@@ -23,6 +23,13 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
     private var currentRecyclerView: RecyclerView? = null
     private var previousViewHolder: RecyclerView.ViewHolder? = null
     private var clampRight: Float = 0f
+    private var rightButtons: Float =
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled &&
+            (TapUI.getInstance(instanceKey).isMarkAsReadRoomListSwipeMenuEnabled ||
+            TapUI.getInstance(instanceKey).isMarkAsUnreadRoomListSwipeMenuEnabled))
+            2f
+        else
+            1f
     private var clampLeft: Float = 0f
     private var onMoveAndSwipedListener: OnMoveAndSwipeListener? = null
 
@@ -58,7 +65,12 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         if (direction == RIGHT)
-            onMoveAndSwipedListener?.onReadOrUnreadItem(viewHolder.layoutPosition)
+            if (TapUI.getInstance(instanceKey).isMarkAsUnreadRoomListSwipeMenuEnabled ||
+                    TapUI.getInstance(instanceKey).isMarkAsReadRoomListSwipeMenuEnabled) {
+                onMoveAndSwipedListener?.onReadOrUnreadItem(viewHolder.layoutPosition)
+            } else {
+                onMoveAndSwipedListener?.onPinOrUnpinItem(viewHolder.layoutPosition)
+            }
         else if (direction == LEFT)
             onMoveAndSwipedListener?.onMuteOrUnmuteItem(viewHolder.layoutPosition)
     }
@@ -85,7 +97,7 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
     private fun setTouchListener(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, currentlyActive: Boolean) {
         val x = when {
             getTag(viewHolder) == SwipeState.CLAMP_RIGHT -> {
-                dX + clampRight
+                dX + (clampRight * rightButtons)
             }
             getTag(viewHolder) == SwipeState.CLAMP_LEFT -> {
                 dX - clampLeft
@@ -100,10 +112,13 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
             removePreviousClamp()
             if (event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP) {
                 swipeBack = if (x <= view.width/2 && dX > 0) {
-                    if (x >= clampRight) {
-                        setTag(viewHolder, SwipeState.CLAMP_RIGHT)
-                    } else {
-                        setTag(viewHolder, SwipeState.IDLE)
+                    when {
+                        x >= (clampRight * rightButtons) -> {
+                            setTag(viewHolder, SwipeState.CLAMP_RIGHT)
+                        }
+                        else -> {
+                            setTag(viewHolder, SwipeState.IDLE)
+                        }
                     }
                     previousViewHolder = viewHolder
                     true
@@ -141,6 +156,7 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
         if (swipeState != SwipeState.CLAMP_LEFT && swipeState != SwipeState.CLAMP_RIGHT) {
             viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read).setOnClickListener {  }
             viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mute).setOnClickListener {  }
+            viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin).setOnClickListener {  }
         } else if (swipeState == SwipeState.CLAMP_RIGHT){
             viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read).setOnClickListener {
                 setTag(viewHolder, SwipeState.IDLE)
@@ -148,6 +164,13 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
                 currentDx = 0f
                 removePreviousClamp()
                 onMoveAndSwipedListener?.onReadOrUnreadItem(viewHolder.layoutPosition)
+            }
+            viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin).setOnClickListener {
+                setTag(viewHolder, SwipeState.IDLE)
+                swipeBack = false
+                currentDx = 0f
+                removePreviousClamp()
+                onMoveAndSwipedListener?.onPinOrUnpinItem(viewHolder.layoutPosition)
             }
         } else if (swipeState == SwipeState.CLAMP_LEFT) {
             viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mute).setOnClickListener {
@@ -174,6 +197,11 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
             dX > 0 -> {
                 hideRightButtons(viewHolder)
                 showLeftButtons(viewHolder)
+                if (dX > max / 2) {
+                    hidePinButton(viewHolder)
+                } else {
+                    showPinButton(viewHolder)
+                }
             }
             dX < 0 -> {
                 hideLeftButtons(viewHolder)
@@ -186,9 +214,9 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
         }
         val x: Float = if (viewHolder.itemView.tag == SwipeState.CLAMP_RIGHT) {
             if (isCurrentlyActive) {
-                dX + clampRight
+                dX + clampRight * rightButtons
             } else {
-                clampRight
+                clampRight * rightButtons
             }
         } else if (viewHolder.itemView.tag == SwipeState.CLAMP_LEFT){
             if (isCurrentlyActive) {
@@ -221,9 +249,10 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
     private fun isSwipeRightEnabled(viewHolder: RecyclerView.ViewHolder): Boolean {
         //mark as read
         return ((viewHolder as TAPRoomListAdapter.RoomListVH).item.isMarkedAsUnread || viewHolder.item.numberOfUnreadMessages > 0) &&
-                    TapUI.getInstance(instanceKey).isMarkAsUnreadRoomListSwipeMenuEnabled ||
+                TapUI.getInstance(instanceKey).isMarkAsUnreadRoomListSwipeMenuEnabled ||
                 //mark as unread
-            !viewHolder.item.isMarkedAsUnread && TapUI.getInstance(instanceKey).isMarkAsReadRoomListSwipeMenuEnabled
+            !viewHolder.item.isMarkedAsUnread && TapUI.getInstance(instanceKey).isMarkAsReadRoomListSwipeMenuEnabled ||
+                TapUI.getInstance(instanceKey).isPinMessageMenuEnabled
     }
 
     private fun isSwipeLeftEnabled(): Boolean {
@@ -232,8 +261,14 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
     }
 
     private fun showLeftButtons(viewHolder: RecyclerView.ViewHolder) {
-        viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read).visibility = View.VISIBLE
-
+        val markAsReadButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read)
+        val pinButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin)
+        if (markAsReadButton.visibility == View.INVISIBLE) {
+            markAsReadButton.visibility = View.VISIBLE
+        }
+        if (pinButton.visibility == View.INVISIBLE) {
+            pinButton.visibility = View.VISIBLE
+        }
     }
 
     private fun showRightButtons(viewHolder: RecyclerView.ViewHolder) {
@@ -242,7 +277,25 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
     }
 
     private fun hideLeftButtons(viewHolder: RecyclerView.ViewHolder) {
-        viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read).visibility = View.INVISIBLE
+        val markAsReadButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read)
+        val pinButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin)
+        if (markAsReadButton.visibility == View.VISIBLE) {
+            markAsReadButton.visibility = View.INVISIBLE
+        }
+        if (pinButton.visibility == View.VISIBLE) {
+            pinButton.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun hidePinButton(viewHolder: RecyclerView.ViewHolder) {
+        val pinButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin)
+        if (pinButton.visibility == View.VISIBLE) {
+            pinButton.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun showPinButton(viewHolder: RecyclerView.ViewHolder) {
+        viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin).visibility = View.VISIBLE
     }
 
     private fun hideRightButtons(viewHolder: RecyclerView.ViewHolder) {

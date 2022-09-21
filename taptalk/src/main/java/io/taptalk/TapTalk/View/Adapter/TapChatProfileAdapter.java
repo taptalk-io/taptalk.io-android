@@ -50,7 +50,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_MUTE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_SHARED_MEDIA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_STARRED_MESSAGES;
@@ -188,7 +187,6 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
         private ConstraintLayout clContainer;
         private ImageView ivMenuIcon, ivRightArrow;
         private TextView tvMenuLabel;
-        private TextView tvMenuInfo;
         private View vSeparator;
         private SwitchCompat swMenuSwitch;
 
@@ -198,7 +196,6 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             ivMenuIcon = itemView.findViewById(R.id.iv_menu_icon);
             ivRightArrow = itemView.findViewById(R.id.iv_right_arrow);
             tvMenuLabel = itemView.findViewById(R.id.tv_menu_label);
-            tvMenuInfo = itemView.findViewById(R.id.tv_menu_info);
             vSeparator = itemView.findViewById(R.id.v_separator);
             swMenuSwitch = itemView.findViewById(R.id.sw_menu_switch);
         }
@@ -216,19 +213,10 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             tvMenuLabel.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
             typedArray.recycle();
 
-            // Set menu info text
-            if (item.getMenuId() == MENU_MUTE) {
-                tvMenuInfo.setVisibility(View.VISIBLE);
-                tvMenuInfo.setText(item.getItemSubLabel());
-            } else {
-                tvMenuInfo.setVisibility(View.GONE);
-            }
-
             // Show menu chevron
             if (item.getMenuId() == MENU_VIEW_MEMBERS ||
                 item.getMenuId() == MENU_STARRED_MESSAGES ||
-                item.getMenuId() == MENU_SHARED_MEDIA ||
-                item.getMenuId() == MENU_MUTE) {
+                item.getMenuId() == MENU_SHARED_MEDIA) {
                 ivRightArrow.setVisibility(View.VISIBLE);
             } else {
                 ivRightArrow.setVisibility(View.GONE);

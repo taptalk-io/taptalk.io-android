@@ -726,4 +726,20 @@ public class TAPApiManager {
         request.setRoomIDs(roomIds);
         execute(homingPigeon.unmuteRoom(request), subscriber);
     }
+
+    public void getPinnedRoomIds(Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        execute(homingPigeon.getPinnedRoomIds(), subscriber);
+    }
+
+    public void pinRoom(List<String> roomIds, Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        TapRoomIdsRequest request = new TapRoomIdsRequest();
+        request.setRoomIDs(roomIds);
+        execute(homingPigeon.pinRoom(request), subscriber);
+    }
+
+    public void unpinRoom(List<String> roomIds, Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        TapRoomIdsRequest request = new TapRoomIdsRequest();
+        request.setRoomIDs(roomIds);
+        execute(homingPigeon.unpinRoom(request), subscriber);
+    }
 }

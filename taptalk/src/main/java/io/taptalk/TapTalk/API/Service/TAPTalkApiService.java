@@ -237,4 +237,12 @@ public interface TAPTalkApiService {
     @POST("client/room/unmute")
     Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> unmuteRoom(@Body TapRoomIdsRequest request);
 
+    @POST("client/room/get_pinned_room_ids")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> getPinnedRoomIds();
+
+    @POST("client/room/pin")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> pinRoom(@Body TapRoomIdsRequest request);
+
+    @POST("client/room/unpin")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> unpinRoom(@Body TapRoomIdsRequest request);
 }
