@@ -190,6 +190,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:maxHeight="200dp"
                     android:scaleType="centerCrop"
                     android:visibility="gone"
                     app:cornerRadius="8dp"
@@ -271,7 +272,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 app:barrierDirection="end"
-                app:constraint_referenced_ids="cl_forwarded,cl_quote,v_quote_background,tv_message_body" />
+                app:constraint_referenced_ids="cl_forwarded,cl_quote,v_quote_background,tv_message_body, cl_link" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -233,6 +233,7 @@
                     android:id="@+id/rciv_link_image"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:maxHeight="200dp"
                     android:layout_marginTop="8dp"
                     android:scaleType="centerCrop"
                     android:visibility="gone"
@@ -303,7 +304,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 app:barrierDirection="end"
-                app:constraint_referenced_ids="tv_user_name,cl_forwarded,cl_quote,v_quote_background,tv_message_body" />
+                app:constraint_referenced_ids="tv_user_name,cl_forwarded,cl_quote,v_quote_background,tv_message_body, cl_link" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
