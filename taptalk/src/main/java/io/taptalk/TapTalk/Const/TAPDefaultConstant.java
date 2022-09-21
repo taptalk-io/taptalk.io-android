@@ -391,6 +391,7 @@ public class TAPDefaultConstant {
         public static final String GROUP_MAX_PARTICIPANTS = "groupMaxParticipants";
         public static final String ROOM_PHOTO_MAX_FILE_SIZE = "roomPhotoMaxFileSize";
         public static final String USER_PHOTO_MAX_FILE_SIZE = "userPhotoMaxFileSize";
+        public static final String ROOM_MAX_PINNED = "roomMaxPinned";
 
         public static final String USERNAME_IGNORE_CASE = "usernameIgnoreCase";
     }
@@ -443,7 +444,6 @@ public class TAPDefaultConstant {
         public static final int MENU_REPORT = 15;
         public static final int MENU_STARRED_MESSAGES = 16;
         public static final int MENU_SHARED_MEDIA = 17;
-        public static final int MENU_MUTE = 18;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -469,6 +469,7 @@ public class TAPDefaultConstant {
     public static final String K_UNREAD_ROOM_LIST = "kTAPUnreadRoomList";
     public static final String K_PINNED_MESSAGE = "kTAPPinnedMessage";
     public static final String K_MUTED_ROOM_LIST = "kTAPMutedRoomList";
+    public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 
@@ -477,6 +478,7 @@ public class TAPDefaultConstant {
     public static final String DEFAULT_USER_PHOTO_MAX_FILE_SIZE = "10485760";
     public static final String DEFAULT_GROUP_MAX_PARTICIPANTS = "100";
     public static final String DEFAULT_CHANNEL_MAX_PARTICIPANTS = "5000";
+    public static final String DEFAULT_ROOM_MAX_PINNED= "10";
 
     public static final int CHARACTER_LIMIT = 4000;
     public static final int MAX_ITEMS_PER_PAGE = 50;

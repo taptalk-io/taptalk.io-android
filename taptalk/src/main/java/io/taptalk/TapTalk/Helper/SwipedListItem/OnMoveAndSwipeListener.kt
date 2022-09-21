@@ -4,4 +4,6 @@ interface OnMoveAndSwipeListener {
     fun onReadOrUnreadItem(position: Int)
 
     fun onMuteOrUnmuteItem(position: Int)
+
+    fun onPinOrUnpinItem(position: Int)
 }

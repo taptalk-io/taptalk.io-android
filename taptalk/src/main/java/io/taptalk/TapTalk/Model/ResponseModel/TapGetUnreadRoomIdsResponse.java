@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TapGetUnreadRoomIdsResponse{
 
-	@JsonAlias({"mutedRoomIDs", "unmutedRoomIDs"})
+	@JsonAlias({"mutedRoomIDs", "unmutedRoomIDs", "pinnedRoomIDs", "unpinnedRoomIDs"})
 	@JsonProperty("unreadRoomIDs")
 	private List<String> unreadRoomIDs;
 
