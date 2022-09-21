@@ -43,7 +43,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
@@ -935,7 +934,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void getMutedRoomList() {
-        TapCoreRoomListManager.getInstance(instanceKey).getMutedChatRoomIDs(new TapCoreGetMutedChatRoomListener() {
+        TapCoreRoomListManager.getInstance(instanceKey).getMutedChatRoomList(new TapCoreGetMutedChatRoomListener() {
             @Override
             public void onSuccess(@NonNull ArrayList<TapMutedRoomListModel> mutedRoomList) {
                 super.onSuccess(mutedRoomList);
@@ -949,7 +948,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void getPinnedRoomList() {
-        TapCoreRoomListManager.getInstance(instanceKey).getPinnedChatRoomList(new TapCoreGetStringArrayListener() {
+        TapCoreRoomListManager.getInstance(instanceKey).getPinnedChatRoomIDs(new TapCoreGetStringArrayListener() {
             @Override
             public void onSuccess(@NonNull ArrayList<String> pinnedRoomList) {
                 super.onSuccess(pinnedRoomList);

@@ -1,5 +1,16 @@
 package io.taptalk.TapTalk.Manager;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CHAT_ROOM_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ROOM_MAX_PINNED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.ROOM_MAX_PINNED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
@@ -29,20 +40,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.Model.TapConfigs;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CHAT_ROOM_NOT_FOUND;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ROOM_MAX_PINNED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_USER_PHOTO_MAX_FILE_SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.ROOM_MAX_PINNED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USER_PHOTO_MAX_FILE_SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 @Keep
 public class TapCoreRoomListManager {
@@ -654,7 +651,7 @@ public class TapCoreRoomListManager {
         });
     }
 
-    public void getMutedChatRoomIDs(TapCoreGetMutedChatRoomListener listener) {
+    public void getMutedChatRoomList(TapCoreGetMutedChatRoomListener listener) {
         TAPDataManager.getInstance(instanceKey).getMutedRoomIds(new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetMutedRoomIdsResponse response) {
@@ -684,7 +681,7 @@ public class TapCoreRoomListManager {
         });
     }
 
-    public void muteChatRoom(List<String> roomIDs, Long expiredAt, TapCommonListener listener) {
+    public void muteChatRooms(List<String> roomIDs, Long expiredAt, TapCommonListener listener) {
         TAPDataManager.getInstance(instanceKey).muteRoom(roomIDs, expiredAt, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
@@ -716,10 +713,10 @@ public class TapCoreRoomListManager {
     public void muteChatRoom(String roomID, Long expiredAt, TapCommonListener listener) {
         List<String> roomIds = new ArrayList<>();
         roomIds.add(roomID);
-        muteChatRoom(roomIds, expiredAt, listener);
+        muteChatRooms(roomIds, expiredAt, listener);
     }
 
-    public void unmuteChatRoom(List<String> roomIDs, TapCommonListener listener) {
+    public void unmuteChatRooms(List<String> roomIDs, TapCommonListener listener) {
         TAPDataManager.getInstance(instanceKey).unmuteRoom(roomIDs, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
@@ -751,15 +748,21 @@ public class TapCoreRoomListManager {
     public void unmuteChatRoom(String roomID, TapCommonListener listener) {
         List<String> roomIds = new ArrayList<>();
         roomIds.add(roomID);
-        unmuteChatRoom(roomIds, listener);
+        unmuteChatRooms(roomIds, listener);
     }
 
     public Integer getMaxPinnedRoom() {
-        String maxPinnedRoom = TapTalk.getCoreConfigs(instanceKey).get(ROOM_MAX_PINNED);
-        return null == maxPinnedRoom ? Integer.valueOf(DEFAULT_ROOM_MAX_PINNED) : Integer.valueOf(maxPinnedRoom);
+        Map<String, String> coreConfigs = TapTalk.getCoreConfigs(instanceKey);
+        if (coreConfigs != null) {
+            String maxPinnedRoom = coreConfigs.get(ROOM_MAX_PINNED);
+            if (maxPinnedRoom != null) {
+                return Integer.valueOf(maxPinnedRoom);
+            }
+        }
+        return Integer.valueOf(DEFAULT_ROOM_MAX_PINNED);
     }
 
-    public void getPinnedChatRoomList(TapCoreGetStringArrayListener listener) {
+    public void getPinnedChatRoomIDs(TapCoreGetStringArrayListener listener) {
         TAPDataManager.getInstance(instanceKey).getPinnedRoomIds(new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
@@ -786,7 +789,7 @@ public class TapCoreRoomListManager {
         });
     }
 
-    public void pinChatRoom(List<String> roomIDs, TapCommonListener listener) {
+    public void pinChatRooms(List<String> roomIDs, TapCommonListener listener) {
         int pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().size();
         if (pinnedRooms < getMaxPinnedRoom()) {
             TAPDataManager.getInstance(instanceKey).pinRoom(roomIDs, new TAPDefaultDataView<>() {
@@ -825,10 +828,10 @@ public class TapCoreRoomListManager {
     public void pinChatRoom(String roomID, TapCommonListener listener) {
         List<String> roomIds = new ArrayList<>();
         roomIds.add(roomID);
-        pinChatRoom(roomIds, listener);
+        pinChatRooms(roomIds, listener);
     }
 
-    public void unpinChatRoom(List<String> roomIDs, TapCommonListener listener) {
+    public void unpinChatRooms(List<String> roomIDs, TapCommonListener listener) {
         TAPDataManager.getInstance(instanceKey).unpinRoom(roomIDs, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
@@ -860,6 +863,6 @@ public class TapCoreRoomListManager {
     public void unpinChatRoom(String roomID, TapCommonListener listener) {
         List<String> roomIds = new ArrayList<>();
         roomIds.add(roomID);
-        unpinChatRoom(roomIds, listener);
+        unpinChatRooms(roomIds, listener);
     }
 }
