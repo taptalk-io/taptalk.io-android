@@ -480,8 +480,9 @@ public class TAPChatManager {
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 } else {
-                    HashMap<String, Object> newData = data;
-                    if (TAPUtils.setUrlWithProtocol(urls.get(0)) != data.get(URL)) {
+                    HashMap<String, Object> newData = new HashMap<>(data);
+                    String url = TAPUtils.setUrlWithProtocol(urls.get(0));
+                    if (!url.equalsIgnoreCase((String) data.get(URL))) {
                         newData = new HashMap<>();
                         newData.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
                     }
@@ -500,8 +501,9 @@ public class TAPChatManager {
             if (urls.isEmpty()) {
                 messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
             } else {
-                HashMap<String, Object> newData = data;
-                if (TAPUtils.setUrlWithProtocol(urls.get(0)) != data.get(URL)) {
+                HashMap<String, Object> newData = new HashMap<>(data);
+                String url = TAPUtils.setUrlWithProtocol(urls.get(0));
+                if (!url.equalsIgnoreCase((String) data.get(URL))) {
                     newData = new HashMap<>();
                     newData.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
                 }
@@ -525,11 +527,11 @@ public class TAPChatManager {
                 String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 List<String> urls = TAPUtils.getUrlsFromString(substr);
                 TAPMessageModel messageModel;
-                HashMap<String, Object> newData = data;
+                HashMap<String, Object> newData = new HashMap<>(data);
                 if (urls.isEmpty()) {
                     newData = new HashMap<>();
                 } else {
-                    if (TAPUtils.setUrlWithProtocol(urls.get(0)) != data.get(URL)) {
+                    if (!TAPUtils.setUrlWithProtocol(urls.get(0)).equalsIgnoreCase((String) data.get(URL))) {
                         newData = new HashMap<>();
                         newData.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
                     }
