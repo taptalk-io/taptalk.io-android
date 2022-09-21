@@ -1371,4 +1371,11 @@ public class TAPUtils {
         }
         return "";
     }
+
+    public static String setUrlWithProtocol(String url) {
+        if (!url.isEmpty() && !url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "http://" + url;
+        }
+        return url;
+    }
 }
