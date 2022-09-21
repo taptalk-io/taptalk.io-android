@@ -517,7 +517,11 @@ public class TapCoreMessageManager {
     }
 
     public void editMessage(TAPMessageModel message, String updatedText, TapCoreSendMessageListener listener) {
-        TAPChatManager.getInstance(instanceKey).editMessage(message, updatedText, listener);
+        TAPChatManager.getInstance(instanceKey).editMessage(message, updatedText, listener, false);
+    }
+
+    public void editMessage(TAPMessageModel previousMessage, TAPMessageModel newMessage, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance(instanceKey).editMessage(previousMessage, newMessage, listener);
     }
 
     public void uploadImage(Context context, Uri uri, TapCoreFileUploadListener listener) {

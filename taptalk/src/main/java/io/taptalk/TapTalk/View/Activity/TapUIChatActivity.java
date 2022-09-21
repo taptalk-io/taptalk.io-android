@@ -218,6 +218,7 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Helper.TapVerticalIndicator;
 import io.taptalk.TapTalk.Helper.audiorecorder.TapAudioManager;
 import io.taptalk.TapTalk.Interface.TapAudioListener;
+import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
@@ -3475,7 +3476,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 } else {
                     return;
                 }
-                TapCoreMessageManager.getInstance(instanceKey).editMessage(messageModel, message, new TapCoreSendMessageListener() {
+                TAPChatManager.getInstance(instanceKey).editMessage(messageModel, message, new TapCoreSendMessageListener() {
                     @Override
                     public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
                         if (errorCode.equals(ERROR_CODE_CAPTION_EXCEEDS_LIMIT)) {
@@ -3486,7 +3487,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                     .show();
                         }
                     }
-                });
+                }, true);
                 hideQuoteLayout();
             } else if (!TextUtils.isEmpty(message)) {
                 String firstUrl = vm.getLinkHashMap().get(TAPDefaultConstant.MessageData.URL);

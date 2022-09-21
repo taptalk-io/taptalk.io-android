@@ -1674,7 +1674,7 @@ public class TAPChatManager {
      * Edit message
      */
 
-    public void editMessage(TAPMessageModel message, String updatedText, TapSendMessageInterface listener) {
+    public void editMessage(TAPMessageModel message, String updatedText, TapSendMessageInterface listener, boolean isTypeChangeEnabled) {
         if (message.getType() == TYPE_TEXT || message.getType() == TYPE_LINK) {
             if (updatedText.length() > CHARACTER_LIMIT) {
                 if (null != listener) {
@@ -1695,12 +1695,16 @@ public class TAPChatManager {
                     data.put(TYPE, null);
                     message.setData(data);
                 }
-                message.setType(TYPE_TEXT);
+                if (isTypeChangeEnabled) {
+                    message.setType(TYPE_TEXT);
+                }
             } else {
                 HashMap<String, Object> data = message.getData() == null ? new HashMap<>() : message.getData();
                 data.put(URLS, urls);
                 message.setData(data);
-                message.setType(TYPE_LINK);
+                if (isTypeChangeEnabled) {
+                    message.setType(TYPE_LINK);
+                }
             }
         }
         else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
@@ -1734,6 +1738,22 @@ public class TAPChatManager {
         }
         // Edit message
         runSendMessageSequence(message, kSocketUpdateMessage);
+    }
+
+    public void editMessage(TAPMessageModel previousMessage, TAPMessageModel newMessage, TapSendMessageInterface listener) {
+        if (previousMessage.getMessageID() == newMessage.getMessageID() &&
+                previousMessage.getLocalID() == newMessage.getLocalID()) {
+            if (null != listener) {
+                sendMessageListeners.put(newMessage.getLocalID(), listener);
+                listener.onStart(newMessage);
+            }
+            // Edit message
+            runSendMessageSequence(newMessage, kSocketUpdateMessage);
+        } else {
+            if (null != listener) {
+                listener.onError(previousMessage, ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE);
+            }
+        }
     }
 
     /**
