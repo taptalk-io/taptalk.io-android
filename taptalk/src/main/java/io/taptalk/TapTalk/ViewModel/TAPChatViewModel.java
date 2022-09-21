@@ -787,7 +787,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public HashMap<String, String> getLinkHashMap() {
-        return linkHashMap == null? new HashMap<>() : linkHashMap;
+        return linkHashMap == null? linkHashMap = new HashMap<>() : linkHashMap;
     }
 
     public void setLinkHashMap(HashMap<String, String> linkHashMap) {
