@@ -228,12 +228,10 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             }
 
             // Check if room is muted
-            if (room.isMuted) {
+            if (item.isMuted) {
                 ivMute.visibility = View.VISIBLE
-                tvBadgeUnread.background = ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_room_list_unread_badge_inactive)
             } else {
                 ivMute.visibility = View.GONE
-                tvBadgeUnread.background = ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_room_list_unread_badge)
             }
 
             // Change Status Message Icon

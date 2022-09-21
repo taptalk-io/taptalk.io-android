@@ -214,7 +214,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             typedArray.recycle();
 
             // Show menu chevron
-            if (item.getMenuId() == MENU_VIEW_MEMBERS || item.getMenuId() == MENU_STARRED_MESSAGES ||
+            if (item.getMenuId() == MENU_VIEW_MEMBERS ||
+                item.getMenuId() == MENU_STARRED_MESSAGES ||
                 item.getMenuId() == MENU_SHARED_MEDIA) {
                 ivRightArrow.setVisibility(View.VISIBLE);
             } else {

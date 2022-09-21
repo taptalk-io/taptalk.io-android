@@ -1,5 +1,9 @@
 package io.taptalk.TapTalk.Helper.SwipedListItem
 
 interface OnMoveAndSwipeListener {
-    fun onItemClick(position: Int)
+    fun onReadOrUnreadItem(position: Int)
+
+    fun onMuteOrUnmuteItem(position: Int)
+
+    fun onPinOrUnpinItem(position: Int)
 }

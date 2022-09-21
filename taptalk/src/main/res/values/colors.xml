@@ -144,6 +144,7 @@
     <color name="tapIconChatProfileMenuClearChat">@color/tapColorDestructiveIcon</color>
     <color name="tapIconChatProfileMenuStarredMessages">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuSharedMedia">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChatProfileMenuMute">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuEditGroup">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupMemberProfileMenuAddToContacts">@color/tapColorPrimaryIcon</color>
@@ -260,6 +261,7 @@
     <color name="tapPopupDialogButtonTextSecondaryColor">@color/tapColorTextMedium</color>
 
     <color name="tapActionSheetDefaultLabelColor">@color/tapColorTextDark</color>
+    <color name="tapActionSheetPrimaryLabelColor">@color/tapColorPrimary</color>
     <color name="tapActionSheetDestructiveLabelColor">@color/tapColorError</color>
 
     <color name="tapSectionHeaderLabelColor">@color/tapGrey9b</color>
@@ -284,6 +286,7 @@
     <color name="tapChatProfileUsernameColor">@color/tapColorPrimary</color>
     <color name="tapChatProfileMemberCountColor">@color/tapColorTextMedium</color>
     <color name="tapChatProfileMenuLabelColor">@color/tapColorTextDark</color>
+    <color name="tapChatProfileMenuInfoColor">@color/tapTransparentBlack1960</color>
     <color name="tapChatProfileMenuDestructiveLabelColor">@color/tapColorError</color>
 
     <color name="tapMediaListInfoLabelColor">@color/tapColorTextLight</color>
@@ -415,6 +418,7 @@
     <color name="tapPumpkinOrangeDark">#e87200</color>
     <color name="tapPumpkinOrange">#ff7e00</color>
     <color name="tapPumpkinOrange10">#1aff7e00</color>
+    <color name="tapDarkOrange">#BB5C00</color>
     <color name="tapTangerine">#ffa107</color>
     <color name="tapOrangeish">#ff9049</color>
     <color name="tapOrangeYellow">#ff9f00</color>

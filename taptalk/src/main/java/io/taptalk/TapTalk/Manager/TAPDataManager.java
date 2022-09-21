@@ -17,7 +17,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_CONTACT_LIST_UPDA
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MUTED_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_UNREAD_ROOM_LIST;
@@ -94,6 +96,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
@@ -240,6 +243,8 @@ public class TAPDataManager {
         removeChatRoomContactActionDismissed();
         removeContactListUpdated();
         removeUnreadRoomIDs();
+        removeMutedRoomIds();
+        removePinnedRoomIDs();
     }
 
     /**
@@ -556,8 +561,41 @@ public class TAPDataManager {
     }
 
     public void removeUnreadRoomIDs() {
-        removePreference(K_UNREAD_ROOM_LIST);
+        removePreference(instanceKey + K_UNREAD_ROOM_LIST);
     }
+
+    public HashMap<String, Long> getMutedRoomIDs() {
+        return Hawk.get(instanceKey + K_MUTED_ROOM_LIST, new HashMap<>());
+    }
+
+    public void saveMutedRoomIDs(HashMap<String, Long> mutedRoomIDs) {
+        Hawk.put(instanceKey + K_MUTED_ROOM_LIST, mutedRoomIDs);
+    }
+
+    public boolean isMutedRoomIDsEmpty() {
+        return getMutedRoomIDs().isEmpty();
+    }
+
+    public void removeMutedRoomIds() {
+        removePreference(instanceKey + K_MUTED_ROOM_LIST);
+    }
+
+    public ArrayList<String> getPinnedRoomIDs() {
+        return Hawk.get(instanceKey + K_PINNED_ROOM_LIST, new ArrayList<>());
+    }
+
+    public void savePinnedRoomIDs(ArrayList<String> pinnedRoomIDs) {
+        Hawk.put(instanceKey + K_PINNED_ROOM_LIST, pinnedRoomIDs);
+    }
+
+    public boolean isPinnedRoomIDsEmpty() {
+        return getPinnedRoomIDs().isEmpty();
+    }
+
+    public void removePinnedRoomIDs() {
+        removePreference(instanceKey + K_PINNED_ROOM_LIST);
+    }
+
 
     /**
      * MY COUNTRY CODE
@@ -1515,5 +1553,29 @@ public class TAPDataManager {
 
     public void getSharedMedia(String roomId, Long minCreated, Long maxCreated, TAPDefaultDataView<TapGetSharedContentResponse> view) {
         TAPApiManager.getInstance(instanceKey).getSharedMedia(roomId, minCreated, maxCreated, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getMutedRoomIds(TAPDefaultDataView<TapGetMutedRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getMutedRoomIds(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void muteRoom(List<String> roomIds, Long expiredAt, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).muteRoom(roomIds, expiredAt, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unmuteRoom(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unmuteRoom(roomIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getPinnedRoomIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getPinnedRoomIds(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void pinRoom(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).pinRoom(roomIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unpinRoom(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unpinRoom(roomIds, new TAPDefaultSubscriber<>(view));
     }
 }

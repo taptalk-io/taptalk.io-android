@@ -46,6 +46,61 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_pin"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:background="@color/tapDarkOrange"
+            app:layout_constraintStart_toEndOf="@id/ll_mark_read"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_pin_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/tap_ic_pin_large"/>
+
+            <TextView
+                android:id="@+id/tv_pin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tap_pin"
+                android:layout_gravity="center"
+                style="@style/tapThinButtonLabelStyle"
+                android:padding="0dp"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_mute"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_mute_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/tap_ic_mute_white"/>
+
+            <TextView
+                android:id="@+id/tv_mute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tap_mute"
+                android:layout_gravity="center"
+                style="@style/tapThinButtonLabelStyle"
+                android:padding="0dp"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -81,6 +136,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0"
+            app:layout_constraintHorizontal_bias="0"
             tools:src="@drawable/tap_bg_circle_9b9b9b" />
 
         <ImageView
@@ -125,17 +181,18 @@
         <TextView
             android:id="@+id/tv_full_name"
             style="@style/tapRoomListNameStyle"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
+            app:layout_goneMarginEnd="30dp"
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toTopOf="@id/tv_group_sender_name"
-            app:layout_constraintEnd_toEndOf="@id/iv_mute"
+            app:layout_constraintEnd_toStartOf="@id/iv_mute"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toEndOf="@id/civ_avatar"
             app:layout_constraintTop_toTopOf="parent"
@@ -145,15 +202,17 @@
         <ImageView
             android:id="@+id/iv_mute"
             android:layout_width="0dp"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
             android:scaleType="fitStart"
             android:src="@drawable/tap_ic_mute_grey"
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/tv_last_message_time"
             app:layout_constraintStart_toEndOf="@id/tv_full_name"
             app:layout_constraintTop_toTopOf="@+id/tv_full_name"
-            app:layout_constraintWidth_min="24dp"
-            app:tint="@color/tapIconRoomListMuted" />
+            app:layout_constraintBottom_toBottomOf="@id/tv_full_name"
+            app:layout_constraintWidth_min="24dp"/>
 
         <ImageView
             android:id="@+id/iv_personal_room_typing_indicator"
@@ -207,14 +266,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginRight="4dp"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_badge_mention"
+            app:layout_constraintEnd_toStartOf="@id/tv_last_message_time"
             app:layout_constraintStart_toEndOf="@id/iv_personal_room_typing_indicator"
             app:layout_constraintTop_toBottomOf="@id/tv_group_sender_name"
             app:layout_constraintVertical_bias="0"
@@ -233,43 +292,57 @@
             android:gravity="end"
             android:maxLines="1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_mute"
             app:layout_constraintTop_toTopOf="@id/tv_full_name"
             tools:text="00:00" />
 
-        <FrameLayout
-            android:id="@+id/fl_status"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="@id/tv_last_message"
             app:layout_constraintEnd_toEndOf="@id/tv_last_message_time"
-            app:layout_constraintTop_toTopOf="@id/tv_last_message">
+            app:layout_constraintTop_toBottomOf="@id/tv_last_message_time">
 
             <ImageView
                 android:id="@+id/iv_message_status"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="end"
-                tools:src="@drawable/tap_ic_sending_grey" />
+                android:padding="1dp"
+                tools:src="@drawable/tap_ic_sending_grey"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_pin"/>
+            
+            <ImageView
+                android:id="@+id/iv_pin"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="end"
+                android:padding="2dp"
+                android:src="@drawable/tap_ic_pin_outline_grey"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tv_badge_unread"
                 style="@style/tapRoomListUnreadBadgeLabelStyle"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:layout_gravity="end"
+                android:layout_height="16dp"
                 android:background="@drawable/tap_bg_room_list_unread_badge"
                 android:gravity="center"
-                android:minWidth="20dp"
+                android:minWidth="16dp"
                 android:paddingStart="4dp"
-                android:paddingTop="2dp"
                 android:paddingEnd="4dp"
-                android:paddingBottom="2dp"
                 android:visibility="gone"
-                tools:text="99+" />
+                tools:text="99+"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_pin"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
-        </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
             android:id="@+id/iv_badge_mention"
@@ -285,9 +358,9 @@
             android:text="@string/tap_at"
             android:tint="@color/tapRoomListUnreadBadgeLabelColor"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/fl_status"
-            app:layout_constraintEnd_toStartOf="@id/fl_status"
-            app:layout_constraintTop_toTopOf="@id/fl_status"
+            app:layout_constraintBottom_toBottomOf="@id/cl_status"
+            app:layout_constraintEnd_toStartOf="@id/cl_status"
+            app:layout_constraintTop_toTopOf="@id/cl_status"
             tools:ignore="UseAppTint" />
 
         <View
@@ -314,7 +387,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="tv_last_message,fl_status,civ_avatar"
+            app:constraint_referenced_ids="tv_last_message,cl_status,civ_avatar"
             app:layout_constraintBottom_toBottomOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

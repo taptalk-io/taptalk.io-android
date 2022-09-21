@@ -82,6 +82,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon;
         private ImageView ivMute;
+        private ImageView ivPin;
         private ImageView ivMessageStatus;
         private ImageView ivPersonalRoomTypingIndicator;
 //        private ImageView ivGroupRoomTypingIndicator;
@@ -97,6 +98,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         private LinearLayout llMarkRead;
         private TextView tvMarkRead;
         private ImageView ivMarkRead;
+        private LinearLayout llMute;
+        private TextView tvMute;
+        private ImageView ivMuteButton;
+        private LinearLayout llPin;
+        private TextView tvPin;
+        private ImageView ivPinButton;
 
         RoomListVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -104,6 +111,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             ivMute = itemView.findViewById(R.id.iv_mute);
+            ivPin = itemView.findViewById(R.id.iv_pin);
             ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
             ivPersonalRoomTypingIndicator = itemView.findViewById(R.id.iv_personal_room_typing_indicator);
 //            ivGroupRoomTypingIndicator = itemView.findViewById(R.id.iv_group_room_typing_indicator);
@@ -119,6 +127,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             llMarkRead = itemView.findViewById(R.id.ll_mark_read);
             tvMarkRead = itemView.findViewById(R.id.tv_mark_read);
             ivMarkRead = itemView.findViewById(R.id.iv_mark_read);
+            llMute = itemView.findViewById(R.id.ll_mute);
+            tvMute = itemView.findViewById(R.id.tv_mute);
+            ivMuteButton = itemView.findViewById(R.id.iv_mute_button);
+            llPin = itemView.findViewById(R.id.ll_pin);
+            tvPin = itemView.findViewById(R.id.tv_pin);
+            ivPinButton = itemView.findViewById(R.id.iv_pin_button);
         }
 
         @Override
@@ -280,12 +294,35 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Check if room is muted
-            if (room.getIsMuted()) {
-                ivMute.setVisibility(View.VISIBLE);
-                tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge_inactive));
+            if (TapUI.getInstance(instanceKey).isMuteRoomListSwipeMenuEnabled()) {
+                llMute.setVisibility(View.VISIBLE);
+                if (item.isMuted()) {
+                    ivMute.setVisibility(View.VISIBLE);
+                    glide.load(R.drawable.tap_ic_unmute_white).fitCenter().into(ivMuteButton);
+                    tvMute.setText(R.string.tap_unmute);
+                } else {
+                    ivMute.setVisibility(View.GONE);
+                    glide.load(R.drawable.tap_ic_mute_white).fitCenter().into(ivMuteButton);
+                    tvMute.setText(R.string.tap_mute);
+                }
             } else {
-                ivMute.setVisibility(View.GONE);
-                tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge));
+                llMute.setVisibility(View.GONE);
+            }
+
+            // Check if room is pinned
+            if (TapUI.getInstance(instanceKey).isPinRoomListSwipeMenuEnabled()) {
+                llPin.setVisibility(View.VISIBLE);
+                if (item.isPinned()) {
+                    ivPin.setVisibility(View.VISIBLE);
+                    glide.load(R.drawable.tap_ic_unpin_large).fitCenter().into(ivPinButton);
+                    tvPin.setText(R.string.tap_unpin);
+                } else {
+                    ivPin.setVisibility(View.GONE);
+                    glide.load(R.drawable.tap_ic_pin_large).fitCenter().into(ivPinButton);
+                    tvPin.setText(R.string.tap_pin);
+                }
+            } else {
+                llPin.setVisibility(View.GONE);
             }
 
             // Change Status Message Icon
@@ -337,13 +374,23 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 }
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
-                glide.load(R.drawable.tap_ic_mark_read_white).fitCenter().into(ivMarkRead);
-                tvMarkRead.setText(R.string.tap_read);
+                if (TapUI.getInstance(instanceKey).isMarkAsReadRoomListSwipeMenuEnabled()) {
+                    llMarkRead.setVisibility(View.VISIBLE);
+                    glide.load(R.drawable.tap_ic_mark_read_white).fitCenter().into(ivMarkRead);
+                    tvMarkRead.setText(R.string.tap_read);
+                } else {
+                    llMarkRead.setVisibility(View.GONE);
+                }
             } else {
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 tvBadgeUnread.setVisibility(View.GONE);
-                glide.load(R.drawable.tap_ic_mark_unread_white).fitCenter().into(ivMarkRead);
-                tvMarkRead.setText(R.string.tap_unread);
+                if (TapUI.getInstance(instanceKey).isMarkAsUnreadRoomListSwipeMenuEnabled()) {
+                    llMarkRead.setVisibility(View.VISIBLE);
+                    glide.load(R.drawable.tap_ic_mark_unread_white).fitCenter().into(ivMarkRead);
+                    tvMarkRead.setText(R.string.tap_unread);
+                } else {
+                    llMarkRead.setVisibility(View.GONE);
+                }
             }
 
             // Show mention badge

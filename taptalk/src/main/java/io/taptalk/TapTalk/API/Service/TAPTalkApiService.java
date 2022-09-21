@@ -50,6 +50,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
@@ -226,4 +227,22 @@ public interface TAPTalkApiService {
 
     @POST("chat/room/get_shared_content")
     Observable<TAPBaseResponse<TapGetSharedContentResponse>> getSharedMedia(@Body TAPGetMessageListByRoomAfterRequest request);
+
+    @POST("client/room/get_muted_room_ids")
+    Observable<TAPBaseResponse<TapGetMutedRoomIdsResponse>> getMutedRoomIds();
+
+    @POST("client/room/mute")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> muteRoom(@Body TapRoomIdsRequest request);
+
+    @POST("client/room/unmute")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> unmuteRoom(@Body TapRoomIdsRequest request);
+
+    @POST("client/room/get_pinned_room_ids")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> getPinnedRoomIds();
+
+    @POST("client/room/pin")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> pinRoom(@Body TapRoomIdsRequest request);
+
+    @POST("client/room/unpin")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> unpinRoom(@Body TapRoomIdsRequest request);
 }

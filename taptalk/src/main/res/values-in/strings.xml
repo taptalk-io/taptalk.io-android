@@ -428,16 +428,26 @@
     <string name="tap_deleted_user">Deleted User</string>
     <string name="tap_saved_messages">Saved Messages</string>
     <string name="tap_chatroom_not_available">Chatroom is not available.</string>
-    <string name="tap_pin">Pin</string>
+    <string name="tap_pin">Sematkan</string>
     <string name="tap_unpin">Lepas Sematan</string>
     <string name="tap_pinned_message">Pinned Message</string>
     <string name="tap_pinned_messages">Pinned Messages</string>
     <string name="unpin_all_messages">Unpin All Messages</string>
+    <string name="tap_mute">Senyap</string>
+    <string name="tap_unmute">Bunyikan</string>
     <string name="tap_media">media</string>
     <string name="tap_links">tautan</string>
     <string name="tap_documents">berkas</string>
     <string name="tap_no_shared_media">Tidak ada media bersama</string>
     <string name="tap_wording_empty_shared_media">Kamu dapat melihat semua media yang di bagikan di obrolan melalui halaman ini setelah kamu mulai membagikannya.</string>
     <string name="tap_view_in_chat">Lihat di Obrolan</string>
+    <string name="tap_tomorrow">besok</string>
+    <string name="tap_one_hour">1 Jam</string>
+    <string name="tap_eight_hours">8 Jam</string>
+    <string name="tap_three_days">3 Hari</string>
+    <string name="tap_always">Selalu</string>
+    <string name="tap_muted">Muted</string>
+    <string name="tap_until">until</string>
+    <string name="tap_off">OFF</string>
 
 </resources>
