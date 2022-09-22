@@ -1172,6 +1172,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_chat_history_content">
 
                 <ImageView
+                    android:id="@+id/iv_delete"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
@@ -1192,6 +1193,18 @@
                     android:text="@string/tap_delete_chat" />
 
             </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/pb_delete"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:progressTint="@color/tapWhite"
+                android:indeterminateTint="@color/tapWhite"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/ll_button_delete_chat"
+                app:layout_constraintEnd_toEndOf="@id/ll_button_delete_chat"
+                app:layout_constraintTop_toTopOf="@id/ll_button_delete_chat"
+                app:layout_constraintBottom_toBottomOf="@id/ll_button_delete_chat" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
