@@ -455,5 +455,6 @@
     <string name="tap_sure_unpin_delete_conversation">Are you sure you want to unpin and delete this conversation?</string>
     <string name="tap_delete_for_me">Delete for me</string>
     <string name="tap_unpin_and_delete_chat">Unpin and Delete Chat</string>
+    <string name="tap_deleting_conversation_dots">Deleting conversation...</string>
 
 </resources>

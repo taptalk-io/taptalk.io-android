@@ -863,6 +863,26 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
+    private void showDeleteRoomLoading() {
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(null);
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSettingUp));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconLoadingProgressPrimary));
+            tvSetupChat.setText(R.string.tap_deleting_conversation_dots);
+            tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
+            TAPUtils.rotateAnimateInfinitely(activity, ivSetupChatLoading);
+
+            tvSetupChatDescription.setVisibility(View.VISIBLE);
+            llRetrySetup.setVisibility(View.GONE);
+            flSetupContainer.setVisibility(View.VISIBLE);
+
+            llRetrySetup.setOnClickListener(null);
+
+            hideNewChatButton();
+        });
+    }
+
     private void showChatRoomSetupSuccess() {
         if (!TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
             return;
@@ -1291,6 +1311,7 @@ public class TapUIRoomListFragment extends Fragment {
                     .setCancelable(false)
                     .setPrimaryButtonTitle(getString(R.string.tap_delete_for_me))
                     .setPrimaryButtonListener(v -> {
+                        showDeleteRoomLoading();
                         // TODO: 22/09/22 handle delete room MU
                     })
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
