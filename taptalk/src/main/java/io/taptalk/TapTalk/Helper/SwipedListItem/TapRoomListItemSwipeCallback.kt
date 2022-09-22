@@ -286,69 +286,54 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
         return TapUI.getInstance(instanceKey).isMuteRoomListSwipeMenuEnabled || TapUI.getInstance(instanceKey).isDeleteRoomListSwipeMenuEnabled
     }
 
+    private fun showButton(viewHolder: RecyclerView.ViewHolder, id: Int) {
+        val button = viewHolder.itemView.findViewById<LinearLayout>(id)
+        if (button.visibility == View.INVISIBLE) {
+            button.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideButton(viewHolder: RecyclerView.ViewHolder, id: Int) {
+        val button = viewHolder.itemView.findViewById<LinearLayout>(id)
+        if (button.visibility == View.VISIBLE) {
+            button.visibility = View.INVISIBLE
+        }
+    }
+
     private fun showLeftButtons(viewHolder: RecyclerView.ViewHolder) {
-        val markAsReadButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read)
-        val pinButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin)
-        if (markAsReadButton.visibility == View.INVISIBLE) {
-            markAsReadButton.visibility = View.VISIBLE
-        }
-        if (pinButton.visibility == View.INVISIBLE) {
-            pinButton.visibility = View.VISIBLE
-        }
+        showButton(viewHolder, R.id.ll_mark_read)
+        showButton(viewHolder, R.id.ll_pin)
     }
 
     private fun showRightButtons(viewHolder: RecyclerView.ViewHolder) {
-        val muteButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mute)
-        val deleteButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_delete)
-        if (muteButton.visibility == View.INVISIBLE) {
-            muteButton.visibility = View.VISIBLE
-        }
-        if (deleteButton.visibility == View.INVISIBLE) {
-            deleteButton.visibility = View.VISIBLE
-        }
+        showButton(viewHolder, R.id.ll_mute)
+        showButton(viewHolder, R.id.ll_delete)
     }
 
     private fun hideLeftButtons(viewHolder: RecyclerView.ViewHolder) {
-        val markAsReadButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read)
-        val pinButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin)
-        if (markAsReadButton.visibility == View.VISIBLE) {
-            markAsReadButton.visibility = View.INVISIBLE
-        }
-        if (pinButton.visibility == View.VISIBLE) {
-            pinButton.visibility = View.INVISIBLE
-        }
+        hideButton(viewHolder, R.id.ll_mark_read)
+        hideButton(viewHolder, R.id.ll_pin)
     }
 
     private fun hidePinButton(viewHolder: RecyclerView.ViewHolder) {
-        val pinButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin)
-        if (pinButton.visibility == View.VISIBLE) {
-            pinButton.visibility = View.INVISIBLE
-        }
+        hideButton(viewHolder, R.id.ll_pin)
     }
 
     private fun showPinButton(viewHolder: RecyclerView.ViewHolder) {
-        viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin).visibility = View.VISIBLE
+        showButton(viewHolder, R.id.ll_pin)
     }
+
     private fun hideDeleteButton(viewHolder: RecyclerView.ViewHolder) {
-        val deleteButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_delete)
-        if (deleteButton.visibility == View.VISIBLE) {
-            deleteButton.visibility = View.INVISIBLE
-        }
+        hideButton(viewHolder, R.id.ll_delete)
     }
 
     private fun showDeleteButton(viewHolder: RecyclerView.ViewHolder) {
-        viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_delete).visibility = View.VISIBLE
+        showButton(viewHolder, R.id.ll_delete)
     }
 
     private fun hideRightButtons(viewHolder: RecyclerView.ViewHolder) {
-        val muteButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mute)
-        val deleteButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_delete)
-        if (muteButton.visibility == View.VISIBLE) {
-            muteButton.visibility = View.INVISIBLE
-        }
-        if (deleteButton.visibility == View.VISIBLE) {
-            deleteButton.visibility = View.INVISIBLE
-        }
+        hideButton(viewHolder, R.id.ll_mute)
+        hideButton(viewHolder, R.id.ll_delete)
     }
 
 }
