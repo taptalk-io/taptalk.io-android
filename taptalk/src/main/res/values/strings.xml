@@ -59,6 +59,7 @@
     <string name="tap_from">From:</string>
     <string name="tap_no_chats_to_show">No chats to show</string>
     <string name="tap_delete_chat">Delete Chat</string>
+    <string name="tap_delete_chat_small">Delete chat</string>
     <string name="tap_this_deleted_message">This message was deleted.</string>
     <string name="tap_this_is_a_chat_history">This is a chat history</string>
     <string name="tap_this_user_is_no_longer_available">This user is no longer available</string>
@@ -451,5 +452,7 @@
     <string name="tap_muted">Muted</string>
     <string name="tap_until">until</string>
     <string name="tap_off">OFF</string>
+    <string name="tap_sure_delete_conversation">Are you sure you want to delete this conversation?</string>
+    <string name="tap_delete_for_me">Delete for me</string>
 
 </resources>

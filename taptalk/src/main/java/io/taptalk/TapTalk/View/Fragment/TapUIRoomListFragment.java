@@ -1270,6 +1270,22 @@ public class TapUIRoomListFragment extends Fragment {
                 TapCoreRoomListManager.getInstance(instanceKey).pinChatRoom(roomId, pinRoomListener(position, roomId));
             }
         }
+
+        @Override
+        public void onDeleteItem(int position) {
+            new TapTalkDialog(new TapTalkDialog.Builder(activity)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_delete_chat_small))
+                    .setMessage(getString(R.string.tap_sure_delete_conversation))
+                    .setCancelable(false)
+                    .setPrimaryButtonTitle(getString(R.string.tap_delete_for_me))
+                    .setPrimaryButtonListener(v -> {
+                        // TODO: 22/09/22 handle delete room MU
+                    })
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setSecondaryButtonListener(v -> {}))
+                    .show();
+        }
     };
 
     TAPGeneralListener<TapMutedRoomListModel> muteListener = new TAPGeneralListener<>() {
