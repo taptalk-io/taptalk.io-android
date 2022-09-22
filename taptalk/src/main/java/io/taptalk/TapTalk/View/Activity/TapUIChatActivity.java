@@ -149,6 +149,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -270,6 +271,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private FrameLayout flLoading;
     private LinearLayout llButtonDeleteChat;
     private TextView tvDeleteChat;
+    private ImageView ivDelete;
+    private ProgressBar pbDelete;
     private ConstraintLayout clContainer;
     private ConstraintLayout clContactAction;
     private ConstraintLayout clUnreadButton;
@@ -888,6 +891,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flLoading = (FrameLayout) findViewById(R.id.fl_loading);
         llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
         tvDeleteChat = findViewById(R.id.tv_delete);
+        ivDelete = findViewById(R.id.iv_delete);
+        pbDelete = findViewById(R.id.pb_delete);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
@@ -5603,20 +5608,38 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     };
 
-    private View.OnClickListener llDeleteGroupClickListener = v -> TAPOldDataManager.getInstance(instanceKey).cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
-        @Override
-        public void onDeleteFinished() {
-            super.onDeleteFinished();
-            TAPDataManager.getInstance(instanceKey).deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
-                @Override
-                public void onDeleteFinished() {
-                    super.onDeleteFinished();
-                    vm.setDeleteGroup(true);
-                    closeActivity();
-                }
-            });
-        }
-    });
+    private View.OnClickListener llDeleteGroupClickListener = v ->  {
+        // TODO: 22/09/22 show progress bar delete MU
+        // TODO: 22/09/22 call delete room API MU
+        TAPOldDataManager.getInstance(instanceKey).cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+            @Override
+            public void onDeleteFinished() {
+                super.onDeleteFinished();
+                TAPDataManager.getInstance(instanceKey).deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                    @Override
+                    public void onDeleteFinished() {
+                        super.onDeleteFinished();
+                        vm.setDeleteGroup(true);
+                        closeActivity();
+                    }
+                });
+            }
+        });
+    };
+
+    private void showDeleteRoomLoading() {
+        tvDeleteChat.setVisibility(View.GONE);
+        ivDelete.setVisibility(View.GONE);
+        pbDelete.setVisibility(View.VISIBLE);
+        llButtonDeleteChat.setEnabled(false);
+    }
+
+    private void hideDeleteRoomLoading() {
+        tvDeleteChat.setVisibility(View.VISIBLE);
+        ivDelete.setVisibility(View.VISIBLE);
+        pbDelete.setVisibility(View.GONE);
+        llButtonDeleteChat.setEnabled(true);
+    }
 
     private class DeleteRoomAsync extends AsyncTask<String, Void, Void> {
         @Override
