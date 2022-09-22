@@ -1273,10 +1273,21 @@ public class TapUIRoomListFragment extends Fragment {
 
         @Override
         public void onDeleteItem(int position) {
+            TAPRoomListModel room = vm.getRoomList().get(position);
+            String roomId = room.getLastMessage().getRoom().getRoomID();
+            String title;
+            String message;
+            if (TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(roomId)) {
+                title = getString(R.string.tap_unpin_and_delete_chat);
+                message = getString(R.string.tap_sure_unpin_delete_conversation);
+            } else {
+                title = getString(R.string.tap_delete_chat);
+                message = getString(R.string.tap_sure_delete_conversation);
+            }
             new TapTalkDialog(new TapTalkDialog.Builder(activity)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle(getString(R.string.tap_delete_chat_small))
-                    .setMessage(getString(R.string.tap_sure_delete_conversation))
+                    .setTitle(title)
+                    .setMessage(message)
                     .setCancelable(false)
                     .setPrimaryButtonTitle(getString(R.string.tap_delete_for_me))
                     .setPrimaryButtonListener(v -> {

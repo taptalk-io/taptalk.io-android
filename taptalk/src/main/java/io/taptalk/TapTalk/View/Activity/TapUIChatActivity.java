@@ -269,6 +269,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private FrameLayout flRoomUnavailable;
     private FrameLayout flLoading;
     private LinearLayout llButtonDeleteChat;
+    private TextView tvDeleteChat;
     private ConstraintLayout clContainer;
     private ConstraintLayout clContactAction;
     private ConstraintLayout clUnreadButton;
@@ -886,6 +887,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flRoomUnavailable = (FrameLayout) findViewById(R.id.fl_room_unavailable);
         flLoading = (FrameLayout) findViewById(R.id.fl_loading);
         llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
+        tvDeleteChat = findViewById(R.id.tv_delete);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
@@ -3160,6 +3162,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
             if (null != llButtonDeleteChat) {
                 llButtonDeleteChat.setOnClickListener(llDeleteGroupClickListener);
+            }
+            if (null != tvDeleteChat) {
+                if (TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(vm.getRoom().getRoomID())) {
+                    tvDeleteChat.setText(R.string.tap_unpin_and_delete_chat);
+                }
             }
         });
     }

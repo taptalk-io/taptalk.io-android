@@ -57,7 +57,6 @@
     <string name="tap_from">Dari:</string>
     <string name="tap_no_chats_to_show">Tidak ada chat</string>
     <string name="tap_delete_chat">Hapus Chat</string>
-    <string name="tap_delete_chat_small">Hapus chat</string>
     <string name="tap_this_deleted_message">Pesan ini telah dihapus.</string>
     <string name="tap_this_is_a_chat_history">Chat ini sudah ditutup</string>
     <string name="tap_this_user_is_no_longer_available">Pengguna ini tidak lagi dapat dihubungi</string>
@@ -451,6 +450,8 @@
     <string name="tap_until">until</string>
     <string name="tap_off">OFF</string>
     <string name="tap_sure_delete_conversation">Are you sure you want to delete this conversation?</string>
+    <string name="tap_sure_unpin_delete_conversation">Are you sure you want to unpin and delete this conversation?</string>
     <string name="tap_delete_for_me">Delete for me</string>
+    <string name="tap_unpin_and_delete_chat">Unpin and Delete Chat</string>
 
 </resources>
