@@ -1740,20 +1740,13 @@ public class TAPChatManager {
         runSendMessageSequence(message, kSocketUpdateMessage);
     }
 
-    public void editMessage(TAPMessageModel previousMessage, TAPMessageModel newMessage, TapSendMessageInterface listener) {
-        if (previousMessage.getMessageID() == newMessage.getMessageID() &&
-                previousMessage.getLocalID() == newMessage.getLocalID()) {
-            if (null != listener) {
-                sendMessageListeners.put(newMessage.getLocalID(), listener);
-                listener.onStart(newMessage);
-            }
-            // Edit message
-            runSendMessageSequence(newMessage, kSocketUpdateMessage);
-        } else {
-            if (null != listener) {
-                listener.onError(previousMessage, ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE);
-            }
+    public void editMessage(TAPMessageModel newMessage, TapSendMessageInterface listener) {
+        if (null != listener) {
+            sendMessageListeners.put(newMessage.getLocalID(), listener);
+            listener.onStart(newMessage);
         }
+        // Edit message
+        runSendMessageSequence(newMessage, kSocketUpdateMessage);
     }
 
     /**

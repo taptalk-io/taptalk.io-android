@@ -599,8 +599,8 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance(instanceKey).editMessage(message, updatedText, listener, false);
     }
 
-    public void editMessage(TAPMessageModel previousMessage, TAPMessageModel newMessage, TapCoreSendMessageListener listener) {
-        TAPChatManager.getInstance(instanceKey).editMessage(previousMessage, newMessage, listener);
+    public void editMessage(TAPMessageModel newMessage, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance(instanceKey).editMessage(newMessage, listener);
     }
 
     public void uploadImage(Context context, Uri uri, TapCoreFileUploadListener listener) {
