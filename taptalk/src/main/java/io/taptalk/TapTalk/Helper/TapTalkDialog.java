@@ -132,7 +132,7 @@ public class TapTalkDialog extends Dialog {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_success_ripple));
                 } else {
-                    primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_success));
+                    primary.setBackground(res.getDrawable(R.drawable.tap_bg_rounded_primary_8dp));
                 }
                 break;
         }
@@ -236,17 +236,8 @@ public class TapTalkDialog extends Dialog {
         public TapTalkDialog show() {
             TapTalkDialog dialog = build();
             dialog.show();
-            setDialogSize();
             return dialog;
         }
 
-        @UiThread
-        private void setDialogSize() {
-            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-            lp.copyFrom(dialog.getWindow().getAttributes());
-            lp.width = TAPUtils.getScreenWidth() - TAPUtils.dpToPx(90);
-            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            dialog.getWindow().setAttributes(lp);
-        }
     }
 }
