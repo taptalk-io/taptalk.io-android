@@ -505,6 +505,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 super.onSuccess(arrayList);
                 isStarredIdsLoaded = true;
                 vm.setStarredMessageIds(arrayList);
+                TAPDataManager.getInstance(instanceKey).saveStarredMessageIds(vm.getRoom().getRoomID(), arrayList);
                 messageAdapter.setStarredMessageIds(arrayList);
                 if (isPinnedIdsLoaded) {
                     messageAdapter.notifyDataSetChanged();
@@ -1089,6 +1090,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 e.printStackTrace();
             }
         }
+        vm.setStarredMessageIds(TAPDataManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID()));
 
         // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm);
@@ -2843,6 +2845,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TapCoreMessageManager.getInstance(instanceKey).starMessage(message.getRoom().getRoomID(), messageId);
                 vm.addStarredMessageId(messageId);
             }
+            TAPDataManager.getInstance(instanceKey).saveStarredMessageIds(vm.getRoom().getRoomID(), vm.getStarredMessageIds());
             messageAdapter.setStarredMessageIds(vm.getStarredMessageIds());
             if (vm.getMessagePointer().containsKey(message.getLocalID())) {
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
