@@ -67,8 +67,6 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapCoreGetMutedChatRoomListener;
-import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -970,7 +968,16 @@ public class TapUIRoomListFragment extends Fragment {
                     }
                 }
                 if (isHandleDeleteRoomEnabled) {
-                    // TODO: 27/09/22 handle cleared rooms MU 
+                    if (response.getClearedRooms() != null) {
+                        new Thread(() -> {
+                            for (TapMutedRoomListModel clearedRoom : response.getClearedRooms()) {
+                                if (clearedRoom.getExpiredAt() != null && TAPDataManager.getInstance(instanceKey).getLastRoomMessageDeleteTime() < clearedRoom.getExpiredAt()) {
+                                    TAPDataManager.getInstance(instanceKey).deleteRoomMessageBeforeTimestamp(clearedRoom.getRoomID(), clearedRoom.getExpiredAt(), new TAPDatabaseListener<TAPMessageEntity>() {});
+                                }
+                            }
+                            TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
+                        }).start();
+                    }
                 } else {
                     TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                 }
