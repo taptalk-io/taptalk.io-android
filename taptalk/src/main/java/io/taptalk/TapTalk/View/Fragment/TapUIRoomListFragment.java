@@ -86,6 +86,7 @@ import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -942,49 +943,45 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
-    private void getUnreadRoomList() {
-        TapCoreRoomListManager.getInstance(instanceKey).getMarkedAsUnreadChatRoomList(new TapCoreGetStringArrayListener() {
+    private void getRoomIdsWithState() {
+        TAPDataManager.getInstance(instanceKey).getRoomIdsWithState(new TAPDefaultDataView<>() {
             @Override
-            public void onSuccess(@NonNull ArrayList<String> arrayList) {
-                for(String id : arrayList) {
-                    updateRoomUnreadMark(id, true);
-                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(id)));
+            public void onSuccess(TapGetRoomIdsWithStateResponse response) {
+                super.onSuccess(response);
+                if (response.getUnreadRoomIDs() != null) {
+                    for (String id : response.getUnreadRoomIDs()) {
+                        updateRoomUnreadMark(id, true);
+                        adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(id)));
+                    }
+                    calculateBadgeCount();
                 }
+                if (response.getMutedRooms() != null) {
+                    for (TapMutedRoomListModel mutedRoom : response.getMutedRooms()) {
+                        boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(mutedRoom.getRoomID());
+                        updateMutedRooms(mutedRoom.getRoomID(), isMuted);
+                        adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(mutedRoom.getRoomID())));
+                    }
+                }
+                if (response.getPinnedRoomIDs() != null) {
+                    for (String pinnedRoom : response.getPinnedRoomIDs()) {
+                        boolean isPinned = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(pinnedRoom);
+                        updatePinnedRooms(pinnedRoom, isPinned);
+                        adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(pinnedRoom)));
+                    }
+                }
+                // TODO: 27/09/22 handle cleared rooms MU 
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
                 calculateBadgeCount();
             }
 
             @Override
-            public void onError(@org.jetbrains.annotations.Nullable String errorCode, @org.jetbrains.annotations.Nullable String errorMessage) {
-                super.onError(errorCode, errorMessage);
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
                 calculateBadgeCount();
-            }
-        });
-    }
-
-    private void getMutedRoomList() {
-        TapCoreRoomListManager.getInstance(instanceKey).getMutedChatRoomList(new TapCoreGetMutedChatRoomListener() {
-            @Override
-            public void onSuccess(@NonNull ArrayList<TapMutedRoomListModel> mutedRoomList) {
-                super.onSuccess(mutedRoomList);
-                for (TapMutedRoomListModel mutedRoom : mutedRoomList) {
-                    boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(mutedRoom.getRoomID());
-                    updateMutedRooms(mutedRoom.getRoomID(), isMuted);
-                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(mutedRoom.getRoomID())));
-                }
-            }
-        });
-    }
-
-    private void getPinnedRoomList() {
-        TapCoreRoomListManager.getInstance(instanceKey).getPinnedChatRoomIDs(new TapCoreGetStringArrayListener() {
-            @Override
-            public void onSuccess(@NonNull ArrayList<String> pinnedRoomList) {
-                super.onSuccess(pinnedRoomList);
-                for (String pinnedRoom : pinnedRoomList) {
-                    boolean isPinned = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(pinnedRoom);
-                    updatePinnedRooms(pinnedRoom, isPinned);
-                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(pinnedRoom)));
-                }
             }
         });
     }
@@ -1084,9 +1081,7 @@ public class TapUIRoomListFragment extends Fragment {
 
             vm.setFetchingMessageListAndUnread(false);
 
-            getUnreadRoomList();
-            getMutedRoomList();
-            getPinnedRoomList();
+            getRoomIdsWithState();
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
@@ -1177,9 +1172,7 @@ public class TapUIRoomListFragment extends Fragment {
             }
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
-            getUnreadRoomList();
-            getMutedRoomList();
-            getPinnedRoomList();
+            getRoomIdsWithState();
         }
 
         @Override
