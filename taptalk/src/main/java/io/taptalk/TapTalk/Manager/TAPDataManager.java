@@ -448,7 +448,7 @@ public class TAPDataManager {
         Hawk.put(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, System.currentTimeMillis());
     }
 
-    private Long getLastRoomMessageDeleteTime() {
+    public Long getLastRoomMessageDeleteTime() {
         return Hawk.get(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, null);
     }
 
