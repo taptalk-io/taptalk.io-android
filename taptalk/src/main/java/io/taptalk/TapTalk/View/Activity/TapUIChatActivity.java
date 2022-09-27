@@ -234,6 +234,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
@@ -5609,22 +5610,51 @@ public class TapUIChatActivity extends TAPBaseActivity {
     };
 
     private View.OnClickListener llDeleteGroupClickListener = v ->  {
-        // TODO: 22/09/22 show progress bar delete MU
-        // TODO: 22/09/22 call delete room API MU
-        TAPOldDataManager.getInstance(instanceKey).cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
-            @Override
-            public void onDeleteFinished() {
-                super.onDeleteFinished();
-                TAPDataManager.getInstance(instanceKey).deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
-                    @Override
-                    public void onDeleteFinished() {
-                        super.onDeleteFinished();
-                        vm.setDeleteGroup(true);
-                        closeActivity();
-                    }
-                });
-            }
-        });
+        String title;
+        String message;
+        if (TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(vm.getRoom().getRoomID())) {
+            title = getString(R.string.tap_unpin_and_delete_chat);
+            message = getString(R.string.tap_sure_unpin_delete_conversation);
+        } else {
+            title = getString(R.string.tap_delete_chat);
+            message = getString(R.string.tap_sure_delete_conversation);
+        }
+        new TapTalkDialog(new TapTalkDialog.Builder(this)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_delete_for_me))
+                .setPrimaryButtonListener(view -> {
+                    showDeleteRoomLoading();
+                    TapCoreChatRoomManager.getInstance(instanceKey).deleteAllChatRoomMessages(vm.getRoom().getRoomID(), new TapCommonListener() {
+                        @Override
+                        public void onSuccess(String successMessage) {
+                            super.onSuccess(successMessage);
+                            // TODO: 27/09/22 remove from starred message ids pref MU
+                            hideDeleteRoomLoading();
+                            TAPDataManager.getInstance(instanceKey).removePinnedRoomID(vm.getRoom().getRoomID());
+                            TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(vm.getRoom().getRoomID(), new TapCommonListener() {
+                                @Override
+                                public void onSuccess(String successMessage) {
+                                    super.onSuccess(successMessage);
+                                    vm.setDeleteGroup(true);
+                                    closeActivity();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(String errorCode, String errorMessage) {
+                            super.onError(errorCode, errorMessage);
+                            hideDeleteRoomLoading();
+                            showErrorDialog(getString(R.string.tap_error), errorMessage);
+                        }
+                    });
+                })
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setSecondaryButtonListener(secondaryView -> {}))
+                .show();
     };
 
     private void showDeleteRoomLoading() {

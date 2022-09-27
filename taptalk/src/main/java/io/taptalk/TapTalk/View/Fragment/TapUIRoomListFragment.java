@@ -79,6 +79,7 @@ import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
 import io.taptalk.TapTalk.Manager.TapUI;
@@ -883,6 +884,13 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
+    private void hideDeleteRoomLoading() {
+        activity.runOnUiThread(() -> {
+            showNewChatButton();
+            flSetupContainer.setVisibility(View.GONE);
+        });
+    }
+
     private void showChatRoomSetupSuccess() {
         if (!TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
             return;
@@ -1312,7 +1320,33 @@ public class TapUIRoomListFragment extends Fragment {
                     .setPrimaryButtonTitle(getString(R.string.tap_delete_for_me))
                     .setPrimaryButtonListener(v -> {
                         showDeleteRoomLoading();
-                        // TODO: 22/09/22 handle delete room MU
+                        TapCoreChatRoomManager.getInstance(instanceKey).deleteAllChatRoomMessages(roomId, new TapCommonListener() {
+                            @Override
+                            public void onSuccess(String successMessage) {
+                                super.onSuccess(successMessage);
+                                // TODO: 27/09/22 remove from starred message ids pref MU
+                                hideDeleteRoomLoading();
+                                TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
+                                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
+                                    @Override
+                                    public void onSuccess(String successMessage) {
+                                        super.onSuccess(successMessage);
+                                        activity.runOnUiThread(() -> {
+                                            int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(roomId));
+                                            vm.getRoomList().remove(index);
+                                            adapter.notifyItemRemoved(index);
+                                        });
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onError(String errorCode, String errorMessage) {
+                                super.onError(errorCode, errorMessage);
+                                hideDeleteRoomLoading();
+                                showErrorDialog(errorMessage);
+                            }
+                        });
                     })
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setSecondaryButtonListener(v -> {}))
