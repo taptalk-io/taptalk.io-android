@@ -1328,10 +1328,10 @@ public class TapUIRoomListFragment extends Fragment {
                             @Override
                             public void onSuccess(String successMessage) {
                                 super.onSuccess(successMessage);
-                                // TODO: 27/09/22 remove from starred message ids pref MU
                                 hideDeleteRoomLoading();
                                 TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                                 TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
+                                TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomId);
                                 TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
                                     @Override
                                     public void onSuccess(String successMessage) {
