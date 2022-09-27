@@ -52,6 +52,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
@@ -248,4 +249,7 @@ public interface TAPTalkApiService {
 
     @POST("client/room/clear_chat")
     Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> clearChat(@Body TapRoomIdsRequest request);
+
+    @POST("client/room/get_room_ids_with_state")
+    Observable<TAPBaseResponse<TapGetRoomIdsWithStateResponse>> getRoomIdsWithState();
 }
