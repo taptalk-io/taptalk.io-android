@@ -596,6 +596,12 @@ public class TAPDataManager {
         removePreference(instanceKey + K_PINNED_ROOM_LIST);
     }
 
+    public void removePinnedRoomID(String roomId) {
+        ArrayList<String> pinnedRoomIDs = getPinnedRoomIDs();
+        pinnedRoomIDs.remove(roomId);
+        savePinnedRoomIDs(pinnedRoomIDs);
+    }
+
 
     /**
      * MY COUNTRY CODE
