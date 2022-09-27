@@ -248,6 +248,7 @@ public class TAPDataManager {
         removeUnreadRoomIDs();
         removeMutedRoomIds();
         removePinnedRoomIDs();
+        removeStarredMessageIds();
     }
 
     /**
@@ -577,7 +578,7 @@ public class TAPDataManager {
     }
 
     public void removeUnreadRoomIDs() {
-        removePreference(instanceKey + K_UNREAD_ROOM_LIST);
+        removePreference(K_UNREAD_ROOM_LIST);
     }
 
     public HashMap<String, Long> getMutedRoomIDs() {
@@ -593,7 +594,7 @@ public class TAPDataManager {
     }
 
     public void removeMutedRoomIds() {
-        removePreference(instanceKey + K_MUTED_ROOM_LIST);
+        removePreference(K_MUTED_ROOM_LIST);
     }
 
     public ArrayList<String> getPinnedRoomIDs() {
@@ -609,7 +610,7 @@ public class TAPDataManager {
     }
 
     public void removePinnedRoomIDs() {
-        removePreference(instanceKey + K_PINNED_ROOM_LIST);
+        removePreference(K_PINNED_ROOM_LIST);
     }
 
     public void removePinnedRoomID(String roomId) {
@@ -636,6 +637,18 @@ public class TAPDataManager {
         if (starredMessageIdMap != null) {
             return starredMessageIdMap.get(roomID);
         } else return null;
+    }
+
+    public void removeStarredMessageIds(String roomID) {
+        HashMap<String, ArrayList<String>> starredMessageIdMap = Hawk.get(instanceKey + K_STARRED_MESSAGE, null);
+        if (starredMessageIdMap != null) {
+            starredMessageIdMap.remove(roomID);
+            Hawk.put(instanceKey + K_STARRED_MESSAGE, starredMessageIdMap);
+        }
+    }
+
+    public void removeStarredMessageIds() {
+        removePreference(K_STARRED_MESSAGE);
     }
 
     /**
