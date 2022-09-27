@@ -245,4 +245,7 @@ public interface TAPTalkApiService {
 
     @POST("client/room/unpin")
     Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> unpinRoom(@Body TapRoomIdsRequest request);
+
+    @POST("client/room/clear_chat")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> clearChat(@Body TapRoomIdsRequest request);
 }

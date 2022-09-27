@@ -742,4 +742,10 @@ public class TAPApiManager {
         request.setRoomIDs(roomIds);
         execute(homingPigeon.unpinRoom(request), subscriber);
     }
+
+    public void clearChat(List<String> roomIds, Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        TapRoomIdsRequest request = new TapRoomIdsRequest();
+        request.setRoomIDs(roomIds);
+        execute(homingPigeon.clearChat(request), subscriber);
+    }
 }

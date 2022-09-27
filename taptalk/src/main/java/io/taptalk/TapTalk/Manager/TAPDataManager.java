@@ -1578,4 +1578,8 @@ public class TAPDataManager {
     public void unpinRoom(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
         TAPApiManager.getInstance(instanceKey).unpinRoom(roomIds, new TAPDefaultSubscriber<>(view));
     }
+
+    public void clearChat(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).clearChat(roomIds, new TAPDefaultSubscriber<>(view));
+    }
 }
