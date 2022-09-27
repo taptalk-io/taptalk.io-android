@@ -5633,6 +5633,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             super.onSuccess(successMessage);
                             // TODO: 27/09/22 remove from starred message ids pref MU
                             hideDeleteRoomLoading();
+                            TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                             TAPDataManager.getInstance(instanceKey).removePinnedRoomID(vm.getRoom().getRoomID());
                             TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(vm.getRoom().getRoomID(), new TapCommonListener() {
                                 @Override

@@ -943,7 +943,7 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
-    private void getRoomIdsWithState() {
+    private void getRoomIdsWithState(boolean isHandleDeleteRoomEnabled) {
         TAPDataManager.getInstance(instanceKey).getRoomIdsWithState(new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetRoomIdsWithStateResponse response) {
@@ -969,7 +969,11 @@ public class TapUIRoomListFragment extends Fragment {
                         adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(pinnedRoom)));
                     }
                 }
-                // TODO: 27/09/22 handle cleared rooms MU 
+                if (isHandleDeleteRoomEnabled) {
+                    // TODO: 27/09/22 handle cleared rooms MU 
+                } else {
+                    TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
+                }
             }
 
             @Override
@@ -1081,7 +1085,7 @@ public class TapUIRoomListFragment extends Fragment {
 
             vm.setFetchingMessageListAndUnread(false);
 
-            getRoomIdsWithState();
+            getRoomIdsWithState(true);
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
@@ -1172,7 +1176,7 @@ public class TapUIRoomListFragment extends Fragment {
             }
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
-            getRoomIdsWithState();
+            getRoomIdsWithState(false);
         }
 
         @Override
@@ -1319,6 +1323,7 @@ public class TapUIRoomListFragment extends Fragment {
                                 super.onSuccess(successMessage);
                                 // TODO: 27/09/22 remove from starred message ids pref MU
                                 hideDeleteRoomLoading();
+                                TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                                 TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
                                 TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
                                     @Override
