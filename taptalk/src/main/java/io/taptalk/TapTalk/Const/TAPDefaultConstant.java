@@ -456,6 +456,7 @@ public class TAPDefaultConstant {
     public static final String K_USER_ID = "kTAPUserID";
     public static final String K_RECIPIENT_ID = "kTAPRecipientID";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
+    public static final String K_LAST_ROOM_MESSAGE_DELETE_TIME = "kTAPLastRoomMessageDeleteTime";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
     public static final String K_GROUP_DATA_MAP = "kGroupDataMap";

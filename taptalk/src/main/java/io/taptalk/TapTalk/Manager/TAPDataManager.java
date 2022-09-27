@@ -15,6 +15,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_CONTACT_LIST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_ROOM_MESSAGE_DELETE_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MUTED_ROOM_LIST;
@@ -437,6 +438,18 @@ public class TAPDataManager {
 
     private void removeLastUpdatedMessageTimestampMap() {
         removePreference(K_LAST_UPDATED);
+    }
+
+    /**
+     * LAST ROOM MESSAGE DELETE TIME
+     */
+
+    public void saveLastRoomMessageDeleteTime() {
+        Hawk.put(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, System.currentTimeMillis());
+    }
+
+    private Long getLastRoomMessageDeleteTime() {
+        return Hawk.get(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, null);
     }
 
     /**
