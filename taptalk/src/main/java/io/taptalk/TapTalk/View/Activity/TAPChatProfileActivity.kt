@@ -1202,9 +1202,9 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 user.imageURL,
                 ""
             )
-            TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, room)
+            TapStarredMessagesActivity.Companion.start(this@TAPChatProfileActivity, instanceKey, room)
         } else {
-            TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, vm!!.room)
+            TapStarredMessagesActivity.Companion.start(this@TAPChatProfileActivity, instanceKey, vm!!.room)
         }
     }
 
