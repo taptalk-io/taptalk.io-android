@@ -14,6 +14,7 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
@@ -94,6 +95,14 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
     @Override
     public void onTapTalkProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
 
+    }
+
+    @Override
+    public void onTapTalkStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
+        if (null == activity) {
+            return;
+        }
+        TapStarredMessagesActivity.Companion.start(activity, instanceKey, room);
     }
 
     private void openTapTalkChatProfile(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {

@@ -15,6 +15,4 @@ public interface TapUIChatProfileInterface {
     void onReportUserButtonTapped(Activity activity, TAPRoomModel room, TAPUserModel reportedUser);
 
     void onReportGroupButtonTapped(Activity activity, TAPRoomModel room);
-
-    void onStarredMessageButtonTapped(Activity activity, TAPRoomModel room);
 }

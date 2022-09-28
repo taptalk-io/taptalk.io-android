@@ -1457,13 +1457,13 @@ public class TapUI {
     }
 
     void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
-        if (getChatProfileListeners().isEmpty()) {
-            return;
+        if (getChatRoomListeners().isEmpty()) {
+            TapStarredMessagesActivity.Companion.start(activity, instanceKey, room);
         }
 
-        for (TapUIChatProfileListener listener : getChatProfileListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             if (null != listener) {
-                listener.onStarredMessageButtonTapped(activity, room);
+                listener.onTapTalkStarredMessageButtonTapped(activity, room);
             }
         }
     }
