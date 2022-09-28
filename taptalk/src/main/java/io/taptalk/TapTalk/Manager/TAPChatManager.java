@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import static androidx.core.util.PatternsCompat.WEB_URL;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,7 +39,9 @@ import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -68,6 +69,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketClearChat;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
@@ -200,7 +202,6 @@ public class TAPChatManager {
     private TAPSocketMessageListener socketMessageListener = new TAPSocketMessageListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
-            Log.d("emitTest", "eventName : " + eventName + ", emitData : " + emitData);
             List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
             switch (eventName) {
                 case kEventOpenRoom:
@@ -244,6 +245,23 @@ public class TAPChatManager {
                     for (TAPChatListener listener : chatListenersCopy) {
                         listener.onUserOnlineStatusUpdate(onlineStatus);
                     }
+                    break;
+                case kSocketClearChat:
+                    TAPEmitModel<TAPUpdateRoomResponse> clearChatEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse clearChatData = clearChatEmit.getData();
+                    String roomId = clearChatData.getRoom().getRoomID();
+                    TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
+                    TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
+                    TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomId);
+                    TapCoreChatRoomManager.getInstance(instanceKey).deleteAllChatRoomMessages(roomId, new TapCommonListener() {
+                        @Override
+                        public void onSuccess(String successMessage) {
+                            super.onSuccess(successMessage);
+                            for (TAPChatListener listener : chatListenersCopy) {
+                                listener.onChatCleared(clearChatData.getRoom());
+                            }
+                        }
+                    });
                     break;
             }
         }

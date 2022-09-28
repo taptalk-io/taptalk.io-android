@@ -306,6 +306,16 @@ public class TapUIRoomListFragment extends Fragment {
             public void onReceiveStopTyping(TAPTypingModel typingModel) {
                 showTypingIndicator(typingModel, false);
             }
+
+            @Override
+            public void onChatCleared(TAPRoomModel room) {
+                super.onChatCleared(room);
+                activity.runOnUiThread(() -> {
+                    int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
+                    vm.getRoomList().remove(index);
+                    adapter.notifyItemRemoved(index);
+                });
+            }
         };
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
 
