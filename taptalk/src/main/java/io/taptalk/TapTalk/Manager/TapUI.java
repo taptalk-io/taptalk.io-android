@@ -1456,6 +1456,18 @@ public class TapUI {
         }
     }
 
+    void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
+        if (getChatProfileListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatProfileListener listener : getChatProfileListeners()) {
+            if (null != listener) {
+                listener.onStarredMessageButtonTapped(activity, room);
+            }
+        }
+    }
+
     void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             if (null != listener) {

@@ -200,6 +200,7 @@ public class TAPChatManager {
     private TAPSocketMessageListener socketMessageListener = new TAPSocketMessageListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
+            Log.d("emitTest", "eventName : " + eventName + ", emitData : " + emitData);
             List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
             switch (eventName) {
                 case kEventOpenRoom:
@@ -2186,6 +2187,10 @@ public class TAPChatManager {
 
     public void triggerChatProfileReportGroupButtonTapped(Activity activity, TAPRoomModel room) {
         TapUI.getInstance(instanceKey).triggerChatProfileReportGroupButtonTapped(activity, room);
+    }
+
+    public void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
+        TapUI.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(activity, room);
     }
 
     public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
