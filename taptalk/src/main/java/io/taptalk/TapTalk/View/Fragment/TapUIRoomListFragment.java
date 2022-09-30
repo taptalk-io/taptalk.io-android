@@ -1367,7 +1367,13 @@ public class TapUIRoomListFragment extends Fragment {
                             public void onError(String errorCode, String errorMessage) {
                                 super.onError(errorCode, errorMessage);
                                 hideDeleteRoomLoading();
-                                showErrorDialog(errorMessage);
+                                new TapTalkDialog(new TapTalkDialog.Builder(activity)
+                                        .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                                        .setTitle(getString(R.string.tap_fail_delete_chatroom))
+                                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                        .setPrimaryButtonListener(v -> {})
+                                        .setCancelable(false))
+                                        .show();
                             }
                         });
                     })
