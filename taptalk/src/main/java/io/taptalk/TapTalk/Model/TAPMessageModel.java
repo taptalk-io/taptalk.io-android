@@ -182,7 +182,7 @@ public class TAPMessageModel implements Parcelable {
             quoteContent = quotedMessage.getBody();
         }
         String quoteFileID = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID);
-        String quoteImageURL = null == quotedMessage.getData() ? "" : null != quotedMessage.getData().get(FILE_URL) ? (String) quotedMessage.getData().get(FILE_URL) : null != quotedMessage.getData().get(IMAGE_URL) ? (String) quotedMessage.getData().get(IMAGE_URL) : (String) quotedMessage.getData().get(TAPDefaultConstant.MessageData.IMAGE);
+        String quoteImageURL = null == quotedMessage.getData() ? "" : null != quotedMessage.getData().get(IMAGE_URL) ? (String) quotedMessage.getData().get(IMAGE_URL) : quotedMessage.getData().get(TAPDefaultConstant.MessageData.IMAGE) != null? (String) quotedMessage.getData().get(TAPDefaultConstant.MessageData.IMAGE) : null != quotedMessage.getData().get(FILE_URL) ? (String) quotedMessage.getData().get(FILE_URL) : "";
         String quoteFileType = quotedMessage.getType() == TYPE_IMAGE ? IMAGE :
                 quotedMessage.getType() == TYPE_VIDEO ? VIDEO :
                         quotedMessage.getType() == TYPE_FILE ? FILE :
