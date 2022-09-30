@@ -4177,6 +4177,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvLinkContent.setText(url);
         clLink.setVisibility(View.VISIBLE);
         vm.clearLinkHashMap();
+        clQuote.setVisibility(View.GONE);
     }
 
     private void updateLinkPreview(String linkTitle, String linkContent,String imageUrl) {
@@ -4201,6 +4202,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void hideLinkPreview(boolean isClearLinkMap) {
         if (isClearLinkMap) {
             vm.clearLinkHashMap();
+        } else {
+            if (vm.getQuotedMessage() != null) {
+                clQuote.setVisibility(View.VISIBLE);
+            }
         }
         clLink.setVisibility(View.GONE);
         tvLinkTitle.setText(R.string.tap_loading_dots);
