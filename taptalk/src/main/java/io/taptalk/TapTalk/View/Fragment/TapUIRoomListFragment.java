@@ -959,22 +959,30 @@ public class TapUIRoomListFragment extends Fragment {
                 if (response.getUnreadRoomIDs() != null) {
                     for (String id : response.getUnreadRoomIDs()) {
                         updateRoomUnreadMark(id, true);
-                        adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(id)));
+                        activity.runOnUiThread(() -> {
+                            adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(id)));
+                        });
                     }
                     calculateBadgeCount();
                 }
                 if (response.getMutedRooms() != null) {
+                    HashMap<String, Long> mutedRooms = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs();
                     for (TapMutedRoomListModel mutedRoom : response.getMutedRooms()) {
-                        boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(mutedRoom.getRoomID());
-                        updateMutedRooms(mutedRoom.getRoomID(), isMuted);
-                        adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(mutedRoom.getRoomID())));
+                        mutedRooms.put(mutedRoom.getRoomID(), mutedRoom.getExpiredAt());
+                        updateMutedRooms(mutedRoom.getRoomID(), true);
+                        activity.runOnUiThread(() -> {
+                            adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(mutedRoom.getRoomID())));
+                        });
                     }
+                    TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(mutedRooms);
                 }
                 if (response.getPinnedRoomIDs() != null) {
+                    TAPDataManager.getInstance(instanceKey).savePinnedRoomIDs(new ArrayList<>(response.getPinnedRoomIDs()));
                     for (String pinnedRoom : response.getPinnedRoomIDs()) {
-                        boolean isPinned = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(pinnedRoom);
-                        updatePinnedRooms(pinnedRoom, isPinned);
-                        adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(pinnedRoom)));
+                        updatePinnedRooms(pinnedRoom, true);
+                        activity.runOnUiThread(() -> {
+                            adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(pinnedRoom)));
+                        });
                     }
                 }
                 if (isHandleDeleteRoomEnabled) {
