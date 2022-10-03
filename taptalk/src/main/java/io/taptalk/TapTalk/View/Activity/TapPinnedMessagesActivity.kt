@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -38,17 +39,19 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
 
     companion object {
         const val PAGE_SIZE = 50
-    }
-
-    fun start(
-        context: Activity,
-        instanceKey: String?,
-        room: TAPRoomModel
-    ) {
-        val intent = Intent(context, TapPinnedMessagesActivity::class.java)
-        intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
-        intent.putExtra(TAPDefaultConstant.Extras.ROOM, room)
-        context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_PINNED_MESSAGES)
+        fun start(
+            context: Context,
+            instanceKey: String?,
+            room: TAPRoomModel
+        ) {
+            if (context is Activity) {
+                val intent = Intent(context, TapPinnedMessagesActivity::class.java)
+                intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
+                intent.putExtra(TAPDefaultConstant.Extras.ROOM, room)
+                context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_PINNED_MESSAGES
+                )
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1227,9 +1227,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flLoading.setOnClickListener(v -> {
         });
         ivForward.setOnClickListener(v -> forwardMessages());
-        ibPinnedMessages.setOnClickListener(v -> {
-            new TapPinnedMessagesActivity().start(this, instanceKey, vm.getRoom());
-        });
+        ibPinnedMessages.setOnClickListener(v -> TapPinnedMessagesActivity.Companion.start(this, instanceKey, vm.getRoom()));
         clPinnedMessage.setOnClickListener(v -> {
             if (!isLoadPinnedMessages) {
                 pinnedMessageLayoutOnClick();

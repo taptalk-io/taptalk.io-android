@@ -36,6 +36,7 @@ import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapPinnedMessagesActivity;
 import io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
@@ -495,6 +496,13 @@ public class TapUI {
             return;
         }
         TapStarredMessagesActivity.Companion.start(context, instanceKey, room);
+    }
+
+    public void openPinnedMessagesChatRoom(Context context, TAPRoomModel room) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TapPinnedMessagesActivity.Companion.start(context, instanceKey, room);
     }
 
     public TapUIRoomListFragment getCurrentTapTalkRoomListFragment() {
