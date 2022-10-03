@@ -105,6 +105,11 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
         TapStarredMessagesActivity.Companion.start(activity, instanceKey, room);
     }
 
+    @Override
+    public void onSavedMessageBubbleArrowTapped(TAPMessageModel message) {
+
+    }
+
     private void openTapTalkChatProfile(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
         if (null == activity) {
             return;

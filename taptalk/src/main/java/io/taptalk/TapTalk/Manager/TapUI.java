@@ -1484,6 +1484,18 @@ public class TapUI {
         }
     }
 
+    public void triggerSavedMessageBubbleArrowTapped(TAPMessageModel messageModel) {
+        if (getChatRoomListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            if (null != listener) {
+                listener.onSavedMessageBubbleArrowTapped(messageModel);
+            }
+        }
+    }
+
     List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
         for (TapUICustomKeyboardListener listener : getCustomKeyboardListeners()) {
             List<TAPCustomKeyboardItemModel> items = listener.setCustomKeyboardItems(room, activeUser, recipientUser);
