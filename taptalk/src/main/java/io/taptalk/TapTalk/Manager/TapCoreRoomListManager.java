@@ -29,6 +29,7 @@ import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMutedChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
+import io.taptalk.TapTalk.Listener.TapCoreRoomListListener;
 import io.taptalk.TapTalk.Listener.TapCoreUpdateMessageStatusListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
@@ -45,6 +46,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public class TapCoreRoomListManager {
 
     private static HashMap<String, TapCoreRoomListManager> instances;
+    private List<TapCoreRoomListListener> coreRoomListListeners;
 
     private String instanceKey = "";
 
@@ -66,6 +68,38 @@ public class TapCoreRoomListManager {
 
     private static HashMap<String, TapCoreRoomListManager> getInstances() {
         return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public List<TapCoreRoomListListener> getCoreRoomListListeners() {
+        return null == coreRoomListListeners ? coreRoomListListeners = new ArrayList<>() : coreRoomListListeners;
+    }
+
+    public void setCoreRoomListListeners(List<TapCoreRoomListListener> coreRoomListListeners) {
+        this.coreRoomListListeners = coreRoomListListeners;
+    }
+
+    public void addCoreRoomListListener(TapCoreRoomListListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getCoreRoomListListeners().remove(listener);
+        getCoreRoomListListeners().add(listener);
+    }
+
+    public void removeCoreRoomListListener(TapCoreRoomListListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getCoreRoomListListeners().remove(listener);
+    }
+
+    public void onChatRoomDeleted(String roomID) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        for (TapCoreRoomListListener listener : getCoreRoomListListeners()) {
+            listener.onChatRoomDeleted(roomID);
+        }
     }
 
     public void fetchNewMessageToDatabase(TapCommonListener listener) {
