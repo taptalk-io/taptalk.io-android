@@ -144,7 +144,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         @Override
         protected void onBind(TAPRoomListModel item, int position) {
             TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
-            if (null == activeUser) {
+            if (null == activeUser || null == item) {
                 return;
             }
 
