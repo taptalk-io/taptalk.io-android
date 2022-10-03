@@ -990,7 +990,17 @@ public class TapUIRoomListFragment extends Fragment {
                         new Thread(() -> {
                             for (TapMutedRoomListModel clearedRoom : response.getClearedRooms()) {
                                 if (clearedRoom.getExpiredAt() != null && TAPDataManager.getInstance(instanceKey).getLastRoomMessageDeleteTime() < clearedRoom.getExpiredAt()) {
-                                    TAPDataManager.getInstance(instanceKey).deleteRoomMessageBeforeTimestamp(clearedRoom.getRoomID(), clearedRoom.getExpiredAt(), new TAPDatabaseListener<TAPMessageEntity>() {});
+                                    TAPDataManager.getInstance(instanceKey).getRoomMediaMessageBeforeTimestamp(clearedRoom.getRoomID(), clearedRoom.getExpiredAt(), new TAPDatabaseListener<>() {
+                                        @Override
+                                        public void onSelectFinished(List<TAPMessageEntity> entities) {
+                                            super.onSelectFinished(entities);
+                                            for (TAPMessageEntity message : entities) {
+                                                TAPDataManager.getInstance(instanceKey).deletePhysicalFile(message);
+                                            }
+                                            TAPDataManager.getInstance(instanceKey).deleteRoomMessageBeforeTimestamp(clearedRoom.getRoomID(), clearedRoom.getExpiredAt(), new TAPDatabaseListener<TAPMessageEntity>() {
+                                            });
+                                        }
+                                    });
                                 }
                             }
                             TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();

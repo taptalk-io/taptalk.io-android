@@ -23,6 +23,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
@@ -47,6 +48,7 @@ public class TapCoreRoomListManager {
 
     private static HashMap<String, TapCoreRoomListManager> instances;
     private List<TapCoreRoomListListener> coreRoomListListeners;
+    private TAPChatListener chatListener;
 
     private String instanceKey = "";
 
@@ -70,17 +72,25 @@ public class TapCoreRoomListManager {
         return null == instances ? instances = new HashMap<>() : instances;
     }
 
-    public List<TapCoreRoomListListener> getCoreRoomListListeners() {
+    private List<TapCoreRoomListListener> getCoreRoomListListeners() {
         return null == coreRoomListListeners ? coreRoomListListeners = new ArrayList<>() : coreRoomListListeners;
-    }
-
-    public void setCoreRoomListListeners(List<TapCoreRoomListListener> coreRoomListListeners) {
-        this.coreRoomListListeners = coreRoomListListeners;
     }
 
     public void addCoreRoomListListener(TapCoreRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
+        }
+        if (getCoreRoomListListeners().isEmpty()) {
+            if (chatListener == null) {
+                chatListener = new TAPChatListener() {
+                    @Override
+                    public void onChatCleared(TAPRoomModel room) {
+                        super.onChatCleared(room);
+                        listener.onChatRoomDeleted(room.getRoomID());
+                    }
+                };
+                TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
+            }
         }
         getCoreRoomListListeners().remove(listener);
         getCoreRoomListListeners().add(listener);
@@ -91,14 +101,8 @@ public class TapCoreRoomListManager {
             return;
         }
         getCoreRoomListListeners().remove(listener);
-    }
-
-    public void onChatRoomDeleted(String roomID) {
-        if (!TapTalk.checkTapTalkInitialized()) {
-            return;
-        }
-        for (TapCoreRoomListListener listener : getCoreRoomListListeners()) {
-            listener.onChatRoomDeleted(roomID);
+        if (getCoreRoomListListeners().isEmpty()) {
+            TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
         }
     }
 
