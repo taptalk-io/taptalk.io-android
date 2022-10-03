@@ -1484,7 +1484,7 @@ public class TapUI {
         }
     }
 
-    public void triggerSavedMessageBubbleArrowTapped(TAPMessageModel messageModel) {
+    void triggerSavedMessageBubbleArrowTapped(TAPMessageModel messageModel) {
         if (getChatRoomListeners().isEmpty()) {
             return;
         }
@@ -1496,7 +1496,7 @@ public class TapUI {
         }
     }
 
-    public void triggerPinnedMessageTapped(TAPMessageModel message) {
+    void triggerPinnedMessageTapped(TAPMessageModel message) {
         if (getChatRoomListeners().isEmpty()) {
             return;
         }

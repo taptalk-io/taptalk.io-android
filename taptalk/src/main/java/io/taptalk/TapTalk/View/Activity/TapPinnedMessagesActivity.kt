@@ -309,7 +309,7 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
     private val chatListener = object : TAPChatListener() {
         override fun onOutsideClicked(message: TAPMessageModel?) {
             super.onOutsideClicked(message)
-            TapUI.getInstance(instanceKey).triggerPinnedMessageTapped(message)
+            TAPChatManager.getInstance(instanceKey).triggerPinnedMessageTapped(message)
             val intent = Intent()
             intent.putExtra(TAPDefaultConstant.Extras.MESSAGE, message)
             setResult(RESULT_OK, intent)

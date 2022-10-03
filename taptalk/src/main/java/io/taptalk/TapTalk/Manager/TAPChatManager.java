@@ -2227,6 +2227,14 @@ public class TAPChatManager {
         TapUI.getInstance(instanceKey).triggerProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
     }
 
+    public void triggerSavedMessageBubbleArrowTapped(TAPMessageModel message) {
+        TapUI.getInstance(instanceKey).triggerSavedMessageBubbleArrowTapped(message);
+    }
+
+    public void triggerPinnedMessageTapped(TAPMessageModel message) {
+        TapUI.getInstance(instanceKey).triggerPinnedMessageTapped(message);
+    }
+
     public String getRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {
         return TapUI.getInstance(instanceKey).getRoomListTitleText(roomList, position, context);
     }

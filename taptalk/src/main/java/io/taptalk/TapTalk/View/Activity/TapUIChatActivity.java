@@ -1702,7 +1702,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             super.onArrowButtonClicked(message);
             if (!isArrowButtonTapped) {
                 if (message.getForwardFrom() != null) {
-                    TapUI.getInstance(instanceKey).triggerSavedMessageBubbleArrowTapped(message);
+                    TAPChatManager.getInstance(instanceKey).triggerSavedMessageBubbleArrowTapped(message);
                     isArrowButtonTapped = true;
                     String roomId = message.getForwardFrom().getRoomID();
                     String localId = message.getForwardFrom().getLocalID();
