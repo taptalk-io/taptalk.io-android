@@ -18,10 +18,7 @@ import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener
-import io.taptalk.TapTalk.Manager.TAPChatManager
-import io.taptalk.TapTalk.Manager.TAPContactManager
-import io.taptalk.TapTalk.Manager.TAPGroupManager
-import io.taptalk.TapTalk.Manager.TapCoreMessageManager
+import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
@@ -312,6 +309,7 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
     private val chatListener = object : TAPChatListener() {
         override fun onOutsideClicked(message: TAPMessageModel?) {
             super.onOutsideClicked(message)
+            TapUI.getInstance(instanceKey).triggerPinnedMessageTapped(message)
             val intent = Intent()
             intent.putExtra(TAPDefaultConstant.Extras.MESSAGE, message)
             setResult(RESULT_OK, intent)
