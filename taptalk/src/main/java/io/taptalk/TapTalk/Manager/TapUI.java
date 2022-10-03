@@ -1496,6 +1496,18 @@ public class TapUI {
         }
     }
 
+    public void triggerPinnedMessageTapped(TAPMessageModel message) {
+        if (getChatRoomListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            if (null != listener) {
+                listener.onPinnedMessageTapped(message);
+            }
+        }
+    }
+
     List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
         for (TapUICustomKeyboardListener listener : getCustomKeyboardListeners()) {
             List<TAPCustomKeyboardItemModel> items = listener.setCustomKeyboardItems(room, activeUser, recipientUser);

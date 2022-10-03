@@ -35,4 +35,6 @@ public interface TapUIChatRoomInterface {
     void onTapTalkStarredMessageButtonTapped(Activity activity, TAPRoomModel room);
 
     void onSavedMessageBubbleArrowTapped(TAPMessageModel message);
+
+    void onPinnedMessageTapped(TAPMessageModel message);
 }
