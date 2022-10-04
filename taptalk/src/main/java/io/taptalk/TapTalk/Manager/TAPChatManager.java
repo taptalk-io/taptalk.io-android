@@ -42,6 +42,7 @@ import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -72,10 +73,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketClearChat;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMuteRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnmuteRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
@@ -266,6 +269,25 @@ public class TAPChatManager {
                             }
                         }
                     });
+                    break;
+                case kSocketMuteRoom:
+                case kSocketUnmuteRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> muteRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse muteRoomData = muteRoomEmit.getData();
+                    String mutedRoomId = muteRoomData.getRoom().getRoomID();
+                    Long expiredAt = muteRoomData.getExpiredAt();
+                    HashMap<String, Long> mutedRooms = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs();
+                    if (expiredAt != null) {
+                        // mute room
+                        mutedRooms.put(mutedRoomId, expiredAt);
+                    } else {
+                        // unmute room
+                        mutedRooms.remove(mutedRoomId);
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(mutedRooms);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onMuteOrUnmuteRoom(muteRoomData.getRoom());
+                    }
                     break;
             }
         }
