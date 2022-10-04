@@ -327,6 +327,53 @@ public class TapUIRoomListFragment extends Fragment {
                     getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomId))));
                 }
             }
+
+            @Override
+            public void onPinRoom(TAPRoomModel room) {
+                super.onPinRoom(room);
+                ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                boolean isPinned = pinnedRooms.contains(room.getRoomID());
+                updatePinnedRooms(room.getRoomID(), isPinned);
+                int targetIndex = 0;
+                int position = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
+                vm.getRoomList().add(targetIndex, vm.getRoomList().remove(position));
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(() -> {
+                        adapter.notifyItemMoved(position, targetIndex);
+                        adapter.notifyItemChanged(targetIndex);
+                        rvContactList.scrollToPosition(0);
+                    });
+                }
+            }
+
+            @Override
+            public void onUnpinRoom(TAPRoomModel room) {
+                super.onUnpinRoom(room);
+                ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                boolean isPinned = pinnedRooms.contains(room.getRoomID());
+                updatePinnedRooms(room.getRoomID(), isPinned);
+                int targetIndex = pinnedRooms.size();
+                int position = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
+                if (pinnedRooms.size() < vm.getRoomList().size()) {
+                    for (int i = pinnedRooms.size(); i < vm.getRoomList().size(); i++) {
+                        if (vm.getRoomList().get(position).getLastMessage().getCreated() > vm.getRoomList().get(i).getLastMessage().getCreated()) {
+                            targetIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    targetIndex = vm.getRoomList().size() - 1;
+                }
+                vm.getRoomList().add(targetIndex, vm.getRoomList().remove(position));
+                if (null != getActivity()) {
+                    int finalTargetIndex = targetIndex;
+                    getActivity().runOnUiThread(() -> {
+                        adapter.notifyItemMoved(position, finalTargetIndex);
+                        adapter.notifyItemChanged(finalTargetIndex);
+                        rvContactList.scrollToPosition(0);
+                    });
+                }
+            }
         };
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
 

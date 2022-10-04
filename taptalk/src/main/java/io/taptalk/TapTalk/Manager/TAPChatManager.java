@@ -76,9 +76,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMuteRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketPinRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnmuteRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnpinRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
@@ -287,6 +289,30 @@ public class TAPChatManager {
                     TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(mutedRooms);
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         chatListener.onMuteOrUnmuteRoom(muteRoomData.getRoom(), expiredAt);
+                    }
+                    break;
+                case kSocketPinRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> pinRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse pinRoomData = pinRoomEmit.getData();
+                    String pinnedRoomId = pinRoomData.getRoom().getRoomID();
+                    ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                    if (!pinnedRooms.contains(pinnedRoomId)) {
+                        pinnedRooms.add(0, pinnedRoomId);
+                    }
+                    TAPDataManager.getInstance(instanceKey).savePinnedRoomIDs(pinnedRooms);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onPinRoom(pinRoomData.getRoom());
+                    }
+                    break;
+                case kSocketUnpinRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> unpinRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse unpinRoomData = unpinRoomEmit.getData();
+                    String unpinnedRoomId = unpinRoomData.getRoom().getRoomID();
+                    ArrayList<String> pinnedRoomIds = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                    pinnedRoomIds.remove(unpinnedRoomId);
+                    TAPDataManager.getInstance(instanceKey).savePinnedRoomIDs(pinnedRoomIds);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onUnpinRoom(unpinRoomData.getRoom());
                     }
                     break;
             }
