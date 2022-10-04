@@ -769,6 +769,76 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:visibility="gone"
+                android:background="@color/tapWhite"
+                app:layout_constraintBottom_toTopOf="@id/et_chat">
+
+                <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
+                    android:id="@+id/rciv_link"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:padding="8dp"
+                    android:src="@drawable/tap_ic_link_white"
+                    android:background="@drawable/tap_bg_rounded_primary_8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_link_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    app:layout_goneMarginStart="16dp"
+                    app:layout_goneMarginBottom="8dp"
+                    tools:text="@string/tap_loading_dots"
+                    style="@style/tapLinkPreviewTitleStyle"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:layout_constraintStart_toEndOf="@id/rciv_link"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_close_link"
+                    app:layout_constraintBottom_toTopOf="@id/tv_link_content"/>
+
+                <TextView
+                    android:id="@+id/tv_link_content"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="8dp"
+                    tools:text="@tools:sample/lorem/random"
+                    style="@style/tapLinkPreviewContentStyle"
+                    app:layout_constraintStart_toStartOf="@id/tv_link_title"
+                    app:layout_constraintTop_toBottomOf="@id/tv_link_title"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_close_link" />
+
+                <ImageView
+                    android:id="@+id/iv_close_link"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/tap_ic_close_grey"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <ImageView
                 android:id="@+id/iv_chat_menu_area"
                 android:layout_width="0dp"

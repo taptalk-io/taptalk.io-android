@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Timer durationTimer;
     private int duration, pausedPosition, pinnedMessageIndex;
     private boolean isSelectState;
+    private HashMap<String, String> linkHashMap;
 
     public static class TAPChatViewModelFactory implements ViewModelProvider.Factory {
         private Application application;
@@ -782,5 +784,17 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.forwardedMessages = forwardedMessages;
         this.quoteAction = quoteAction;
         TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), forwardedMessages, quoteAction);
+    }
+
+    public HashMap<String, String> getLinkHashMap() {
+        return linkHashMap == null? linkHashMap = new HashMap<>() : linkHashMap;
+    }
+
+    public void setLinkHashMap(HashMap<String, String> linkHashMap) {
+        this.linkHashMap = linkHashMap;
+    }
+
+    public void clearLinkHashMap() {
+        getLinkHashMap().clear();
     }
 }

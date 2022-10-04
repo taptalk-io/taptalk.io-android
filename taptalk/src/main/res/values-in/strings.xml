@@ -455,5 +455,6 @@
     <string name="tap_unpin_and_delete_chat">Unpin and Delete Chat</string>
     <string name="tap_deleting_conversation_dots">Deleting conversation...</string>
     <string name="tap_fail_delete_chatroom">Oops! Failed to delete chat room</string>
+    <string name="tap_loading_dots">Loading...</string>
 
 </resources>

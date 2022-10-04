@@ -116,6 +116,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
@@ -126,6 +127,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
@@ -395,6 +397,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ConstraintLayout clLink;
+        private TextView tvLinkTitle;
+        private TextView tvLinkContent;
+        private TAPRoundedCornerImageView rcivLinkImage;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -420,6 +426,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
             tvEdited = itemView.findViewById(R.id.tv_edited);
+            clLink = itemView.findViewById(R.id.cl_link);
+            tvLinkTitle = itemView.findViewById(R.id.tv_link_title);
+            tvLinkContent = itemView.findViewById(R.id.tv_link_content);
+            rcivLinkImage = itemView.findViewById(R.id.rciv_link_image);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -449,6 +459,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvEdited.setVisibility(View.GONE);
             }
             setMessageBodyText(tvMessageBody, item, item.getBody());
+            setLinkPreview(item);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             setSelectedState(item, ivSelect, vBubbleArea);
@@ -505,6 +516,36 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onMessageRead(TAPMessageModel message) {
             showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        private void setLinkPreview(TAPMessageModel item) {
+            if (!TapUI.getInstance(instanceKey).isLinkPreviewInMessageEnabled() || item.getData() == null) {
+                clLink.setVisibility(View.GONE);
+            } else {
+                String title = (String) item.getData().get(TITLE);
+                if (title != null) {
+                    String description = (String) item.getData().get(DESCRIPTION);
+                    String url = (String) item.getData().get(URL);
+                    String image = (String) item.getData().get(IMAGE);
+                    clLink.setVisibility(View.VISIBLE);
+                    tvLinkTitle.setText(title);
+                    if (description == null || description.isEmpty()) {
+                        tvLinkContent.setVisibility(View.GONE);
+                    } else {
+                        tvLinkContent.setVisibility(View.VISIBLE);
+                        tvLinkContent.setText(description);
+                    }
+                    if (image == null || image.isEmpty()) {
+                        rcivLinkImage.setVisibility(View.GONE);
+                    } else {
+                        rcivLinkImage.setVisibility(View.VISIBLE);
+                        glide.load(image).fitCenter().into(rcivLinkImage);
+                    }
+                    clLink.setOnClickListener(view -> TAPUtils.openCustomTabLayout((Activity) itemView.getContext(), url));
+                } else {
+                    clLink.setVisibility(View.GONE);
+                }
+            }
         }
     }
 

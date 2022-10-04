@@ -18,7 +18,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SITE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
@@ -418,21 +425,93 @@ public class TapCoreMessageManager {
     }
 
     public void sendVoiceMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, file, listener);
     }
 
     public void sendVoiceMessage(File file, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
         TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, file, listener);
     }
 
     public void sendVoiceMessage(Uri uri, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, uri, listener);
     }
 
     public void sendVoiceMessage(Uri uri, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
         TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, uri, listener);
+    }
+
+    public void sendLinkMessage(String messageBody, TAPRoomModel room, List<String> urls, @Nullable String title, @Nullable String description, @Nullable String image, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        HashMap<String, Object> data = new HashMap<>();
+        data.put(URLS, urls);
+        data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+        if (title != null) {
+            data.put(TITLE, title);
+        }
+        if (description != null) {
+            data.put(DESCRIPTION, description);
+        }
+        if (image != null) {
+            data.put(IMAGE, image);
+        }
+        TAPChatManager.getInstance(instanceKey).sendLinkMessageWithRoomModel(messageBody, room, data, listener);
+    }
+
+    public void sendLinkMessage(String messageBody, TAPRoomModel room, List<String> urls, @Nullable String title, @Nullable String description, @Nullable String image, @Nullable String siteName, @Nullable String type,  TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        HashMap<String, Object> data = new HashMap<>();
+        data.put(URLS, urls);
+        data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+        if (title != null) {
+            data.put(TITLE, title);
+        }
+        if (description != null) {
+            data.put(DESCRIPTION, description);
+        }
+        if (image != null) {
+            data.put(IMAGE, image);
+        }
+        if (siteName != null) {
+            data.put(SITE_NAME, siteName);
+        }
+        if (type != null) {
+            data.put(TYPE, type);
+        }
+        TAPChatManager.getInstance(instanceKey).sendLinkMessageWithRoomModel(messageBody, room, data, listener);
+    }
+
+    public void sendLinkMessage(String messageBody, TAPRoomModel room, TAPMessageModel quotedMessage, List<String> urls, @Nullable String title, @Nullable String description, @Nullable String image, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
+        sendLinkMessage(messageBody, room, urls, title, description, image, listener);
+    }
+
+    public void sendLinkMessage(String messageBody, TAPRoomModel room, TAPMessageModel quotedMessage, List<String> urls, @Nullable String title, @Nullable String description, @Nullable String image, @Nullable String siteName, @Nullable String type, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
+        sendLinkMessage(messageBody, room, urls, title, description, image, siteName, type, listener);
     }
 
     public void sendForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, TapCoreSendMessageListener listener) {
@@ -517,7 +596,11 @@ public class TapCoreMessageManager {
     }
 
     public void editMessage(TAPMessageModel message, String updatedText, TapCoreSendMessageListener listener) {
-        TAPChatManager.getInstance(instanceKey).editMessage(message, updatedText, listener);
+        TAPChatManager.getInstance(instanceKey).editMessage(message, updatedText, listener, false);
+    }
+
+    public void editMessage(TAPMessageModel newMessage, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance(instanceKey).editMessage(newMessage, listener);
     }
 
     public void uploadImage(Context context, Uri uri, TapCoreFileUploadListener listener) {
