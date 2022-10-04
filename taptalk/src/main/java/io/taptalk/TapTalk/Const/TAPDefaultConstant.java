@@ -32,6 +32,8 @@ public class TAPDefaultConstant {
         public static final String kSocketUserOnlineStatus = "user/status";
         public static final String kSocketUserUpdated = "user/updated";
         public static final String kSocketClearChat = "room/clearChat";
+        public static final String kSocketMuteRoom = "room/mute";
+        public static final String kSocketUnmuteRoom = "room/unmute";
     }
 
     public static final class RoomType {

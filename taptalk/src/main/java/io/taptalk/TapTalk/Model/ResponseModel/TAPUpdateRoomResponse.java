@@ -14,6 +14,10 @@ public class TAPUpdateRoomResponse implements Parcelable {
     @JsonProperty("room")
     private TAPRoomModel room;
 
+    @Nullable
+    @JsonProperty("expiredAt")
+    private Long expiredAt;
+
     public TAPUpdateRoomResponse() {
     }
 
@@ -30,6 +34,14 @@ public class TAPUpdateRoomResponse implements Parcelable {
         this.room = room;
     }
 
+    @Nullable
+    public Long getExpiredAt() {
+        return expiredAt;
+    }
+
+    public void setExpiredAt(@Nullable Long expiredAt) {
+        this.expiredAt = expiredAt;
+    }
 
     @Override
     public int describeContents() {
@@ -39,10 +51,12 @@ public class TAPUpdateRoomResponse implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.room, flags);
+        dest.writeLong(this.expiredAt);
     }
 
     protected TAPUpdateRoomResponse(Parcel in) {
         this.room = in.readParcelable(TAPRoomModel.class.getClassLoader());
+        this.expiredAt = in.readLong();
     }
 
     public static final Creator<TAPUpdateRoomResponse> CREATOR = new Creator<TAPUpdateRoomResponse>() {
