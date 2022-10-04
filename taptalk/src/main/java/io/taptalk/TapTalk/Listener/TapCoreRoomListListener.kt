@@ -16,4 +16,12 @@ abstract class TapCoreRoomListListener : TapCoreRoomListInterface{
     override fun onChatRoomUnmuted(roomID: String) {
 
     }
+
+    override fun onChatRoomPinned(roomID: String) {
+
+    }
+
+    override fun onChatRoomUnpinned(roomID: String) {
+
+    }
 }

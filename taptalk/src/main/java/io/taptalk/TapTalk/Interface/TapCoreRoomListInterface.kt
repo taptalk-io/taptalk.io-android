@@ -6,4 +6,8 @@ interface TapCoreRoomListInterface {
     fun onChatRoomMuted(roomID : String, expiryTime : Long)
 
     fun onChatRoomUnmuted(roomID : String)
+
+    fun onChatRoomPinned(roomID : String)
+
+    fun onChatRoomUnpinned(roomID : String)
 }
