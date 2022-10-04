@@ -122,4 +122,14 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     public void onMuteOrUnmuteRoom(TAPRoomModel room, Long expiredAt) {
 
     }
+
+    @Override
+    public void onPinRoom(TAPRoomModel room) {
+
+    }
+
+    @Override
+    public void onUnpinRoom(TAPRoomModel room) {
+
+    }
 }
