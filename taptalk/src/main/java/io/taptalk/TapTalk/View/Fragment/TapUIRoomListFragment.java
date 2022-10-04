@@ -1424,8 +1424,10 @@ public class TapUIRoomListFragment extends Fragment {
                                         super.onSuccess(successMessage);
                                         activity.runOnUiThread(() -> {
                                             int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(roomId));
-                                            vm.getRoomList().remove(index);
-                                            adapter.notifyItemRemoved(index);
+                                            if (index != -1) {
+                                                vm.getRoomList().remove(index);
+                                                adapter.notifyItemRemoved(index);
+                                            }
                                         });
                                     }
                                 });
