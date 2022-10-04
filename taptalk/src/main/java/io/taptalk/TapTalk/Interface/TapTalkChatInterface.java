@@ -59,5 +59,5 @@ public interface TapTalkChatInterface {
 
     void onChatCleared(TAPRoomModel room);
 
-    void onMuteOrUnmuteRoom(TAPRoomModel room);
+    void onMuteOrUnmuteRoom(TAPRoomModel room, Long expiredAt);
 }

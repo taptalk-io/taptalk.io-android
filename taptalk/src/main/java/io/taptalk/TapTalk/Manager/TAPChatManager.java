@@ -286,7 +286,7 @@ public class TAPChatManager {
                     }
                     TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(mutedRooms);
                     for (TAPChatListener chatListener : chatListenersCopy) {
-                        chatListener.onMuteOrUnmuteRoom(muteRoomData.getRoom());
+                        chatListener.onMuteOrUnmuteRoom(muteRoomData.getRoom(), expiredAt);
                     }
                     break;
             }

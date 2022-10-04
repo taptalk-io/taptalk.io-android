@@ -88,6 +88,16 @@ public class TapCoreRoomListManager {
                         super.onChatCleared(room);
                         listener.onChatRoomDeleted(room.getRoomID());
                     }
+
+                    @Override
+                    public void onMuteOrUnmuteRoom(TAPRoomModel room, Long expiredAt) {
+                        super.onMuteOrUnmuteRoom(room, expiredAt);
+                        if (expiredAt != null) {
+                            listener.onChatRoomMuted(room.getRoomID(), expiredAt);
+                        } else {
+                            listener.onChatRoomUnmuted(room.getRoomID());
+                        }
+                    }
                 };
                 TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
             }

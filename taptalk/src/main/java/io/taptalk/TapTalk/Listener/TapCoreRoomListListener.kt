@@ -8,4 +8,12 @@ abstract class TapCoreRoomListListener : TapCoreRoomListInterface{
     override fun onChatRoomDeleted(roomID: String) {
 
     }
+
+    override fun onChatRoomMuted(roomID: String, expiryTime: Long) {
+
+    }
+
+    override fun onChatRoomUnmuted(roomID: String) {
+
+    }
 }

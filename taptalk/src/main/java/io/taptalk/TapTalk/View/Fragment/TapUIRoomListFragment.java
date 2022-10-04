@@ -318,8 +318,8 @@ public class TapUIRoomListFragment extends Fragment {
             }
 
             @Override
-            public void onMuteOrUnmuteRoom(TAPRoomModel room) {
-                super.onMuteOrUnmuteRoom(room);
+            public void onMuteOrUnmuteRoom(TAPRoomModel room, Long expiredAt) {
+                super.onMuteOrUnmuteRoom(room, expiredAt);
                 String roomId = room.getRoomID();
                 boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(roomId);
                 updateMutedRooms(roomId, isMuted);
