@@ -12,7 +12,7 @@ android {
         minSdk 16
         targetSdk 31
         versionCode 122
-        versionName '2.6.0'
+        versionName '2.7.0'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -124,6 +124,9 @@ dependencies {
     // Chrome Custom Tab
     implementation 'androidx.browser:browser:1.4.0'
 
+    // HTML Parser
+    implementation 'org.jsoup:jsoup:1.15.3'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 //    implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
 }
@@ -141,7 +144,7 @@ project.afterEvaluate {
                 artifact androidSourcesJar // optional sources
                 groupId = 'com.github.taptalk-io'
                 artifactId = 'taptalk.io-android'
-                version = "2.6.0"
+                version = "2.7.0"
 //                version = "\"${defaultConfig.versionName}\""
             }
         }

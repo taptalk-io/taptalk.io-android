@@ -1361,4 +1361,21 @@ public class TAPUtils {
         }
         return urls;
     }
+
+    public static String getFirstUrlFromString(String text) {
+        String [] parts = text.split("\\s+");
+        for (String item : parts) {
+            if (WEB_URL.matcher(item).matches()) {
+                return item;
+            }
+        }
+        return "";
+    }
+
+    public static String setUrlWithProtocol(String url) {
+        if (!url.isEmpty() && !url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "http://" + url;
+        }
+        return url;
+    }
 }

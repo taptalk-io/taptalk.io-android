@@ -1,7 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import static androidx.core.util.PatternsCompat.WEB_URL;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -78,11 +76,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
@@ -338,6 +340,13 @@ public class TAPChatManager {
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
 
+    public void sendLinkMessage(String textMessage, HashMap<String, Object> data) {
+        if (null == activeRoom) {
+            return;
+        }
+        sendLinkMessageWithRoomModel(textMessage, activeRoom, data);
+    }
+
     public void sendImageMessageToServer(TAPMessageModel messageModel) {
         removeUploadingMessageFromHashMap(messageModel.getLocalID());
         triggerListenerAndSendMessage(messageModel, false);
@@ -388,7 +397,10 @@ public class TAPChatManager {
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 } else {
-                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), urls);
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    data.put(URLS, urls);
+                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), data);
                 }
                 // Add entity to list
                 messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
@@ -403,7 +415,10 @@ public class TAPChatManager {
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
                 } else {
-                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), urls);
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    data.put(URLS, urls);
+                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), data);
                 }
             // Send message
             triggerListenerAndSendMessage(messageModel, true);
@@ -423,13 +438,7 @@ public class TAPChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                TAPMessageModel messageModel;
-                List<String> urls = TAPUtils.getUrlsFromString(substr);
-                if (urls.isEmpty()) {
-                    messageModel = createTextMessage(substr, roomModel, getActiveUser());
-                } else {
-                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), urls);
-                }
+                TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
 
                 if (null != listener) {
                     sendMessageListeners.put(messageModel.getLocalID(), listener);
@@ -443,14 +452,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
-
-                TAPMessageModel messageModel;
-                List<String> urls = TAPUtils.getUrlsFromString(textMessage);
-                if (urls.isEmpty()) {
-                    messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
-                } else {
-                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), urls);
-                }
+                TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
             if (null != listener) {
                 sendMessageListeners.put(messageModel.getLocalID(), listener);
                 listener.onStart(messageModel);
@@ -460,6 +462,100 @@ public class TAPChatManager {
         }
         // Run queue after list is updated
         //checkAndSendPendingMessages();
+    }
+
+    public void sendLinkMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, HashMap<String, Object> data) {
+        Integer startIndex;
+
+        checkAndSendForwardedMessage(roomModel);
+
+        if (textMessage.length() > CHARACTER_LIMIT) {
+            // Message exceeds character limit
+            List<TAPMessageEntity> messageEntities = new ArrayList<>();
+            Integer length = textMessage.length();
+            for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
+                String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                TAPMessageModel messageModel;
+                List<String> urls = TAPUtils.getUrlsFromString(substr);
+                if (urls.isEmpty()) {
+                    messageModel = createTextMessage(substr, roomModel, getActiveUser());
+                } else {
+                    HashMap<String, Object> newData = new HashMap<>(data);
+                    String url = TAPUtils.setUrlWithProtocol(urls.get(0));
+                    if (!url.equalsIgnoreCase((String) data.get(URL))) {
+                        newData = new HashMap<>();
+                        newData.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    }
+                    newData.put(URLS, urls);
+                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), newData);
+                }
+                // Add entity to list
+                messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
+
+                // Send truncated message
+                triggerListenerAndSendMessage(messageModel, true);
+            }
+        } else {
+            TAPMessageModel messageModel;
+            List<String> urls = TAPUtils.getUrlsFromString(textMessage);
+            if (urls.isEmpty()) {
+                messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
+            } else {
+                HashMap<String, Object> newData = new HashMap<>(data);
+                String url = TAPUtils.setUrlWithProtocol(urls.get(0));
+                if (!url.equalsIgnoreCase((String) data.get(URL))) {
+                    newData = new HashMap<>();
+                    newData.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                }
+                newData.put(URLS, urls);
+                messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), newData);
+            }
+            // Send message
+            triggerListenerAndSendMessage(messageModel, true);
+        }
+    }
+
+    public void sendLinkMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, HashMap<String, Object> data, TapSendMessageInterface listener) {
+        Integer startIndex;
+
+        checkAndSendForwardedMessage(roomModel);
+
+        if (textMessage.length() > CHARACTER_LIMIT) {
+            // Message exceeds character limit
+            Integer length = textMessage.length();
+            for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
+                String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                List<String> urls = TAPUtils.getUrlsFromString(substr);
+                TAPMessageModel messageModel;
+                HashMap<String, Object> newData = new HashMap<>(data);
+                if (urls.isEmpty()) {
+                    newData = new HashMap<>();
+                } else {
+                    if (!TAPUtils.setUrlWithProtocol(urls.get(0)).equalsIgnoreCase((String) data.get(URL))) {
+                        newData = new HashMap<>();
+                        newData.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    }
+                    newData.put(URLS, urls);
+                }
+                messageModel = createLinkMessage(substr, roomModel, getActiveUser(), newData);
+
+                if (null != listener) {
+                    sendMessageListeners.put(messageModel.getLocalID(), listener);
+                    listener.onStart(messageModel);
+                }
+
+                // Send truncated message
+                triggerListenerAndSendMessage(messageModel, true);
+            }
+        } else {
+            TAPMessageModel messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), data);
+            if (null != listener) {
+                sendMessageListeners.put(messageModel.getLocalID(), listener);
+                listener.onStart(messageModel);
+            }
+            // Send message
+            triggerListenerAndSendMessage(messageModel, true);
+        }
     }
 
     public void sendDirectReplyTextMessage(String textMessage, TAPRoomModel roomModel) {
@@ -478,7 +574,10 @@ public class TAPChatManager {
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 } else {
-                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), urls);
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    data.put(URLS, urls);
+                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), data);
                 }
                 // Add entity to list
                 messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
@@ -497,7 +596,10 @@ public class TAPChatManager {
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
                 } else {
-                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), urls);
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    data.put(URLS, urls);
+                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), data);
                 }
 
             // save LocalID to list of Reply Local IDs
@@ -547,11 +649,8 @@ public class TAPChatManager {
      * Construct Link Message Model
      */
 
-    private TAPMessageModel createLinkMessage(String message, TAPRoomModel room, TAPUserModel user, List<String> urls) {
-        // Create new TAPMessageModel based on text
-        HashMap<String, Object> data = new HashMap<>();
-        data.put(URL, urls.get(0));
-        data.put(URLS, urls);
+    private TAPMessageModel createLinkMessage(String message, TAPRoomModel room, TAPUserModel user, HashMap<String, Object> data) {
+        // Create new TAPMessageModel for link type
         if (null == getQuotedMessages().get(room.getRoomID())) {
             return TAPMessageModel.Builder(
                     message,
@@ -1575,7 +1674,7 @@ public class TAPChatManager {
      * Edit message
      */
 
-    public void editMessage(TAPMessageModel message, String updatedText, TapSendMessageInterface listener) {
+    public void editMessage(TAPMessageModel message, String updatedText, TapSendMessageInterface listener, boolean isTypeChangeEnabled) {
         if (message.getType() == TYPE_TEXT || message.getType() == TYPE_LINK) {
             if (updatedText.length() > CHARACTER_LIMIT) {
                 if (null != listener) {
@@ -1590,15 +1689,22 @@ public class TAPChatManager {
                 if (data != null) {
                     data.put(URL, null);
                     data.put(URLS, null);
+                    data.put(TITLE, null);
+                    data.put(DESCRIPTION, null);
+                    data.put(IMAGE, null);
+                    data.put(TYPE, null);
                     message.setData(data);
                 }
-                message.setType(TYPE_TEXT);
+                if (isTypeChangeEnabled) {
+                    message.setType(TYPE_TEXT);
+                }
             } else {
                 HashMap<String, Object> data = message.getData() == null ? new HashMap<>() : message.getData();
-                data.put(URL, urls.get(0));
                 data.put(URLS, urls);
                 message.setData(data);
-                message.setType(TYPE_LINK);
+                if (isTypeChangeEnabled) {
+                    message.setType(TYPE_LINK);
+                }
             }
         }
         else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
@@ -1632,6 +1738,15 @@ public class TAPChatManager {
         }
         // Edit message
         runSendMessageSequence(message, kSocketUpdateMessage);
+    }
+
+    public void editMessage(TAPMessageModel newMessage, TapSendMessageInterface listener) {
+        if (null != listener) {
+            sendMessageListeners.put(newMessage.getLocalID(), listener);
+            listener.onStart(newMessage);
+        }
+        // Edit message
+        runSendMessageSequence(newMessage, kSocketUpdateMessage);
     }
 
     /**

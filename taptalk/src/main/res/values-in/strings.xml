@@ -449,5 +449,6 @@
     <string name="tap_muted">Muted</string>
     <string name="tap_until">until</string>
     <string name="tap_off">OFF</string>
+    <string name="tap_loading_dots">Loading...</string>
 
 </resources>

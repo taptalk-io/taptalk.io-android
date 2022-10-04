@@ -38,13 +38,17 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEven
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IS_PLAYING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -176,6 +180,10 @@ import com.bumptech.glide.request.target.Target;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -210,6 +218,7 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Helper.TapVerticalIndicator;
 import io.taptalk.TapTalk.Helper.audiorecorder.TapAudioManager;
 import io.taptalk.TapTalk.Interface.TapAudioListener;
+import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
@@ -255,6 +264,10 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class TapUIChatActivity extends TAPBaseActivity {
 
@@ -366,6 +379,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private final static int MAX_FORWARD_COUNT = 30;
     private ImageView ivForward;
 
+    // Link Preview
+    private ConstraintLayout clLink;
+    private TAPRoundedCornerImageView rcivLink;
+    private TextView tvLinkTitle;
+    private TextView tvLinkContent;
+    private ImageView ivCloseLink;
+
+    private Handler linkHandler;
+    private Runnable linkRunnable;
+
     // Scroll state
     private enum STATE {WORKING, LOADED, DONE}
     // Voice Note State
@@ -460,6 +483,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         glide = Glide.with(this);
         audioManager = TapAudioManager.Companion.getInstance(instanceKey, audioListener);
+        linkHandler = new Handler();
         bindViews();
         initRoom();
         registerBroadcastManager();
@@ -965,6 +989,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvPinnedLabel = findViewById(R.id.tv_pinned_label);
         tvPinnedMessage = findViewById(R.id.tv_pinned_message);
         ibPinnedMessages = findViewById(R.id.ib_pin_messages);
+        clLink = findViewById(R.id.cl_link);
+        rcivLink = findViewById(R.id.rciv_link);
+        tvLinkTitle = findViewById(R.id.tv_link_title);
+        tvLinkContent = findViewById(R.id.tv_link_content);
+        ivCloseLink = findViewById(R.id.iv_close_link);
     }
 
     private boolean initViewModel() {
@@ -1258,6 +1287,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 isLoadPinnedMessages = false;
             }
+        }
+
+        if (TapUI.getInstance().isLinkPreviewInMessageEnabled()) {
+            ivCloseLink.setOnClickListener(v -> {
+                vm.getLinkHashMap().remove(TITLE);
+                vm.getLinkHashMap().remove(DESCRIPTION);
+                vm.getLinkHashMap().remove(IMAGE);
+                vm.getLinkHashMap().remove(TYPE);
+                hideLinkPreview(false);
+            });
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -2086,7 +2125,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(TAPUtils.getFileDisplayName(message));
                 tvQuoteContent.setText(TAPUtils.getFileDisplayInfo(message));
                 tvQuoteContent.setMaxLines(1);
-            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE) {
+            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE && message.getType() != TYPE_LINK) {
                 // Show image quote from file URL
                 glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
                 rcivQuoteImage.setColorFilter(null);
@@ -2110,14 +2149,23 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
-            } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
+            } else if (null != message.getData() &&
+                    (null != message.getData().get(IMAGE_URL) || null != message.getData().get(IMAGE))) {
                 // Show image quote from image URL
-                glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                if (message.getData().get(IMAGE_URL) != null) {
+                    glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                    vQuoteDecoration.setVisibility(View.GONE);
+                } else if (message.getData().get(IMAGE) != null){
+                    //show link image
+                    glide.load((String) message.getData().get(IMAGE)).into(rcivQuoteImage);
+                    vQuoteDecoration.setVisibility(View.VISIBLE);
+                } else {
+                    vQuoteDecoration.setVisibility(View.GONE);
+                }
                 rcivQuoteImage.setColorFilter(null);
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
-                vQuoteDecoration.setVisibility(View.GONE);
 
                 if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
                     tvQuoteTitle.setText(message.getForwardFrom().getFullname());
@@ -3408,12 +3456,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
             seekBar.setProgress(0);
             setDefaultState();
         } else if (recordingState == RECORDING_STATE.DEFAULT) {
-            etChat.setText("");
             if (vm.getQuotedMessage() != null && vm.getQuoteAction() == EDIT) {
                 // edit message
                 TAPMessageModel messageModel = vm.getQuotedMessage();
                 if ((messageModel.getType() == TYPE_TEXT || messageModel.getType() == TYPE_LINK) && !TextUtils.isEmpty(message)) {
                     messageModel.setBody(message);
+                    HashMap<String, Object> data = messageModel.getData();
+                    if (data == null) {
+                        data = new HashMap<>();
+                    }
+                    data.put(TITLE, vm.getLinkHashMap().get(TITLE));
+                    data.put(DESCRIPTION, vm.getLinkHashMap().get(DESCRIPTION));
+                    data.put(IMAGE, vm.getLinkHashMap().get(IMAGE));
+                    data.put(TYPE, vm.getLinkHashMap().get(TYPE));
+                    data.put(TAPDefaultConstant.MessageData.URL, vm.getLinkHashMap().get(TAPDefaultConstant.MessageData.URL));
+                    messageModel.setData(data);
                 } else if (messageModel.getType() == TYPE_IMAGE || messageModel.getType() == TYPE_VIDEO) {
                     HashMap<String, Object> data = messageModel.getData();
                     if (data != null) {
@@ -3423,7 +3480,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 } else {
                     return;
                 }
-                TapCoreMessageManager.getInstance(instanceKey).editMessage(messageModel, message, new TapCoreSendMessageListener() {
+                TAPChatManager.getInstance(instanceKey).editMessage(messageModel, message, new TapCoreSendMessageListener() {
                     @Override
                     public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
                         if (errorCode.equals(ERROR_CODE_CAPTION_EXCEEDS_LIMIT)) {
@@ -3434,20 +3491,30 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                     .show();
                         }
                     }
-                });
+                }, true);
                 hideQuoteLayout();
             } else if (!TextUtils.isEmpty(message)) {
-                // send message
-                TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
-
-                // Updated 2020/04/23
-                //rvMessageList.scrollToPosition(0);
+                String firstUrl = vm.getLinkHashMap().get(TAPDefaultConstant.MessageData.URL);
+                if (firstUrl != null && !firstUrl.isEmpty()) {
+                    // send message as link
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(TITLE, vm.getLinkHashMap().get(TITLE));
+                    data.put(DESCRIPTION, vm.getLinkHashMap().get(DESCRIPTION));
+                    data.put(IMAGE, vm.getLinkHashMap().get(IMAGE));
+                    data.put(TYPE, vm.getLinkHashMap().get(TYPE));
+                    data.put(TAPDefaultConstant.MessageData.URL, firstUrl);
+                    TAPChatManager.getInstance(instanceKey).sendLinkMessage(message, data);
+                } else {
+                    // send message as text
+                    TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
+                }
                 rvMessageList.post(this::scrollToBottom);
             } else {
                 TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
                 ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
             }
+            etChat.setText("");
         } else {
             TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
             ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
@@ -3966,16 +4033,84 @@ public class TapUIChatActivity extends TAPBaseActivity {
         };
     };
 
+    private Runnable setLinkRunnable(String text) {
+        return new Runnable() {
+            String firstUrl = TAPUtils.getFirstUrlFromString(text);
+            @Override
+            public void run() {
+                if (!firstUrl.isEmpty() && !firstUrl.startsWith("http://") && !firstUrl.startsWith("https://")) {
+                    firstUrl = "http://" + firstUrl;
+                }
+                if (!firstUrl.isEmpty() && !firstUrl.equals(vm.getLinkHashMap().get(TAPDefaultConstant.MessageData.URL))) {
+                    // Contains url
+                    showLinkPreview(firstUrl);
+                    Observable.fromCallable(() -> {
+                        Document document;
+                        HashMap<String, String> linkMap = new HashMap<>();
+                        document = Jsoup.connect(firstUrl).get();
+
+                        linkMap.put(TITLE, document.title());
+                        linkMap.put(TAPDefaultConstant.MessageData.URL, firstUrl);
+                        Element img = document.selectFirst("img");
+                        if (img != null) {
+                            linkMap.put(IMAGE, img.absUrl("src"));
+                        }
+                        Element desc = document.selectFirst("meta[property='og:description']");
+                        if (desc != null) {
+                            linkMap.put(DESCRIPTION, desc.attr("content"));
+                        }
+                        Element type = document.selectFirst("meta[property='og:type']");
+                        if (type != null) {
+                            linkMap.put(TYPE, type.attr("content"));
+                        }
+                        return linkMap;
+                    })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Observer<>() {
+                                @Override
+                                public void onNext(HashMap<String, String> linkMap) {
+                                    if (firstUrl.equals(TAPUtils.setUrlWithProtocol(TAPUtils.getFirstUrlFromString(etChat.getText().toString())))) {
+                                        vm.setLinkHashMap(linkMap);
+                                        updateLinkPreview(linkMap.get(TITLE), linkMap.get(DESCRIPTION), linkMap.get(IMAGE) == null ? "" : linkMap.get(IMAGE));
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    if (firstUrl.equals(TAPUtils.setUrlWithProtocol(TAPUtils.getFirstUrlFromString(etChat.getText().toString())))) {
+                                        hideLinkPreview(true);
+                                    }
+                                }
+
+                                @Override
+                                public void onCompleted() {
+
+                                }
+                            });
+                } else {
+                    // Text only
+                    hideLinkPreview(true);
+                }
+            }
+        };
+    }
+
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+            linkHandler.removeCallbacks(linkRunnable);
         }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (recordingState == RECORDING_STATE.DEFAULT) {
                 if (s.length() > 0 && s.toString().trim().length() > 0) {
+                    if (TapUI.getInstance().isLinkPreviewInMessageEnabled()) {
+                        // Delay 0.3 sec before url check
+                        linkRunnable = setLinkRunnable(s.toString());
+                        linkHandler.postDelayed(linkRunnable, 300);
+                    }
                     // Hide chat menu and enable send button when EditText is filled
                     ivChatMenu.setVisibility(View.GONE);
                     ivButtonChatMenu.setVisibility(View.GONE);
@@ -3999,6 +4134,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     ivButtonChatMenu.setVisibility(View.GONE);
                     setSendButtonDisabled();
                     hideUserMentionList();
+                    hideLinkPreview(true);
                     //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
                     //    if (vm.isCustomKeyboardEnabled()) {
                     //        ivChatMenu.setVisibility(View.VISIBLE);
@@ -4026,6 +4162,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         setSendButtonDisabled();
                     }
                     hideUserMentionList();
+                    hideLinkPreview(true);
                 }
             }
         }
@@ -4035,6 +4172,52 @@ public class TapUIChatActivity extends TAPBaseActivity {
             sendTypingEmit(s.length() > 0);
         }
     };
+
+    private void showLinkPreview(String url) {
+        tvLinkContent.setText(url);
+        clLink.setVisibility(View.VISIBLE);
+        vm.clearLinkHashMap();
+        clQuote.setVisibility(View.GONE);
+    }
+
+    private void updateLinkPreview(String linkTitle, String linkContent,String imageUrl) {
+        tvLinkTitle.setText(linkTitle);
+        tvLinkTitle.setTextColor(ContextCompat.getColor(this, R.color.tapTitleLabelColor));
+        if (linkContent == null || linkContent.isEmpty()) {
+            tvLinkContent.setVisibility(View.GONE);
+        } else {
+            tvLinkContent.setVisibility(View.VISIBLE);
+            tvLinkContent.setText(linkContent);
+        }
+        if (imageUrl != null && imageUrl.isEmpty()) {
+            rcivLink.setVisibility(View.GONE);
+        } else {
+            rcivLink.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_white_rounded_8dp));
+            rcivLink.setPadding(0,0,0,0);
+            glide.load(imageUrl).fitCenter().into(rcivLink);
+            rcivLink.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hideLinkPreview(boolean isClearLinkMap) {
+        if (isClearLinkMap) {
+            vm.clearLinkHashMap();
+        } else {
+            if (vm.getQuotedMessage() != null) {
+                clQuote.setVisibility(View.VISIBLE);
+            }
+        }
+        clLink.setVisibility(View.GONE);
+        tvLinkTitle.setText(R.string.tap_loading_dots);
+        tvLinkTitle.setTextColor(ContextCompat.getColor(this, R.color.tapMediaLinkColor));
+        tvLinkContent.setText("");
+        tvLinkContent.setVisibility(View.VISIBLE);
+        glide.load(R.drawable.tap_ic_link_white).override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).into(rcivLink);
+        int padding = TAPUtils.dpToPx(8);
+        rcivLink.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_rounded_primary_8dp));
+        rcivLink.setPadding(padding, padding, padding, padding);
+        rcivLink.setVisibility(View.VISIBLE);
+    }
 
     private void setSendButtonDisabled() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
