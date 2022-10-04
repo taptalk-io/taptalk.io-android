@@ -316,6 +316,17 @@ public class TapUIRoomListFragment extends Fragment {
                     adapter.notifyItemRemoved(index);
                 });
             }
+
+            @Override
+            public void onMuteOrUnmuteRoom(TAPRoomModel room) {
+                super.onMuteOrUnmuteRoom(room);
+                String roomId = room.getRoomID();
+                boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(roomId);
+                updateMutedRooms(roomId, isMuted);
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomId))));
+                }
+            }
         };
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
 
