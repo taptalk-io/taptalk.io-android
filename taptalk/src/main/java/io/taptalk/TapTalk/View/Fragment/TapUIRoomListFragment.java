@@ -312,8 +312,11 @@ public class TapUIRoomListFragment extends Fragment {
                 super.onChatCleared(room);
                 activity.runOnUiThread(() -> {
                     int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
-                    vm.getRoomList().remove(index);
-                    adapter.notifyItemRemoved(index);
+                    if (index != -1) {
+                        updatePinnedRooms(room.getRoomID(), false);
+                        vm.getRoomList().remove(index);
+                        adapter.notifyItemRemoved(index);
+                    }
                 });
             }
 
@@ -1415,22 +1418,8 @@ public class TapUIRoomListFragment extends Fragment {
                             public void onSuccess(String successMessage) {
                                 super.onSuccess(successMessage);
                                 hideDeleteRoomLoading();
-                                TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
-                                TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
-                                TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomId);
-                                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
-                                    @Override
-                                    public void onSuccess(String successMessage) {
-                                        super.onSuccess(successMessage);
-                                        activity.runOnUiThread(() -> {
-                                            int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(roomId));
-                                            if (index != -1) {
-                                                vm.getRoomList().remove(index);
-                                                adapter.notifyItemRemoved(index);
-                                            }
-                                        });
-                                    }
-                                });
+                                updatePinnedRooms(roomId, false);
+                                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {});
                             }
 
                             @Override
