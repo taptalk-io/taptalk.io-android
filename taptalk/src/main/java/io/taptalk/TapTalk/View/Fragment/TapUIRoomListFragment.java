@@ -356,10 +356,10 @@ public class TapUIRoomListFragment extends Fragment {
                 updatePinnedRooms(room.getRoomID(), isPinned);
                 int targetIndex = pinnedRooms.size();
                 int position = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
-                if (pinnedRooms.size() < vm.getRoomList().size()) {
-                    for (int i = pinnedRooms.size(); i < vm.getRoomList().size(); i++) {
+                if (pinnedRooms.size() + 1 < vm.getRoomList().size()) {
+                    for (int i = pinnedRooms.size() + 1; i < vm.getRoomList().size(); i++) {
                         if (vm.getRoomList().get(position).getLastMessage().getCreated() > vm.getRoomList().get(i).getLastMessage().getCreated()) {
-                            targetIndex = i;
+                            targetIndex = i - 1;
                             break;
                         }
                     }
@@ -1417,13 +1417,7 @@ public class TapUIRoomListFragment extends Fragment {
                                 super.onSuccess(successMessage);
                                 hideDeleteRoomLoading();
                                 updatePinnedRooms(roomId, false);
-                                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
-                                    @Override
-                                    public void onSuccess(String successMessage) {
-                                        super.onSuccess(successMessage);
-
-                                    }
-                                });
+                                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {});
                             }
 
                             @Override
@@ -1482,38 +1476,6 @@ public class TapUIRoomListFragment extends Fragment {
 
     private TapCommonListener pinRoomListener(int position, String roomId) {
         return new TapCommonListener() {
-            @Override
-            public void onSuccess(String successMessage) {
-                super.onSuccess(successMessage);
-                ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
-                boolean isPinned = pinnedRooms.contains(roomId);
-                updatePinnedRooms(roomId, isPinned);
-                int targetIndex = pinnedRooms.size();
-                if (isPinned) {
-                    targetIndex = 0;
-                } else {
-                    if (pinnedRooms.size() < vm.getRoomList().size()) {
-                        for (int i = pinnedRooms.size(); i < vm.getRoomList().size(); i++) {
-                            if (vm.getRoomList().get(position).getLastMessage().getCreated() > vm.getRoomList().get(i).getLastMessage().getCreated()) {
-                                targetIndex = i;
-                                break;
-                            }
-                        }
-                    } else {
-                        targetIndex = vm.getRoomList().size() - 1;
-                    }
-                }
-                vm.getRoomList().add(targetIndex, vm.getRoomList().remove(position));
-                if (null != getActivity()) {
-                    int finalTargetIndex = targetIndex;
-                    getActivity().runOnUiThread(() -> {
-                        adapter.notifyItemMoved(position, finalTargetIndex);
-                        adapter.notifyItemChanged(finalTargetIndex);
-                        rvContactList.scrollToPosition(0);
-                    });
-                }
-            }
-
             @Override
             public void onError(String errorCode, String errorMessage) {
                 super.onError(errorCode, errorMessage);
