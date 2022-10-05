@@ -312,11 +312,10 @@ public class TapUIRoomListFragment extends Fragment {
                 super.onChatCleared(room);
                 activity.runOnUiThread(() -> {
                     int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
-                    if (index != -1) {
-                        updatePinnedRooms(room.getRoomID(), false);
-                        vm.getRoomList().remove(index);
-                        adapter.notifyItemRemoved(index);
-                    }
+                    updatePinnedRooms(room.getRoomID(), false);
+                    vm.getRoomList().remove(index);
+                    vm.getRoomPointer().remove(room.getRoomID());
+                    adapter.notifyItemRemoved(index);
                 });
             }
 
@@ -715,7 +714,7 @@ public class TapUIRoomListFragment extends Fragment {
                 if (LEAVE_ROOM.equals(message.getAction()) && vm.getMyUserID().equals(message.getUser().getUserID())) {
                     // Remove room from list
                     vm.getRoomList().remove(roomList);
-                    vm.getRoomPointer().remove(roomList.getLastMessage().getLocalID());
+                    vm.getRoomPointer().remove(roomList.getLastMessage().getRoom().getRoomID());
                     activity.runOnUiThread(() -> adapter.notifyItemRemoved(oldPos));
                 } else {
                     // Update room list's last message with the new message from socket
@@ -773,12 +772,11 @@ public class TapUIRoomListFragment extends Fragment {
             }
 
             int index;
-            if (TAPUtils.isSavedMessagesRoom(newRoomList.getLastMessage().getRoom().getRoomID(), instanceKey) ||
-                    vm.getRoomList().size() == 0 ||
-                    !TAPUtils.isSavedMessagesRoom(vm.getRoomList().get(0).getLastMessage().getRoom().getRoomID(), instanceKey)) {
-                index = 0;
+            if (!TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(messageRoomID)) {
+                vm.getRoomList().remove(newRoomList);
+                index = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().size();
             } else {
-                index = 1;
+                index = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().indexOf(messageRoomID);
             }
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(index, newRoomList);
@@ -1419,7 +1417,13 @@ public class TapUIRoomListFragment extends Fragment {
                                 super.onSuccess(successMessage);
                                 hideDeleteRoomLoading();
                                 updatePinnedRooms(roomId, false);
-                                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {});
+                                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
+                                    @Override
+                                    public void onSuccess(String successMessage) {
+                                        super.onSuccess(successMessage);
+
+                                    }
+                                });
                             }
 
                             @Override
@@ -1680,6 +1684,7 @@ public class TapUIRoomListFragment extends Fragment {
                                             activity.runOnUiThread(() -> {
                                                 int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID));
                                                 vm.getRoomList().remove(index);
+                                                vm.getRoomPointer().remove(roomID);
                                                 adapter.notifyItemRemoved(index);
                                             });
                                         }
