@@ -308,9 +308,7 @@ public class TAPChatManager {
                     TAPEmitModel<TAPUpdateRoomResponse> unpinRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
                     TAPUpdateRoomResponse unpinRoomData = unpinRoomEmit.getData();
                     String unpinnedRoomId = unpinRoomData.getRoom().getRoomID();
-                    ArrayList<String> pinnedRoomIds = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
-                    pinnedRoomIds.remove(unpinnedRoomId);
-                    TAPDataManager.getInstance(instanceKey).savePinnedRoomIDs(pinnedRoomIds);
+                    TAPDataManager.getInstance(instanceKey).removePinnedRoomID(unpinnedRoomId);
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         chatListener.onUnpinRoom(unpinRoomData.getRoom());
                     }
