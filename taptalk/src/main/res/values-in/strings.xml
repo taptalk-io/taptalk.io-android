@@ -450,5 +450,6 @@
     <string name="tap_until">until</string>
     <string name="tap_off">OFF</string>
     <string name="tap_loading_dots">Loading...</string>
+    <string name="tap_schedule_message">Schedule Message</string>
 
 </resources>

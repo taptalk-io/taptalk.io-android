@@ -1143,7 +1143,7 @@
             android:id="@+id/cl_forward"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:elevation="10dp"
+            android:elevation="9dp"
             android:visibility="gone"
             android:clickable="true"
             android:focusable="true"
@@ -1369,6 +1369,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history" />
+
+    <View
+        android:id="@+id/v_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="10dp"
+        android:background="@color/tapTransparentBlack1920" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_schedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="11dp"
+        app:cardBackgroundColor="@color/tapWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history">
+        
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/tap_ic_clock_grey"
+                app:tint="@color/tapColorPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tap_schedule_message"
+                style="@style/tapInfoLabelBodyStyle" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/g_schedule_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="v_screen, cv_schedule" />
 
     <include layout="@layout/tap_layout_popup_loading_screen" />
 

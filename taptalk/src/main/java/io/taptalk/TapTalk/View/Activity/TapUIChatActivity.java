@@ -386,6 +386,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TextView tvLinkContent;
     private ImageView ivCloseLink;
 
+    // Schedule Message
+    private CardView cvSchedule;
+    private View vScreen;
+    private Group gScheduleMessage;
+    private ImageView ivSchedule;
+
     private Handler linkHandler;
     private Runnable linkRunnable;
 
@@ -710,6 +716,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }
         }
+        if (gScheduleMessage.getVisibility() == View.VISIBLE) {
+            hideScheduleMessageButton();
+        }
     }
 
     @Override
@@ -994,6 +1003,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvLinkTitle = findViewById(R.id.tv_link_title);
         tvLinkContent = findViewById(R.id.tv_link_content);
         ivCloseLink = findViewById(R.id.iv_close_link);
+        cvSchedule = findViewById(R.id.cv_schedule);
+        vScreen = findViewById(R.id.v_screen);
+        gScheduleMessage = findViewById(R.id.g_schedule_message);
+        ivSchedule = findViewById(R.id.iv_schedule);
     }
 
     private boolean initViewModel() {
@@ -1254,6 +1267,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 pinnedMessageLayoutOnClick();
             }
         });
+        // TODO: 05/10/22 add tapUI case for schedule message MU
+        ivButtonSend.setOnLongClickListener(view -> {
+            showScheduleMessageButton();
+            return true;
+        });
+        vScreen.setOnClickListener(v -> hideScheduleMessageButton());
+        cvSchedule.setOnClickListener(v -> {
+            // TODO: 05/10/22 show time picker dialog MU
+        });
+        // TODO: 05/10/22 handle schedule message icon MU
+
 
         if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
@@ -2232,6 +2256,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             });
         }
+    }
+
+    private void showScheduleMessageButton() {
+        gScheduleMessage.setVisibility(View.VISIBLE);
+        hideKeyboards();
+    }
+
+    private void hideScheduleMessageButton() {
+        gScheduleMessage.setVisibility(View.GONE);
+        hideKeyboards();
     }
 
     private void pinnedMessageLayoutOnClick() {
@@ -4226,6 +4260,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
         }
         ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+        ivButtonSend.setEnabled(false);
     }
 
     private void setSendButtonEnabled() {
@@ -4235,6 +4270,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
         }
         ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+        ivButtonSend.setEnabled(true);
     }
 
     private void checkAndSearchUserMentionList() {
