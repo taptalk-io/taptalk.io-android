@@ -893,6 +893,18 @@
                 app:layout_goneMarginStart="16dp" />
 
             <ImageView
+                android:id="@+id/iv_schedule"
+                android:layout_width="24dp"
+                android:layout_height="32dp"
+                android:src="@drawable/tap_ic_clock_grey"
+                android:scaleType="centerInside"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="@id/iv_attach"
+                app:layout_constraintBottom_toBottomOf="@id/iv_attach"
+                app:layout_constraintEnd_toStartOf="@id/iv_attach"
+                app:tint="@color/tapIconChatComposerAttach" />
+
+            <ImageView
                 android:id="@+id/iv_attach"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
