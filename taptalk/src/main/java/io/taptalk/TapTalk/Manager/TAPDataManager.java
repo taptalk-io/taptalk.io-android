@@ -15,6 +15,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_CONTACT_LIST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_ROOM_MESSAGE_DELETE_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MUTED_ROOM_LIST;
@@ -22,6 +23,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_STARRED_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_UNREAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
@@ -98,6 +100,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
@@ -245,6 +248,7 @@ public class TAPDataManager {
         removeUnreadRoomIDs();
         removeMutedRoomIds();
         removePinnedRoomIDs();
+        removeStarredMessageIds();
     }
 
     /**
@@ -439,6 +443,18 @@ public class TAPDataManager {
     }
 
     /**
+     * LAST ROOM MESSAGE DELETE TIME
+     */
+
+    public void saveLastRoomMessageDeleteTime() {
+        Hawk.put(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, System.currentTimeMillis());
+    }
+
+    public Long getLastRoomMessageDeleteTime() {
+        return Hawk.get(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, null);
+    }
+
+    /**
      * NEWEST PINNED MESSAGE
      */
 
@@ -458,6 +474,7 @@ public class TAPDataManager {
             return newestPinnedMessages.get(roomID);
         } else return null;
     }
+
     /**
      * USER LAST ACTIVITY
      */
@@ -561,7 +578,7 @@ public class TAPDataManager {
     }
 
     public void removeUnreadRoomIDs() {
-        removePreference(instanceKey + K_UNREAD_ROOM_LIST);
+        removePreference(K_UNREAD_ROOM_LIST);
     }
 
     public HashMap<String, Long> getMutedRoomIDs() {
@@ -577,7 +594,7 @@ public class TAPDataManager {
     }
 
     public void removeMutedRoomIds() {
-        removePreference(instanceKey + K_MUTED_ROOM_LIST);
+        removePreference(K_MUTED_ROOM_LIST);
     }
 
     public ArrayList<String> getPinnedRoomIDs() {
@@ -593,9 +610,46 @@ public class TAPDataManager {
     }
 
     public void removePinnedRoomIDs() {
-        removePreference(instanceKey + K_PINNED_ROOM_LIST);
+        removePreference(K_PINNED_ROOM_LIST);
     }
 
+    public void removePinnedRoomID(String roomId) {
+        ArrayList<String> pinnedRoomIDs = getPinnedRoomIDs();
+        pinnedRoomIDs.remove(roomId);
+        savePinnedRoomIDs(pinnedRoomIDs);
+    }
+
+    /**
+     * STARRED MESSAGE
+     */
+
+    public void saveStarredMessageIds(String roomID, ArrayList<String> messageIds) {
+        HashMap<String, ArrayList<String>> starredMessageIdMap = Hawk.get(instanceKey + K_STARRED_MESSAGE, null);
+        if (starredMessageIdMap == null) {
+            starredMessageIdMap = new LinkedHashMap<>();
+        }
+        starredMessageIdMap.put(roomID, messageIds);
+        Hawk.put(instanceKey + K_STARRED_MESSAGE, starredMessageIdMap);
+    }
+
+    public ArrayList<String> getStarredMessageIds(String roomID) {
+        HashMap<String, ArrayList<String>> starredMessageIdMap = Hawk.get(instanceKey + K_STARRED_MESSAGE, null);
+        if (starredMessageIdMap != null) {
+            return starredMessageIdMap.get(roomID);
+        } else return null;
+    }
+
+    public void removeStarredMessageIds(String roomID) {
+        HashMap<String, ArrayList<String>> starredMessageIdMap = Hawk.get(instanceKey + K_STARRED_MESSAGE, null);
+        if (starredMessageIdMap != null) {
+            starredMessageIdMap.remove(roomID);
+            Hawk.put(instanceKey + K_STARRED_MESSAGE, starredMessageIdMap);
+        }
+    }
+
+    public void removeStarredMessageIds() {
+        removePreference(K_STARRED_MESSAGE);
+    }
 
     /**
      * MY COUNTRY CODE
@@ -1577,5 +1631,13 @@ public class TAPDataManager {
 
     public void unpinRoom(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
         TAPApiManager.getInstance(instanceKey).unpinRoom(roomIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void clearChat(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).clearChat(roomIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getRoomIdsWithState(TAPDefaultDataView<TapGetRoomIdsWithStateResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getRoomIdsWithState(new TAPDefaultSubscriber<>(view));
     }
 }

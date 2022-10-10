@@ -31,6 +31,11 @@ public class TAPDefaultConstant {
         public static final String kSocketAuthentication = "user/authentication";
         public static final String kSocketUserOnlineStatus = "user/status";
         public static final String kSocketUserUpdated = "user/updated";
+        public static final String kSocketClearChat = "room/clearChat";
+        public static final String kSocketMuteRoom = "room/mute";
+        public static final String kSocketUnmuteRoom = "room/unmute";
+        public static final String kSocketPinRoom = "room/pin";
+        public static final String kSocketUnpinRoom = "room/unpin";
     }
 
     public static final class RoomType {
@@ -462,6 +467,7 @@ public class TAPDefaultConstant {
     public static final String K_USER_ID = "kTAPUserID";
     public static final String K_RECIPIENT_ID = "kTAPRecipientID";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
+    public static final String K_LAST_ROOM_MESSAGE_DELETE_TIME = "kTAPLastRoomMessageDeleteTime";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
     public static final String K_GROUP_DATA_MAP = "kGroupDataMap";
@@ -476,6 +482,7 @@ public class TAPDefaultConstant {
     public static final String K_PINNED_MESSAGE = "kTAPPinnedMessage";
     public static final String K_MUTED_ROOM_LIST = "kTAPMutedRoomList";
     public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
+    public static final String K_STARRED_MESSAGE = "kTAPStarredMessage";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 

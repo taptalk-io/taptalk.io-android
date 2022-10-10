@@ -104,6 +104,9 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         private LinearLayout llPin;
         private TextView tvPin;
         private ImageView ivPinButton;
+        private LinearLayout llDelete;
+        private TextView tvDelete;
+        private ImageView ivDelete;
 
         RoomListVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -133,12 +136,15 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             llPin = itemView.findViewById(R.id.ll_pin);
             tvPin = itemView.findViewById(R.id.tv_pin);
             ivPinButton = itemView.findViewById(R.id.iv_pin_button);
+            llDelete = itemView.findViewById(R.id.ll_delete);
+            tvDelete = itemView.findViewById(R.id.tv_delete);
+            ivDelete = itemView.findViewById(R.id.iv_delete);
         }
 
         @Override
         protected void onBind(TAPRoomListModel item, int position) {
             TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
-            if (null == activeUser) {
+            if (null == activeUser || null == item) {
                 return;
             }
 
@@ -323,6 +329,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 }
             } else {
                 llPin.setVisibility(View.GONE);
+            }
+            
+            if (TapUI.getInstance(instanceKey).isDeleteRoomListSwipeMenuEnabled()) {
+                llDelete.setVisibility(View.VISIBLE);
+            } else {
+                llDelete.setVisibility(View.GONE);
             }
 
             // Change Status Message Icon

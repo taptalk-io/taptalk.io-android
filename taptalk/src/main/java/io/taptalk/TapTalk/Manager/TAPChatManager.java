@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -38,7 +39,10 @@ import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -66,12 +70,17 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketClearChat;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMuteRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketPinRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnmuteRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnpinRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
@@ -244,6 +253,64 @@ public class TAPChatManager {
                     TAPOnlineStatusModel onlineStatus = onlineStatusEmit.getData();
                     for (TAPChatListener listener : chatListenersCopy) {
                         listener.onUserOnlineStatusUpdate(onlineStatus);
+                    }
+                    break;
+                case kSocketClearChat:
+                    TAPEmitModel<TAPUpdateRoomResponse> clearChatEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse clearChatData = clearChatEmit.getData();
+                    String roomId = clearChatData.getRoom().getRoomID();
+                    TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
+                    TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
+                    TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomId);
+                    TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
+                        @Override
+                        public void onSuccess(String successMessage) {
+                            super.onSuccess(successMessage);
+                            for (TAPChatListener listener : chatListenersCopy) {
+                                listener.onChatCleared(clearChatData.getRoom());
+                            }
+                        }
+                    });
+                    break;
+                case kSocketMuteRoom:
+                case kSocketUnmuteRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> muteRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse muteRoomData = muteRoomEmit.getData();
+                    String mutedRoomId = muteRoomData.getRoom().getRoomID();
+                    Long expiredAt = muteRoomData.getExpiredAt();
+                    HashMap<String, Long> mutedRooms = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs();
+                    if (expiredAt != null) {
+                        // mute room
+                        mutedRooms.put(mutedRoomId, expiredAt);
+                    } else {
+                        // unmute room
+                        mutedRooms.remove(mutedRoomId);
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(mutedRooms);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onMuteOrUnmuteRoom(muteRoomData.getRoom(), expiredAt);
+                    }
+                    break;
+                case kSocketPinRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> pinRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse pinRoomData = pinRoomEmit.getData();
+                    String pinnedRoomId = pinRoomData.getRoom().getRoomID();
+                    ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                    if (!pinnedRooms.contains(pinnedRoomId)) {
+                        pinnedRooms.add(0, pinnedRoomId);
+                    }
+                    TAPDataManager.getInstance(instanceKey).savePinnedRoomIDs(pinnedRooms);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onPinRoom(pinRoomData.getRoom());
+                    }
+                    break;
+                case kSocketUnpinRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> unpinRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse unpinRoomData = unpinRoomEmit.getData();
+                    String unpinnedRoomId = unpinRoomData.getRoom().getRoomID();
+                    TAPDataManager.getInstance(instanceKey).removePinnedRoomID(unpinnedRoomId);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onUnpinRoom(unpinRoomData.getRoom());
                     }
                     break;
             }
@@ -2303,6 +2370,10 @@ public class TAPChatManager {
         TapUI.getInstance(instanceKey).triggerChatProfileReportGroupButtonTapped(activity, room);
     }
 
+    public void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
+        TapUI.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(activity, room);
+    }
+
     public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
         return TapUI.getInstance(instanceKey).getCustomKeyboardItems(room, activeUser, recipientUser);
     }
@@ -2317,6 +2388,14 @@ public class TAPChatManager {
 
     public void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         TapUI.getInstance(instanceKey).triggerProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
+    }
+
+    public void triggerSavedMessageBubbleArrowTapped(TAPMessageModel message) {
+        TapUI.getInstance(instanceKey).triggerSavedMessageBubbleArrowTapped(message);
+    }
+
+    public void triggerPinnedMessageTapped(TAPMessageModel message) {
+        TapUI.getInstance(instanceKey).triggerPinnedMessageTapped(message);
     }
 
     public String getRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {

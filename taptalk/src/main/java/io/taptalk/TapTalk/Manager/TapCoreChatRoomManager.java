@@ -20,6 +20,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
@@ -708,5 +709,43 @@ public class TapCoreChatRoomManager {
         if (null != listener) {
             listener.onSuccess(room);
         }
+    }
+
+    public void deleteAllChatRoomMessages(List<String> roomIDs, TapCommonListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPDataManager.getInstance(instanceKey).clearChat(roomIDs, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetUnreadRoomIdsResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    listener.onSuccess("Messages deleted.");
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void deleteAllChatRoomMessages(String roomID, TapCommonListener listener) {
+        List<String> roomIds = new ArrayList<>();
+        roomIds.add(roomID);
+        deleteAllChatRoomMessages(roomIds, listener);
     }
 }

@@ -67,8 +67,6 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapCoreGetMutedChatRoomListener;
-import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -79,12 +77,14 @@ import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -305,6 +305,76 @@ public class TapUIRoomListFragment extends Fragment {
             @Override
             public void onReceiveStopTyping(TAPTypingModel typingModel) {
                 showTypingIndicator(typingModel, false);
+            }
+
+            @Override
+            public void onChatCleared(TAPRoomModel room) {
+                super.onChatCleared(room);
+                activity.runOnUiThread(() -> {
+                    int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
+                    updatePinnedRooms(room.getRoomID(), false);
+                    vm.getRoomList().remove(index);
+                    vm.getRoomPointer().remove(room.getRoomID());
+                    adapter.notifyItemRemoved(index);
+                });
+            }
+
+            @Override
+            public void onMuteOrUnmuteRoom(TAPRoomModel room, Long expiredAt) {
+                super.onMuteOrUnmuteRoom(room, expiredAt);
+                String roomId = room.getRoomID();
+                boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(roomId);
+                updateMutedRooms(roomId, isMuted);
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomId))));
+                }
+            }
+
+            @Override
+            public void onPinRoom(TAPRoomModel room) {
+                super.onPinRoom(room);
+                ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                boolean isPinned = pinnedRooms.contains(room.getRoomID());
+                updatePinnedRooms(room.getRoomID(), isPinned);
+                int targetIndex = 0;
+                int position = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
+                vm.getRoomList().add(targetIndex, vm.getRoomList().remove(position));
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(() -> {
+                        adapter.notifyItemMoved(position, targetIndex);
+                        adapter.notifyItemChanged(targetIndex);
+                        rvContactList.scrollToPosition(0);
+                    });
+                }
+            }
+
+            @Override
+            public void onUnpinRoom(TAPRoomModel room) {
+                super.onUnpinRoom(room);
+                ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                boolean isPinned = pinnedRooms.contains(room.getRoomID());
+                updatePinnedRooms(room.getRoomID(), isPinned);
+                int targetIndex = pinnedRooms.size();
+                int position = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
+                if (pinnedRooms.size() + 1 < vm.getRoomList().size()) {
+                    for (int i = pinnedRooms.size() + 1; i < vm.getRoomList().size(); i++) {
+                        if (vm.getRoomList().get(position).getLastMessage().getCreated() > vm.getRoomList().get(i).getLastMessage().getCreated()) {
+                            targetIndex = i - 1;
+                            break;
+                        }
+                    }
+                } else {
+                    targetIndex = vm.getRoomList().size() - 1;
+                }
+                vm.getRoomList().add(targetIndex, vm.getRoomList().remove(position));
+                if (null != getActivity()) {
+                    int finalTargetIndex = targetIndex;
+                    getActivity().runOnUiThread(() -> {
+                        adapter.notifyItemMoved(position, finalTargetIndex);
+                        adapter.notifyItemChanged(finalTargetIndex);
+                        rvContactList.scrollToPosition(0);
+                    });
+                }
             }
         };
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
@@ -644,7 +714,7 @@ public class TapUIRoomListFragment extends Fragment {
                 if (LEAVE_ROOM.equals(message.getAction()) && vm.getMyUserID().equals(message.getUser().getUserID())) {
                     // Remove room from list
                     vm.getRoomList().remove(roomList);
-                    vm.getRoomPointer().remove(roomList.getLastMessage().getLocalID());
+                    vm.getRoomPointer().remove(roomList.getLastMessage().getRoom().getRoomID());
                     activity.runOnUiThread(() -> adapter.notifyItemRemoved(oldPos));
                 } else {
                     // Update room list's last message with the new message from socket
@@ -702,12 +772,11 @@ public class TapUIRoomListFragment extends Fragment {
             }
 
             int index;
-            if (TAPUtils.isSavedMessagesRoom(newRoomList.getLastMessage().getRoom().getRoomID(), instanceKey) ||
-                    vm.getRoomList().size() == 0 ||
-                    !TAPUtils.isSavedMessagesRoom(vm.getRoomList().get(0).getLastMessage().getRoom().getRoomID(), instanceKey)) {
-                index = 0;
+            if (!TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(messageRoomID)) {
+                vm.getRoomList().remove(newRoomList);
+                index = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().size();
             } else {
-                index = 1;
+                index = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().indexOf(messageRoomID);
             }
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(index, newRoomList);
@@ -863,6 +932,33 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
+    private void showDeleteRoomLoading() {
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(null);
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSettingUp));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconLoadingProgressPrimary));
+            tvSetupChat.setText(R.string.tap_deleting_conversation_dots);
+            tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
+            TAPUtils.rotateAnimateInfinitely(activity, ivSetupChatLoading);
+
+            tvSetupChatDescription.setVisibility(View.VISIBLE);
+            llRetrySetup.setVisibility(View.GONE);
+            flSetupContainer.setVisibility(View.VISIBLE);
+
+            llRetrySetup.setOnClickListener(null);
+
+            hideNewChatButton();
+        });
+    }
+
+    private void hideDeleteRoomLoading() {
+        activity.runOnUiThread(() -> {
+            showNewChatButton();
+            flSetupContainer.setVisibility(View.GONE);
+        });
+    }
+
     private void showChatRoomSetupSuccess() {
         if (!TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
             return;
@@ -914,49 +1010,76 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
-    private void getUnreadRoomList() {
-        TapCoreRoomListManager.getInstance(instanceKey).getMarkedAsUnreadChatRoomList(new TapCoreGetStringArrayListener() {
+    private void getRoomIdsWithState(boolean isHandleDeleteRoomEnabled) {
+        TAPDataManager.getInstance(instanceKey).getRoomIdsWithState(new TAPDefaultDataView<>() {
             @Override
-            public void onSuccess(@NonNull ArrayList<String> arrayList) {
-                for(String id : arrayList) {
-                    updateRoomUnreadMark(id, true);
-                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(id)));
+            public void onSuccess(TapGetRoomIdsWithStateResponse response) {
+                super.onSuccess(response);
+                if (response.getUnreadRoomIDs() != null) {
+                    for (String id : response.getUnreadRoomIDs()) {
+                        updateRoomUnreadMark(id, true);
+                        activity.runOnUiThread(() -> {
+                            adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(id)));
+                        });
+                    }
+                    calculateBadgeCount();
                 }
+                if (response.getMutedRooms() != null) {
+                    HashMap<String, Long> mutedRooms = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs();
+                    for (TapMutedRoomListModel mutedRoom : response.getMutedRooms()) {
+                        mutedRooms.put(mutedRoom.getRoomID(), mutedRoom.getExpiredAt());
+                        updateMutedRooms(mutedRoom.getRoomID(), true);
+                        activity.runOnUiThread(() -> {
+                            adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(mutedRoom.getRoomID())));
+                        });
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(mutedRooms);
+                }
+                if (response.getPinnedRoomIDs() != null) {
+                    TAPDataManager.getInstance(instanceKey).savePinnedRoomIDs(new ArrayList<>(response.getPinnedRoomIDs()));
+                    for (String pinnedRoom : response.getPinnedRoomIDs()) {
+                        updatePinnedRooms(pinnedRoom, true);
+                        activity.runOnUiThread(() -> {
+                            adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(pinnedRoom)));
+                        });
+                    }
+                }
+                if (isHandleDeleteRoomEnabled) {
+                    if (response.getClearedRooms() != null) {
+                        new Thread(() -> {
+                            for (TapMutedRoomListModel clearedRoom : response.getClearedRooms()) {
+                                if (clearedRoom.getExpiredAt() != null && TAPDataManager.getInstance(instanceKey).getLastRoomMessageDeleteTime() < clearedRoom.getExpiredAt()) {
+                                    TAPDataManager.getInstance(instanceKey).getRoomMediaMessageBeforeTimestamp(clearedRoom.getRoomID(), clearedRoom.getExpiredAt(), new TAPDatabaseListener<>() {
+                                        @Override
+                                        public void onSelectFinished(List<TAPMessageEntity> entities) {
+                                            super.onSelectFinished(entities);
+                                            for (TAPMessageEntity message : entities) {
+                                                TAPDataManager.getInstance(instanceKey).deletePhysicalFile(message);
+                                            }
+                                            TAPDataManager.getInstance(instanceKey).deleteRoomMessageBeforeTimestamp(clearedRoom.getRoomID(), clearedRoom.getExpiredAt(), new TAPDatabaseListener<TAPMessageEntity>() {
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                            TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
+                        }).start();
+                    }
+                } else {
+                    TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
                 calculateBadgeCount();
             }
 
             @Override
-            public void onError(@org.jetbrains.annotations.Nullable String errorCode, @org.jetbrains.annotations.Nullable String errorMessage) {
-                super.onError(errorCode, errorMessage);
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
                 calculateBadgeCount();
-            }
-        });
-    }
-
-    private void getMutedRoomList() {
-        TapCoreRoomListManager.getInstance(instanceKey).getMutedChatRoomList(new TapCoreGetMutedChatRoomListener() {
-            @Override
-            public void onSuccess(@NonNull ArrayList<TapMutedRoomListModel> mutedRoomList) {
-                super.onSuccess(mutedRoomList);
-                for (TapMutedRoomListModel mutedRoom : mutedRoomList) {
-                    boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(mutedRoom.getRoomID());
-                    updateMutedRooms(mutedRoom.getRoomID(), isMuted);
-                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(mutedRoom.getRoomID())));
-                }
-            }
-        });
-    }
-
-    private void getPinnedRoomList() {
-        TapCoreRoomListManager.getInstance(instanceKey).getPinnedChatRoomIDs(new TapCoreGetStringArrayListener() {
-            @Override
-            public void onSuccess(@NonNull ArrayList<String> pinnedRoomList) {
-                super.onSuccess(pinnedRoomList);
-                for (String pinnedRoom : pinnedRoomList) {
-                    boolean isPinned = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(pinnedRoom);
-                    updatePinnedRooms(pinnedRoom, isPinned);
-                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(pinnedRoom)));
-                }
             }
         });
     }
@@ -1056,9 +1179,7 @@ public class TapUIRoomListFragment extends Fragment {
 
             vm.setFetchingMessageListAndUnread(false);
 
-            getUnreadRoomList();
-            getMutedRoomList();
-            getPinnedRoomList();
+            getRoomIdsWithState(true);
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
@@ -1149,9 +1270,7 @@ public class TapUIRoomListFragment extends Fragment {
             }
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
-            getUnreadRoomList();
-            getMutedRoomList();
-            getPinnedRoomList();
+            getRoomIdsWithState(false);
         }
 
         @Override
@@ -1270,6 +1389,55 @@ public class TapUIRoomListFragment extends Fragment {
                 TapCoreRoomListManager.getInstance(instanceKey).pinChatRoom(roomId, pinRoomListener(position, roomId));
             }
         }
+
+        @Override
+        public void onDeleteItem(int position) {
+            TAPRoomListModel room = vm.getRoomList().get(position);
+            String roomId = room.getLastMessage().getRoom().getRoomID();
+            String title;
+            String message;
+            if (TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(roomId)) {
+                title = getString(R.string.tap_unpin_and_delete_chat);
+                message = getString(R.string.tap_sure_unpin_delete_conversation);
+            } else {
+                title = getString(R.string.tap_delete_chat);
+                message = getString(R.string.tap_sure_delete_conversation);
+            }
+            new TapTalkDialog(new TapTalkDialog.Builder(activity)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setCancelable(false)
+                    .setPrimaryButtonTitle(getString(R.string.tap_delete_for_me))
+                    .setPrimaryButtonListener(v -> {
+                        showDeleteRoomLoading();
+                        TapCoreChatRoomManager.getInstance(instanceKey).deleteAllChatRoomMessages(roomId, new TapCommonListener() {
+                            @Override
+                            public void onSuccess(String successMessage) {
+                                super.onSuccess(successMessage);
+                                hideDeleteRoomLoading();
+                                updatePinnedRooms(roomId, false);
+                                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {});
+                            }
+
+                            @Override
+                            public void onError(String errorCode, String errorMessage) {
+                                super.onError(errorCode, errorMessage);
+                                hideDeleteRoomLoading();
+                                new TapTalkDialog(new TapTalkDialog.Builder(activity)
+                                        .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                                        .setTitle(getString(R.string.tap_fail_delete_chatroom))
+                                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                        .setPrimaryButtonListener(v -> {})
+                                        .setCancelable(false))
+                                        .show();
+                            }
+                        });
+                    })
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setSecondaryButtonListener(v -> {}))
+                    .show();
+        }
     };
 
     TAPGeneralListener<TapMutedRoomListModel> muteListener = new TAPGeneralListener<>() {
@@ -1308,38 +1476,6 @@ public class TapUIRoomListFragment extends Fragment {
 
     private TapCommonListener pinRoomListener(int position, String roomId) {
         return new TapCommonListener() {
-            @Override
-            public void onSuccess(String successMessage) {
-                super.onSuccess(successMessage);
-                ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
-                boolean isPinned = pinnedRooms.contains(roomId);
-                updatePinnedRooms(roomId, isPinned);
-                int targetIndex = pinnedRooms.size();
-                if (isPinned) {
-                    targetIndex = 0;
-                } else {
-                    if (pinnedRooms.size() < vm.getRoomList().size()) {
-                        for (int i = pinnedRooms.size(); i < vm.getRoomList().size(); i++) {
-                            if (vm.getRoomList().get(position).getLastMessage().getCreated() > vm.getRoomList().get(i).getLastMessage().getCreated()) {
-                                targetIndex = i;
-                                break;
-                            }
-                        }
-                    } else {
-                        targetIndex = vm.getRoomList().size() - 1;
-                    }
-                }
-                vm.getRoomList().add(targetIndex, vm.getRoomList().remove(position));
-                if (null != getActivity()) {
-                    int finalTargetIndex = targetIndex;
-                    getActivity().runOnUiThread(() -> {
-                        adapter.notifyItemMoved(position, finalTargetIndex);
-                        adapter.notifyItemChanged(finalTargetIndex);
-                        rvContactList.scrollToPosition(0);
-                    });
-                }
-            }
-
             @Override
             public void onError(String errorCode, String errorMessage) {
                 super.onError(errorCode, errorMessage);
@@ -1510,6 +1646,7 @@ public class TapUIRoomListFragment extends Fragment {
                                             activity.runOnUiThread(() -> {
                                                 int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID));
                                                 vm.getRoomList().remove(index);
+                                                vm.getRoomPointer().remove(roomID);
                                                 adapter.notifyItemRemoved(index);
                                             });
                                         }
