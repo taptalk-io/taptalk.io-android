@@ -11,10 +11,12 @@ import kotlinx.android.synthetic.main.tap_fragment_time_picker_bottom_sheet.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
 
 class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var currentDate : Date
+    private lateinit var currentCal : Calendar
     private val sdf = SimpleDateFormat("E dd MMM", Locale.getDefault())
     private val resultSdf = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
     private val dates = arrayOfNulls<String>(365)
@@ -33,9 +35,19 @@ class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         currentDate = Date()
-        dates[0] = getString(R.string.tap_today)
+        currentCal = Calendar.getInstance()
+        val currentHour = currentCal.get(Calendar.HOUR_OF_DAY)
+        val currentMinute = currentCal.get(Calendar.MINUTE)
+        val increment = if (currentHour == 23 && currentMinute == 59) {
+            val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(1)))
+            dates[0] = sdf.format(date)
+            1
+        } else {
+            dates[0] = getString(R.string.tap_today)
+            0
+        }
         for (i in 1 until 365) {
-            val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(i.toLong())))
+            val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(i + increment.toLong())))
             dates[i] = sdf.format(date)
         }
     }
@@ -59,26 +71,25 @@ class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
         np_date.setOnValueChangedListener { numberPicker, i, i2 ->
             btn_send.text = getTimeResult()
         }
-        // TODO: set date value MU
 
         np_hour.displayedValues = null
         np_hour.minValue = hours[0].toInt()
         np_hour.maxValue = hours[hours.size-1].toInt()
         np_hour.displayedValues = hours
+        np_hour.value = currentCal.get(Calendar.HOUR_OF_DAY)
         np_hour.setOnValueChangedListener { numberPicker, i, i2 ->
             btn_send.text = getTimeResult()
         }
-        // TODO: set hour value MU
         // TODO: handle if date less than current MU
 
         np_minute.displayedValues = null
         np_minute.minValue = minutes[0].toInt()
         np_minute.maxValue = minutes[minutes.size-1].toInt()
         np_minute.displayedValues = minutes
+        np_minute.value = currentCal.get(Calendar.MINUTE) + 1
         np_minute.setOnValueChangedListener { numberPicker, i, i2 ->
             btn_send.text = getTimeResult()
         }
-        // TODO: set minute value MU
         // TODO: handle if date less than current MU
 
         tv_cancel_btn.setOnClickListener {
