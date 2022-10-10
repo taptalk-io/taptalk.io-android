@@ -11,7 +11,6 @@ import kotlinx.android.synthetic.main.tap_fragment_time_picker_bottom_sheet.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.HashMap
 
 class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
 
@@ -19,6 +18,7 @@ class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var currentCal : Calendar
     private val sdf = SimpleDateFormat("E dd MMM", Locale.getDefault())
     private val resultSdf = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+    private val fullSdf = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
     private val dates = arrayOfNulls<String>(365)
     private val hours = arrayOf(
         "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",
@@ -68,7 +68,8 @@ class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
         np_date.maxValue = dates.size - 1
         np_date.wrapSelectorWheel = false
         np_date.displayedValues = dates
-        np_date.setOnValueChangedListener { numberPicker, i, i2 ->
+        np_date.setOnValueChangedListener { _, _, _ ->
+            checkTimeValue()
             btn_send.text = getTimeResult()
         }
 
@@ -77,20 +78,20 @@ class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
         np_hour.maxValue = hours[hours.size-1].toInt()
         np_hour.displayedValues = hours
         np_hour.value = currentCal.get(Calendar.HOUR_OF_DAY)
-        np_hour.setOnValueChangedListener { numberPicker, i, i2 ->
+        np_hour.setOnValueChangedListener { _, _, _ ->
+            checkTimeValue()
             btn_send.text = getTimeResult()
         }
-        // TODO: handle if date less than current MU
 
         np_minute.displayedValues = null
         np_minute.minValue = minutes[0].toInt()
         np_minute.maxValue = minutes[minutes.size-1].toInt()
         np_minute.displayedValues = minutes
         np_minute.value = currentCal.get(Calendar.MINUTE) + 1
-        np_minute.setOnValueChangedListener { numberPicker, i, i2 ->
+        np_minute.setOnValueChangedListener { _, _, _ ->
+            checkTimeValue()
             btn_send.text = getTimeResult()
         }
-        // TODO: handle if date less than current MU
 
         tv_cancel_btn.setOnClickListener {
             dismiss()
@@ -109,5 +110,20 @@ class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
     private fun getTimeResult(): String {
         val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(np_date.value.toLong())))
         return "Send on ${resultSdf.format(date)} at ${hours[np_hour.value]}:${minutes[ np_minute.value]}"
+    }
+
+    private fun checkTimeValue() {
+        val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(np_date.value.toLong())))
+        val shownTime = "${resultSdf.format(date)} ${hours[np_hour.value]}:${minutes[np_minute.value]}"
+        val shownDate = fullSdf.parse(shownTime)
+        if (shownDate != null) {
+            if (shownDate.time < System.currentTimeMillis()) {
+                // time less than current, reset value
+                currentCal = Calendar.getInstance()
+                np_date.value = 0
+                np_hour.value = currentCal.get(Calendar.HOUR_OF_DAY)
+                np_minute.value = currentCal.get(Calendar.MINUTE) + 1
+            }
+        }
     }
 }
