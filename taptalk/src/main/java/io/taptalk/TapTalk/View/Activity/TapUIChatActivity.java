@@ -262,6 +262,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
+import io.taptalk.TapTalk.View.BottomSheet.TapTimePickerBottomSheetFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import rx.Observable;
@@ -1274,7 +1275,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
         vScreen.setOnClickListener(v -> hideScheduleMessageButton());
         cvSchedule.setOnClickListener(v -> {
-            // TODO: 05/10/22 show time picker dialog MU
+            hideScheduleMessageButton();
+            TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment();
+            timePicker.show(getSupportFragmentManager(), "");
         });
         // TODO: 05/10/22 handle schedule message icon MU
 
