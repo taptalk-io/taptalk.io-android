@@ -138,6 +138,10 @@
             android:name="io.taptalk.TapTalk.View.Activity.TapSharedMediaActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TapScheduledMessageActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
