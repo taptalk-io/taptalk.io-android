@@ -12,9 +12,9 @@
         style="@style/tapDeletedChatRoomInfoContentStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:padding="12dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        android:padding="14dp"
         android:text="@string/tap_cancel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -89,8 +89,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="28dp"
-        style="@style/tapButtonLabelStyle"
-        android:background="@drawable/tap_bg_rounded_primary_8dp"
+        style="@style/tapPrimaryButtonStyle"
         tools:text="@string/tap_send"
         app:layout_constraintTop_toBottomOf="@id/np_date"
         app:layout_constraintBottom_toBottomOf="parent" />

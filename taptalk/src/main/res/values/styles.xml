@@ -122,6 +122,15 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="tapPrimaryButtonStyle" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@drawable/tap_bg_rounded_primary_8dp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/tapButtonLabelColor</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="tapButtonInactiveLabelStyle" parent="tapFontFamilyBold">
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/tapButtonInactiveLabelColor</item>
