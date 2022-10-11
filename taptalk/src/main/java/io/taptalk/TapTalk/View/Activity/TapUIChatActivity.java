@@ -1279,7 +1279,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
         // TODO: 05/10/22 add tapUI case for schedule message MU
         ivButtonSend.setOnLongClickListener(view -> {
-            showScheduleMessageButton();
+            if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+                showScheduleMessageButton();
+            }
             return true;
         });
         vScreen.setOnClickListener(v -> hideScheduleMessageButton());
@@ -1294,7 +1296,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             });
             timePicker.show(getSupportFragmentManager(), "");
         });
-        ivSchedule.setOnClickListener(v -> TapScheduledMessageActivity.Companion.start(this, instanceKey, vm.getRoom()));
+        // TODO: 11/10/22 handle tapUI for scheduled message icon appearance MU
+        ivSchedule.setOnClickListener(v ->  {
+            if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+                TapScheduledMessageActivity.Companion.start(this, instanceKey, vm.getRoom());
+            }
+        });
 
 
         if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
