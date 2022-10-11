@@ -1417,7 +1417,6 @@ public class TapUIRoomListFragment extends Fragment {
                                 super.onSuccess(successMessage);
                                 hideDeleteRoomLoading();
                                 updatePinnedRooms(roomId, false);
-                                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {});
                             }
 
                             @Override

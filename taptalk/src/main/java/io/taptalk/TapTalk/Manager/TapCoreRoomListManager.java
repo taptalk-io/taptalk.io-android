@@ -404,10 +404,10 @@ public class TapCoreRoomListManager {
                     TAPDataManager.getInstance(instanceKey).getMessageRoomListAndUnread(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetRoomListResponse>() {
                         @Override
                         public void onSuccess(TAPGetRoomListResponse response) {
+                            List<String> userIds = new ArrayList<>();
                             if (response.getMessages().size() > 0) {
                                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
                                 List<TAPMessageModel> deliveredMessages = new ArrayList<>();
-                                List<String> userIds = new ArrayList<>();
                                 List<TAPUserModel> userModels = new ArrayList<>();
                                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                                     try {

@@ -5817,17 +5817,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         public void onSuccess(String successMessage) {
                             super.onSuccess(successMessage);
                             hideDeleteRoomLoading();
-                            TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
-                            TAPDataManager.getInstance(instanceKey).removePinnedRoomID(vm.getRoom().getRoomID());
-                            TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(vm.getRoom().getRoomID());
-                            TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(vm.getRoom().getRoomID(), new TapCommonListener() {
-                                @Override
-                                public void onSuccess(String successMessage) {
-                                    super.onSuccess(successMessage);
-                                    vm.setDeleteGroup(true);
-                                    closeActivity();
-                                }
-                            });
+                            vm.setDeleteGroup(true);
+                            closeActivity();
                         }
 
                         @Override

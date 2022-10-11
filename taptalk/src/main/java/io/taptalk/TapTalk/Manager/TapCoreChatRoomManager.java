@@ -711,20 +711,36 @@ public class TapCoreChatRoomManager {
         }
     }
 
-    public void deleteAllChatRoomMessages(List<String> roomIDs, TapCommonListener listener) {
+    public void deleteAllChatRoomMessages(String roomID, TapCommonListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
             return;
         }
+        List<String> roomIDs = new ArrayList<>();
+        roomIDs.add(roomID);
         TAPDataManager.getInstance(instanceKey).clearChat(roomIDs, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
-                super.onSuccess(response);
-                if (null != listener) {
-                    listener.onSuccess("Messages deleted.");
-                }
+                TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomID, new TapCommonListener() {
+                    @Override
+                    public void onSuccess(String successMessage) {
+                        TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
+                        TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomID);
+                        TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomID);
+                        if (null != listener) {
+                            listener.onSuccess("Successfully deleted chat room messages.");
+                        }
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        if (null != listener) {
+                            listener.onError(errorCode, errorMessage);
+                        }
+                    }
+                });
             }
 
             @Override
@@ -741,11 +757,5 @@ public class TapCoreChatRoomManager {
                 }
             }
         });
-    }
-
-    public void deleteAllChatRoomMessages(String roomID, TapCommonListener listener) {
-        List<String> roomIds = new ArrayList<>();
-        roomIds.add(roomID);
-        deleteAllChatRoomMessages(roomIds, listener);
     }
 }
