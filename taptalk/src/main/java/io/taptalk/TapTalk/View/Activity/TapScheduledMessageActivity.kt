@@ -1350,14 +1350,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             runOnUiThread {
                 // Remove empty chat layout if still shown
                 if (null == newMessage.isHidden || !newMessage.isHidden!!) {
-                    if (TAPUtils.isSavedMessagesRoom(
-                            vm.room.roomID,
-                            instanceKey
-                        ) && cv_empty_saved_message.getVisibility() == View.VISIBLE
-                    ) {
-                        cv_empty_saved_message.setVisibility(View.GONE)
-                    } else if (cl_empty_chat.getVisibility() == View.VISIBLE) {
-                        cl_empty_chat.setVisibility(View.GONE)
+                     if (ll_empty_scheduled_message.visibility == View.VISIBLE) {
+                         ll_empty_scheduled_message.visibility = View.GONE
                     }
                     showMessageList()
                 }
@@ -1427,14 +1421,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             runOnUiThread {
                 // Remove empty chat layout if still shown
                 if (null == newMessage.isHidden || !newMessage.isHidden!!) {
-                    if (TAPUtils.isSavedMessagesRoom(
-                            vm.room.roomID,
-                            instanceKey
-                        ) && cv_empty_saved_message.getVisibility() == View.VISIBLE
-                    ) {
-                        cv_empty_saved_message.setVisibility(View.GONE)
-                    } else if (cl_empty_chat.getVisibility() == View.VISIBLE) {
-                        cl_empty_chat.setVisibility(View.GONE)
+                    if (ll_empty_scheduled_message.visibility == View.VISIBLE) {
+                        ll_empty_scheduled_message.visibility = View.GONE
                     }
                     showMessageList()
                 }
