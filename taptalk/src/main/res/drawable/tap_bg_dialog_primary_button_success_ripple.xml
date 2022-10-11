@@ -3,5 +3,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:color="@color/tapTransparentBlack10"
     tools:targetApi="lollipop">
-    <item android:drawable="@drawable/tap_bg_dialog_primary_button_success" />
+    <item android:drawable="@drawable/tap_bg_rounded_primary_8dp" />
 </ripple>

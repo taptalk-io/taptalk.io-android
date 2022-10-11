@@ -153,6 +153,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -243,6 +244,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
@@ -284,6 +286,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private FrameLayout flRoomUnavailable;
     private FrameLayout flLoading;
     private LinearLayout llButtonDeleteChat;
+    private TextView tvDeleteChat;
+    private ImageView ivDelete;
+    private ProgressBar pbDelete;
     private ConstraintLayout clContainer;
     private ConstraintLayout clContactAction;
     private ConstraintLayout clUnreadButton;
@@ -532,6 +537,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 super.onSuccess(arrayList);
                 isStarredIdsLoaded = true;
                 vm.setStarredMessageIds(arrayList);
+                TAPDataManager.getInstance(instanceKey).saveStarredMessageIds(vm.getRoom().getRoomID(), arrayList);
                 messageAdapter.setStarredMessageIds(arrayList);
                 if (isPinnedIdsLoaded) {
                     messageAdapter.notifyDataSetChanged();
@@ -921,6 +927,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flRoomUnavailable = (FrameLayout) findViewById(R.id.fl_room_unavailable);
         flLoading = (FrameLayout) findViewById(R.id.fl_loading);
         llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
+        tvDeleteChat = findViewById(R.id.tv_delete);
+        ivDelete = findViewById(R.id.iv_delete);
+        pbDelete = findViewById(R.id.pb_delete);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
@@ -1125,6 +1134,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 e.printStackTrace();
             }
         }
+        vm.setStarredMessageIds(TAPDataManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID()));
 
         // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm);
@@ -1261,9 +1271,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flLoading.setOnClickListener(v -> {
         });
         ivForward.setOnClickListener(v -> forwardMessages());
-        ibPinnedMessages.setOnClickListener(v -> {
-            new TapPinnedMessagesActivity().start(this, instanceKey, vm.getRoom());
-        });
+        ibPinnedMessages.setOnClickListener(v -> TapPinnedMessagesActivity.Companion.start(this, instanceKey, vm.getRoom()));
         clPinnedMessage.setOnClickListener(v -> {
             if (!isLoadPinnedMessages) {
                 pinnedMessageLayoutOnClick();
@@ -1765,6 +1773,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             super.onArrowButtonClicked(message);
             if (!isArrowButtonTapped) {
                 if (message.getForwardFrom() != null) {
+                    TAPChatManager.getInstance(instanceKey).triggerSavedMessageBubbleArrowTapped(message);
                     isArrowButtonTapped = true;
                     String roomId = message.getForwardFrom().getRoomID();
                     String localId = message.getForwardFrom().getLocalID();
@@ -2927,6 +2936,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TapCoreMessageManager.getInstance(instanceKey).starMessage(message.getRoom().getRoomID(), messageId);
                 vm.addStarredMessageId(messageId);
             }
+            TAPDataManager.getInstance(instanceKey).saveStarredMessageIds(vm.getRoom().getRoomID(), vm.getStarredMessageIds());
             messageAdapter.setStarredMessageIds(vm.getStarredMessageIds());
             if (vm.getMessagePointer().containsKey(message.getLocalID())) {
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
@@ -3252,6 +3262,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
             if (null != llButtonDeleteChat) {
                 llButtonDeleteChat.setOnClickListener(llDeleteGroupClickListener);
+            }
+            if (null != tvDeleteChat) {
+                if (TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(vm.getRoom().getRoomID())) {
+                    tvDeleteChat.setText(R.string.tap_unpin_and_delete_chat);
+                }
             }
         });
     }
@@ -5825,20 +5840,65 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     };
 
-    private View.OnClickListener llDeleteGroupClickListener = v -> TAPOldDataManager.getInstance(instanceKey).cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
-        @Override
-        public void onDeleteFinished() {
-            super.onDeleteFinished();
-            TAPDataManager.getInstance(instanceKey).deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
-                @Override
-                public void onDeleteFinished() {
-                    super.onDeleteFinished();
-                    vm.setDeleteGroup(true);
-                    closeActivity();
-                }
-            });
+    private View.OnClickListener llDeleteGroupClickListener = v ->  {
+        String title;
+        String message;
+        if (TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(vm.getRoom().getRoomID())) {
+            title = getString(R.string.tap_unpin_and_delete_chat);
+            message = getString(R.string.tap_sure_unpin_delete_conversation);
+        } else {
+            title = getString(R.string.tap_delete_chat);
+            message = getString(R.string.tap_sure_delete_conversation);
         }
-    });
+        new TapTalkDialog(new TapTalkDialog.Builder(this)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_delete_for_me))
+                .setPrimaryButtonListener(view -> {
+                    showDeleteRoomLoading();
+                    TapCoreChatRoomManager.getInstance(instanceKey).deleteAllChatRoomMessages(vm.getRoom().getRoomID(), new TapCommonListener() {
+                        @Override
+                        public void onSuccess(String successMessage) {
+                            super.onSuccess(successMessage);
+                            hideDeleteRoomLoading();
+                            vm.setDeleteGroup(true);
+                            closeActivity();
+                        }
+
+                        @Override
+                        public void onError(String errorCode, String errorMessage) {
+                            super.onError(errorCode, errorMessage);
+                            hideDeleteRoomLoading();
+                            new TapTalkDialog(new TapTalkDialog.Builder(TapUIChatActivity.this)
+                                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                                    .setTitle(getString(R.string.tap_fail_delete_chatroom))
+                                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                    .setPrimaryButtonListener(v -> {})
+                                    .setCancelable(false))
+                                    .show();
+                        }
+                    });
+                })
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setSecondaryButtonListener(secondaryView -> {}))
+                .show();
+    };
+
+    private void showDeleteRoomLoading() {
+        tvDeleteChat.setVisibility(View.GONE);
+        ivDelete.setVisibility(View.GONE);
+        pbDelete.setVisibility(View.VISIBLE);
+        llButtonDeleteChat.setEnabled(false);
+    }
+
+    private void hideDeleteRoomLoading() {
+        tvDeleteChat.setVisibility(View.VISIBLE);
+        ivDelete.setVisibility(View.VISIBLE);
+        pbDelete.setVisibility(View.GONE);
+        llButtonDeleteChat.setEnabled(true);
+    }
 
     private class DeleteRoomAsync extends AsyncTask<String, Void, Void> {
         @Override

@@ -84,6 +84,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
@@ -741,5 +742,15 @@ public class TAPApiManager {
         TapRoomIdsRequest request = new TapRoomIdsRequest();
         request.setRoomIDs(roomIds);
         execute(homingPigeon.unpinRoom(request), subscriber);
+    }
+
+    public void clearChat(List<String> roomIds, Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        TapRoomIdsRequest request = new TapRoomIdsRequest();
+        request.setRoomIDs(roomIds);
+        execute(homingPigeon.clearChat(request), subscriber);
+    }
+
+    public void getRoomIdsWithState(Subscriber<TAPBaseResponse<TapGetRoomIdsWithStateResponse>> subscriber) {
+        execute(homingPigeon.getRoomIdsWithState(), subscriber);
     }
 }

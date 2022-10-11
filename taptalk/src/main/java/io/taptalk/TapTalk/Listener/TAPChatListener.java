@@ -5,8 +5,8 @@ import androidx.annotation.Keep;
 import io.taptalk.TapTalk.Interface.TapTalkChatInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
 
 @Keep
 public abstract class TAPChatListener implements TapTalkChatInterface {
@@ -110,6 +110,26 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
 
     @Override
     public void onRequestUserData(TAPMessageModel message) {
+
+    }
+
+    @Override
+    public void onChatCleared(TAPRoomModel room) {
+
+    }
+
+    @Override
+    public void onMuteOrUnmuteRoom(TAPRoomModel room, Long expiredAt) {
+
+    }
+
+    @Override
+    public void onPinRoom(TAPRoomModel room) {
+
+    }
+
+    @Override
+    public void onUnpinRoom(TAPRoomModel room) {
 
     }
 }

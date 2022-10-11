@@ -1202,9 +1202,11 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 user.imageURL,
                 ""
             )
-            TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, room)
+            TapStarredMessagesActivity.start(this@TAPChatProfileActivity, instanceKey, room)
+            TAPChatManager.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(this, room)
         } else {
-            TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, vm!!.room)
+            TapStarredMessagesActivity.start(this@TAPChatProfileActivity, instanceKey, vm!!.room)
+            TAPChatManager.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(this, vm!!.room)
         }
     }
 

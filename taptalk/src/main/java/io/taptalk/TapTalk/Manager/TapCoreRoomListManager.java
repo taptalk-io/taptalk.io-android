@@ -23,12 +23,14 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMutedChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
+import io.taptalk.TapTalk.Listener.TapCoreRoomListListener;
 import io.taptalk.TapTalk.Listener.TapCoreUpdateMessageStatusListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
@@ -45,6 +47,8 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public class TapCoreRoomListManager {
 
     private static HashMap<String, TapCoreRoomListManager> instances;
+    private List<TapCoreRoomListListener> coreRoomListListeners;
+    private TAPChatListener chatListener;
 
     private String instanceKey = "";
 
@@ -66,6 +70,62 @@ public class TapCoreRoomListManager {
 
     private static HashMap<String, TapCoreRoomListManager> getInstances() {
         return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    private List<TapCoreRoomListListener> getCoreRoomListListeners() {
+        return null == coreRoomListListeners ? coreRoomListListeners = new ArrayList<>() : coreRoomListListeners;
+    }
+
+    public void addCoreRoomListListener(TapCoreRoomListListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        if (getCoreRoomListListeners().isEmpty()) {
+            if (chatListener == null) {
+                chatListener = new TAPChatListener() {
+                    @Override
+                    public void onChatCleared(TAPRoomModel room) {
+                        super.onChatCleared(room);
+                        listener.onChatRoomDeleted(room.getRoomID());
+                    }
+
+                    @Override
+                    public void onMuteOrUnmuteRoom(TAPRoomModel room, Long expiredAt) {
+                        super.onMuteOrUnmuteRoom(room, expiredAt);
+                        if (expiredAt != null) {
+                            listener.onChatRoomMuted(room.getRoomID(), expiredAt);
+                        } else {
+                            listener.onChatRoomUnmuted(room.getRoomID());
+                        }
+                    }
+
+                    @Override
+                    public void onPinRoom(TAPRoomModel room) {
+                        super.onPinRoom(room);
+                        listener.onChatRoomPinned(room.getRoomID());
+                    }
+
+                    @Override
+                    public void onUnpinRoom(TAPRoomModel room) {
+                        super.onUnpinRoom(room);
+                        listener.onChatRoomUnpinned(room.getRoomID());
+                    }
+                };
+                TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
+            }
+        }
+        getCoreRoomListListeners().remove(listener);
+        getCoreRoomListListeners().add(listener);
+    }
+
+    public void removeCoreRoomListListener(TapCoreRoomListListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getCoreRoomListListeners().remove(listener);
+        if (getCoreRoomListListeners().isEmpty()) {
+            TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
+        }
     }
 
     public void fetchNewMessageToDatabase(TapCommonListener listener) {
@@ -344,10 +404,10 @@ public class TapCoreRoomListManager {
                     TAPDataManager.getInstance(instanceKey).getMessageRoomListAndUnread(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetRoomListResponse>() {
                         @Override
                         public void onSuccess(TAPGetRoomListResponse response) {
+                            List<String> userIds = new ArrayList<>();
                             if (response.getMessages().size() > 0) {
                                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
                                 List<TAPMessageModel> deliveredMessages = new ArrayList<>();
-                                List<String> userIds = new ArrayList<>();
                                 List<TAPUserModel> userModels = new ArrayList<>();
                                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                                     try {

@@ -36,6 +36,8 @@ import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapPinnedMessagesActivity;
+import io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
@@ -125,6 +127,7 @@ public class TapUI {
     private boolean isMuteRoomListSwipeMenuDisabled;
     private boolean isLinkPreviewInMessageDisabled;
     private boolean isPinRoomListSwipeMenuDisabled;
+    private boolean isDeleteRoomListSwipeMenuDisabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -487,6 +490,20 @@ public class TapUI {
                 openChatRoomWithRoomModel(context, room);
             }
         });
+    }
+
+    public void openStarredMessagesPage(Context context, TAPRoomModel room) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TapStarredMessagesActivity.Companion.start(context, instanceKey, room);
+    }
+
+    public void openPinnedMessagesChatRoom(Context context, TAPRoomModel room) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TapPinnedMessagesActivity.Companion.start(context, instanceKey, room);
     }
 
     public TapUIRoomListFragment getCurrentTapTalkRoomListFragment() {
@@ -1193,6 +1210,17 @@ public class TapUI {
         isPinRoomListSwipeMenuDisabled = !isEnabled;
     }
 
+    public boolean isDeleteRoomListSwipeMenuEnabled() {
+        return !isDeleteRoomListSwipeMenuDisabled;
+    }
+
+    public void setDeleteRoomListSwipeMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isDeleteRoomListSwipeMenuDisabled = !isEnabled;
+    }
+
     /**
      * ==========================================================================================
      * CUSTOM BUBBLE
@@ -1448,6 +1476,18 @@ public class TapUI {
         }
     }
 
+    void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
+        if (getChatRoomListeners().isEmpty()) {
+            TapStarredMessagesActivity.Companion.start(activity, instanceKey, room);
+        }
+
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            if (null != listener) {
+                listener.onTapTalkStarredMessageButtonTapped(activity, room);
+            }
+        }
+    }
+
     void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             if (null != listener) {
@@ -1460,6 +1500,30 @@ public class TapUI {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             if (null != listener) {
                 listener.onTapTalkProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
+            }
+        }
+    }
+
+    void triggerSavedMessageBubbleArrowTapped(TAPMessageModel messageModel) {
+        if (getChatRoomListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            if (null != listener) {
+                listener.onSavedMessageBubbleArrowTapped(messageModel);
+            }
+        }
+    }
+
+    void triggerPinnedMessageTapped(TAPMessageModel message) {
+        if (getChatRoomListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            if (null != listener) {
+                listener.onPinnedMessageTapped(message);
             }
         }
     }

@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Interface;
 
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
@@ -56,4 +57,11 @@ public interface TapTalkChatInterface {
 
     void onRequestUserData(TAPMessageModel message);
 
+    void onChatCleared(TAPRoomModel room);
+
+    void onMuteOrUnmuteRoom(TAPRoomModel room, Long expiredAt);
+
+    void onPinRoom(TAPRoomModel room);
+
+    void onUnpinRoom(TAPRoomModel room);
 }
