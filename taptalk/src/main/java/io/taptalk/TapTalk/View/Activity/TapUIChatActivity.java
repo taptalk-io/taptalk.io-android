@@ -223,6 +223,7 @@ import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
@@ -1276,10 +1277,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vScreen.setOnClickListener(v -> hideScheduleMessageButton());
         cvSchedule.setOnClickListener(v -> {
             hideScheduleMessageButton();
-            TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment();
+            TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TAPGeneralListener<TAPRoomModel>() {
+                @Override
+                public void onClick() {
+                    super.onClick();
+                    TapScheduledMessageActivity.Companion.start(TapUIChatActivity.this, instanceKey, vm.getRoom());
+                }
+            });
             timePicker.show(getSupportFragmentManager(), "");
         });
-        // TODO: 05/10/22 handle schedule message icon MU
+        ivSchedule.setOnClickListener(v -> TapScheduledMessageActivity.Companion.start(this, instanceKey, vm.getRoom()));
 
 
         if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {

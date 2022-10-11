@@ -6,13 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
 import kotlinx.android.synthetic.main.tap_fragment_time_picker_bottom_sheet.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
+// TODO: updaet listener model when api ready MU
+class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<TAPRoomModel>) : BottomSheetDialogFragment() {
 
     private lateinit var currentDate : Date
     private lateinit var currentCal : Calendar
@@ -97,6 +100,10 @@ class TapTimePickerBottomSheetFragment : BottomSheetDialogFragment() {
             dismiss()
         }
         btn_send.text = getTimeResult()
+        btn_send.setOnClickListener {
+            listener.onClick()
+            dismiss()
+        }
     }
 
     override fun show(manager: FragmentManager, tag: String?) {
