@@ -8,8 +8,9 @@
     <color name="tapColorAccent">@color/tapColorPrimary</color>
 
     <color name="tapColorTextLight">@color/tapWhite</color>
-    <color name="tapColorTextMedium">@color/tapGrey9b</color>
+    <color name="tapColorTextMedium">@color/tapTransparentBlack1940</color>
     <color name="tapColorTextDark">@color/tapBlack19</color>
+    <color name="tapColorTextGrey">@color/tapTransparentBlack1960</color>
 
     <color name="tapColorSuccess">@color/tapAppleGreen</color>
     <color name="tapColorError">@color/tapWatermelonRed</color>
@@ -256,7 +257,7 @@
     <color name="tapNavBarSearchTextColor">@color/tapColorTextDark</color>
 
     <color name="tapPopupDialogTitleColor">@color/tapColorTextDark</color>
-    <color name="tapPopupDialogBodyColor">@color/tapColorTextDark</color>
+    <color name="tapPopupDialogBodyColor">@color/tapColorTextGrey</color>
     <color name="tapPopupDialogButtonTextPrimaryColor">@color/tapColorTextLight</color>
     <color name="tapPopupDialogButtonTextSecondaryColor">@color/tapColorTextMedium</color>
 

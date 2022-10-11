@@ -306,7 +306,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
     inner class LinkViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {
         private val tvLink: TextView = itemView.findViewById(R.id.tv_link)
         override fun onBind(item: TAPMessageModel?, position: Int) {
-            if (null == item?.data) {
+            if (null == item?.data || item.data?.get(URL) == null) {
                 return
             }
             tvLink.text = item.data?.get(URL) as String

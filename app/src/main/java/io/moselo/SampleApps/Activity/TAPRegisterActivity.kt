@@ -2,9 +2,7 @@ package io.moselo.SampleApps.Activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Rect
@@ -13,15 +11,14 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.Editable
 import android.text.InputType
+import android.text.SpannableString
 import android.text.TextWatcher
+import android.text.style.URLSpan
 import android.util.Patterns
 import android.view.View
 import android.view.ViewTreeObserver
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -34,10 +31,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_CAMERA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_GALLERY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.*
-import io.taptalk.TapTalk.Helper.TAPBroadcastManager
-import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TapTalk
-import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
@@ -211,6 +205,28 @@ class TAPRegisterActivity : TAPBaseActivity() {
             vm.formCheck[indexMobileNumber] = stateValid
         }
 
+        // Set url span for privacy policy label
+        val spannableString = SpannableString(tv_label_privacy_policy.text)
+        spannableString.setSpan(
+            URLSpan("https://taptalk.io/privacy-policy/"),
+            spannableString.length - 27,
+            spannableString.length, 0
+        )
+
+        val movementMethod = TAPBetterLinkMovementMethod.newInstance()
+            .setOnLinkClickListener { textView: TextView?, url: String?, originalText: String? ->
+                false
+            }
+            .setOnLinkLongClickListener { textView: TextView?, url: String?, originalText: String? ->
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText(url, url)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(this@TAPRegisterActivity, "Link Copied", Toast.LENGTH_SHORT).show()
+                true
+            }
+        tv_label_privacy_policy.text = spannableString
+        tv_label_privacy_policy.movementMethod = movementMethod
+
         TAPUtils.showKeyboard(this, et_full_name)
 
         fl_container.setOnClickListener { clearAllFocus() }
@@ -220,7 +236,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         iv_view_password.setOnClickListener { togglePasswordVisibility(et_password, iv_view_password) }
         iv_view_password_retype.setOnClickListener { togglePasswordVisibility(et_retype_password, iv_view_password_retype) }
-
+        cb_privacy_policy.setOnCheckedChangeListener { _, _ -> checkPrivacyPolicy() }
         et_retype_password.setOnEditorActionListener { v, a, e -> fl_button_continue.callOnClick() }
 
         sv_register.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
@@ -388,6 +404,14 @@ class TAPRegisterActivity : TAPBaseActivity() {
         checkContinueButtonAvailability()
     }
 
+    private fun checkPrivacyPolicy() {
+        if (cb_privacy_policy.isChecked) {
+            tv_label_privacy_policy_error.visibility = View.GONE
+        } else {
+            tv_label_privacy_policy_error.visibility = View.GONE
+        }
+    }
+
     private fun updateEditTextBackground(view: View, hasFocus: Boolean) {
         if (hasFocus) {
             view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
@@ -460,6 +484,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun register() {
+        if (!cb_privacy_policy.isChecked) {
+            tv_label_privacy_policy_error.visibility = View.VISIBLE
+            return
+        }
         TAPDataManager.getInstance(instanceKey).register(
                 et_full_name.text.toString(),
                 et_username.text.toString(),

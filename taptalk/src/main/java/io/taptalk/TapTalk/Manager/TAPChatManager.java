@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import static androidx.core.util.PatternsCompat.WEB_URL;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,7 +39,10 @@ import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -68,21 +70,30 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketClearChat;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMuteRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketPinRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnmuteRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnpinRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
@@ -244,6 +255,64 @@ public class TAPChatManager {
                         listener.onUserOnlineStatusUpdate(onlineStatus);
                     }
                     break;
+                case kSocketClearChat:
+                    TAPEmitModel<TAPUpdateRoomResponse> clearChatEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse clearChatData = clearChatEmit.getData();
+                    String roomId = clearChatData.getRoom().getRoomID();
+                    TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
+                    TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
+                    TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomId);
+                    TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
+                        @Override
+                        public void onSuccess(String successMessage) {
+                            super.onSuccess(successMessage);
+                            for (TAPChatListener listener : chatListenersCopy) {
+                                listener.onChatCleared(clearChatData.getRoom());
+                            }
+                        }
+                    });
+                    break;
+                case kSocketMuteRoom:
+                case kSocketUnmuteRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> muteRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse muteRoomData = muteRoomEmit.getData();
+                    String mutedRoomId = muteRoomData.getRoom().getRoomID();
+                    Long expiredAt = muteRoomData.getExpiredAt();
+                    HashMap<String, Long> mutedRooms = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs();
+                    if (expiredAt != null) {
+                        // mute room
+                        mutedRooms.put(mutedRoomId, expiredAt);
+                    } else {
+                        // unmute room
+                        mutedRooms.remove(mutedRoomId);
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(mutedRooms);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onMuteOrUnmuteRoom(muteRoomData.getRoom(), expiredAt);
+                    }
+                    break;
+                case kSocketPinRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> pinRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse pinRoomData = pinRoomEmit.getData();
+                    String pinnedRoomId = pinRoomData.getRoom().getRoomID();
+                    ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                    if (!pinnedRooms.contains(pinnedRoomId)) {
+                        pinnedRooms.add(0, pinnedRoomId);
+                    }
+                    TAPDataManager.getInstance(instanceKey).savePinnedRoomIDs(pinnedRooms);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onPinRoom(pinRoomData.getRoom());
+                    }
+                    break;
+                case kSocketUnpinRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> unpinRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse unpinRoomData = unpinRoomEmit.getData();
+                    String unpinnedRoomId = unpinRoomData.getRoom().getRoomID();
+                    TAPDataManager.getInstance(instanceKey).removePinnedRoomID(unpinnedRoomId);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onUnpinRoom(unpinRoomData.getRoom());
+                    }
+                    break;
             }
         }
     };
@@ -338,6 +407,13 @@ public class TAPChatManager {
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
 
+    public void sendLinkMessage(String textMessage, HashMap<String, Object> data) {
+        if (null == activeRoom) {
+            return;
+        }
+        sendLinkMessageWithRoomModel(textMessage, activeRoom, data);
+    }
+
     public void sendImageMessageToServer(TAPMessageModel messageModel) {
         removeUploadingMessageFromHashMap(messageModel.getLocalID());
         triggerListenerAndSendMessage(messageModel, false);
@@ -388,7 +464,10 @@ public class TAPChatManager {
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 } else {
-                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), urls);
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    data.put(URLS, urls);
+                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), data);
                 }
                 // Add entity to list
                 messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
@@ -403,7 +482,10 @@ public class TAPChatManager {
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
                 } else {
-                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), urls);
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    data.put(URLS, urls);
+                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), data);
                 }
             // Send message
             triggerListenerAndSendMessage(messageModel, true);
@@ -423,13 +505,7 @@ public class TAPChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                TAPMessageModel messageModel;
-                List<String> urls = TAPUtils.getUrlsFromString(substr);
-                if (urls.isEmpty()) {
-                    messageModel = createTextMessage(substr, roomModel, getActiveUser());
-                } else {
-                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), urls);
-                }
+                TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
 
                 if (null != listener) {
                     sendMessageListeners.put(messageModel.getLocalID(), listener);
@@ -443,14 +519,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
-
-                TAPMessageModel messageModel;
-                List<String> urls = TAPUtils.getUrlsFromString(textMessage);
-                if (urls.isEmpty()) {
-                    messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
-                } else {
-                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), urls);
-                }
+                TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
             if (null != listener) {
                 sendMessageListeners.put(messageModel.getLocalID(), listener);
                 listener.onStart(messageModel);
@@ -460,6 +529,100 @@ public class TAPChatManager {
         }
         // Run queue after list is updated
         //checkAndSendPendingMessages();
+    }
+
+    public void sendLinkMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, HashMap<String, Object> data) {
+        Integer startIndex;
+
+        checkAndSendForwardedMessage(roomModel);
+
+        if (textMessage.length() > CHARACTER_LIMIT) {
+            // Message exceeds character limit
+            List<TAPMessageEntity> messageEntities = new ArrayList<>();
+            Integer length = textMessage.length();
+            for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
+                String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                TAPMessageModel messageModel;
+                List<String> urls = TAPUtils.getUrlsFromString(substr);
+                if (urls.isEmpty()) {
+                    messageModel = createTextMessage(substr, roomModel, getActiveUser());
+                } else {
+                    HashMap<String, Object> newData = new HashMap<>(data);
+                    String url = TAPUtils.setUrlWithProtocol(urls.get(0));
+                    if (!url.equalsIgnoreCase((String) data.get(URL))) {
+                        newData = new HashMap<>();
+                        newData.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    }
+                    newData.put(URLS, urls);
+                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), newData);
+                }
+                // Add entity to list
+                messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
+
+                // Send truncated message
+                triggerListenerAndSendMessage(messageModel, true);
+            }
+        } else {
+            TAPMessageModel messageModel;
+            List<String> urls = TAPUtils.getUrlsFromString(textMessage);
+            if (urls.isEmpty()) {
+                messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
+            } else {
+                HashMap<String, Object> newData = new HashMap<>(data);
+                String url = TAPUtils.setUrlWithProtocol(urls.get(0));
+                if (!url.equalsIgnoreCase((String) data.get(URL))) {
+                    newData = new HashMap<>();
+                    newData.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                }
+                newData.put(URLS, urls);
+                messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), newData);
+            }
+            // Send message
+            triggerListenerAndSendMessage(messageModel, true);
+        }
+    }
+
+    public void sendLinkMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, HashMap<String, Object> data, TapSendMessageInterface listener) {
+        Integer startIndex;
+
+        checkAndSendForwardedMessage(roomModel);
+
+        if (textMessage.length() > CHARACTER_LIMIT) {
+            // Message exceeds character limit
+            Integer length = textMessage.length();
+            for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
+                String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                List<String> urls = TAPUtils.getUrlsFromString(substr);
+                TAPMessageModel messageModel;
+                HashMap<String, Object> newData = new HashMap<>(data);
+                if (urls.isEmpty()) {
+                    newData = new HashMap<>();
+                } else {
+                    if (!TAPUtils.setUrlWithProtocol(urls.get(0)).equalsIgnoreCase((String) data.get(URL))) {
+                        newData = new HashMap<>();
+                        newData.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    }
+                    newData.put(URLS, urls);
+                }
+                messageModel = createLinkMessage(substr, roomModel, getActiveUser(), newData);
+
+                if (null != listener) {
+                    sendMessageListeners.put(messageModel.getLocalID(), listener);
+                    listener.onStart(messageModel);
+                }
+
+                // Send truncated message
+                triggerListenerAndSendMessage(messageModel, true);
+            }
+        } else {
+            TAPMessageModel messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), data);
+            if (null != listener) {
+                sendMessageListeners.put(messageModel.getLocalID(), listener);
+                listener.onStart(messageModel);
+            }
+            // Send message
+            triggerListenerAndSendMessage(messageModel, true);
+        }
     }
 
     public void sendDirectReplyTextMessage(String textMessage, TAPRoomModel roomModel) {
@@ -478,7 +641,10 @@ public class TAPChatManager {
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 } else {
-                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), urls);
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    data.put(URLS, urls);
+                    messageModel = createLinkMessage(substr, roomModel, getActiveUser(), data);
                 }
                 // Add entity to list
                 messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
@@ -497,7 +663,10 @@ public class TAPChatManager {
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
                 } else {
-                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), urls);
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                    data.put(URLS, urls);
+                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), data);
                 }
 
             // save LocalID to list of Reply Local IDs
@@ -547,11 +716,8 @@ public class TAPChatManager {
      * Construct Link Message Model
      */
 
-    private TAPMessageModel createLinkMessage(String message, TAPRoomModel room, TAPUserModel user, List<String> urls) {
-        // Create new TAPMessageModel based on text
-        HashMap<String, Object> data = new HashMap<>();
-        data.put(URL, urls.get(0));
-        data.put(URLS, urls);
+    private TAPMessageModel createLinkMessage(String message, TAPRoomModel room, TAPUserModel user, HashMap<String, Object> data) {
+        // Create new TAPMessageModel for link type
         if (null == getQuotedMessages().get(room.getRoomID())) {
             return TAPMessageModel.Builder(
                     message,
@@ -1575,7 +1741,7 @@ public class TAPChatManager {
      * Edit message
      */
 
-    public void editMessage(TAPMessageModel message, String updatedText, TapSendMessageInterface listener) {
+    public void editMessage(TAPMessageModel message, String updatedText, TapSendMessageInterface listener, boolean isTypeChangeEnabled) {
         if (message.getType() == TYPE_TEXT || message.getType() == TYPE_LINK) {
             if (updatedText.length() > CHARACTER_LIMIT) {
                 if (null != listener) {
@@ -1590,15 +1756,22 @@ public class TAPChatManager {
                 if (data != null) {
                     data.put(URL, null);
                     data.put(URLS, null);
+                    data.put(TITLE, null);
+                    data.put(DESCRIPTION, null);
+                    data.put(IMAGE, null);
+                    data.put(TYPE, null);
                     message.setData(data);
                 }
-                message.setType(TYPE_TEXT);
+                if (isTypeChangeEnabled) {
+                    message.setType(TYPE_TEXT);
+                }
             } else {
                 HashMap<String, Object> data = message.getData() == null ? new HashMap<>() : message.getData();
-                data.put(URL, urls.get(0));
                 data.put(URLS, urls);
                 message.setData(data);
-                message.setType(TYPE_LINK);
+                if (isTypeChangeEnabled) {
+                    message.setType(TYPE_LINK);
+                }
             }
         }
         else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
@@ -1632,6 +1805,15 @@ public class TAPChatManager {
         }
         // Edit message
         runSendMessageSequence(message, kSocketUpdateMessage);
+    }
+
+    public void editMessage(TAPMessageModel newMessage, TapSendMessageInterface listener) {
+        if (null != listener) {
+            sendMessageListeners.put(newMessage.getLocalID(), listener);
+            listener.onStart(newMessage);
+        }
+        // Edit message
+        runSendMessageSequence(newMessage, kSocketUpdateMessage);
     }
 
     /**
@@ -2188,6 +2370,10 @@ public class TAPChatManager {
         TapUI.getInstance(instanceKey).triggerChatProfileReportGroupButtonTapped(activity, room);
     }
 
+    public void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
+        TapUI.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(activity, room);
+    }
+
     public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
         return TapUI.getInstance(instanceKey).getCustomKeyboardItems(room, activeUser, recipientUser);
     }
@@ -2202,6 +2388,14 @@ public class TAPChatManager {
 
     public void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         TapUI.getInstance(instanceKey).triggerProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
+    }
+
+    public void triggerSavedMessageBubbleArrowTapped(TAPMessageModel message) {
+        TapUI.getInstance(instanceKey).triggerSavedMessageBubbleArrowTapped(message);
+    }
+
+    public void triggerPinnedMessageTapped(TAPMessageModel message) {
+        TapUI.getInstance(instanceKey).triggerPinnedMessageTapped(message);
     }
 
     public String getRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {

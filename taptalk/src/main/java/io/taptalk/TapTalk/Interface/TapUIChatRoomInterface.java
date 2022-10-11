@@ -31,4 +31,10 @@ public interface TapUIChatRoomInterface {
     void onTapTalkProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption);
 
     void onTapTalkProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption);
+
+    void onTapTalkStarredMessageButtonTapped(Activity activity, TAPRoomModel room);
+
+    void onSavedMessageBubbleArrowTapped(TAPMessageModel message);
+
+    void onPinnedMessageTapped(TAPMessageModel message);
 }

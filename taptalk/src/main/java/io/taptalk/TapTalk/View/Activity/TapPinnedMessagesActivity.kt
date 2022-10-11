@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -18,10 +19,7 @@ import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener
-import io.taptalk.TapTalk.Manager.TAPChatManager
-import io.taptalk.TapTalk.Manager.TAPContactManager
-import io.taptalk.TapTalk.Manager.TAPGroupManager
-import io.taptalk.TapTalk.Manager.TapCoreMessageManager
+import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
@@ -41,17 +39,19 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
 
     companion object {
         const val PAGE_SIZE = 50
-    }
-
-    fun start(
-        context: Activity,
-        instanceKey: String?,
-        room: TAPRoomModel
-    ) {
-        val intent = Intent(context, TapPinnedMessagesActivity::class.java)
-        intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
-        intent.putExtra(TAPDefaultConstant.Extras.ROOM, room)
-        context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_PINNED_MESSAGES)
+        fun start(
+            context: Context,
+            instanceKey: String?,
+            room: TAPRoomModel
+        ) {
+            if (context is Activity) {
+                val intent = Intent(context, TapPinnedMessagesActivity::class.java)
+                intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
+                intent.putExtra(TAPDefaultConstant.Extras.ROOM, room)
+                context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_PINNED_MESSAGES
+                )
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -312,6 +312,7 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
     private val chatListener = object : TAPChatListener() {
         override fun onOutsideClicked(message: TAPMessageModel?) {
             super.onOutsideClicked(message)
+            TAPChatManager.getInstance(instanceKey).triggerPinnedMessageTapped(message)
             val intent = Intent()
             intent.putExtra(TAPDefaultConstant.Extras.MESSAGE, message)
             setResult(RESULT_OK, intent)
