@@ -458,5 +458,6 @@
     <string name="tap_loading_dots">Loading...</string>
     <string name="tap_schedule_message">Schedule Message</string>
     <string name="tap_scheduled_message">Scheduled Message</string>
+    <string name="tap_empty_scheduled_message">No scheduled message here yet</string>
 
 </resources>
