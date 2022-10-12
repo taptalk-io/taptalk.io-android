@@ -98,11 +98,14 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
@@ -1639,5 +1642,29 @@ public class TAPDataManager {
 
     public void getRoomIdsWithState(TAPDefaultDataView<TapGetRoomIdsWithStateResponse> view) {
         TAPApiManager.getInstance(instanceKey).getRoomIdsWithState(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void createScheduledMessage(TAPMessageModel message, Long scheduledTime, TAPDefaultDataView<TapCreateScheduledMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).createScheduledMessage(message, scheduledTime, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getScheduledMessages(String roomId, TAPDefaultDataView<TapGetScheduledMessageListResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getScheduledMessages(roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void editScheduledMessageContent(Integer scheduledMessageId, TAPMessageModel message, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).editScheduledMessageContent(scheduledMessageId, message, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void editScheduledMessageTime(Integer scheduledMessageId, Long scheduledTime,  TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).editScheduledMessageTime(scheduledMessageId, scheduledTime, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void deleteScheduledMessages(List<Integer> scheduledMessageIds, String roomId,TAPDefaultDataView<TapIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).deleteScheduledMessages(scheduledMessageIds, roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void sendScheduledMessageNow(List<Integer> scheduledMessageIds, String roomId,TAPDefaultDataView<TapIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).sendScheduledMessageNow(scheduledMessageIds, roomId, new TAPDefaultSubscriber<>(view));
     }
 }
