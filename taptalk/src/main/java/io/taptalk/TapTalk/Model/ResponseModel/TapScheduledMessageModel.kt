@@ -26,4 +26,6 @@ data class TapScheduledMessageModel (
     constructor(id: Int?, message: TAPMessageModel?) : this(null, null, null, id, message)
 
     constructor(id: Int?, scheduledTime: Long?) : this(null, scheduledTime, null, id, null)
+
+    constructor(scheduledTime: Long?, message: TAPMessageModel?) : this(null, scheduledTime, null, null, message)
 }
