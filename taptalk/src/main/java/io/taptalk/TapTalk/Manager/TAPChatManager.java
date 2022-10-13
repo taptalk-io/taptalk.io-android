@@ -816,12 +816,6 @@ public class TAPChatManager {
         if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             // Send message if socket is connected
             List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
-            if (!message.getBody().isEmpty()) {
-                message.setBody(TAPEncryptorManager.getInstance().encrypt(message.getBody(), message.getLocalID()));
-            }
-            if (null != message.getData() && !message.getData().isEmpty()) {
-                // TODO: 13/10/22 encrypt message data MU
-            }
             TAPDataManager.getInstance(instanceKey).createScheduledMessage(message, scheduledTime, new TAPDefaultDataView<>() {
                 @Override
                 public void onSuccess(TapCreateScheduledMessageResponse response) {

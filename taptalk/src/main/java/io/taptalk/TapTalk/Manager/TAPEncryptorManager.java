@@ -83,6 +83,10 @@ public class TAPEncryptorManager {
     }
 
     public HashMap<String, Object> encryptMessage(TAPMessageModel messageModel) {
+        return encryptMessage(messageModel, true);
+    }
+
+    public HashMap<String, Object> encryptMessage(TAPMessageModel messageModel, boolean isRemoveUser) {
 //        HashMap<String, Object> encryptedMessageMap = TAPUtils.toHashMap(messageModel);
         HashMap<String, Object> encryptedMessageMap = messageModel.toHashMap();
         try {
@@ -102,7 +106,9 @@ public class TAPEncryptorManager {
                 encryptedMessageMap.put(K_QUOTE, quoteMap);
             }
             // Remove unused fields for socket emit
-            encryptedMessageMap.remove(K_USER);
+            if (isRemoveUser) {
+                encryptedMessageMap.remove(K_USER);
+            }
             HashMap<String, Object> roomMap = (HashMap<String, Object>) encryptedMessageMap.get(K_ROOM);
             if (roomMap != null) {
                 roomMap.remove(K_PARTICIPANTS);

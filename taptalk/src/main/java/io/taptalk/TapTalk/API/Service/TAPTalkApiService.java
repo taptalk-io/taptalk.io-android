@@ -266,7 +266,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TapGetScheduledMessageListResponse>> getScheduledMessageList(@Body TAPCommonRequest request);
 
     @POST("chat/scheduled_message/edit_content")
-    Observable<TAPBaseResponse<TAPCommonResponse>> editScheduledMessageContent(@Body TapScheduledMessageModel request);
+    Observable<TAPBaseResponse<TAPCommonResponse>> editScheduledMessageContent(@Body TapCreateScheduledMessageRequest request);
 
     @POST("chat/scheduled_message/edit_scheduled_time")
     Observable<TAPBaseResponse<TAPCommonResponse>> editScheduledMessageTime(@Body TapScheduledMessageModel request);

@@ -761,8 +761,9 @@ public class TAPApiManager {
         execute(homingPigeon.getRoomIdsWithState(), subscriber);
     }
 
-    public void createScheduledMessage(TAPMessageModel message, Long scheduledTime, Subscriber<TAPBaseResponse<TapCreateScheduledMessageResponse>> subscriber) {
-        TapCreateScheduledMessageRequest request = new TapCreateScheduledMessageRequest(scheduledTime, message);
+    public void createScheduledMessage(HashMap<String, Object> message, Long scheduledTime, Subscriber<TAPBaseResponse<TapCreateScheduledMessageResponse>> subscriber) {
+        TapCreateScheduledMessageRequest request = new TapCreateScheduledMessageRequest(message);
+        request.setScheduledTime(scheduledTime);
         execute(homingPigeon.createScheduledMessage(request), subscriber);
     }
 
@@ -771,8 +772,9 @@ public class TAPApiManager {
         execute(homingPigeon.getScheduledMessageList(request), subscriber);
     }
 
-    public void editScheduledMessageContent(Integer scheduledMessageId, TAPMessageModel message, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
-        TapScheduledMessageModel request = new TapScheduledMessageModel(scheduledMessageId, message);
+    public void editScheduledMessageContent(Integer scheduledMessageId, HashMap<String, Object> message, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TapCreateScheduledMessageRequest request = new TapCreateScheduledMessageRequest(message);
+        request.setId(scheduledMessageId);
         execute(homingPigeon.editScheduledMessageContent(request), subscriber);
     }
 

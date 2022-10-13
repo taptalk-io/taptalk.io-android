@@ -1645,7 +1645,8 @@ public class TAPDataManager {
     }
 
     public void createScheduledMessage(TAPMessageModel message, Long scheduledTime, TAPDefaultDataView<TapCreateScheduledMessageResponse> view) {
-        TAPApiManager.getInstance(instanceKey).createScheduledMessage(message, scheduledTime, new TAPDefaultSubscriber<>(view));
+        HashMap<String, Object> messageMap = TAPEncryptorManager.getInstance().encryptMessage(message, false);
+        TAPApiManager.getInstance(instanceKey).createScheduledMessage(messageMap, scheduledTime, new TAPDefaultSubscriber<>(view));
     }
 
     public void getScheduledMessages(String roomId, TAPDefaultDataView<TapGetScheduledMessageListResponse> view) {
@@ -1653,7 +1654,8 @@ public class TAPDataManager {
     }
 
     public void editScheduledMessageContent(Integer scheduledMessageId, TAPMessageModel message, TAPDefaultDataView<TAPCommonResponse> view) {
-        TAPApiManager.getInstance(instanceKey).editScheduledMessageContent(scheduledMessageId, message, new TAPDefaultSubscriber<>(view));
+        HashMap<String, Object> messageMap = TAPEncryptorManager.getInstance().encryptMessage(message, false);
+        TAPApiManager.getInstance(instanceKey).editScheduledMessageContent(scheduledMessageId, messageMap, new TAPDefaultSubscriber<>(view));
     }
 
     public void editScheduledMessageTime(Integer scheduledMessageId, Long scheduledTime,  TAPDefaultDataView<TAPCommonResponse> view) {
