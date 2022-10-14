@@ -42,6 +42,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
@@ -798,6 +799,107 @@ public class TAPChatManager {
     /**
      * Scheduled Message Functions
      */
+
+    public void editScheduledMessage(int scheduledMessageID, TAPMessageModel message, String updatedText, TapCommonListener listener, boolean isTypeChangeEnabled) {
+        if (message.getType() == TYPE_TEXT || message.getType() == TYPE_LINK) {
+            if (updatedText.length() > CHARACTER_LIMIT) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, CHARACTER_LIMIT));
+                }
+                return;
+            }
+            message.setBody(updatedText);
+            List<String> urls = TAPUtils.getUrlsFromString(updatedText);
+            if (isTypeChangeEnabled) {
+                if (urls.isEmpty()) {
+                    HashMap<String, Object> data = message.getData();
+                    if (data != null) {
+                        data.put(URL, null);
+                        data.put(URLS, null);
+                        data.put(TITLE, null);
+                        data.put(DESCRIPTION, null);
+                        data.put(IMAGE, null);
+                        data.put(TYPE, null);
+                        message.setData(data);
+                    }
+                    message.setType(TYPE_TEXT);
+                } else {
+                    HashMap<String, Object> data = message.getData() == null ? new HashMap<>() : message.getData();
+                    data.put(URLS, urls);
+                    message.setData(data);
+                    message.setType(TYPE_LINK);
+                }
+            }
+        }
+        else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
+            if (updatedText.length() > TapTalk.getMaxCaptionLength(instanceKey)) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, TapTalk.getMaxCaptionLength(instanceKey)));
+                }
+                return;
+            }
+            HashMap<String, Object> data = message.getData();
+            if (data != null) {
+                data.put(CAPTION, updatedText);
+                message.setData(data);
+                if (message.getType() == TYPE_IMAGE) {
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateImageCaption(updatedText));
+                }
+                else {
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateVideoCaption(updatedText));
+                }
+            }
+        }
+        else {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE);
+            }
+            return;
+        }
+        message.setIsMessageEdited(false);
+        TAPDataManager.getInstance(instanceKey).editScheduledMessageContent(scheduledMessageID, message, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPCommonResponse response) {
+                super.onSuccess(response);
+                listener.onSuccess(response.getMessage());
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                listener.onError(error.getCode(), error.getMessage());
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+            }
+        });
+    }
+
+    public void editScheduledMessage(int scheduledMessageID, TAPMessageModel updatedMessage, TapCommonListener listener) {
+        updatedMessage.setIsMessageEdited(false);
+        TAPDataManager.getInstance(instanceKey).editScheduledMessageContent(scheduledMessageID, updatedMessage, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPCommonResponse response) {
+                super.onSuccess(response);
+                listener.onSuccess(response.getMessage());
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                listener.onError(error.getCode(), error.getMessage());
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+            }
+        });
+    }
 
     private void triggerListenerAndSendScheduledMessage(TAPMessageModel message, Long scheduledTime, boolean isNotifyChatListener) {
         List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
