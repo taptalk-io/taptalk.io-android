@@ -1895,6 +1895,14 @@ public class TapCoreMessageManager {
         });
     }
 
+    public void editScheduledMessageContent(int scheduledMessageID, TAPMessageModel message, String updatedText, TapCommonListener listener) {
+        TAPChatManager.getInstance(instanceKey).editScheduledMessage(scheduledMessageID, message, updatedText, listener, false);
+    }
+
+    public void editScheduledMessageContent(int scheduledMessageID, TAPMessageModel updatedMessage, TapCommonListener listener) {
+        TAPChatManager.getInstance(instanceKey).editScheduledMessage(scheduledMessageID, updatedMessage, listener);
+    }
+
     public void editScheduledMessageTime(int scheduledMessageID, long scheduledTime, TapCommonListener listener) {
         TAPDataManager.getInstance(instanceKey).editScheduledMessageTime(scheduledMessageID, scheduledTime, new TAPDefaultDataView<>() {
             @Override
