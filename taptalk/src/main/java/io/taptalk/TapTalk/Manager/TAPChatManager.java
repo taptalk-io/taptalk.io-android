@@ -44,7 +44,6 @@ import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
@@ -1940,25 +1939,23 @@ public class TAPChatManager {
             }
             message.setBody(updatedText);
             List<String> urls = TAPUtils.getUrlsFromString(updatedText);
-            if (urls.isEmpty()) {
-                HashMap<String, Object> data = message.getData();
-                if (data != null) {
-                    data.put(URL, null);
-                    data.put(URLS, null);
-                    data.put(TITLE, null);
-                    data.put(DESCRIPTION, null);
-                    data.put(IMAGE, null);
-                    data.put(TYPE, null);
-                    message.setData(data);
-                }
-                if (isTypeChangeEnabled) {
+            if (isTypeChangeEnabled) {
+                if (urls.isEmpty()) {
+                    HashMap<String, Object> data = message.getData();
+                    if (data != null) {
+                        data.put(URL, null);
+                        data.put(URLS, null);
+                        data.put(TITLE, null);
+                        data.put(DESCRIPTION, null);
+                        data.put(IMAGE, null);
+                        data.put(TYPE, null);
+                        message.setData(data);
+                    }
                     message.setType(TYPE_TEXT);
-                }
-            } else {
-                HashMap<String, Object> data = message.getData() == null ? new HashMap<>() : message.getData();
-                data.put(URLS, urls);
-                message.setData(data);
-                if (isTypeChangeEnabled) {
+                } else {
+                    HashMap<String, Object> data = message.getData() == null ? new HashMap<>() : message.getData();
+                    data.put(URLS, urls);
+                    message.setData(data);
                     message.setType(TYPE_LINK);
                 }
             }
