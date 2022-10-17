@@ -14,8 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-// TODO: updaet listener model when api ready MU
-class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<TAPRoomModel>) : BottomSheetDialogFragment() {
+class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<Long>) : BottomSheetDialogFragment() {
 
     private lateinit var currentDate : Date
     private lateinit var currentCal : Calendar
@@ -101,7 +100,7 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
         }
         btn_send.text = getTimeResult()
         btn_send.setOnClickListener {
-            listener.onClick()
+            listener.onClick(0, getScheduledTime())
             dismiss()
         }
     }
@@ -132,5 +131,12 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
                 np_minute.value = currentCal.get(Calendar.MINUTE) + 1
             }
         }
+    }
+
+    private fun getScheduledTime(): Long {
+        val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(np_date.value.toLong())))
+        val shownTime = "${resultSdf.format(date)} ${hours[np_hour.value]}:${minutes[np_minute.value]}"
+        val shownDate = fullSdf.parse(shownTime)
+        return shownDate?.time ?: 0L
     }
 }

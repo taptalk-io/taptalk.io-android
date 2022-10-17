@@ -12,10 +12,14 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Parcelable
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.View
 import android.view.View.OnFocusChangeListener
@@ -49,11 +53,14 @@ import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Model.*
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
@@ -118,8 +125,14 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         iv_voice_note.isVisible = false
         v_separator.isVisible = false
         fl_connection_status.isVisible = false
+        linkHandler = Handler(mainLooper)
         if (initViewModel())
             initView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        TAPDataManager.getInstance(instanceKey).getScheduledMessages(vm.room.roomID, getScheduledMessagesView)
     }
 
     override fun onBackPressed() {
@@ -177,8 +190,14 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     val medias =
                         intent.getParcelableArrayListExtra<TAPMediaPreviewModel>(Extras.MEDIA_PREVIEWS)
                     if (null != medias && 0 < medias.size) {
-                        TAPChatManager.getInstance(instanceKey)
-                            .sendImageOrVideoMessage(TapTalk.appContext, vm.room, medias)
+                        val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
+                            override fun onClick(position: Int, item: Long?) {
+                                super.onClick(position, item)
+                                TAPChatManager.getInstance(instanceKey)
+                                    .sendImageOrVideoMessage(TapTalk.appContext, vm.room, medias, item)
+                            }
+                        })
+                        timePicker.show(supportFragmentManager, "")
                     }
                 }
                 RequestCode.PICK_LOCATION -> {
@@ -188,21 +207,35 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         )!!
                     val latitude = intent.getDoubleExtra(Location.LATITUDE, 0.0)
                     val longitude = intent.getDoubleExtra(Location.LONGITUDE, 0.0)
-                    TAPChatManager.getInstance(instanceKey)
-                        .sendLocationMessage(vm.room, address, latitude, longitude)
+                    val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
+                        override fun onClick(position: Int, item: Long?) {
+                            super.onClick(position, item)
+                            TAPChatManager.getInstance(instanceKey)
+                                .sendLocationMessage(vm.room, address, latitude, longitude, item)
+                        }
+                    })
+                    timePicker.show(supportFragmentManager, "")
                 }
                 RequestCode.SEND_FILE -> {
-                    if (intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH) != null) {
-                        val tempFile = File(intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH))
+                    val filePath = intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
+                    if (filePath != null) {
+                        val tempFile = File(filePath)
                         if (TAPFileUploadManager.getInstance(instanceKey)
                                 .isSizeAllowedForUpload(tempFile.length())
                         ) {
-                            TAPChatManager.getInstance(instanceKey)
-                                .sendFileMessage(
-                                    this@TapScheduledMessageActivity,
-                                    vm.getRoom(),
-                                    tempFile
-                                )
+                            val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
+                                override fun onClick(position: Int, item: Long?) {
+                                    super.onClick(position, item)
+                                    TAPChatManager.getInstance(instanceKey)
+                                        .sendFileMessage(
+                                            this@TapScheduledMessageActivity,
+                                            vm.room,
+                                            tempFile,
+                                            item
+                                        )
+                                }
+                            })
+                            timePicker.show(supportFragmentManager, "")
                         } else {
                             TapTalkDialog.Builder(this@TapScheduledMessageActivity)
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
@@ -419,7 +452,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         // Initialize chat message RecyclerView
         messageAdapter = TAPMessageAdapter(instanceKey, glide, chatListener, vm)
         messageAdapter.setMessages(vm.messageModels)
-        messageLayoutManager = object : LinearLayoutManager(this, VERTICAL, true) {
+        // TODO: set message models MU
+        messageLayoutManager = object : LinearLayoutManager(this, VERTICAL, false) {
             override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
                 try {
                     super.onLayoutChildren(recycler, state)
@@ -445,46 +479,35 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         rv_message_list.recycledViewPool
             .setMaxRecycledViews(BubbleType.TYPE_BUBBLE_PRODUCT_LIST, 0)
         messageAnimator = rv_message_list.itemAnimator as SimpleItemAnimator
-        messageAnimator.setSupportsChangeAnimations(false)
+        messageAnimator.supportsChangeAnimations = false
         rv_message_list.itemAnimator = null
         rv_message_list.addOnScrollListener(messageListScrollListener)
         //        OverScrollDecoratorHelper.setUpOverScroll(rv_message_list, OverScrollDecoratorHelper.ORIENTATION_VERTICAL); FIXME: 8 Apr 2020 DISABLED OVERSCROLL DECORATOR
-
-        // Disable swipe in deleted user room
-        if (null != vm.getRoom() && RoomType.TYPE_PERSONAL == vm.getRoom()
-                .getType() && null != vm.getOtherUserModel() &&
-            null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted()!! > 0L
-        ) {
-            rv_message_list.disableSwipe()
-        }
+        // TODO: disable swipe message MU
         // Initialize custom keyboard
-        vm.setCustomKeyboardItems(
-            TAPChatManager.getInstance(instanceKey)
-                .getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel())
-        )
-        if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size > 0) {
+        vm.customKeyboardItems = TAPChatManager.getInstance(instanceKey)
+            .getCustomKeyboardItems(vm.room, vm.myUserModel, vm.otherUserModel)
+        if (null != vm.customKeyboardItems && vm.customKeyboardItems.size > 0) {
             // Enable custom keyboard
-            vm.setCustomKeyboardEnabled(true)
+            vm.isCustomKeyboardEnabled = true
             customKeyboardAdapter = TAPCustomKeyboardAdapter(
-                vm.getCustomKeyboardItems()
+                vm.customKeyboardItems
             ) { customKeyboardItemModel: TAPCustomKeyboardItemModel? ->
                 TAPChatManager.getInstance(instanceKey).triggerCustomKeyboardItemTapped(
                     this@TapScheduledMessageActivity,
                     customKeyboardItemModel,
-                    vm.getRoom(),
-                    vm.getMyUserModel(),
-                    vm.getOtherUserModel()
+                    vm.room,
+                    vm.myUserModel,
+                    vm.otherUserModel
                 )
             }
-            rv_custom_keyboard.setAdapter(customKeyboardAdapter)
-            rv_custom_keyboard.setLayoutManager(
-                LinearLayoutManager(
-                    this,
-                    LinearLayoutManager.VERTICAL,
-                    false
-                )
+            rv_custom_keyboard.adapter = customKeyboardAdapter
+            rv_custom_keyboard.layoutManager = LinearLayoutManager(
+                this,
+                LinearLayoutManager.VERTICAL,
+                false
             )
-            iv_chat_menu_area.setOnClickListener(View.OnClickListener { v: View? -> toggleCustomKeyboard() })
+            iv_chat_menu_area.setOnClickListener{ toggleCustomKeyboard() }
         } else {
             // Disable custom keyboard
             vm.isCustomKeyboardEnabled = false
@@ -498,18 +521,19 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         et_chat.addTextChangedListener(chatWatcher)
         et_chat.onFocusChangeListener = chatFocusChangeListener
 
-        v_room_image.setOnClickListener({ openRoomProfile() })
-        iv_button_back.setOnClickListener({ closeActivity() })
-        iv_cancel_reply.setOnClickListener({ hideQuoteLayout() })
-        iv_attach.setOnClickListener({ openAttachMenu() })
+        v_room_image.setOnClickListener { openRoomProfile() }
+        iv_button_back.setOnClickListener { closeActivity() }
+        iv_cancel_reply.setOnClickListener { hideQuoteLayout() }
+        iv_attach.setOnClickListener { openAttachMenu() }
         iv_send_area.setOnClickListener {
-                val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<TAPRoomModel>() {
-                    override fun onClick() {
-                        super.onClick()
-                        // TODO: handle send message MU
-                    }
-                })
-                timePicker.show(supportFragmentManager, "")
+            hideKeyboards()
+            val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
+                override fun onClick(position: Int, item: Long?) {
+                    super.onClick(position, item)
+                    buildAndSendTextOrLinkMessage(item)
+                }
+            })
+            timePicker.show(supportFragmentManager, "")
         }
         iv_to_bottom.setOnClickListener { scrollToBottom() }
         fl_message_list.setOnClickListener {
@@ -581,16 +605,100 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         )
     }
 
+    private fun showLoadingOlderMessagesIndicator() {
+        hideLoadingOlderMessagesIndicator()
+        rv_message_list.post {
+            runOnUiThread {
+                vm.addMessagePointer(vm.getLoadingIndicator(true))
+                messageAdapter.addItem(vm.getLoadingIndicator(false)) // Add loading indicator to last index
+                messageAdapter.notifyItemInserted(messageAdapter.itemCount - 1)
+            }
+        }
+    }
+
+    private fun hideLoadingOlderMessagesIndicator() {
+        rv_message_list.post {
+            runOnUiThread {
+                val loadingIndicator = vm.getLoadingIndicator(false)
+                if (messageAdapter.items != null && !messageAdapter.items.contains(loadingIndicator)) {
+                    return@runOnUiThread
+                }
+                val index = if (messageAdapter.items == null) {
+                    0
+                } else {
+                    messageAdapter.items.indexOf(loadingIndicator)
+                }
+                vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID)
+                if (index >= 0 && index < messageAdapter.itemCount && messageAdapter.getItemAt(index)
+                        .type == MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER
+                ) {
+                    messageAdapter.removeMessage(loadingIndicator)
+                    messageAdapter.setMessages(vm.messageModels)
+                    if (null != messageAdapter.getItemAt(index)) {
+                        messageAdapter.notifyItemChanged(index)
+                    } else {
+                        messageAdapter.notifyItemRemoved(index)
+                    }
+                    updateMessageDecoration()
+                }
+            }
+        }
+    }
+
+    private val getScheduledMessagesView = object : TAPDefaultDataView<TapGetScheduledMessageListResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+            showLoadingOlderMessagesIndicator()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+            hideLoadingOlderMessagesIndicator()
+        }
+
+        override fun onSuccess(response: TapGetScheduledMessageListResponse?) {
+            super.onSuccess(response)
+            if (response?.items?.isNotEmpty() == true) {
+                if (ll_empty_scheduled_message.visibility == View.VISIBLE) {
+                    ll_empty_scheduled_message.visibility = View.GONE
+                }
+                // TODO: add messages to list MU
+                showMessageList()
+                messageAdapter.clearItems()
+                vm.dateSeparators.clear()
+                for (scheduledMessage in response.items) {
+                    if (scheduledMessage.message != null) {
+                        val message = TAPEncryptorManager.getInstance().decryptMessage(scheduledMessage.message.toHashMap())
+                        // hide sending icon for scheduled message page only
+                        message.isSending = false
+                        messageAdapter.addMessage(message)
+                    }
+                }
+            } else {
+                if (ll_empty_scheduled_message.visibility == View.GONE) {
+                    ll_empty_scheduled_message.visibility = View.VISIBLE
+                }
+                hideMessageList()
+            }
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+        }
+    }
 
     private val chatListener: TAPChatListener = object : TAPChatListener() {
 
-        override fun onSendMessage(message: TAPMessageModel) {
-            if (null == vm.room || message.room.roomID != vm.room.roomID) {
+        override fun onCreateScheduledMessage(scheduledMessage: TapScheduledMessageModel?) {
+            super.onCreateScheduledMessage(scheduledMessage)
+            if (null == vm.room || null == scheduledMessage?.message || scheduledMessage.message.room.roomID != vm.room.roomID) {
                 return
             }
-            TAPChatManager.getInstance(instanceKey)
-                .triggerActiveUserSendMessage(this@TapScheduledMessageActivity, message, vm.room)
-            addNewMessage(message)
+            addNewMessage(scheduledMessage.message)
             hideQuoteLayout()
         }
 
@@ -799,7 +907,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
     }
 
     private fun showMessageList() {
-        fl_message_list.setVisibility(View.VISIBLE)
+        fl_message_list.visibility = View.VISIBLE
+    }
+
+    private fun hideMessageList() {
+        fl_message_list.visibility = View.GONE
     }
 
     private fun updateMessageDecoration() {
@@ -1340,6 +1452,87 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         )
     }
 
+    private fun buildAndSendTextOrLinkMessage(scheduledTime : Long?) {
+        val message: String = et_chat.text.toString().trim { it <= ' ' }
+        if (vm.quotedMessage != null && vm.quoteAction == QuoteAction.EDIT) {
+            // edit message
+            val messageModel = vm.quotedMessage
+            if ((messageModel.type == MessageType.TYPE_TEXT || messageModel.type == MessageType.TYPE_LINK) && !TextUtils.isEmpty(
+                    message
+                )
+            ) {
+                messageModel.body = message
+                var data = messageModel.data
+                if (data == null) {
+                    data = HashMap()
+                }
+                data[MessageData.TITLE] = vm.linkHashMap[MessageData.TITLE]
+                data[MessageData.DESCRIPTION] = vm.linkHashMap[MessageData.DESCRIPTION]
+                data[MessageData.IMAGE] = vm.linkHashMap[MessageData.IMAGE]
+                data[MessageData.TYPE] = vm.linkHashMap[MessageData.TYPE]
+                data[MessageData.URL] = vm.linkHashMap[MessageData.URL]
+                messageModel.data = data
+            } else if (messageModel.type == MessageType.TYPE_IMAGE || messageModel.type == MessageType.TYPE_VIDEO) {
+                val data = messageModel.data
+                if (data != null) {
+                    data[MessageData.CAPTION] = message
+                    messageModel.data = data
+                }
+            } else {
+                return
+            }
+            // TODO: handle edit scheduled message MU
+            TAPChatManager.getInstance(instanceKey)
+                .editMessage(messageModel, message, object : TapCoreSendMessageListener() {
+                    override fun onError(
+                        message: TAPMessageModel?,
+                        errorCode: String,
+                        errorMessage: String
+                    ) {
+                        if (errorCode == ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT) {
+                            TapTalkDialog.Builder(this@TapScheduledMessageActivity)
+                                .setTitle(getString(R.string.tap_error_unable_to_edit_message))
+                                .setMessage(errorMessage)
+                                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                .show()
+                        }
+                    }
+                }, true)
+            hideQuoteLayout()
+        } else if (!TextUtils.isEmpty(message)) {
+            val firstUrl = vm.linkHashMap[MessageData.URL]
+            if (firstUrl != null && firstUrl.isNotEmpty()) {
+                // send message as link
+                val data = HashMap<String, Any?>()
+                data[MessageData.TITLE] = vm.linkHashMap[MessageData.TITLE]
+                data[MessageData.DESCRIPTION] = vm.linkHashMap[MessageData.DESCRIPTION]
+                data[MessageData.IMAGE] = vm.linkHashMap[MessageData.IMAGE]
+                data[MessageData.TYPE] = vm.linkHashMap[MessageData.TYPE]
+                data[MessageData.URL] = firstUrl
+                TAPChatManager.getInstance(instanceKey).sendLinkMessage(message, data, scheduledTime)
+            } else {
+                // send message as text
+                TAPChatManager.getInstance(instanceKey).sendTextMessage(message, scheduledTime)
+            }
+            rv_message_list.post(Runnable { scrollToBottom() })
+        } else {
+            TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.room)
+            iv_send.setColorFilter(
+                ContextCompat.getColor(
+                    TapTalk.appContext,
+                    R.color.tapIconChatComposerSendInactive
+                )
+            )
+            iv_send_area.setImageDrawable(
+                ContextCompat.getDrawable(
+                    this@TapScheduledMessageActivity,
+                    R.drawable.tap_bg_chat_composer_send_inactive
+                )
+            )
+        }
+        et_chat.setText("")
+    }
+
     private fun updateMessage(newMessage: TAPMessageModel) {
         if (vm.containerAnimationState == vm.ANIMATING) {
             // Hold message if layout is animating
@@ -1611,7 +1804,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
     private val chatWatcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            linkHandler?.removeCallbacks(linkRunnable)
+            if (::linkRunnable.isInitialized) {
+                linkHandler.removeCallbacks(linkRunnable)
+            }
         }
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {

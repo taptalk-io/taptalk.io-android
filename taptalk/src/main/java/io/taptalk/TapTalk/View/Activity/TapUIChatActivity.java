@@ -1287,10 +1287,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vScreen.setOnClickListener(v -> hideScheduleMessageButton());
         cvSchedule.setOnClickListener(v -> {
             hideScheduleMessageButton();
-            TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TAPGeneralListener<TAPRoomModel>() {
+            TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TAPGeneralListener<>() {
                 @Override
-                public void onClick() {
-                    super.onClick();
+                public void onClick(int position, Long item) {
+                    super.onClick(position, item);
+                    // TODO: 17/10/22 call create scheduled  message API MU
                     TapScheduledMessageActivity.Companion.start(TapUIChatActivity.this, instanceKey, vm.getRoom());
                 }
             });
