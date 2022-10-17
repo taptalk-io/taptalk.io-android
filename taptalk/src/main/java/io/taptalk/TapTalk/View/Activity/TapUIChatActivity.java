@@ -1277,7 +1277,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 pinnedMessageLayoutOnClick();
             }
         });
-        // TODO: 05/10/22 add tapUI case for schedule message MU
         ivButtonSend.setOnLongClickListener(view -> {
             if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
                 showScheduleMessageButton();
@@ -1285,6 +1284,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
             return true;
         });
         vScreen.setOnClickListener(v -> hideScheduleMessageButton());
+        // scheduled message icon always shown (temporary)
+        if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+            ivSchedule.setVisibility(View.VISIBLE);
+        }
         cvSchedule.setOnClickListener(v -> {
             hideScheduleMessageButton();
             TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TAPGeneralListener<>() {
