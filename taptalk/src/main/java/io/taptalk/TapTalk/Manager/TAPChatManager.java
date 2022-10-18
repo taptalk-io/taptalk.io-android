@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
@@ -902,6 +903,8 @@ public class TAPChatManager {
     }
 
     private void triggerListenerAndSendScheduledMessage(TAPMessageModel message, Long scheduledTime, boolean isNotifyChatListener) {
+        // update status text
+        message.setMessageStatusText(TAPTimeFormatter.formatClock(scheduledTime));
         List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
         if (!chatListenersCopy.isEmpty() && isNotifyChatListener) {
             for (TAPChatListener chatListener : chatListenersCopy) {
