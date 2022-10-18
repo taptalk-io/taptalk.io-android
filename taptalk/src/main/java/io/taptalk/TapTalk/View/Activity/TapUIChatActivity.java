@@ -1278,7 +1278,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         });
         ivButtonSend.setOnLongClickListener(view -> {
-            if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+            if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled() &&
+                    (vm.getQuoteAction() != EDIT && vm.getQuoteAction() != FORWARD)) {
                 showScheduleMessageButton();
             }
             return true;
