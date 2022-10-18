@@ -89,11 +89,11 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
         np_minute.minValue = minutes[0].toInt()
         np_minute.maxValue = minutes[minutes.size-1].toInt()
         np_minute.displayedValues = minutes
-        np_minute.value = currentCal.get(Calendar.MINUTE) + 1
         np_minute.setOnValueChangedListener { _, _, _ ->
             checkTimeValue()
             btn_send.text = getTimeResult()
         }
+        np_minute.value = currentCal.get(Calendar.MINUTE) + 1
 
         tv_cancel_btn.setOnClickListener {
             dismiss()
