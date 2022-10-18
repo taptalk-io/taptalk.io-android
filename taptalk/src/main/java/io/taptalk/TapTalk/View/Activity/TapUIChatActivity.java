@@ -1295,8 +1295,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 @Override
                 public void onClick(int position, Long item) {
                     super.onClick(position, item);
-                    // TODO: 17/10/22 call create scheduled  message API MU
-                    TapScheduledMessageActivity.Companion.start(TapUIChatActivity.this, instanceKey, vm.getRoom());
+                    TapScheduledMessageActivity.Companion.start(TapUIChatActivity.this, instanceKey, vm.getRoom(), etChat.getText().toString(), item);
+                    etChat.setText("");
                 }
             });
             timePicker.show(getSupportFragmentManager(), "");

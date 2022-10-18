@@ -167,6 +167,7 @@ public class TAPDefaultConstant {
         public static final String FROM_NOTIF = "kTAPFromNotification";
         public static final String SOCKET_CONNECTED = "kSocketConnected";
         public static final String IS_NEED_REFRESH = "kNeedRefresh";
+        public static final String TIME = "kTAPExtraTime";
     }
 
     public static final class RequestCode {
