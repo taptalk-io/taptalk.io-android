@@ -761,8 +761,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
         }
 
-        override fun onScheduledMessageSent(scheduledMessage: TapScheduledMessageModel?) {
-            super.onScheduledMessageSent(scheduledMessage)
+        override fun onGetScheduledMessageList() {
+            super.onGetScheduledMessageList()
             getScheduledMessages()
         }
 
@@ -1667,7 +1667,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 }
             }
             updateMessageMentionIndexes(newMessage)
-            var previousMessage = messageAdapter.getItemAt(0)
+            var previousMessage : TAPMessageModel? = null
             for (message in messageAdapter.items) {
                 if (scheduledTime < message.created) {
                     previousMessage = message
@@ -1675,7 +1675,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     break
                 }
             }
-            val index = messageAdapter.items.indexOf(previousMessage) + 1
+            val index = if (previousMessage == null) {
+                0
+            } else {
+                messageAdapter.items.indexOf(previousMessage) + 1
+            }
             val currentDate = TAPTimeFormatter.formatDate(newMessage.created)
             if ((null == newMessage.isHidden || !newMessage.isHidden!!) && newMessage.type != MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER && newMessage.type != MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER && newMessage.type != MessageType.TYPE_DATE_SEPARATOR &&
                 (null == previousMessage || currentDate != TAPTimeFormatter
