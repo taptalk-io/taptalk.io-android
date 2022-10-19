@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class TapScheduledMessageModel (
     @field:JsonProperty("updatedTime")
-    val updatedTime: Int? = null,
+    val updatedTime: Long? = null,
 
     @field:JsonProperty("scheduledTime")
     val scheduledTime: Long? = null,
