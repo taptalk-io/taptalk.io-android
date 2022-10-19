@@ -50,10 +50,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
-import io.taptalk.TapTalk.Listener.TAPAttachmentListener
-import io.taptalk.TapTalk.Listener.TAPChatListener
-import io.taptalk.TapTalk.Listener.TAPGeneralListener
-import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener
+import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Model.*
@@ -145,6 +142,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (initViewModel())
             initView()
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener)
+        TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener)
         textMessage = intent.getStringExtra(Extras.MESSAGE)
         textTime = intent.getLongExtra(Extras.TIME, -1)
     }
@@ -159,6 +157,15 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (rv_custom_keyboard.isVisible) {
             hideKeyboards()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        TAPBroadcastManager.unregister(this, broadcastReceiver)
+        TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener)
+        TAPConnectionManager.getInstance(instanceKey).removeSocketListener(socketListener)
+        TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads() // Remove failed download list from active room
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -735,14 +742,19 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 textMessage = null
                 textTime = null
             }
+            if (!vm.isInitialAPICallFinished) {
+                vm.isInitialAPICallFinished = true
+            }
         }
 
         override fun onError(error: TAPErrorModel?) {
             super.onError(error)
+            hideLoadingOlderMessagesIndicator()
         }
 
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
+            hideLoadingOlderMessagesIndicator()
         }
     }
 
@@ -2345,6 +2357,16 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 .setMessage(message)
                 .setPrimaryButtonTitle(getString(R.string.tap_ok))
                 .show()
+        }
+    }
+
+    private val socketListener = object : TAPSocketListener() {
+        override fun onSocketConnected() {
+            if (!vm.isInitialAPICallFinished) {
+                // Call Message List API
+                getScheduledMessages()
+            }
+            restartFailedDownloads()
         }
     }
 
