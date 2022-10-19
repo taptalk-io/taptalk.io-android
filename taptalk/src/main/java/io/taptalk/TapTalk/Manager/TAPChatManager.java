@@ -82,6 +82,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketPinRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketScheduleMessageRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnmuteRoom;
@@ -320,6 +321,11 @@ public class TAPChatManager {
                     TAPDataManager.getInstance(instanceKey).removePinnedRoomID(unpinnedRoomId);
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         chatListener.onUnpinRoom(unpinRoomData.getRoom());
+                    }
+                    break;
+                case kSocketScheduleMessageRoom:
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onGetScheduledMessageList();
                     }
                     break;
             }

@@ -71,4 +71,6 @@ public interface TapTalkChatInterface {
     void onScheduledSendFailed(TapScheduledMessageModel scheduledMessage);
 
     void onScheduledMessageSent(TapScheduledMessageModel scheduledMessage);
+
+    void onGetScheduledMessageList();
 }

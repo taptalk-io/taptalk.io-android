@@ -148,4 +148,9 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     public void onScheduledMessageSent(TapScheduledMessageModel scheduledMessage) {
 
     }
+
+    @Override
+    public void onGetScheduledMessageList() {
+
+    }
 }
