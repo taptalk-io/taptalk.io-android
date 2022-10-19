@@ -936,7 +936,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
         clChatComposerAndHistory = (ConstraintLayout) findViewById(R.id.cl_chat_composer_and_history);
         clChatHistory = (ConstraintLayout) findViewById(R.id.cl_chat_history);
-        clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
+        clQuote = (ConstraintLayout) findViewById(R.id.cl_quote_layout);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clUserMentionList = (ConstraintLayout) findViewById(R.id.cl_user_mention_list);
         clRoomStatus = (ConstraintLayout) findViewById(R.id.cl_room_status);
@@ -959,7 +959,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatarEmpty = (CircleImageView) findViewById(R.id.civ_my_avatar_empty);
         civRoomAvatarEmpty = (CircleImageView) findViewById(R.id.civ_room_avatar_empty);
-        rcivQuoteImage = (TAPRoundedCornerImageView) findViewById(R.id.rciv_quote_image);
+        rcivQuoteImage = (TAPRoundedCornerImageView) findViewById(R.id.rciv_quote_layout_image);
         tvRoomName = (TextView) findViewById(R.id.tv_room_name);
         tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
         tvRoomImageLabel = (TextView) findViewById(R.id.tv_room_image_label);
@@ -972,8 +972,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvMyAvatarLabelEmpty = (TextView) findViewById(R.id.tv_my_avatar_label_empty);
         tvRoomAvatarLabelEmpty = (TextView) findViewById(R.id.tv_room_avatar_label_empty);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
-        tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_title);
-        tvQuoteContent = (TextView) findViewById(R.id.tv_quote_content);
+        tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_layout_title);
+        tvQuoteContent = (TextView) findViewById(R.id.tv_quote_layout_content);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
         tvBadgeMentionCount = (TextView) findViewById(R.id.tv_badge_mention_count);
         tvChatHistoryContent = (TextView) findViewById(R.id.tv_chat_history_content);
@@ -985,7 +985,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         etChat = (EditText) findViewById(R.id.et_chat);
         vRoomImage = findViewById(R.id.v_room_image);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
-        vQuoteDecoration = findViewById(R.id.v_quote_decoration);
+        vQuoteDecoration = findViewById(R.id.v_quote_layout_decoration);
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
         ivVoiceNote = findViewById(R.id.iv_voice_note);
         clVoiceNote = findViewById(R.id.cl_voice_note);

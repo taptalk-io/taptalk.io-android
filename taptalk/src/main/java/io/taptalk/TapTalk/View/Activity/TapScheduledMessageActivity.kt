@@ -54,8 +54,10 @@ import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Model.*
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter
@@ -141,6 +143,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         linkHandler = Handler(mainLooper)
         if (initViewModel())
             initView()
+        registerBroadcastManager()
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener)
         TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener)
         textMessage = intent.getStringExtra(Extras.MESSAGE)
@@ -552,13 +555,17 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         iv_attach.setOnClickListener { openAttachMenu() }
         iv_send_area.setOnClickListener {
             hideKeyboards()
-            val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
-                override fun onClick(position: Int, item: Long?) {
-                    super.onClick(position, item)
-                    buildAndSendTextOrLinkMessage(et_chat.text.toString().trim { it <= ' ' }, item)
-                }
-            })
-            timePicker.show(supportFragmentManager, "")
+            if (vm.quoteAction != null) {
+                buildAndSendTextOrLinkMessage(et_chat.text.toString().trim { it <= ' ' }, vm.quotedMessage.created)
+            } else {
+                val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
+                    override fun onClick(position: Int, item: Long?) {
+                        super.onClick(position, item)
+                        buildAndSendTextOrLinkMessage(et_chat.text.toString().trim { it <= ' ' }, item)
+                    }
+                })
+                timePicker.show(supportFragmentManager, "")
+            }
         }
         iv_to_bottom.setOnClickListener { scrollToBottom() }
         fl_message_list.setOnClickListener {
@@ -1006,28 +1013,28 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
     }
 
-    private fun showEditLayout(message: TAPMessageModel?, quoteAction: Int) {
+    private fun showEditLayout(message: TAPMessageModel?) {
         if (null == message) {
             return
         }
-        vm.setQuotedMessage(message, quoteAction)
+        vm.setQuotedMessage(message, QuoteAction.EDIT)
         runOnUiThread {
-            cl_quote.setVisibility(View.VISIBLE)
+            cl_quote_layout.visibility = View.VISIBLE
             // Add other quotable message type here
             if ((message.type == MessageType.TYPE_IMAGE || message.type == MessageType.TYPE_VIDEO) && null != message.data) {
                 // Show image quote
-                v_quote_decoration.setVisibility(View.GONE)
+                v_quote_layout_decoration.setVisibility(View.GONE)
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
                 var drawable: Drawable? = null
                 val fileID =
                     message.data!![MessageData.FILE_ID] as String?
-                if (null != fileID && !fileID.isEmpty()) {
+                if (null != fileID && fileID.isNotEmpty()) {
                     drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID)
                 }
                 if (null == drawable) {
                     val fileUrl =
                         message.data!![MessageData.FILE_URL] as String?
-                    if (null != fileUrl && !fileUrl.isEmpty()) {
+                    if (null != fileUrl && fileUrl.isNotEmpty()) {
                         drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(
                             TAPUtils.removeNonAlphaNumeric(fileUrl)
                                 .lowercase(Locale.getDefault())
@@ -1035,7 +1042,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     }
                 }
                 if (null != drawable) {
-                    rciv_quote_image.setImageDrawable(drawable)
+                    rciv_quote_layout_image.setImageDrawable(drawable)
                 } else {
                     // Show small thumbnail
                     val thumbnail: Drawable = BitmapDrawable(
@@ -1045,21 +1052,19 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                             ) "" else message.data!![MessageData.THUMBNAIL]) as String?
                         )
                     )
-                    rciv_quote_image.setImageDrawable(thumbnail)
+                    rciv_quote_layout_image.setImageDrawable(thumbnail)
                 }
-                rciv_quote_image.setColorFilter(null)
-                rciv_quote_image.setBackground(null)
-                rciv_quote_image.setScaleType(ImageView.ScaleType.CENTER_CROP)
-                rciv_quote_image.setVisibility(View.VISIBLE)
-                tv_quote_title.setText(R.string.tap_edit_message)
-                tv_quote_content.setText(message.body)
-                tv_quote_content.setMaxLines(1)
-                et_chat.setFilters(
-                    arrayOf<InputFilter>(
-                        LengthFilter(
-                            TapTalk.getMaxCaptionLength(
-                                instanceKey
-                            )
+                rciv_quote_layout_image.colorFilter = null
+                rciv_quote_layout_image.background = null
+                rciv_quote_layout_image.scaleType = ImageView.ScaleType.CENTER_CROP
+                rciv_quote_layout_image.visibility = View.VISIBLE
+                tv_quote_layout_title.setText(R.string.tap_edit_message)
+                tv_quote_layout_content.text = message.body
+                tv_quote_layout_content.maxLines = 1
+                et_chat.filters = arrayOf<InputFilter>(
+                    LengthFilter(
+                        TapTalk.getMaxCaptionLength(
+                            instanceKey
                         )
                     )
                 )
@@ -1068,21 +1073,19 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             ) {
                 // Show image quote from file URL
                 glide.load(message.data!![MessageData.FILE_URL] as String?)
-                    .into(rciv_quote_image)
-                rciv_quote_image.setColorFilter(null)
-                rciv_quote_image.setBackground(null)
-                rciv_quote_image.setScaleType(ImageView.ScaleType.CENTER_CROP)
-                rciv_quote_image.setVisibility(View.VISIBLE)
-                v_quote_decoration.setVisibility(View.GONE)
-                tv_quote_title.setText(R.string.tap_edit_message)
-                tv_quote_content.setText(message.body)
-                tv_quote_content.setMaxLines(1)
-                et_chat.setFilters(
-                    arrayOf<InputFilter>(
-                        LengthFilter(
-                            TapTalk.getMaxCaptionLength(
-                                instanceKey
-                            )
+                    .into(rciv_quote_layout_image)
+                rciv_quote_layout_image.colorFilter = null
+                rciv_quote_layout_image.background = null
+                rciv_quote_layout_image.scaleType = ImageView.ScaleType.CENTER_CROP
+                rciv_quote_layout_image.visibility = View.VISIBLE
+                v_quote_layout_decoration.visibility = View.GONE
+                tv_quote_layout_title.setText(R.string.tap_edit_message)
+                tv_quote_layout_content.text = message.body
+                tv_quote_layout_content.maxLines = 1
+                et_chat.filters = arrayOf<InputFilter>(
+                    LengthFilter(
+                        TapTalk.getMaxCaptionLength(
+                            instanceKey
                         )
                     )
                 )
@@ -1091,57 +1094,53 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             ) {
                 // Show image quote from image URL
                 glide.load(message.data!![MessageData.IMAGE_URL] as String?)
-                    .into(rciv_quote_image)
-                rciv_quote_image.setColorFilter(null)
-                rciv_quote_image.setBackground(null)
-                rciv_quote_image.setScaleType(ImageView.ScaleType.CENTER_CROP)
-                rciv_quote_image.setVisibility(View.VISIBLE)
-                v_quote_decoration.setVisibility(View.GONE)
-                tv_quote_title.setText(R.string.tap_edit_message)
-                tv_quote_content.setText(message.body)
-                tv_quote_content.setMaxLines(1)
-                et_chat.setFilters(
-                    arrayOf<InputFilter>(
-                        LengthFilter(
-                            TapTalk.getMaxCaptionLength(
-                                instanceKey
-                            )
+                    .into(rciv_quote_layout_image)
+                rciv_quote_layout_image.colorFilter = null
+                rciv_quote_layout_image.background = null
+                rciv_quote_layout_image.scaleType = ImageView.ScaleType.CENTER_CROP
+                rciv_quote_layout_image.visibility = View.VISIBLE
+                v_quote_layout_decoration.visibility = View.GONE
+                tv_quote_layout_title.setText(R.string.tap_edit_message)
+                tv_quote_layout_content.text = message.body
+                tv_quote_layout_content.maxLines = 1
+                et_chat.filters = arrayOf<InputFilter>(
+                    LengthFilter(
+                        TapTalk.getMaxCaptionLength(
+                            instanceKey
                         )
                     )
                 )
                 et_chat.setText(message.data!![MessageData.CAPTION].toString())
             } else {
                 // Show text quote
-                v_quote_decoration.setVisibility(View.VISIBLE)
-                rciv_quote_image.setVisibility(View.GONE)
-                tv_quote_title.setText(R.string.tap_edit_message)
-                tv_quote_content.setText(message.body)
-                tv_quote_content.setMaxLines(2)
-                et_chat.setFilters(arrayOf<InputFilter>(LengthFilter(CHARACTER_LIMIT)))
+                v_quote_layout_decoration.visibility = View.VISIBLE
+                rciv_quote_layout_image.visibility = View.GONE
+                tv_quote_layout_title.setText(R.string.tap_edit_message)
+                tv_quote_layout_content.text = message.body
+                tv_quote_layout_content.maxLines = 2
+                et_chat.filters = arrayOf<InputFilter>(LengthFilter(CHARACTER_LIMIT))
                 et_chat.setText(message.body)
             }
             val hadFocus: Boolean = et_chat.hasFocus()
             TAPUtils.showKeyboard(this, et_chat)
-            Handler().postDelayed({ et_chat.requestFocus() }, 300L)
-            if (!hadFocus && et_chat.getSelectionEnd() == 0) {
-                et_chat.setSelection(et_chat.getText().length)
+            Handler(mainLooper).postDelayed({ et_chat.requestFocus() }, 300L)
+            if (!hadFocus && et_chat.selectionEnd == 0) {
+                et_chat.setSelection(et_chat.text.length)
             }
         }
     }
 
     private fun hideQuoteLayout() {
-        if (vm.getQuoteAction() == QuoteAction.EDIT) {
-            et_chat.setFilters(arrayOf<InputFilter>())
-            et_chat.setText("")
-        }
+        et_chat.filters = arrayOf<InputFilter>()
+        et_chat.setText("")
         vm.setQuotedMessage(null, 0)
         vm.setForwardedMessages(null, 0)
         val hasFocus: Boolean = et_chat.hasFocus()
-        if (cl_quote.getVisibility() == View.VISIBLE) {
+        if (cl_quote_layout.visibility == View.VISIBLE) {
             runOnUiThread {
-                cl_quote.setVisibility(View.GONE)
+                cl_quote_layout.visibility = View.GONE
                 if (hasFocus) {
-                    cl_quote.post(Runnable { et_chat.requestFocus() })
+                    cl_quote_layout.post{ et_chat.requestFocus() }
                 }
             }
         }
@@ -1492,20 +1491,90 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
             override fun onEditMessage(message: TAPMessageModel) {
                 super.onEditMessage(message)
-                if (null == vm.getRoom() || message.room.roomID != vm.getRoom().getRoomID()) {
+                if (null == vm.room || message.room.roomID != vm.room.roomID) {
                     return
                 }
-                showEditLayout(message, QuoteAction.EDIT)
+                showEditLayout(message)
+            }
+
+            override fun onDeleteMessage(roomID: String?, message: TAPMessageModel?) {
+                super.onDeleteMessage(roomID, message)
+                val deletedIds = listOf(message?.messageID?.toInt())
+                TAPDataManager.getInstance(instanceKey).deleteScheduledMessages(deletedIds, roomID, idsView)
+            }
+
+            override fun onSendNow(message: TAPMessageModel?) {
+                super.onSendNow(message)
+                val sentIds = listOf(message?.messageID?.toInt())
+                TAPDataManager.getInstance(instanceKey).sendScheduledMessageNow(sentIds, vm.room.roomID, idsView)
+            }
+
+            override fun onRescheduleMessage(message: TAPMessageModel?) {
+                super.onRescheduleMessage(message)
+                val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
+                    override fun onClick(position: Int, item: Long?) {
+                        super.onClick(position, item)
+                        TAPDataManager.getInstance(instanceKey).editScheduledMessageTime(message?.messageID?.toInt(), item, commonView)
+                    }
+                }, message?.created)
+                timePicker.show(supportFragmentManager, "")
             }
         }
 
+    private val idsView = object : TAPDefaultDataView<TapIdsResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+            showLoadingPopup()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+            hideLoadingPopup()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            endLoading()
+            showErrorDialog(error?.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            endLoading()
+            showErrorDialog(errorMessage)
+        }
+    }
+
+    private val commonView = object : TAPDefaultDataView<TAPCommonResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+            showLoadingPopup()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+            hideLoadingPopup()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            endLoading()
+            showErrorDialog(error?.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            endLoading()
+            showErrorDialog(errorMessage)
+        }
+    }
 
     private fun openMediaPreviewPage(mediaPreviews: ArrayList<TAPMediaPreviewModel>) {
         TAPMediaPreviewActivity.start(
             this@TapScheduledMessageActivity,
             instanceKey,
             mediaPreviews,
-            ArrayList<TAPUserModel>(vm.getRoomParticipantsByUsername().values)
+            ArrayList(vm.roomParticipantsByUsername.values)
         )
     }
 
@@ -1537,14 +1606,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             } else {
                 return
             }
-            // TODO: handle edit scheduled message MU
             TAPChatManager.getInstance(instanceKey)
-                .editMessage(messageModel, message, object : TapCoreSendMessageListener() {
-                    override fun onError(
-                        message: TAPMessageModel?,
-                        errorCode: String,
-                        errorMessage: String
-                    ) {
+                .editScheduledMessage(messageModel.messageID!!.toInt(), messageModel, message, object : TapCommonListener() {
+                    override fun onError(errorCode: String?, errorMessage: String?) {
+                        super.onError(errorCode, errorMessage)
                         if (errorCode == ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT) {
                             TapTalkDialog.Builder(this@TapScheduledMessageActivity)
                                 .setTitle(getString(R.string.tap_error_unable_to_edit_message))
@@ -1988,7 +2053,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             vm.clearLinkHashMap()
         } else {
             if (vm.getQuotedMessage() != null) {
-                cl_quote.setVisibility(View.VISIBLE)
+                cl_quote_layout.setVisibility(View.VISIBLE)
             }
         }
         cl_link.setVisibility(View.GONE)
@@ -2236,7 +2301,6 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
     }
 
-
     private val chatFocusChangeListener =
         OnFocusChangeListener { v, hasFocus ->
             if (hasFocus && vm.isCustomKeyboardEnabled) {
@@ -2345,14 +2409,14 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
     }
 
     private fun hideLoadingPopup() {
-        runOnUiThread { fl_loading.setVisibility(View.GONE) }
+        runOnUiThread { fl_loading.visibility = View.GONE }
     }
 
-    private fun showErrorDialog(title: String, message: String) {
+    private fun showErrorDialog(message: String?) {
         runOnUiThread {
             TapTalkDialog.Builder(this)
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                .setTitle(title)
+                .setTitle(getString(R.string.tap_error))
                 .setCancelable(true)
                 .setMessage(message)
                 .setPrimaryButtonTitle(getString(R.string.tap_ok))
@@ -2483,26 +2547,16 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         showDownloadFileDialog()
                     }
                 }
-                LongPressBroadcastEvent.LongPressChatBubble ->                     //disable long press in deleted user room
-                    if (null != intent.getParcelableExtra(Extras.MESSAGE) && intent.getParcelableExtra<Parcelable>(
-                            Extras.MESSAGE
-                        ) is TAPMessageModel
-                    ) {
-                        if (RoomType.TYPE_PERSONAL != vm.getRoom()
-                                .getType() || null != vm.getOtherUserModel() && (null == vm.getOtherUserModel()
-                                .getDeleted() || vm.getOtherUserModel().getDeleted()!! <= 0L)
-                        ) {
-                            val chatBubbleBottomSheet = newInstance(
-                                instanceKey,
-                                LongPressType.CHAT_BUBBLE_TYPE,
-                                (intent.getParcelableExtra<Parcelable>(Extras.MESSAGE) as TAPMessageModel?)!!,
-                                attachmentListener,
-                                vm.getStarredMessageIds(),
-                                vm.getPinnedMessageIds()
-                            )
-                            chatBubbleBottomSheet.show(supportFragmentManager, "")
-                            TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
-                        }
+                LongPressBroadcastEvent.LongPressChatBubble ->
+                    if (null != intent.getParcelableExtra(Extras.MESSAGE) && intent.getParcelableExtra<Parcelable>(Extras.MESSAGE) is TAPMessageModel) {
+                        val chatBubbleBottomSheet = newInstance(
+                            instanceKey,
+                            LongPressType.SCHEDULED_TYPE,
+                            (intent.getParcelableExtra<Parcelable>(Extras.MESSAGE) as TAPMessageModel?)!!,
+                            attachmentListener
+                        )
+                        chatBubbleBottomSheet.show(supportFragmentManager, "")
+                        TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 LongPressBroadcastEvent.LongPressLink -> if (null != intent.getStringExtra(Extras.URL_MESSAGE) && null != intent.getStringExtra(
                         Extras.COPY_MESSAGE

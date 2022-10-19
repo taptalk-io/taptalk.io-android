@@ -707,7 +707,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_quote"
+                android:id="@+id/cl_quote_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="8dp"
@@ -729,7 +729,7 @@
                     app:tint="@color/tapIconChatRoomCancelQuote" />
 
                 <View
-                    android:id="@+id/v_quote_decoration"
+                    android:id="@+id/v_quote_layout_decoration"
                     android:layout_width="4dp"
                     android:layout_height="0dp"
                     android:background="@drawable/tap_bg_quote_decoration"
@@ -738,7 +738,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
-                    android:id="@+id/rciv_quote_image"
+                    android:id="@+id/rciv_quote_layout_image"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:layout_marginStart="4dp"
@@ -754,7 +754,7 @@
                     tools:src="@drawable/tap_img_chat_empty" />
 
                 <TextView
-                    android:id="@+id/tv_quote_title"
+                    android:id="@+id/tv_quote_layout_title"
                     style="@style/tapQuoteLayoutTitleLabelStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -765,15 +765,15 @@
                     android:layout_marginRight="48dp"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    app:layout_constraintBottom_toTopOf="@id/tv_quote_content"
+                    app:layout_constraintBottom_toTopOf="@id/tv_quote_layout_content"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/rciv_quote_image"
+                    app:layout_constraintStart_toEndOf="@id/rciv_quote_layout_image"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed"
                     tools:text="User Name" />
 
                 <TextView
-                    android:id="@+id/tv_quote_content"
+                    android:id="@+id/tv_quote_layout_content"
                     style="@style/tapQuoteLayoutContentLabelStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -787,8 +787,8 @@
                     android:maxLines="2"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/rciv_quote_image"
-                    app:layout_constraintTop_toBottomOf="@id/tv_quote_title"
+                    app:layout_constraintStart_toEndOf="@id/rciv_quote_layout_image"
+                    app:layout_constraintTop_toBottomOf="@id/tv_quote_layout_title"
                     tools:text="In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
