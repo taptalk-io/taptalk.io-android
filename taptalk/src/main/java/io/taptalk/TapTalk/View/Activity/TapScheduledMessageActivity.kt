@@ -673,6 +673,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
     private val getScheduledMessagesView = object : TAPDefaultDataView<TapGetScheduledMessageListResponse>() {
         override fun startLoading() {
             super.startLoading()
+            showMessageList()
             showLoadingOlderMessagesIndicator()
         }
 
@@ -686,6 +687,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             if (response?.items?.isNotEmpty() == true) {
                 messageAdapter.clearItems()
                 vm.dateSeparators.clear()
+                var previousModel : TapScheduledMessageModel? = response.items[0]
+                val firstDateSeparator = generateDateSeparator(previousModel?.scheduledTime)
+                messageAdapter.addMessage(firstDateSeparator)
+
                 for (scheduledMessage in response.items) {
                     if (scheduledMessage.message != null) {
                         val message = TAPEncryptorManager.getInstance().decryptMessage(scheduledMessage.message.toHashMap())
@@ -697,7 +702,15 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                             message.messageStatusText = TAPTimeFormatter.formatClock(scheduledMessage.scheduledTime)
                             message.created = scheduledMessage.scheduledTime
                         }
+                        // add date separator
+                        if (previousModel != null && TAPTimeFormatter.formatDate(previousModel.scheduledTime!!) != TAPTimeFormatter.formatDate(scheduledMessage.scheduledTime!!)) {
+                            val dateSeparator = generateDateSeparator(scheduledMessage.scheduledTime)
+                            vm.dateSeparators[dateSeparator.body] = dateSeparator
+                            vm.dateSeparatorIndexes[dateSeparator.body] = messageAdapter.items.indexOf(previousModel.message)
+                            messageAdapter.addMessage(dateSeparator)
+                        }
                         messageAdapter.addMessage(message)
+                        previousModel = scheduledMessage
                     }
                 }
                 runOnUiThread {
@@ -705,6 +718,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         ll_empty_scheduled_message.visibility = View.GONE
                     }
                     showMessageList()
+                    updateMessageDecoration()
                     messageAdapter.notifyDataSetChanged()
                 }
             } else {
@@ -977,17 +991,6 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     messageAdapter.itemCount - 1
                 )
             )
-        }
-    }
-
-
-    private fun checkForwardLayout(
-        message: TAPMessageModel?,
-        messages: ArrayList<TAPMessageModel>?,
-        quoteAction: Int
-    ) {
-        runOnUiThread {
-            showEditLayout(message, quoteAction)
         }
     }
 
@@ -1560,6 +1563,21 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         et_chat.setText("")
     }
 
+    private fun generateDateSeparator(time: Long?) : TAPMessageModel {
+        if (time == null) {
+            return TAPMessageModel()
+        }
+        return TAPMessageModel.Builder(
+            String.format(getString(R.string.tap_format_s_scheduled_for), TAPTimeFormatter.formatScheduledDate(time)),
+            vm.room,
+            MessageType.TYPE_DATE_SEPARATOR,
+            time - 1,
+            vm.myUserModel,
+            "",
+            null
+        )
+    }
+
     private fun updateMessage(newMessage: TAPMessageModel) {
         if (vm.containerAnimationState == vm.ANIMATING) {
             // Hold message if layout is animating
@@ -1597,15 +1615,16 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     val currentDate =
                         TAPTimeFormatter.formatDate(newMessage.created)
                     if ((null == newMessage.isHidden || !newMessage.isHidden!!) && newMessage.type != MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER && newMessage.type != MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER && newMessage.type != MessageType.TYPE_DATE_SEPARATOR &&
-                        (null == previousMessage || currentDate != TAPTimeFormatter
+                        (null != previousMessage && currentDate != TAPTimeFormatter
                             .formatDate(previousMessage.created))
                     ) {
                         // Generate date separator if first message or date is different
-                        val dateSeparator =
-                            vm.generateDateSeparator(this@TapScheduledMessageActivity, newMessage)
-                        vm.dateSeparators[dateSeparator.localID] = dateSeparator
-                        vm.dateSeparatorIndexes[dateSeparator.localID] = 0
-                        runOnUiThread { messageAdapter.addMessage(dateSeparator) }
+                        val dateSeparator = generateDateSeparator(newMessage.created)
+                        if (!vm.dateSeparators.containsKey(dateSeparator.body)) {
+                            vm.dateSeparators[dateSeparator.body] = dateSeparator
+                            vm.dateSeparatorIndexes[dateSeparator.body] = 0
+                            runOnUiThread { messageAdapter.addMessage(dateSeparator) }
+                        }
                     }
 
                     // Add new message
@@ -1656,19 +1675,20 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     break
                 }
             }
-            val index = messageAdapter.items.indexOf(previousMessage)
+            val index = messageAdapter.items.indexOf(previousMessage) + 1
             val currentDate = TAPTimeFormatter.formatDate(newMessage.created)
             if ((null == newMessage.isHidden || !newMessage.isHidden!!) && newMessage.type != MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER && newMessage.type != MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER && newMessage.type != MessageType.TYPE_DATE_SEPARATOR &&
                 (null == previousMessage || currentDate != TAPTimeFormatter
                     .formatDate(previousMessage.created))
             ) {
                 // Generate date separator if first message or date is different
-                // TODO: generate new date separator logic MU
-                val dateSeparator = vm.generateDateSeparator(this@TapScheduledMessageActivity, newMessage)
-                vm.dateSeparators[dateSeparator.localID] = dateSeparator
-                vm.dateSeparatorIndexes[dateSeparator.localID] = index
-                runOnUiThread {
-                    messageAdapter.addMessage(dateSeparator, index, true)
+                val dateSeparator = generateDateSeparator(scheduledTime)
+                if (!vm.dateSeparators.containsKey(dateSeparator.body)) {
+                    vm.dateSeparators[dateSeparator.body] = dateSeparator
+                    vm.dateSeparatorIndexes[dateSeparator.body] = index
+                    runOnUiThread {
+                        messageAdapter.addMessage(dateSeparator, index, true)
+                    }
                 }
             }
             runOnUiThread { messageAdapter.addMessage(newMessage, index, true) }

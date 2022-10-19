@@ -459,5 +459,6 @@
     <string name="tap_schedule_message">Schedule Message</string>
     <string name="tap_scheduled_message">Scheduled Message</string>
     <string name="tap_empty_scheduled_message">No scheduled message here yet</string>
+    <string name="tap_format_s_scheduled_for">Scheduled for %s</string>
 
 </resources>
