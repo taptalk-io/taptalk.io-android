@@ -1522,49 +1522,25 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
 
     private val idsView = object : TAPDefaultDataView<TapIdsResponse>() {
-        override fun startLoading() {
-            super.startLoading()
-            showLoadingPopup()
-        }
-
-        override fun endLoading() {
-            super.endLoading()
-            hideLoadingPopup()
-        }
-
         override fun onError(error: TAPErrorModel?) {
             super.onError(error)
-            endLoading()
             showErrorDialog(error?.message)
         }
 
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
-            endLoading()
             showErrorDialog(errorMessage)
         }
     }
 
     private val commonView = object : TAPDefaultDataView<TAPCommonResponse>() {
-        override fun startLoading() {
-            super.startLoading()
-            showLoadingPopup()
-        }
-
-        override fun endLoading() {
-            super.endLoading()
-            hideLoadingPopup()
-        }
-
         override fun onError(error: TAPErrorModel?) {
             super.onError(error)
-            endLoading()
             showErrorDialog(error?.message)
         }
 
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
-            endLoading()
             showErrorDialog(errorMessage)
         }
     }
