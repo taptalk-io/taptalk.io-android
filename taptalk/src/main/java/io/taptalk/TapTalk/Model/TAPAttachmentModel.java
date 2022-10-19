@@ -44,7 +44,9 @@ public class TAPAttachmentModel {
     public static final int LONG_PRESS_STAR = 215;
     public static final int LONG_PRESS_EDIT = 216;
     public static final int LONG_PRESS_PIN = 217;
-    public static final int LONG_PRESS_SHARED_MEDIA= 218;
+    public static final int LONG_PRESS_SHARED_MEDIA = 218;
+    public static final int LONG_PRESS_SEND_NOW = 219;
+    public static final int LONG_PRESS_RESCHEDULE = 220;
     // Check icon color in Attachment Adapter when adding more IDs
 
     public TAPAttachmentModel(int icon, int titleIds, int id) {

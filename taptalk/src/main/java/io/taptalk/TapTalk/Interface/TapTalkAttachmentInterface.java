@@ -55,4 +55,8 @@ public interface TapTalkAttachmentInterface {
     void onMessagePinned(TAPMessageModel message);
 
     void onViewInChat(TAPMessageModel message);
+
+    void onSendNow(TAPMessageModel message);
+
+    void onRescheduleMessage(TAPMessageModel message);
 }
