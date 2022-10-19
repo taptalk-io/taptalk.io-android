@@ -14,10 +14,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<Long>) : BottomSheetDialogFragment() {
+class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<Long>, private val defaultTimestamp: Long?) : BottomSheetDialogFragment() {
 
     private lateinit var currentDate : Date
+    private lateinit var defaultDate : Date
     private lateinit var currentCal : Calendar
+    private var dateIndex = 0
     private val sdf = SimpleDateFormat("E dd MMM", Locale.getDefault())
     private val resultSdf = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
     private val fullSdf = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
@@ -34,10 +36,18 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
         "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59"
     )
 
+    constructor(listener: TAPGeneralListener<Long>) : this(listener, null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         currentDate = Date()
         currentCal = Calendar.getInstance()
+        if (defaultTimestamp != null) {
+            defaultDate = Date(defaultTimestamp)
+            currentCal.timeInMillis = defaultTimestamp
+        } else {
+            defaultDate = currentDate
+        }
         val currentHour = currentCal.get(Calendar.HOUR_OF_DAY)
         val currentMinute = currentCal.get(Calendar.MINUTE)
         val increment = if (currentHour == 23 && currentMinute == 59) {
@@ -51,6 +61,9 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
         for (i in 1 until 365) {
             val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(i + increment.toLong())))
             dates[i] = sdf.format(date)
+            if (sdf.format(date).equals(sdf.format(defaultDate))) {
+                dateIndex = i
+            }
         }
     }
 
@@ -70,6 +83,7 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
         np_date.maxValue = dates.size - 1
         np_date.wrapSelectorWheel = false
         np_date.displayedValues = dates
+        np_date.value = dateIndex
         np_date.setOnValueChangedListener { _, _, _ ->
             checkTimeValue()
             btn_send.text = getTimeResult()
