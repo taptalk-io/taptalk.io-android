@@ -32,6 +32,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.ROOM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USERNAME_IGNORE_CASE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USER_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkScreenOrientation.TapTalkOrientationDefault;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
@@ -907,7 +908,11 @@ public class TapTalk implements LifecycleObserver {
         }
         TAPMessageModel shownMessage = message.copyMessageModel();
         if (Boolean.parseBoolean(remoteMessage.getData().get("isScheduled"))) {
-            shownMessage.setBody(String.format("%s You: %s", "🗓", shownMessage.getBody()));
+            if (message.getRoom().getType() == TYPE_GROUP) {
+                shownMessage.getUser().setFullname("🗓You");
+            } else {
+                shownMessage.setBody(String.format("%s You: %s", "🗓", shownMessage.getBody()));
+            }
         }
         if (getInstanceKeys().size() > 1) {
             identifyMessageAndShowNotification(instanceKey, shownMessage);
