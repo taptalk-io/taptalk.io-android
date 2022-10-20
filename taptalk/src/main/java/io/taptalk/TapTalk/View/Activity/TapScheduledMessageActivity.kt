@@ -555,7 +555,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         iv_attach.setOnClickListener { openAttachMenu() }
         iv_send_area.setOnClickListener {
             hideKeyboards()
-            if (vm.quoteAction != null) {
+            if (vm.quoteAction != null && vm.quotedMessage != null) {
                 buildAndSendTextOrLinkMessage(et_chat.text.toString().trim { it <= ' ' }, vm.quotedMessage.created)
             } else {
                 val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
