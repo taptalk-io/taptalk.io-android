@@ -905,10 +905,14 @@ public class TapTalk implements LifecycleObserver {
         if (null == message) {
             return;
         }
+        TAPMessageModel shownMessage = message.copyMessageModel();
+        if (Boolean.parseBoolean(remoteMessage.getData().get("isScheduled"))) {
+            shownMessage.setBody(String.format("%s You: %s", "🗓", shownMessage.getBody()));
+        }
         if (getInstanceKeys().size() > 1) {
-            identifyMessageAndShowNotification(instanceKey, message);
+            identifyMessageAndShowNotification(instanceKey, shownMessage);
         } else {
-            showBackgroundNotification(instanceKey, message);
+            showBackgroundNotification(instanceKey, shownMessage);
         }
         TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(message));
     }
