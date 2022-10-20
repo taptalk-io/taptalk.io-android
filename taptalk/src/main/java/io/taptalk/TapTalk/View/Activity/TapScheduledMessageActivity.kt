@@ -54,11 +54,7 @@ import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Model.*
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
-import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse
-import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse
-import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse
-import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel
+import io.taptalk.TapTalk.Model.ResponseModel.*
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
@@ -86,6 +82,7 @@ import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class TapScheduledMessageActivity: TAPBaseActivity() {
 
@@ -725,6 +722,15 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         }
                         messageAdapter.addMessage(message)
                         previousModel = scheduledMessage
+                    }
+                }
+                if (TAPChatManager.getInstance(instanceKey).pendingScheduledMessages.isNotEmpty()) {
+                    for (message in TAPChatManager.getInstance(instanceKey).pendingScheduledMessages) {
+                        if (message.message?.room?.roomID == vm.room.roomID && message != null) {
+                            if (!messageAdapter.items.contains(message.message)) {
+                                addNewMessage(message.message!!, message.scheduledTime!!)
+                            }
+                        }
                     }
                 }
                 runOnUiThread {
@@ -1624,7 +1630,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             String.format(getString(R.string.tap_format_s_scheduled_for), TAPTimeFormatter.formatScheduledDate(time)),
             vm.room,
             MessageType.TYPE_DATE_SEPARATOR,
-            time - 1,
+            Date(time).time.minus(TimeUnit.DAYS.toMillis(1)) +1,
             vm.myUserModel,
             "",
             null
@@ -1704,6 +1710,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
     }
 
     private fun addNewMessage(newMessage: TAPMessageModel, scheduledTime: Long) {
+        newMessage.created = scheduledTime
         if (vm.containerAnimationState == vm.ANIMATING) {
             // Hold message if layout is animating
             // Message is added after transition finishes in containerTransitionListener

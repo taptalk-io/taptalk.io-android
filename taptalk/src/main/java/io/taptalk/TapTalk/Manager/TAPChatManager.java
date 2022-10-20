@@ -189,6 +189,7 @@ public class TAPChatManager {
         public void onSocketConnected() {
 
             checkAndSendPendingMessages();
+            checkAndSendPendingScheduledMessages();
             isFinishChatFlow = false;
         }
 
@@ -930,6 +931,8 @@ public class TAPChatManager {
                 @Override
                 public void onSuccess(TapCreateScheduledMessageResponse response) {
                     super.onSuccess(response);
+                    pendingScheduledMessages.remove(message.getLocalID());
+                    checkAndSendPendingScheduledMessages();
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         if (null != chatListener) {
                             chatListener.onScheduledMessageSent(new TapScheduledMessageModel(scheduledTime, message));
@@ -940,6 +943,7 @@ public class TAPChatManager {
                 @Override
                 public void onError(TAPErrorModel error) {
                     super.onError(error);
+                    checkAndSendPendingScheduledMessages();
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         if (null != chatListener) {
                             chatListener.onScheduledSendFailed(new TapScheduledMessageModel(scheduledTime, message));
@@ -950,6 +954,7 @@ public class TAPChatManager {
                 @Override
                 public void onError(String errorMessage) {
                     super.onError(errorMessage);
+                    checkAndSendPendingScheduledMessages();
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         if (null != chatListener) {
                             chatListener.onScheduledSendFailed(new TapScheduledMessageModel(scheduledTime, message));
@@ -2036,6 +2041,17 @@ public class TAPChatManager {
         }
     }
 
+    public void checkAndSendPendingScheduledMessages() {
+        if (!pendingScheduledMessages.isEmpty()) {
+            TapScheduledMessageModel scheduledMessage = pendingScheduledMessages.entrySet().iterator().next().getValue();
+            if (scheduledMessage.getScheduledTime() > System.currentTimeMillis()) {
+                runScheduledMessageSequence(scheduledMessage.getMessage(), scheduledMessage.getScheduledTime());
+            } else {
+                runSendMessageSequence(scheduledMessage.getMessage(), kSocketNewMessage);
+            }
+        }
+    }
+
     /**
      * Edit message
      */
@@ -2513,6 +2529,18 @@ public class TAPChatManager {
         return saveMessages;
     }
 
+    public List<TapScheduledMessageModel> getPendingScheduledMessages() {
+        List<TapScheduledMessageModel> scheduledMessages = new ArrayList<>();
+        try {
+            for (Map.Entry<String, TapScheduledMessageModel> message : pendingScheduledMessages.entrySet()) {
+                scheduledMessages.add(message.getValue());
+            }
+        } catch (ConcurrentModificationException e) {
+            e.printStackTrace();
+        }
+        return scheduledMessages;
+    }
+
     public void clearSaveMessages() {
         saveMessages.clear();
     }
@@ -2578,6 +2606,7 @@ public class TAPChatManager {
     public void resetChatManager() {
         clearSaveMessages();
         pendingMessages.clear();
+        pendingScheduledMessages.clear();
         pendingMessageActions.clear();
         waitingUploadProgress.clear();
         waitingResponses.clear();
