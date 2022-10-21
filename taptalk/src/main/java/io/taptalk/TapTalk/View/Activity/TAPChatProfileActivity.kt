@@ -647,7 +647,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         val menuReport = TapChatProfileItemModel(
                             ChatProfileMenuType.MENU_REPORT,
                             getString(R.string.tap_report_user),
-                            R.drawable.tap_ic_flag_black,
+                            R.drawable.tap_ic_warning_triangle_red,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
                             R.style.tapChatProfileMenuDestructiveLabelStyle
                         )
@@ -883,7 +883,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     val menuReport = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_REPORT,
                         getString(R.string.tap_report_user),
-                        R.drawable.tap_ic_flag_black,
+                        R.drawable.tap_ic_warning_triangle_red,
                         R.color.tapIconChatProfileMenuReportUserOrGroup,
                         R.style.tapChatProfileMenuDestructiveLabelStyle
                     )
