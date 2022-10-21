@@ -465,5 +465,11 @@
     <string name="tap_send_now">Send Now</string>
     <string name="tap_reschedule">Reschedule</string>
     <string name="tap_report">Report</string>
+    <string name="tap_report_user_description_wording">You may report a user if you find them inappropriate, please help us know why...</string>
+    <string name="tap_why_report_user">Why do you want to report this user? (Optional)</string>
+    <string name="tap_tell_us_why_dots">Tell us why...</string>
+    <string name="tap_please_specify_reason">Please specify your reason</string>
+    <string name="tap_this_field_is_required">This field is required.</string>
+    <string name="tap_submit_report">Submit Report</string>
 
 </resources>

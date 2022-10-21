@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/tapWhite"
+    tools:context=".View.Activity.TapReportActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
+        android:elevation="2dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_button_back"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_chevron_left_white"
+            app:tint="@color/tapIconNavigationBarBackButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/tapNavBarTitleLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="?attr/actionBarSize"
+            android:layout_marginRight="?attr/actionBarSize"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="@string/tap_report_user"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_report_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/tap_report_user_description_wording"
+                style="@style/tapFormTextFieldStyle"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_report_description" />
+
+            <EditText
+                android:id="@+id/et_other"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="4dp"
+                style="@style/tapAreaEditText"
+                android:gravity="start"
+                android:hint="@string/tap_please_specify_reason"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/tv_report_description"
+                app:layout_constraintEnd_toEndOf="@id/tv_report_description"
+                app:layout_constraintTop_toBottomOf="@id/rv_options" />
+
+            <TextView
+                android:id="@+id/tv_error_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                android:text="@string/tap_this_field_is_required"
+                style="@style/tapFormErrorInfoRegularStyle"
+                app:layout_constraintTop_toBottomOf="@id/et_other"
+                app:layout_constraintStart_toStartOf="@id/et_other" />
+
+            <TextView
+                android:id="@+id/tv_label_optional"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/tap_why_report_user"
+                style="@style/tapSectionLabelStyle"
+                app:layout_constraintStart_toStartOf="@id/tv_report_description"
+                app:layout_constraintEnd_toEndOf="@id/tv_report_description"
+                app:layout_constraintTop_toBottomOf="@id/tv_error_other" />
+
+            <EditText
+                android:id="@+id/et_reason"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="8dp"
+                style="@style/tapAreaEditText"
+                android:maxLength="2000"
+                android:gravity="start"
+                android:inputType="textMultiLine"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical"
+                android:hint="@string/tap_tell_us_why_dots"
+                app:layout_constraintStart_toStartOf="@id/tv_report_description"
+                app:layout_constraintEnd_toEndOf="@id/tv_report_description"
+                app:layout_constraintTop_toBottomOf="@id/tv_label_optional" />
+
+            <TextView
+                android:id="@+id/tv_character_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="10dp"
+                android:text="0/2000"
+                style="@style/tapAlbumCountLabelStyle"
+                app:layout_constraintTop_toBottomOf="@id/et_reason"
+                app:layout_constraintEnd_toEndOf="@id/et_reason" />
+
+            <Button
+                android:id="@+id/btn_submit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/tap_submit_report"
+                style="@style/tapDestructiveButtonStyle"
+                app:layout_constraintTop_toBottomOf="@id/tv_character_count"
+                app:layout_constraintStart_toStartOf="@id/tv_report_description"
+                app:layout_constraintEnd_toEndOf="@id/tv_report_description"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

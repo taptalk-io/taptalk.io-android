@@ -32,7 +32,7 @@
 
     <color name="tapTextFieldCursorColor">@color/tapColorPrimary</color>
     <color name="tapTextFieldBorderActiveColor">@color/tapColorPrimary</color>
-    <color name="tapTextFieldBorderInactiveColor">@color/tapTransparentBlack1910</color>
+    <color name="tapTextFieldBorderInactiveColor">@color/tapTransparentBlack1940</color>
     <color name="tapTextFieldBorderErrorColor">@color/tapColorError</color>
 
     <color name="tapButtonInactiveBackgroundGradientLightColor">@color/tapTransparentBlack1910</color>
