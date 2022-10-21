@@ -28,4 +28,12 @@ data class TapScheduledMessageModel (
     constructor(id: Int?, scheduledTime: Long?) : this(null, scheduledTime, null, id, null)
 
     constructor(scheduledTime: Long?, message: TAPMessageModel?) : this(null, scheduledTime, null, null, message)
+
+    constructor(getScheduledMessageItem: TapGetScheduledMessageItem) : this(
+            updatedTime = getScheduledMessageItem.updatedTime,
+            scheduledTime = getScheduledMessageItem.scheduledTime,
+            createdTime = getScheduledMessageItem.createdTime,
+            id = getScheduledMessageItem.id,
+            message = TAPMessageModel.fromHashMap(getScheduledMessageItem.message)
+        )
 }

@@ -83,10 +83,12 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageItem;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
@@ -1843,7 +1845,17 @@ public class TapCoreMessageManager {
             public void onSuccess(TapGetScheduledMessageListResponse response) {
                 super.onSuccess(response);
                 if (response.getItems() != null) {
-                    listener.onSuccess(response.getItems());
+                    List<TapScheduledMessageModel> scheduledMessages = new ArrayList<>();
+                    for (TapGetScheduledMessageItem item : response.getItems()) {
+                        scheduledMessages.add(new TapScheduledMessageModel(
+                                item.getUpdatedTime(),
+                                item.getScheduledTime(),
+                                item.getCreatedTime(),
+                                item.getId(),
+                                TAPEncryptorManager.getInstance().decryptMessage(item.getMessage())
+                        ));
+                    }
+                    listener.onSuccess(scheduledMessages);
                 } else {
                     listener.onSuccess(new ArrayList<>());
                 }

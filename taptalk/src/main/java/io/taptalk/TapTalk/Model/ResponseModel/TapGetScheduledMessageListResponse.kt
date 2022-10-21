@@ -5,5 +5,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class TapGetScheduledMessageListResponse(
 
 	@field:JsonProperty("items")
-	val items: List<TapScheduledMessageModel>? = null
+	val items: List<TapGetScheduledMessageItem>? = null
 )
