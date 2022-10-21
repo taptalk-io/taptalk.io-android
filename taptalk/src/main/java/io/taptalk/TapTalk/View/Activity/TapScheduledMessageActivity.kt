@@ -173,8 +173,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (resultCode == RESULT_OK) {
             when (requestCode) {
                 RequestCode.SEND_IMAGE_FROM_CAMERA -> {
-                    if (null != intent && null != intent.data) {
-                        vm.cameraImageUri = intent.data
+                    if (null != data && null != data.data) {
+                        vm.cameraImageUri = data.data
                     }
                     if (null == vm.cameraImageUri) {
                         return
@@ -190,18 +190,18 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     openMediaPreviewPage(imageCameraUris)
                 }
                 RequestCode.SEND_MEDIA_FROM_GALLERY -> {
-                    if (null == intent) {
+                    if (null == data) {
                         return
                     }
                     var galleryMediaPreviews = ArrayList<TAPMediaPreviewModel>()
-                    val clipData = intent.clipData
+                    val clipData = data.clipData
                     if (null != clipData) {
                         // Multiple media selection
                         galleryMediaPreviews =
                             TAPUtils.getPreviewsFromClipData(this@TapScheduledMessageActivity, clipData, true)
                     } else {
                         // Single media selection
-                        val uri = intent.data
+                        val uri = data.data
                         galleryMediaPreviews.add(
                             TAPMediaPreviewModel.Builder(
                                 uri,
@@ -213,8 +213,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     openMediaPreviewPage(galleryMediaPreviews)
                 }
                 RequestCode.SEND_MEDIA_FROM_PREVIEW -> {
-                    val medias =
-                        intent.getParcelableArrayListExtra<TAPMediaPreviewModel>(Extras.MEDIA_PREVIEWS)
+                    val medias = data?.getParcelableArrayListExtra<TAPMediaPreviewModel>(Extras.MEDIA_PREVIEWS)
                     if (null != medias && 0 < medias.size) {
                         val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
                             override fun onClick(position: Int, item: Long?) {
@@ -228,11 +227,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 }
                 RequestCode.PICK_LOCATION -> {
                     val address =
-                        if (intent.getStringExtra(Location.LOCATION_NAME) == null) "" else intent.getStringExtra(
+                        if (data?.getStringExtra(Location.LOCATION_NAME) == null) "" else data.getStringExtra(
                             Location.LOCATION_NAME
                         )!!
-                    val latitude = intent.getDoubleExtra(Location.LATITUDE, 0.0)
-                    val longitude = intent.getDoubleExtra(Location.LONGITUDE, 0.0)
+                    val latitude = data?.getDoubleExtra(Location.LATITUDE, 0.0)
+                    val longitude = data?.getDoubleExtra(Location.LONGITUDE, 0.0)
                     val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
                         override fun onClick(position: Int, item: Long?) {
                             super.onClick(position, item)
@@ -243,7 +242,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     timePicker.show(supportFragmentManager, "")
                 }
                 RequestCode.SEND_FILE -> {
-                    val filePath = intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
+                    val filePath = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
                     if (filePath != null) {
                         val tempFile = File(filePath)
                         if (TAPFileUploadManager.getInstance(instanceKey)
@@ -279,8 +278,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         }
                     }
                 }
-                RequestCode.OPEN_GROUP_PROFILE -> if (intent != null) {
-                    val messageModel = intent.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                RequestCode.OPEN_GROUP_PROFILE -> if (data != null) {
+                    val messageModel = data.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
                     if (messageModel != null) {
                         goToMessage(messageModel)
                     } else {
@@ -288,16 +287,16 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         closeActivity()
                     }
                 }
-                RequestCode.OPEN_MEMBER_PROFILE -> if (intent != null) {
-                    val message = intent.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                RequestCode.OPEN_MEMBER_PROFILE -> if (data != null) {
+                    val message = data.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
                     if (message != null) {
                         goToMessage(message)
-                    } else if (intent.getBooleanExtra(Extras.CLOSE_ACTIVITY, false)) {
+                    } else if (data.getBooleanExtra(Extras.CLOSE_ACTIVITY, false)) {
                         closeActivity()
                     }
                 }
-                RequestCode.OPEN_PERSONAL_PROFILE -> if (intent != null) {
-                    val message = intent.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                RequestCode.OPEN_PERSONAL_PROFILE -> if (data != null) {
+                    val message = data.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
                     if (message != null) {
                         scrollToMessage(message.localID)
                     }
@@ -698,13 +697,19 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             if (response?.items?.isNotEmpty() == true) {
                 messageAdapter.clearItems()
                 vm.dateSeparators.clear()
-                var previousModel : TapScheduledMessageModel? = response.items[0]
+                val firstItem = response.items[0]
+                var previousModel : TapScheduledMessageModel? = TapScheduledMessageModel(
+                    firstItem.updatedTime,
+                    firstItem.scheduledTime,
+                    firstItem.createdTime,
+                    firstItem.id,
+                    TAPEncryptorManager.getInstance().decryptMessage(firstItem.message))
                 val firstDateSeparator = generateDateSeparator(previousModel?.scheduledTime)
                 messageAdapter.addMessage(firstDateSeparator)
 
                 for (scheduledMessage in response.items) {
                     if (scheduledMessage.message != null) {
-                        val message = TAPEncryptorManager.getInstance().decryptMessage(scheduledMessage.message.toHashMap())
+                        val message = TAPEncryptorManager.getInstance().decryptMessage(scheduledMessage.message)
                         // hide sending icon for scheduled message page only
                         message.isSending = false
                         message.messageID = scheduledMessage.id.toString()
@@ -721,7 +726,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                             messageAdapter.addMessage(dateSeparator)
                         }
                         messageAdapter.addMessage(message)
-                        previousModel = scheduledMessage
+                        previousModel = TapScheduledMessageModel(scheduledMessage)
                     }
                 }
                 if (TAPChatManager.getInstance(instanceKey).pendingScheduledMessages.isNotEmpty()) {

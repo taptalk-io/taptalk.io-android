@@ -1182,7 +1182,7 @@ public class TAPChatManager {
         if (null == messageModel) {
             return;
         }
-        if (scheduledTime < System.currentTimeMillis()) {
+        if (scheduledTime > System.currentTimeMillis()) {
             uploadingScheduledMessages.put(messageModel.getLocalID(), new TapScheduledMessageModel(scheduledTime, messageModel));
         }
 
@@ -1569,7 +1569,9 @@ public class TAPChatManager {
 
         addUploadingMessageToHashMap(messageModel);
         messageModel = fixOrientationAndShowImagePreviewBubble(messageModel, scheduledTime);
-        uploadingScheduledMessages.put(messageModel.getLocalID(), new TapScheduledMessageModel(scheduledTime, messageModel));
+        if (scheduledTime > System.currentTimeMillis()) {
+            uploadingScheduledMessages.put(messageModel.getLocalID(), new TapScheduledMessageModel(scheduledTime, messageModel));
+        }
 
         TAPFileUploadManager.getInstance(instanceKey).addUploadQueue(context, room.getRoomID(), messageModel);
     }
@@ -1745,7 +1747,9 @@ public class TAPChatManager {
             triggerSendMessageListener(messageModel, scheduledTime);
         }
 
-        uploadingScheduledMessages.put(messageModel.getLocalID(), new TapScheduledMessageModel(scheduledTime, messageModel));
+        if (scheduledTime > System.currentTimeMillis()) {
+            uploadingScheduledMessages.put(messageModel.getLocalID(), new TapScheduledMessageModel(scheduledTime, messageModel));
+        }
         TAPFileUploadManager.getInstance(instanceKey).addUploadQueue(context, room.getRoomID(), messageModel);
     }
     public void sendImageOrVideoMessage(Context context, TAPRoomModel room, ArrayList<TAPMediaPreviewModel> medias) {
