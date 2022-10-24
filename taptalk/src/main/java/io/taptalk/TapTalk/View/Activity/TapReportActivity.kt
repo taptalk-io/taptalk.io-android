@@ -13,14 +13,26 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.TypefaceSpan
 import android.view.MotionEvent
+import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
+import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Adapter.TapSelectableStringListAdapter
+import io.taptalk.TapTalk.ViewModel.TapReportViewModel
 import kotlinx.android.synthetic.main.activity_tap_report.*
 
 class TapReportActivity : TAPBaseActivity() {
-    var reportType: ReportType = ReportType.USER
+    val vm : TapReportViewModel by lazy {
+        ViewModelProvider(this)[TapReportViewModel::class.java]
+    }
+    private lateinit var optionsAdapter : TapSelectableStringListAdapter
+
     companion object {
         enum class ReportType {
             USER, MESSAGE
@@ -90,8 +102,26 @@ class TapReportActivity : TAPBaseActivity() {
             false
         }
         if (intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) != null) {
-            reportType = intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) as ReportType
+            vm.reportType = intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) as ReportType
         }
+        vm.reportOptions = when (vm.reportType) {
+            ReportType.USER -> arrayListOf(
+                getString(R.string.tap_report_user_options_1),
+                getString(R.string.tap_report_user_options_2),
+                getString(R.string.tap_report_user_options_3),
+                getString(R.string.tap_report_user_options_4),
+                getString(R.string.tap_others)
+            )
+            // TODO: set report message options MU
+            ReportType.MESSAGE -> arrayListOf()
+        }
+        optionsAdapter = TapSelectableStringListAdapter(vm.reportOptions, onClickListener)
+        if (vm.selectedReportOption.isNotEmpty()) {
+            optionsAdapter.setSelectedText(vm.selectedReportOption)
+        }
+        rv_options.adapter = optionsAdapter
+        rv_options.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        rv_options.setHasFixedSize(true)
     }
 
     private val characterWatcher = object : TextWatcher {
@@ -99,9 +129,32 @@ class TapReportActivity : TAPBaseActivity() {
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-        override fun afterTextChanged(p0: Editable?) {
-            val reasonCount = "${et_reason.text.length}/2000"
+        override fun afterTextChanged(text: Editable?) {
+            vm.reportReason = text.toString()
+            val reasonCount = "${text?.length}/2000"
             tv_character_count.text = reasonCount
+        }
+    }
+
+    private val onClickListener = object : TAPGeneralListener<String>() {
+        override fun onClick(position: Int, item: String?) {
+            super.onClick(position, item)
+            if (vm.selectedReportOption != item) {
+                vm.selectedReportOption = if (item == optionsAdapter.getSelectedText()) {
+                    ""
+                } else {
+                    item.toString()
+                }
+                if (position == optionsAdapter.itemCount - 1 && item != optionsAdapter.getSelectedText()) {
+                    et_other.visibility = View.VISIBLE
+                } else {
+                    et_other.visibility = View.GONE
+                    et_other.setText("")
+                    TAPUtils.dismissKeyboard(this@TapReportActivity)
+                }
+                optionsAdapter.setSelectedText(vm.selectedReportOption)
+                optionsAdapter.notifyDataSetChanged()
+            }
         }
     }
 

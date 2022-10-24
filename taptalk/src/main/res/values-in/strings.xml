@@ -469,5 +469,10 @@
     <string name="tap_please_specify_reason">Please specify your reason</string>
     <string name="tap_this_field_is_required">This field is required.</string>
     <string name="tap_submit_report">Submit Report</string>
+    <string name="tap_others">Others</string>
+    <string name="tap_report_user_options_1">Sending false information</string>
+    <string name="tap_report_user_options_2">Pretending to be someone else</string>
+    <string name="tap_report_user_options_3">Scam or fraud</string>
+    <string name="tap_report_user_options_4">Dangerous Organization</string>
 
 </resources>
