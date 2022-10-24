@@ -2985,6 +2985,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onReportMessage(TAPMessageModel message) {
             super.onReportMessage(message);
+            TAPChatManager.getInstance(instanceKey).triggerReportMessageButtonTapped(TapUIChatActivity.this, message);
             TapReportActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, TapReportActivity.ReportType.MESSAGE);
         }
     };

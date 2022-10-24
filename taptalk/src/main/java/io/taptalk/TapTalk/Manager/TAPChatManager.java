@@ -2728,6 +2728,10 @@ public class TAPChatManager {
         TapUI.getInstance(instanceKey).triggerPinnedMessageTapped(message);
     }
 
+    public void triggerReportMessageButtonTapped(Activity activity, TAPMessageModel message) {
+        TapUI.getInstance(instanceKey).triggerReportMessageButtonTapped(activity, message);
+    }
+
     public String getRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {
         return TapUI.getInstance(instanceKey).getRoomListTitleText(roomList, position, context);
     }

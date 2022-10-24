@@ -374,7 +374,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -485,7 +485,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -593,7 +593,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -679,7 +679,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -753,7 +753,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -835,7 +835,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
