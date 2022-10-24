@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
+import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPUserModel
@@ -131,13 +132,47 @@ class TapReportActivity : TAPBaseActivity() {
                 getString(R.string.tap_others)
             )
         }
+
         optionsAdapter = TapSelectableStringListAdapter(vm.reportOptions, onClickListener)
-        if (vm.selectedReportOption.isNotEmpty()) {
-            optionsAdapter.setSelectedText(vm.selectedReportOption)
+        if (vm.selectedReportOption.isEmpty()) {
+            vm.selectedReportOption = vm.reportOptions[0]
         }
+        optionsAdapter.setSelectedText(vm.selectedReportOption)
         rv_options.adapter = optionsAdapter
         rv_options.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rv_options.setHasFixedSize(true)
+
+        btn_submit.setOnClickListener {
+            TapTalkDialog.Builder(this)
+                .setTitle(getString(R.string.tap_submit_report))
+                .setMessage(getString(R.string.tap_wording_submit_report))
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setPrimaryButtonTitle(getString(R.string.tap_submit))
+                .setPrimaryButtonListener {
+                    // TODO: handle api call MU
+                }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setSecondaryButtonListener { }
+                .show()
+        }
+        iv_button_back.setOnClickListener {
+            onBackPressed()
+        }
+    }
+
+    override fun onBackPressed() {
+        // TODO: handle when loading api call MU
+        TapTalkDialog.Builder(this)
+            .setTitle(getString(R.string.tap_you_havent_submit_report))
+            .setMessage(getString(R.string.tap_havent_submit_report_wording))
+            .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+            .setPrimaryButtonTitle(getString(R.string.tap_yes))
+            .setPrimaryButtonListener {
+                finish()
+            }
+            .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+            .setSecondaryButtonListener { }
+            .show()
     }
 
     private val characterWatcher = object : TextWatcher {

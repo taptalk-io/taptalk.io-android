@@ -481,5 +481,9 @@
     <string name="tap_report_message_options_2">Nudity or sexual activity</string>
     <string name="tap_report_message_options_3">Bullying or harassment</string>
     <string name="tap_report_message_options_4">Violence</string>
+    <string name="tap_wording_submit_report">You will submit a report for this user, you can tell us why so we can help you. Are you sure you want to submit now?</string>
+    <string name="tap_submit">Submit</string>
+    <string name="tap_you_havent_submit_report">You haven’t submit your report</string>
+    <string name="tap_havent_submit_report_wording">Your report has not been submitted, are you sure you want to go back before submitting?</string>
 
 </resources>
