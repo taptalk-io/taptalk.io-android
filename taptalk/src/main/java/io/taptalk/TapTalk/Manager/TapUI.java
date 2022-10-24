@@ -116,6 +116,8 @@ public class TapUI {
     private boolean isEmailAddressInChatProfileVisible;
     private boolean isAddContactDisabled;
     private boolean isReportButtonInChatProfileVisible;
+    private boolean isReportButtonInUserProfileVisible;
+    private boolean isReportButtonInGroupProfileVisible;
     private boolean isMarkAsReadRoomListSwipeMenuDisabled;
     private boolean isMarkAsUnreadRoomListSwipeMenuDisabled;
     private boolean isStarMessageMenuDisabled;
@@ -1095,6 +1097,34 @@ public class TapUI {
             return;
         }
         isReportButtonInChatProfileVisible = reportButtonInChatProfileVisible;
+    }
+
+    public boolean isReportButtonInUserProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportButtonInUserProfileVisible;
+    }
+
+    public void setReportButtonInUserProfileVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportButtonInUserProfileVisible = isVisible;
+    }
+
+    public boolean isReportButtonInGroupProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportButtonInGroupProfileVisible;
+    }
+
+    public void setReportButtonInGroupProfileVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportButtonInGroupProfileVisible = isVisible;
     }
 
     public boolean isMarkAsUnreadRoomListSwipeMenuEnabled() {
