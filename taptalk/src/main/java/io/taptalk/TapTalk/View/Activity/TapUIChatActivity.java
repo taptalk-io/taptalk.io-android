@@ -2981,6 +2981,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TapCoreMessageManager.getInstance(instanceKey).pinMessage(message.getRoom().getRoomID(), messageId);
             }
         }
+
+        @Override
+        public void onReportMessage(TAPMessageModel message) {
+            super.onReportMessage(message);
+            TapReportActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, TapReportActivity.ReportType.MESSAGE);
+        }
     };
 
     private void setChatRoomStatus(TAPOnlineStatusModel onlineStatus) {
