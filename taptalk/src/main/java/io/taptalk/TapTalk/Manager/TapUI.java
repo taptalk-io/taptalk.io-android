@@ -118,6 +118,7 @@ public class TapUI {
     private boolean isReportButtonInChatProfileVisible;
     private boolean isReportButtonInUserProfileVisible;
     private boolean isReportButtonInGroupProfileVisible;
+    private boolean isReportMessageMenuEnabled;
     private boolean isMarkAsReadRoomListSwipeMenuDisabled;
     private boolean isMarkAsUnreadRoomListSwipeMenuDisabled;
     private boolean isStarMessageMenuDisabled;
@@ -1127,6 +1128,20 @@ public class TapUI {
         isReportButtonInGroupProfileVisible = isVisible;
     }
 
+    public boolean isReportMessageMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportMessageMenuEnabled;
+    }
+
+    public void setReportMessageMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportMessageMenuEnabled = isEnabled;
+    }
+
     public boolean isMarkAsUnreadRoomListSwipeMenuEnabled() {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;
@@ -1566,6 +1581,18 @@ public class TapUI {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             if (null != listener) {
                 listener.onPinnedMessageTapped(message);
+            }
+        }
+    }
+
+    void triggerReportMessageButtonTapped(Activity activity, TAPMessageModel message) {
+        if (getChatRoomListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            if (null != listener) {
+                listener.onReportMessageButtonTapped(activity, message);
             }
         }
     }
