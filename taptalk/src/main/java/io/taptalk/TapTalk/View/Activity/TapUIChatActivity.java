@@ -166,6 +166,8 @@ import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -265,6 +267,8 @@ import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
+import io.taptalk.TapTalk.View.Fragment.TapBaseCustomNavigationBarFragment;
+import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import rx.Observable;
 import rx.Observer;
@@ -288,6 +292,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private ImageView ivDelete;
     private ProgressBar pbDelete;
     private ConstraintLayout clContainer;
+    private ConstraintLayout clActionBar;
     private ConstraintLayout clContactAction;
     private ConstraintLayout clUnreadButton;
     private ConstraintLayout clChatComposerAndHistory;
@@ -393,6 +398,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private Handler linkHandler;
     private Runnable linkRunnable;
+
+    // Custom Navigation Bar
+    private FragmentContainerView customNavigationBarFragmentContainerView;
+    private Fragment customNavigationBarFragment;
 
     // Scroll state
     private enum STATE {WORKING, LOADED, DONE}
@@ -920,6 +929,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivDelete = findViewById(R.id.iv_delete);
         pbDelete = findViewById(R.id.pb_delete);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
+        clActionBar = (ConstraintLayout) findViewById(R.id.cl_action_bar);
         clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
@@ -1003,6 +1013,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvLinkTitle = findViewById(R.id.tv_link_title);
         tvLinkContent = findViewById(R.id.tv_link_content);
         ivCloseLink = findViewById(R.id.iv_close_link);
+        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
     }
 
     private boolean initViewModel() {
@@ -1047,6 +1058,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void initView() {
         getWindow().setBackgroundDrawable(null);
+
+        // TODO: TEST
+        TapBaseCustomNavigationBarFragment fTest = TapBaseCustomNavigationBarFragment.newInstance(instanceKey, vm.getRoom(), null);
+        getSupportFragmentManager().beginTransaction().add(R.id.custom_action_bar_fragment_container, fTest).commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .show(fTest)
+                .commit();
+        customNavigationBarFragmentContainerView.setVisibility(View.VISIBLE);
+        clActionBar.setVisibility(View.GONE);
 
         // Set room name
         if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)){
@@ -1119,6 +1140,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 e.printStackTrace();
             }
         }
+
         vm.setStarredMessageIds(TAPDataManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID()));
 
         // Initialize chat message RecyclerView
