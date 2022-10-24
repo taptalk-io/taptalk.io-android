@@ -463,7 +463,7 @@
     <string name="tap_send_now">Send Now</string>
     <string name="tap_reschedule">Reschedule</string>
     <string name="tap_report">Report</string>
-    <string name="tap_report_user_description_wording">You may report a user if you find them inappropriate, please help us know why...</string>
+    <string name="tap_report_user_description_wording">You may report a user if you find them inappropriate, please choose one of the reason we can know how to handle this properly.</string>
     <string name="tap_why_report_user">Why do you want to report this user? (Optional)</string>
     <string name="tap_tell_us_why_dots">Tell us why...</string>
     <string name="tap_please_specify_reason">Please specify your reason</string>
@@ -474,5 +474,10 @@
     <string name="tap_report_user_options_2">Pretending to be someone else</string>
     <string name="tap_report_user_options_3">Scam or fraud</string>
     <string name="tap_report_user_options_4">Dangerous Organization</string>
+    <string name="tap_report_message">Report Message</string>
+    <string name="tap_report_message_options_1">Hate speech</string>
+    <string name="tap_report_message_options_2">Nudity or sexual activity</string>
+    <string name="tap_report_message_options_3">Bullying or harassment</string>
+    <string name="tap_report_message_options_4">Violence</string>
 
 </resources>

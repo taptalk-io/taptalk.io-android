@@ -21,6 +21,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapSelectableStringListAdapter
@@ -33,10 +34,11 @@ class TapReportActivity : TAPBaseActivity() {
     }
     private lateinit var optionsAdapter : TapSelectableStringListAdapter
 
+    enum class ReportType {
+        USER, MESSAGE
+    }
+
     companion object {
-        enum class ReportType {
-            USER, MESSAGE
-        }
         fun start(
             context: Context,
             instanceKey: String?,
@@ -53,13 +55,13 @@ class TapReportActivity : TAPBaseActivity() {
         fun start(
             context: Context,
             instanceKey: String?,
-            user: TAPUserModel,
+            message: TAPMessageModel,
             reportType: ReportType
         ) {
             if (context is Activity) {
                 val intent = Intent(context, TapReportActivity::class.java)
                 intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
-                intent.putExtra(TAPDefaultConstant.Extras.USER, user)
+                intent.putExtra(TAPDefaultConstant.Extras.MESSAGE, message)
                 intent.putExtra(TAPDefaultConstant.Extras.REPORT_TYPE, reportType)
                 context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER)
             }
@@ -71,6 +73,15 @@ class TapReportActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tap_report)
 
+        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) != null) {
+            vm.reportType = intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) as ReportType
+        }
+        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.USER) != null) {
+            vm.user = intent.getParcelableExtra(TAPDefaultConstant.Extras.USER)
+        }
+        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.MESSAGE) != null) {
+            vm.message = intent.getParcelableExtra(TAPDefaultConstant.Extras.MESSAGE)
+        }
         val spannable = SpannableString(tv_label_optional.text)
         spannable.setSpan(
             TypefaceSpan("sans-serif"),
@@ -91,6 +102,9 @@ class TapReportActivity : TAPBaseActivity() {
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
         tv_label_optional.text = spannable
+        if (vm.reportType == ReportType.MESSAGE) {
+            tv_title.text = getString(R.string.tap_report_message)
+        }
         et_reason.addTextChangedListener(characterWatcher)
         et_reason.setOnTouchListener { view, motionEvent ->
             if (et_reason.hasFocus()) {
@@ -101,9 +115,6 @@ class TapReportActivity : TAPBaseActivity() {
             }
             false
         }
-        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) != null) {
-            vm.reportType = intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) as ReportType
-        }
         vm.reportOptions = when (vm.reportType) {
             ReportType.USER -> arrayListOf(
                 getString(R.string.tap_report_user_options_1),
@@ -112,8 +123,13 @@ class TapReportActivity : TAPBaseActivity() {
                 getString(R.string.tap_report_user_options_4),
                 getString(R.string.tap_others)
             )
-            // TODO: set report message options MU
-            ReportType.MESSAGE -> arrayListOf()
+            ReportType.MESSAGE -> arrayListOf(
+                getString(R.string.tap_report_message_options_1),
+                getString(R.string.tap_report_message_options_2),
+                getString(R.string.tap_report_message_options_3),
+                getString(R.string.tap_report_message_options_4),
+                getString(R.string.tap_others)
+            )
         }
         optionsAdapter = TapSelectableStringListAdapter(vm.reportOptions, onClickListener)
         if (vm.selectedReportOption.isNotEmpty()) {
