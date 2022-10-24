@@ -23,6 +23,7 @@ import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Model.TAPMessageModel
+import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapSelectableStringListAdapter
@@ -43,12 +44,12 @@ class TapReportActivity : TAPBaseActivity() {
         fun start(
             context: Context,
             instanceKey: String?,
-            user: TAPUserModel
+            room: TAPRoomModel
         ) {
             if (context is Activity) {
                 val intent = Intent(context, TapReportActivity::class.java)
                 intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
-                intent.putExtra(TAPDefaultConstant.Extras.USER, user)
+                intent.putExtra(TAPDefaultConstant.Extras.ROOM, room)
                 context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER)
             }
         }
@@ -77,8 +78,8 @@ class TapReportActivity : TAPBaseActivity() {
         if (intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) != null) {
             vm.reportType = intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) as ReportType
         }
-        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.USER) != null) {
-            vm.user = intent.getParcelableExtra(TAPDefaultConstant.Extras.USER)
+        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.ROOM) != null) {
+            vm.room = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
         }
         if (intent.getSerializableExtra(TAPDefaultConstant.Extras.MESSAGE) != null) {
             vm.message = intent.getParcelableExtra(TAPDefaultConstant.Extras.MESSAGE)
