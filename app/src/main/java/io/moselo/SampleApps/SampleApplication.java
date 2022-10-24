@@ -55,6 +55,7 @@ public class SampleApplication extends MultiDexApplication {
         TapUI.getInstance(INSTANCE_KEY).setDeleteAccountButtonVisible(true);
         TapUI.getInstance(INSTANCE_KEY).setReportButtonInUserProfileVisible(true);
         TapUI.getInstance(INSTANCE_KEY).setReportButtonInGroupProfileVisible(true);
+        TapUI.getInstance(INSTANCE_KEY).setReportMessageMenuEnabled(true);
         TapUI.getInstance(INSTANCE_KEY).addMyAccountListener(new TapUIMyAccountListener() {
             @Override
             public void onDeleteButtonInMyAccountPageTapped(@NonNull Activity activity) {
