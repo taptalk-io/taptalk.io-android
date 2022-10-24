@@ -1058,9 +1058,11 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         if (null != vm!!.groupMemberUser) {
             TAPChatManager.getInstance(instanceKey)
                 .triggerChatProfileReportUserButtonTapped(this, vm!!.room, vm!!.groupMemberUser)
+            TapReportActivity.start(this, instanceKey, vm!!.groupMemberUser)
         } else if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
             TAPChatManager.getInstance(instanceKey)
                 .triggerChatProfileReportUserButtonTapped(this, vm!!.room, vm!!.userDataFromManager)
+            TapReportActivity.start(this, instanceKey, vm!!.userDataFromManager)
         } else {
             TAPChatManager.getInstance(instanceKey)
                 .triggerChatProfileReportGroupButtonTapped(this, vm!!.room)
