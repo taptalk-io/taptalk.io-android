@@ -17,12 +17,17 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
+import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapSelectableStringListAdapter
 import io.taptalk.TapTalk.ViewModel.TapReportViewModel
@@ -40,6 +45,20 @@ class TapReportActivity : TAPBaseActivity() {
     }
 
     companion object {
+
+        fun start(
+            context: Context,
+            instanceKey: String?,
+            user: TAPUserModel
+        ) {
+            if (context is Activity) {
+                val intent = Intent(context, TapReportActivity::class.java)
+                intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
+                intent.putExtra(TAPDefaultConstant.Extras.USER, user)
+                context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER)
+            }
+        }
+
         fun start(
             context: Context,
             instanceKey: String?,
@@ -76,6 +95,9 @@ class TapReportActivity : TAPBaseActivity() {
 
         if (intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) != null) {
             vm.reportType = intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) as ReportType
+        }
+        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.USER) != null) {
+            vm.user = intent.getParcelableExtra(TAPDefaultConstant.Extras.USER)
         }
         if (intent.getSerializableExtra(TAPDefaultConstant.Extras.ROOM) != null) {
             vm.room = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
@@ -149,8 +171,9 @@ class TapReportActivity : TAPBaseActivity() {
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setPrimaryButtonTitle(getString(R.string.tap_submit))
                 .setPrimaryButtonListener {
-                    // TODO: handle api call MU
-                    showLoading()
+                    when (vm.reportType) {
+                        ReportType.USER -> TAPDataManager.getInstance(instanceKey).submitUserReport(vm.user?.userID, vm.selectedReportOption, (vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount -1]), et_reason.text.toString(), submitReportView)
+                    }
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setSecondaryButtonListener { }
@@ -195,11 +218,56 @@ class TapReportActivity : TAPBaseActivity() {
 
     private fun hideLoading() {
         isLoading = false
-        pb_loading.visibility = View.VISIBLE
+        pb_loading.visibility = View.GONE
         btn_submit.text = getString(R.string.tap_submit_report)
         et_reason.isEnabled = true
         et_other.isEnabled = true
         optionsAdapter.setEnabled(true)
+    }
+
+    private fun showPopUpError() {
+        TapTalkDialog.Builder(this)
+            .setTitle(getString(R.string.tap_failed_to_submit_report))
+            .setMessage(getString(R.string.tap_failed_submit_report_wording))
+            .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+            .setPrimaryButtonTitle(getString(R.string.tap_ok))
+            .setPrimaryButtonListener { }
+            .show()
+    }
+
+    private val submitReportView = object : TAPDefaultDataView<TAPCommonResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+            showLoading()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+            hideLoading()
+        }
+
+        override fun onSuccess(response: TAPCommonResponse?) {
+            super.onSuccess(response)
+            TapTalkDialog.Builder(this@TapReportActivity)
+                .setTitle(getString(R.string.tap_report_has_been_submitted))
+                .setMessage(getString(R.string.tap_thank_you_for_reporting))
+                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setPrimaryButtonListener { }
+                .show()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            endLoading()
+            showPopUpError()
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            endLoading()
+            showPopUpError()
+        }
     }
 
     private val characterWatcher = object : TextWatcher {
