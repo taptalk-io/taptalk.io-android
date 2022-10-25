@@ -173,6 +173,7 @@ class TapReportActivity : TAPBaseActivity() {
                 .setPrimaryButtonListener {
                     when (vm.reportType) {
                         ReportType.USER -> TAPDataManager.getInstance(instanceKey).submitUserReport(vm.user?.userID, vm.selectedReportOption, (vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount -1]), et_reason.text.toString(), submitReportView)
+                        ReportType.MESSAGE -> TAPDataManager.getInstance(instanceKey).submitMessageReport(vm.message?.messageID, vm.message?.room?.roomID, vm.selectedReportOption, (vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount -1]), et_reason.text.toString(), submitReportView)
                     }
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
