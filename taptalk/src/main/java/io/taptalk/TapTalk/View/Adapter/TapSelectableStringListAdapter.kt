@@ -10,6 +10,7 @@ import io.taptalk.TapTalk.R
 class TapSelectableStringListAdapter(selectableStrings: List<String>, private val onClickListener: TAPGeneralListener<String>) : TAPBaseAdapter<String, TAPBaseViewHolder<String>>() {
 
     private var selectedText : String = ""
+    private var isEnabled = true
 
     init {
         items = selectableStrings
@@ -26,7 +27,15 @@ class TapSelectableStringListAdapter(selectableStrings: List<String>, private va
         private val ivSelect = itemView.findViewById<ImageView>(R.id.iv_select)
         private val tvOption = itemView.findViewById<TextView>(R.id.tv_option)
         override fun onBind(item: String, position: Int) {
-            ivSelect.setImageResource(if (item == getSelectedText()) R.drawable.tap_ic_circle_active_check else R.drawable.tap_ic_circle_inactive)
+            val resource =
+            if (item == getSelectedText()) {
+                if (isEnabled)
+                    R.drawable.tap_ic_circle_active_check
+                else
+                    R.drawable.tap_ic_circle_inactive_check
+            } else
+                R.drawable.tap_ic_circle_inactive
+            ivSelect.setImageResource(resource)
             tvOption.text = item
             itemView.setOnClickListener {
                 onClickListener.onClick(position, item)
@@ -40,5 +49,14 @@ class TapSelectableStringListAdapter(selectableStrings: List<String>, private va
 
     fun getSelectedText() : String {
         return this.selectedText
+    }
+
+    fun setEnabled(isEnabled : Boolean) {
+        this.isEnabled = isEnabled
+        notifyDataSetChanged()
+    }
+
+    fun isEnabled() : Boolean {
+        return this.isEnabled
     }
 }

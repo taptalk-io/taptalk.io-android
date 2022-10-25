@@ -52,6 +52,7 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:overScrollMode="never"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
         app:layout_constraintBottom_toBottomOf="parent" >
 
@@ -148,7 +149,7 @@
             <Button
                 android:id="@+id/btn_submit"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="20dp"
                 android:text="@string/tap_submit_report"
@@ -157,6 +158,19 @@
                 app:layout_constraintStart_toStartOf="@id/tv_report_description"
                 app:layout_constraintEnd_toEndOf="@id/tv_report_description"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ProgressBar
+                android:id="@+id/pb_loading"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:padding="12dp"
+                android:indeterminateTint="@color/tapWhite"
+                android:clickable="true"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/btn_submit"
+                app:layout_constraintEnd_toEndOf="@id/btn_submit"
+                app:layout_constraintTop_toTopOf="@id/btn_submit"
+                app:layout_constraintBottom_toBottomOf="@id/btn_submit" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

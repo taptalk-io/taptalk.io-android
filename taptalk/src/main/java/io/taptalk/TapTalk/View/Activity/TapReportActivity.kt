@@ -19,12 +19,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
-import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapSelectableStringListAdapter
 import io.taptalk.TapTalk.ViewModel.TapReportViewModel
@@ -35,6 +33,7 @@ class TapReportActivity : TAPBaseActivity() {
         ViewModelProvider(this)[TapReportViewModel::class.java]
     }
     private lateinit var optionsAdapter : TapSelectableStringListAdapter
+    private var isLoading = false
 
     enum class ReportType {
         USER, MESSAGE
@@ -151,6 +150,7 @@ class TapReportActivity : TAPBaseActivity() {
                 .setPrimaryButtonTitle(getString(R.string.tap_submit))
                 .setPrimaryButtonListener {
                     // TODO: handle api call MU
+                    showLoading()
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setSecondaryButtonListener { }
@@ -162,10 +162,18 @@ class TapReportActivity : TAPBaseActivity() {
     }
 
     override fun onBackPressed() {
-        // TODO: handle when loading api call MU
+        val title: String
+        val message: String
+        if (isLoading) {
+            title = getString(R.string.tap_report_might_not_submitted)
+            message = getString(R.string.tap_report_might_not_submitted_wording)
+        } else {
+            title = getString(R.string.tap_you_havent_submit_report)
+            message = getString(R.string.tap_havent_submit_report_wording)
+        }
         TapTalkDialog.Builder(this)
-            .setTitle(getString(R.string.tap_you_havent_submit_report))
-            .setMessage(getString(R.string.tap_havent_submit_report_wording))
+            .setTitle(title)
+            .setMessage(message)
             .setDialogType(TapTalkDialog.DialogType.DEFAULT)
             .setPrimaryButtonTitle(getString(R.string.tap_yes))
             .setPrimaryButtonListener {
@@ -174,6 +182,24 @@ class TapReportActivity : TAPBaseActivity() {
             .setSecondaryButtonTitle(getString(R.string.tap_cancel))
             .setSecondaryButtonListener { }
             .show()
+    }
+
+    private fun showLoading() {
+        isLoading = true
+        pb_loading.visibility = View.VISIBLE
+        btn_submit.text = ""
+        et_reason.isEnabled = false
+        et_other.isEnabled = false
+        optionsAdapter.setEnabled(false)
+    }
+
+    private fun hideLoading() {
+        isLoading = false
+        pb_loading.visibility = View.VISIBLE
+        btn_submit.text = getString(R.string.tap_submit_report)
+        et_reason.isEnabled = true
+        et_other.isEnabled = true
+        optionsAdapter.setEnabled(true)
     }
 
     private val characterWatcher = object : TextWatcher {
@@ -191,7 +217,7 @@ class TapReportActivity : TAPBaseActivity() {
     private val onClickListener = object : TAPGeneralListener<String>() {
         override fun onClick(position: Int, item: String?) {
             super.onClick(position, item)
-            if (vm.selectedReportOption != item) {
+            if (vm.selectedReportOption != item && !isLoading) {
                 vm.selectedReportOption = if (item == optionsAdapter.getSelectedText()) {
                     ""
                 } else {

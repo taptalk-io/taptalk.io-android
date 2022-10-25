@@ -483,5 +483,7 @@
     <string name="tap_submit">Submit</string>
     <string name="tap_you_havent_submit_report">You haven’t submit your report</string>
     <string name="tap_havent_submit_report_wording">Your report has not been submitted, are you sure you want to go back before submitting?</string>
+    <string name="tap_report_might_not_submitted">Your report might have not been submitted</string>
+    <string name="tap_report_might_not_submitted_wording">Your report might have not been submitted because you clicked back while we are trying to submit your report, are you sure you want to go back?</string>
 
 </resources>
