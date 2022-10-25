@@ -30,7 +30,7 @@ public class TapBaseCustomNavigationBarFragment extends Fragment {
         
     }
 
-    private TapBaseCustomNavigationBarFragment(String instanceKey, TAPRoomModel room, HashMap<String, Object> userInfo) {
+    public TapBaseCustomNavigationBarFragment(String instanceKey, TAPRoomModel room, HashMap<String, Object> userInfo) {
         this.instanceKey = instanceKey;
         this.room = room;
         this.userInfo = userInfo;
@@ -67,7 +67,7 @@ public class TapBaseCustomNavigationBarFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.tap_cell_user_room, container, false); // TODO: TEST LAYOUT
+        return inflater.inflate(R.layout.tap_cell_empty, container, false); // TODO: TEST LAYOUT
     }
 
 //    @Override

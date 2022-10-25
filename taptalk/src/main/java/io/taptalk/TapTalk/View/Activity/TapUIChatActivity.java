@@ -269,6 +269,7 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.View.Fragment.TapBaseCustomNavigationBarFragment;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
+import io.taptalk.TapTalk.View.Fragment.TestNavbarFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import rx.Observable;
 import rx.Observer;
@@ -1060,7 +1061,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         getWindow().setBackgroundDrawable(null);
 
         // TODO: TEST
-        TapBaseCustomNavigationBarFragment fTest = TapBaseCustomNavigationBarFragment.newInstance(instanceKey, vm.getRoom(), null);
+        TestNavbarFragment fTest = new TestNavbarFragment(instanceKey, vm.getRoom(), null);
         getSupportFragmentManager().beginTransaction().add(R.id.custom_action_bar_fragment_container, fTest).commit();
         getSupportFragmentManager()
                 .beginTransaction()
