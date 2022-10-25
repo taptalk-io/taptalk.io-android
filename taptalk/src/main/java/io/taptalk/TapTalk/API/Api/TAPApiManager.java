@@ -799,4 +799,11 @@ public class TAPApiManager {
         request.setUserID(userId);
         execute(homingPigeon.submitUserReport(request), subscriber);
     }
+
+    public void submitMessageReport(String messageId, String roomId, String category, boolean isOtherCategory, String reason, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TapReportUserRequest request = new TapReportUserRequest(category, isOtherCategory, reason);
+        request.setMessageID(messageId);
+        request.setRoomID(roomId);
+        execute(homingPigeon.submitMessageReport(request), subscriber);
+    }
 }

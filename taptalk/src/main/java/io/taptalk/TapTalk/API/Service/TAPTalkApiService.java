@@ -280,4 +280,7 @@ public interface TAPTalkApiService {
 
     @POST("client/chat_report/submit_user")
     Observable<TAPBaseResponse<TAPCommonResponse>> submitUserReport(@Body TapReportUserRequest request);
+
+    @POST("client/chat_report/submit_message")
+    Observable<TAPBaseResponse<TAPCommonResponse>> submitMessageReport(@Body TapReportUserRequest request);
 }
