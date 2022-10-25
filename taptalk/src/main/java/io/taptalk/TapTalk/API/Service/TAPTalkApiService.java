@@ -24,6 +24,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapCreateScheduledMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdsWithRoomIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapReportUserRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdsRequest;
@@ -276,4 +277,7 @@ public interface TAPTalkApiService {
 
     @POST("chat/scheduled_message/send_now")
     Observable<TAPBaseResponse<TapIdsResponse>> sendScheduledMessageNow(@Body TapIdsWithRoomIdRequest request);
+
+    @POST("client/chat_report/submit_user")
+    Observable<TAPBaseResponse<TAPCommonResponse>> submitUserReport(@Body TapReportUserRequest request);
 }
