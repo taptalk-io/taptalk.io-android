@@ -22,7 +22,7 @@ public class TestNavbarFragment extends TapBaseCustomNavigationBarFragment {
         return inflater.inflate(R.layout.tap_cell_user_room, container, false); // TODO: TEST LAYOUT
     }
 
-    public TestNavbarFragment(String instanceKey, TAPRoomModel room, HashMap<String, Object> userInfo) {
-        super(instanceKey, room, userInfo);
+    public TestNavbarFragment(String instanceKey, TAPRoomModel room) {
+        super(instanceKey, room);
     }
 }

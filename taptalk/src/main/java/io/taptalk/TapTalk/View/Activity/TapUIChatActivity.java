@@ -1061,7 +1061,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         getWindow().setBackgroundDrawable(null);
 
         // TODO: TEST
-        TestNavbarFragment fTest = new TestNavbarFragment(instanceKey, vm.getRoom(), null);
+        TestNavbarFragment fTest = new TestNavbarFragment(instanceKey, vm.getRoom());
         getSupportFragmentManager().beginTransaction().add(R.id.custom_action_bar_fragment_container, fTest).commit();
         getSupportFragmentManager()
                 .beginTransaction()
