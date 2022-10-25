@@ -57,6 +57,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT;
@@ -2380,6 +2381,10 @@ public class TAPChatManager {
 
     public void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPRoomModel room, TAPUserModel activeUser, TAPUserModel otherUser) {
         TapUI.getInstance(instanceKey).triggerCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, otherUser);
+    }
+
+    public TapBaseChatRoomCustomNavigationBarFragment getChatRoomCustomNavigationBar(Activity activity, TAPRoomModel room, TAPUserModel activeUser, @Nullable TAPUserModel recipientUser) {
+        return TapUI.getInstance(instanceKey).getChatRoomCustomNavigationBar(activity, room, activeUser, recipientUser);
     }
 
     public void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {

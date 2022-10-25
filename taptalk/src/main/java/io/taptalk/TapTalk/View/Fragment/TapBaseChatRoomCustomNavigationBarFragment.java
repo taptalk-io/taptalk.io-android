@@ -12,21 +12,20 @@ import androidx.fragment.app.Fragment;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.R;
 
-public class TapBaseCustomNavigationBarFragment extends Fragment {
+public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
 
-    private String TAG = TapBaseCustomNavigationBarFragment.class.getSimpleName();
     private String instanceKey = "";
     private TAPRoomModel room;
 
-    public TapBaseCustomNavigationBarFragment() {
+    public TapBaseChatRoomCustomNavigationBarFragment() {
         
     }
 
-    public TapBaseCustomNavigationBarFragment(TAPRoomModel room) {
+    public TapBaseChatRoomCustomNavigationBarFragment(TAPRoomModel room) {
         this.room = room;
     }
 
-    public TapBaseCustomNavigationBarFragment(String instanceKey, TAPRoomModel room) {
+    public TapBaseChatRoomCustomNavigationBarFragment(String instanceKey, TAPRoomModel room) {
         this.instanceKey = instanceKey;
         this.room = room;
     }
