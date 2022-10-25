@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/tap_bg_area_text_field_active" android:state_focused="true" />
-    <item android:drawable="@drawable/tap_bg_area_text_field_inactive" android:state_focused="false" />
+    <item android:drawable="@drawable/tap_bg_area_text_field_active" android:state_focused="true" android:state_enabled="true" />
+    <item android:drawable="@drawable/tap_bg_area_text_field_inactive" android:state_focused="false" android:state_enabled="true" />
+    <item android:drawable="@drawable/tap_bg_area_text_field_disabled" android:state_enabled="false" />
 </selector>
