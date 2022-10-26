@@ -78,6 +78,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketClearChat;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMarkAsReadRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMarkAsUnreadRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMuteRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
@@ -273,6 +275,7 @@ public class TAPChatManager {
                     TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                     TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
                     TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomId);
+                    TAPDataManager.getInstance(instanceKey).removeUnreadRoomID(roomId);
                     TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
                         @Override
                         public void onSuccess(String successMessage) {
@@ -322,6 +325,28 @@ public class TAPChatManager {
                     TAPDataManager.getInstance(instanceKey).removePinnedRoomID(unpinnedRoomId);
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         chatListener.onUnpinRoom(unpinRoomData.getRoom());
+                    }
+                    break;
+                case kSocketMarkAsReadRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> markAsReadRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse markAsReadRoomData = markAsReadRoomEmit.getData();
+                    String readRoomId = markAsReadRoomData.getRoom().getRoomID();
+                    TAPDataManager.getInstance(instanceKey).removeUnreadRoomID(readRoomId);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onMarkRoomAsRead(markAsReadRoomData.getRoom().getRoomID());
+                    }
+                    break;
+                case kSocketMarkAsUnreadRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> markAsUnreadRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse markAsUnreadRoomData = markAsUnreadRoomEmit.getData();
+                    String unreadRoomId = markAsUnreadRoomData.getRoom().getRoomID();
+                    ArrayList<String> unreadRooms = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+                    if (!unreadRooms.contains(unreadRoomId)) {
+                        unreadRooms.add(unreadRoomId);
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRooms);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onMarkRoomAsUnread(markAsUnreadRoomData.getRoom().getRoomID());
                     }
                     break;
                 case kSocketScheduleMessageRoom:
