@@ -135,6 +135,16 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     }
 
     @Override
+    public void onMarkRoomAsRead(String roomID) {
+
+    }
+
+    @Override
+    public void onMarkRoomAsUnread(String roomID) {
+
+    }
+
+    @Override
     public void onCreateScheduledMessage(TapScheduledMessageModel scheduledMessage) {
 
     }
