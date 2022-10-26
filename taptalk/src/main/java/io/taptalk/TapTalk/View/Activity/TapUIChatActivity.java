@@ -1835,7 +1835,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     };
 
-    private void closeActivity() {
+    public void closeActivity() {
         rvCustomKeyboard.setVisibility(View.GONE);
         onBackPressed();
     }
@@ -3962,7 +3962,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }));
     }
 
-    private void hideUnreadButton() {
+    public void hideUnreadButton() {
         if (null != ivUnreadButtonImage.getAnimation()) {
             return;
         }

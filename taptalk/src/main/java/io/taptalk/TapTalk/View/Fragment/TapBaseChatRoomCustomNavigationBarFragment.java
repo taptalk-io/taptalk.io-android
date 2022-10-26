@@ -18,14 +18,18 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TapCoreChatRoomListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 
 public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
 
     private TAPRoomModel room;
+    private TAPUserModel recipientUser;
+    private TAPOnlineStatusModel onlineStatus;
     private LinkedHashMap<String, TAPUserModel> typingUsers;
 
     public TapBaseChatRoomCustomNavigationBarFragment() {
@@ -44,24 +48,14 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
         return null;
     }
 
-    public TAPRoomModel getRoom() {
-        return room;
-    }
-
-    public void setRoom(TAPRoomModel room) {
-        this.room = room;
-    }
-
-    public LinkedHashMap<String, TAPUserModel> getTypingUsers() {
-        return null == typingUsers ? typingUsers = new LinkedHashMap<>() : typingUsers;
-    }
-
-    public void setTypingUsers(LinkedHashMap<String, TAPUserModel> typingUsers) {
-        this.typingUsers = typingUsers;
-    }
-
     public void onBackPressed() {
-        if (getActivity() != null) {
+        if (getActivity() == null) {
+            return;
+        }
+        if (getActivity() instanceof TapUIChatActivity) {
+            ((TapUIChatActivity) getActivity()).closeActivity();
+        }
+        else {
             getActivity().onBackPressed();
         }
     }
@@ -122,6 +116,7 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
 
             if (isRoomParticipant) {
                 Log.e(">>>>>", "onReceiveOnlineStatus: TRIGGER onReceiveOnlineStatus");
+                setOnlineStatus(new TAPOnlineStatusModel(user, isOnline, lastActive));
                 TapBaseChatRoomCustomNavigationBarFragment.this.onReceiveOnlineStatus(user, isOnline, lastActive);
             }
         }
@@ -159,5 +154,37 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
 
     public void onReceiveOnlineStatus(TAPUserModel user, Boolean isOnline, Long lastActive) {
 
+    }
+
+    public TAPRoomModel getRoom() {
+        return room;
+    }
+
+    public void setRoom(TAPRoomModel room) {
+        this.room = room;
+    }
+
+    public TAPUserModel getRecipientUser() {
+        return recipientUser;
+    }
+
+    public void setRecipientUser(TAPUserModel recipientUser) {
+        this.recipientUser = recipientUser;
+    }
+
+    public TAPOnlineStatusModel getOnlineStatus() {
+        return onlineStatus;
+    }
+
+    public void setOnlineStatus(TAPOnlineStatusModel onlineStatus) {
+        this.onlineStatus = onlineStatus;
+    }
+
+    public LinkedHashMap<String, TAPUserModel> getTypingUsers() {
+        return null == typingUsers ? typingUsers = new LinkedHashMap<>() : typingUsers;
+    }
+
+    public void setTypingUsers(LinkedHashMap<String, TAPUserModel> typingUsers) {
+        this.typingUsers = typingUsers;
     }
 }
