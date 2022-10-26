@@ -389,8 +389,12 @@ public class TAPChatManager {
      * get other user ID from the currently active room
      */
     public String getOtherUserIdFromRoom(String roomID) {
-        String[] splitRoomID = roomID.split("-");
-        return !splitRoomID[0].equals(getActiveUser().getUserID()) ? splitRoomID[0] : splitRoomID[1];
+        try {
+            String[] splitRoomID = roomID.split("-");
+            return !splitRoomID[0].equals(getActiveUser().getUserID()) ? splitRoomID[0] : splitRoomID[1];
+        } catch (Exception e) {
+            return "0";
+        }
     }
 
     public void sendMessage(TAPMessageModel message, TapSendMessageInterface listener) {
@@ -2387,10 +2391,6 @@ public class TAPChatManager {
         return TapUI.getInstance(instanceKey).getChatRoomCustomNavigationBar(activity, room, activeUser, recipientUser);
     }
 
-    public void triggerUpdatedChatRoomDataReceived(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
-        TapUI.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(room, recipientUser);
-    }
-
     public void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         TapUI.getInstance(instanceKey).triggerProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
     }
@@ -2463,7 +2463,14 @@ public class TAPChatManager {
      * TAP CORE
      * ============================================================================================
      */
+
     public void triggerRequestMessageFileUpload(TAPMessageModel messageModel, Uri fileUri) {
         TapCoreMessageManager.getInstance(instanceKey).triggerRequestMessageFileUpload(messageModel, fileUri);
+    }
+
+    public void triggerUpdatedChatRoomDataReceived(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
+        for (TAPChatListener listener : chatListeners) {
+            listener.onReceiveUpdatedChatRoomData(room, recipientUser);
+        }
     }
 }

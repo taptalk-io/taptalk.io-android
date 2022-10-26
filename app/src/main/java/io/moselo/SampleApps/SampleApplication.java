@@ -6,20 +6,27 @@ import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_SECRET;
 import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
 
 import android.app.Activity;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
 
 import io.moselo.SampleApps.Activity.TAPLoginActivity;
 import io.moselo.SampleApps.Activity.TapDeleteAccountActivity;
+import io.moselo.SampleApps.Fragment.MeetTalkChatRoomNavigationBarFragment;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Listener.TapUIChatRoomCustomNavigationBarListener;
 import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
+import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalkSample.BuildConfig;
 import io.taptalk.TapTalkSample.R;
 
@@ -64,6 +71,15 @@ public class SampleApplication extends MultiDexApplication {
         if (BuildConfig.DEBUG) {
             TapUI.getInstance(INSTANCE_KEY).setCloseButtonInRoomListVisible(true);
         }
+
+
+        // TODO: TEST
+        TapUI.getInstance(INSTANCE_KEY).addChatRoomCustomNavigationBarListener(new TapUIChatRoomCustomNavigationBarListener() {
+            @Override
+            public TapBaseChatRoomCustomNavigationBarFragment setCustomChatRoomNavigationBar(Activity activity, TAPRoomModel room, TAPUserModel activeUser, @Nullable TAPUserModel recipientUser) {
+                return new MeetTalkChatRoomNavigationBarFragment(room);
+            }
+        });
     }
 
     TapListener tapListener = new TapListener(INSTANCE_KEY) {

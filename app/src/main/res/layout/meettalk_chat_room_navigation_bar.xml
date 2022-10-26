@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_action_bar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/tapDefaultNavBarBackgroundColor"
+    android:elevation="3dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <ImageView
+        android:id="@+id/iv_button_back"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="16dp"
+        android:src="@drawable/tap_ic_chevron_left_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/civ_room_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/tapIconNavigationBarBackButton" />
+
+    <TextView
+        android:id="@+id/tv_room_name"
+        style="@style/tapChatRoomNameLabelStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="left"
+        android:maxLines="1"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cl_room_status"
+        app:layout_constraintEnd_toStartOf="@id/iv_button_video_call"
+        app:layout_constraintStart_toEndOf="@id/civ_room_image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_goneMarginEnd="?attr/actionBarSize"
+        app:layout_goneMarginLeft="?attr/actionBarSize"
+        app:layout_goneMarginRight="?attr/actionBarSize"
+        app:layout_goneMarginStart="?attr/actionBarSize"
+        android:text="Room Name" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_room_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/tv_room_name"
+        app:layout_constraintStart_toStartOf="@id/tv_room_name"
+        app:layout_constraintTop_toBottomOf="@id/tv_room_name">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_room_online_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View
+                android:id="@+id/v_room_status_badge"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/tv_room_status"
+                app:layout_constraintEnd_toStartOf="@id/tv_room_status"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_room_status"
+                tools:background="@drawable/tap_bg_circle_active" />
+
+            <TextView
+                android:id="@+id/tv_room_status"
+                style="@style/tapChatRoomStatusLabelStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/v_room_status_badge"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Active Now" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_room_typing_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_room_typing_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_room_typing_status"
+                app:layout_constraintEnd_toStartOf="@id/tv_room_typing_status"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintTop_toTopOf="@id/tv_room_typing_status"
+                app:tint="@color/tapColorTextMedium" />
+
+            <TextView
+                android:id="@+id/tv_room_typing_status"
+                style="@style/tapChatRoomStatusLabelStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_room_typing_indicator"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Typing" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <io.taptalk.TapTalk.Helper.CircleImageView
+        android:id="@+id/civ_room_image"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="2dp"
+        android:padding="12dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/tap_bg_circle_9b9b9b"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_room_name"
+        app:layout_constraintStart_toEndOf="@id/iv_button_back"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_room_image_label"
+        style="@style/tapDefaultRoomAvatarSmallFontStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textAllCaps="true"
+        app:layout_constraintBottom_toBottomOf="@id/civ_room_image"
+        app:layout_constraintEnd_toEndOf="@id/civ_room_image"
+        app:layout_constraintStart_toStartOf="@id/civ_room_image"
+        app:layout_constraintTop_toTopOf="@id/civ_room_image"
+        tools:text="A" />
+
+    <!--Clickable area for room image-->
+    <View
+        android:id="@+id/v_room_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="@id/civ_room_image"
+        app:layout_constraintEnd_toEndOf="@id/civ_room_image"
+        app:layout_constraintStart_toStartOf="@id/civ_room_image"
+        app:layout_constraintTop_toTopOf="@id/civ_room_image" />
+
+    <ImageView
+        android:id="@+id/iv_room_icon"
+        android:layout_width="13dp"
+        android:layout_height="13dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginBottom="14dp"
+        android:src="@drawable/tap_ic_verified"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/civ_room_image"
+        app:layout_constraintEnd_toEndOf="@id/civ_room_image" />
+
+    <ImageView
+        android:id="@+id/iv_button_video_call"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginRight="4dp"
+        android:padding="4dp"
+        android:src="@drawable/tap_ic_video_orange_outline"
+        android:tint="@color/tapButtonIconPrimaryColor"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/iv_button_voice_call" />
+
+    <ImageView
+        android:id="@+id/iv_button_voice_call"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginRight="16dp"
+        android:padding="4dp"
+        android:src="@drawable/tap_ic_phone_orange_outline"
+        android:tint="@color/tapButtonIconPrimaryColor"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

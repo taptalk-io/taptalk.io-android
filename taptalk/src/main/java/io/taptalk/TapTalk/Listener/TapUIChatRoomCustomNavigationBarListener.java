@@ -16,24 +16,4 @@ public abstract class TapUIChatRoomCustomNavigationBarListener implements TapUIC
     public TapBaseChatRoomCustomNavigationBarFragment setCustomChatRoomNavigationBar(Activity activity, TAPRoomModel room, TAPUserModel activeUser, @Nullable TAPUserModel recipientUser) {
         return null;
     }
-
-    @Override
-    public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
-
-    }
-
-    @Override
-    public void onReceiveStartTyping(String roomID, TAPUserModel user) {
-
-    }
-
-    @Override
-    public void onReceiveStopTyping(String roomID, TAPUserModel user) {
-
-    }
-
-    @Override
-    public void onReceiveOnlineStatus(TAPUserModel user, Boolean isOnline, Long lastActive) {
-
-    }
 }

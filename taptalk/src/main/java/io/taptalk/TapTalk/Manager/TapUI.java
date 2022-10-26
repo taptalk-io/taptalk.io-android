@@ -78,7 +78,6 @@ public class TapUI {
     private List<TapUIChatRoomCustomNavigationBarListener> tapUIChatRoomCustomNavigationBarListeners;
     private List<TapUIMyAccountListener> tapUIMyAccountListeners;
     private HashMap<Integer, LongPressMenuType> longPressMenuMap;
-    private TAPChatListener chatListener;
 
     private TapUIRoomListFragment currentTapTalkRoomListFragment;
     private TapUIChatActivity currentTapTalkChatActivity;
@@ -257,39 +256,6 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        if (getChatRoomCustomNavigationBarListeners().isEmpty()) {
-            if (null == chatListener) {
-                chatListener = new TAPChatListener() {
-                    @Override
-                    public void onReceiveStartTyping(TAPTypingModel typingModel) {
-                        for (TapUIChatRoomCustomNavigationBarListener listener : getChatRoomCustomNavigationBarListeners()) {
-                            if (null != listener) {
-                                listener.onReceiveStartTyping(typingModel.getRoomID(), typingModel.getUser());
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onReceiveStopTyping(TAPTypingModel typingModel) {
-                        for (TapUIChatRoomCustomNavigationBarListener listener : getChatRoomCustomNavigationBarListeners()) {
-                            if (null != listener) {
-                                listener.onReceiveStopTyping(typingModel.getRoomID(), typingModel.getUser());
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
-                        for (TapUIChatRoomCustomNavigationBarListener listener : getChatRoomCustomNavigationBarListeners()) {
-                            if (null != listener) {
-                                listener.onReceiveOnlineStatus(onlineStatus.getUser(), onlineStatus.getOnline(), onlineStatus.getLastActive());
-                            }
-                        }
-                    }
-                };
-            }
-            TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
-        }
         getChatRoomCustomNavigationBarListeners().remove(listener);
         getChatRoomCustomNavigationBarListeners().add(listener);
     }
@@ -299,9 +265,6 @@ public class TapUI {
             return;
         }
         getChatRoomCustomNavigationBarListeners().remove(listener);
-        if (getChatRoomCustomNavigationBarListeners().isEmpty()) {
-            TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
-        }
     }
 
     private List<TapUIMyAccountListener> getMyAccountListeners() {
@@ -1616,14 +1579,6 @@ public class TapUI {
             }
         }
         return null;
-    }
-
-    void triggerUpdatedChatRoomDataReceived(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
-        for (TapUIChatRoomCustomNavigationBarListener listener : getChatRoomCustomNavigationBarListeners()) {
-            if (null != listener) {
-                listener.onReceiveUpdatedChatRoomData(room, recipientUser);
-            }
-        }
     }
 
     String getRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {
