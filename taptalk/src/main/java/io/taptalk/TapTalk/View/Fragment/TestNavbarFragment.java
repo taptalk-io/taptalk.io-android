@@ -22,8 +22,4 @@ public class TestNavbarFragment extends TapBaseChatRoomCustomNavigationBarFragme
     public TestNavbarFragment(TAPRoomModel room) {
         super(room);
     }
-
-    public TestNavbarFragment(String instanceKey, TAPRoomModel room) {
-        super(instanceKey, room);
-    }
 }

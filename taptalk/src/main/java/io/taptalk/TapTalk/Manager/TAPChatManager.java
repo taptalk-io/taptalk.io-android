@@ -2387,6 +2387,10 @@ public class TAPChatManager {
         return TapUI.getInstance(instanceKey).getChatRoomCustomNavigationBar(activity, room, activeUser, recipientUser);
     }
 
+    public void triggerUpdatedChatRoomDataReceived(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
+        TapUI.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(room, recipientUser);
+    }
+
     public void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         TapUI.getInstance(instanceKey).triggerProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
     }

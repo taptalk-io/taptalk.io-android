@@ -14,8 +14,10 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
 import io.taptalk.TapTalk.Listener.TapUIChatProfileListener;
 import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
@@ -28,9 +30,11 @@ import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
@@ -74,6 +78,7 @@ public class TapUI {
     private List<TapUIChatRoomCustomNavigationBarListener> tapUIChatRoomCustomNavigationBarListeners;
     private List<TapUIMyAccountListener> tapUIMyAccountListeners;
     private HashMap<Integer, LongPressMenuType> longPressMenuMap;
+    private TAPChatListener chatListener;
 
     private TapUIRoomListFragment currentTapTalkRoomListFragment;
     private TapUIChatActivity currentTapTalkChatActivity;
@@ -252,6 +257,39 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
+        if (getChatRoomCustomNavigationBarListeners().isEmpty()) {
+            if (null == chatListener) {
+                chatListener = new TAPChatListener() {
+                    @Override
+                    public void onReceiveStartTyping(TAPTypingModel typingModel) {
+                        for (TapUIChatRoomCustomNavigationBarListener listener : getChatRoomCustomNavigationBarListeners()) {
+                            if (null != listener) {
+                                listener.onReceiveStartTyping(typingModel.getRoomID(), typingModel.getUser());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onReceiveStopTyping(TAPTypingModel typingModel) {
+                        for (TapUIChatRoomCustomNavigationBarListener listener : getChatRoomCustomNavigationBarListeners()) {
+                            if (null != listener) {
+                                listener.onReceiveStopTyping(typingModel.getRoomID(), typingModel.getUser());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
+                        for (TapUIChatRoomCustomNavigationBarListener listener : getChatRoomCustomNavigationBarListeners()) {
+                            if (null != listener) {
+                                listener.onReceiveOnlineStatus(onlineStatus.getUser(), onlineStatus.getOnline(), onlineStatus.getLastActive());
+                            }
+                        }
+                    }
+                };
+            }
+            TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
+        }
         getChatRoomCustomNavigationBarListeners().remove(listener);
         getChatRoomCustomNavigationBarListeners().add(listener);
     }
@@ -261,6 +299,9 @@ public class TapUI {
             return;
         }
         getChatRoomCustomNavigationBarListeners().remove(listener);
+        if (getChatRoomCustomNavigationBarListeners().isEmpty()) {
+            TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
+        }
     }
 
     private List<TapUIMyAccountListener> getMyAccountListeners() {
@@ -1575,6 +1616,14 @@ public class TapUI {
             }
         }
         return null;
+    }
+
+    void triggerUpdatedChatRoomDataReceived(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
+        for (TapUIChatRoomCustomNavigationBarListener listener : getChatRoomCustomNavigationBarListeners()) {
+            if (null != listener) {
+                listener.onReceiveUpdatedChatRoomData(room, recipientUser);
+            }
+        }
     }
 
     String getRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {

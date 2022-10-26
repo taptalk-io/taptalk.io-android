@@ -267,7 +267,6 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
-import io.taptalk.TapTalk.View.Fragment.TestNavbarFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import rx.Observable;
 import rx.Observer;
@@ -3133,6 +3132,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                     }).start();
                 }
+                TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getOtherUserModel());
             }
         });
     }
@@ -3149,11 +3149,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     setChatRoomStatus(onlineStatus);
                     TAPChatManager.getInstance(instanceKey).setNeedToCallUpdateRoomStatusAPI(false);
 
+                    vm.getRoom().setName(updatedContact.getFullname());
+                    vm.getRoom().setImageURL(updatedContact.getImageURL());
+                    setOtherUserModel(updatedContact);
                     if (null == vm.getOtherUserModel()) {
-                        setOtherUserModel(updatedContact);
                         initRoom();
-                    } else {
-                        setOtherUserModel(updatedContact);
                     }
 
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
@@ -3164,6 +3164,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     } else {
                         clContactAction.setVisibility(View.GONE);
                     }
+
+                    TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getOtherUserModel());
                 }
 
                 @Override
@@ -3460,6 +3462,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
                 }
             });
+            TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getOtherUserModel());
         } else if (vm.getRoom().getType() == TYPE_PERSONAL &&
                 UPDATE_USER.equals(message.getAction()) &&
                 message.getUser().getUserID().equals(vm.getOtherUserID())) {
@@ -3477,6 +3480,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     civRoomImage.post(() -> loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
                 }
             });
+            TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getOtherUserModel());
         }
     }
 

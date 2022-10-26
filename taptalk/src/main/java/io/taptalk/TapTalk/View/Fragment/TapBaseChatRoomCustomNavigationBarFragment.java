@@ -11,10 +11,10 @@ import androidx.fragment.app.Fragment;
 
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 
 public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
 
-    private String instanceKey = "";
     private TAPRoomModel room;
 
     public TapBaseChatRoomCustomNavigationBarFragment() {
@@ -25,13 +25,12 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
         this.room = room;
     }
 
-    public TapBaseChatRoomCustomNavigationBarFragment(String instanceKey, TAPRoomModel room) {
-        this.instanceKey = instanceKey;
-        this.room = room;
-    }
-
+    @Nullable
     public String getInstanceKey() {
-        return instanceKey;
+        if (getActivity() != null && getActivity() instanceof TAPBaseActivity) {
+            return ((TAPBaseActivity)getActivity()).instanceKey;
+        }
+        return null;
     }
 
     public TAPRoomModel getRoom() {
