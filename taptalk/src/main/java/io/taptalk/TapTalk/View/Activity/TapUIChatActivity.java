@@ -1057,6 +1057,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void initView() {
         getWindow().setBackgroundDrawable(null);
 
+        if (null != getIntent().getStringExtra(GROUP_TYPING_MAP)) {
+            try {
+                String tempGroupTyping = getIntent().getStringExtra(GROUP_TYPING_MAP);
+                Gson gson = new Gson();
+                Type typingType = new TypeToken<LinkedHashMap<String, TAPUserModel>>() {
+                }.getType();
+                vm.setGroupTyping(gson.fromJson(tempGroupTyping, typingType));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         customNavigationBarFragment = TAPChatManager.getInstance(instanceKey).getChatRoomCustomNavigationBar(this, vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel());
         if (null != customNavigationBarFragment) {
             // Show custom navigation bar
@@ -1067,6 +1079,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     .commit();
             customNavigationBarFragmentContainerView.setVisibility(View.VISIBLE);
             clActionBar.setVisibility(View.GONE);
+
+            customNavigationBarFragment.setTypingUsers(vm.getGroupTyping());
         }
         else {
             // Setup default navigation bar
@@ -1129,17 +1143,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //            showTypingIndicator();
 //        }
 
-            if (null != getIntent().getStringExtra(GROUP_TYPING_MAP)) {
-                try {
-                    String tempGroupTyping = getIntent().getStringExtra(GROUP_TYPING_MAP);
-                    Gson gson = new Gson();
-                    Type typingType = new TypeToken<LinkedHashMap<String, TAPUserModel>>() {
-                    }.getType();
-                    vm.setGroupTyping(gson.fromJson(tempGroupTyping, typingType));
-                    if (0 < vm.getGroupTypingSize()) showTypingIndicator();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (0 < vm.getGroupTypingSize()) {
+                showTypingIndicator();
             }
         }
 

@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.LinkedHashMap;
+
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TapCoreChatRoomListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -24,6 +26,7 @@ import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
 
     private TAPRoomModel room;
+    private LinkedHashMap<String, TAPUserModel> typingUsers;
 
     public TapBaseChatRoomCustomNavigationBarFragment() {
         
@@ -49,6 +52,14 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
         this.room = room;
     }
 
+    public LinkedHashMap<String, TAPUserModel> getTypingUsers() {
+        return null == typingUsers ? typingUsers = new LinkedHashMap<>() : typingUsers;
+    }
+
+    public void setTypingUsers(LinkedHashMap<String, TAPUserModel> typingUsers) {
+        this.typingUsers = typingUsers;
+    }
+
     public void onBackPressed() {
         if (getActivity() != null) {
             getActivity().onBackPressed();
@@ -68,6 +79,7 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
         @Override
         public void onReceiveStartTyping(String roomID, TAPUserModel user) {
             if (null != getRoom() && getRoom().getRoomID().equals(roomID)) {
+                getTypingUsers().put(user.getUserID(), user);
                 TapBaseChatRoomCustomNavigationBarFragment.this.onReceiveStartTyping(roomID, user);
             }
         }
@@ -75,6 +87,7 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
         @Override
         public void onReceiveStopTyping(String roomID, TAPUserModel user) {
             if (null != getRoom() && getRoom().getRoomID().equals(roomID)) {
+                getTypingUsers().remove(user.getUserID());
                 TapBaseChatRoomCustomNavigationBarFragment.this.onReceiveStopTyping(roomID, user);
             }
         }
