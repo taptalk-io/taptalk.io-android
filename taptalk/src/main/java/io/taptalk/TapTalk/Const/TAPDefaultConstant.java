@@ -36,6 +36,8 @@ public class TAPDefaultConstant {
         public static final String kSocketUnmuteRoom = "room/unmute";
         public static final String kSocketPinRoom = "room/pin";
         public static final String kSocketUnpinRoom = "room/unpin";
+        public static final String kSocketMarkAsReadRoom = "room/markAsRead";
+        public static final String kSocketMarkAsUnreadRoom = "room/markAsUnread";
         public static final String kSocketScheduleMessageRoom = "room/scheduleMessage";
     }
 
