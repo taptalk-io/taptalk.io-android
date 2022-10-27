@@ -493,5 +493,6 @@
     <string name="tap_failed_submit_report_wording">There has been an error while submitting, please try again.</string>
     <string name="tap_block_user_dialog_wording">Blocking someone will not allow them to see your updates, and you will not receive any messages or calls from this contact. Are you sure you want to continue?</string>
     <string name="tap_block">Block</string>
+    <string name="tap_blocked_contacts">Blocked Contacts</string>
 
 </resources>

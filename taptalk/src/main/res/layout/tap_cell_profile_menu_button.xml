@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/tap_ic_notification_orange" />
+        android:src="@drawable/tap_ic_block_red" />
 
     <TextView
         android:id="@+id/tv_menu_label"
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginLeft="12dp"
-        android:text="@string/tap_notifications"
+        android:text="@string/tap_blocked_contacts"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_menu_icon"
         app:layout_constraintTop_toTopOf="parent" />
@@ -63,7 +63,6 @@
         android:layout_marginRight="12dp"
         android:src="@drawable/tap_ic_chevron_right_grey"
         app:tint="@color/tapIconChevronRightGray"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
