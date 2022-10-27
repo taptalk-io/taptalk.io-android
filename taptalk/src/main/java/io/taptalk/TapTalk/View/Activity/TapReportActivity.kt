@@ -96,13 +96,13 @@ class TapReportActivity : TAPBaseActivity() {
         if (intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) != null) {
             vm.reportType = intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) as ReportType
         }
-        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.USER) != null) {
+        if (intent.getParcelableExtra<TAPUserModel>(TAPDefaultConstant.Extras.USER) != null) {
             vm.user = intent.getParcelableExtra(TAPDefaultConstant.Extras.USER)
         }
-        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.ROOM) != null) {
+        if (intent.getParcelableExtra<TAPRoomModel>(TAPDefaultConstant.Extras.ROOM) != null) {
             vm.room = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
         }
-        if (intent.getSerializableExtra(TAPDefaultConstant.Extras.MESSAGE) != null) {
+        if (intent.getParcelableExtra<TAPMessageModel>(TAPDefaultConstant.Extras.MESSAGE) != null) {
             vm.message = intent.getParcelableExtra(TAPDefaultConstant.Extras.MESSAGE)
         }
         val spannable = SpannableString(tv_label_optional.text)
@@ -254,7 +254,9 @@ class TapReportActivity : TAPBaseActivity() {
                 .setMessage(getString(R.string.tap_thank_you_for_reporting))
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                 .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                .setPrimaryButtonListener { }
+                .setPrimaryButtonListener {
+                    finish()
+                }
                 .show()
         }
 
