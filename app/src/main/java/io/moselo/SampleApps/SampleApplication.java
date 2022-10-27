@@ -71,15 +71,6 @@ public class SampleApplication extends MultiDexApplication {
         if (BuildConfig.DEBUG) {
             TapUI.getInstance(INSTANCE_KEY).setCloseButtonInRoomListVisible(true);
         }
-
-
-        // TODO: TEST
-        TapUI.getInstance(INSTANCE_KEY).addChatRoomCustomNavigationBarListener(new TapUIChatRoomCustomNavigationBarListener() {
-            @Override
-            public TapBaseChatRoomCustomNavigationBarFragment setCustomChatRoomNavigationBar(Activity activity, TAPRoomModel room, TAPUserModel activeUser, @Nullable TAPUserModel recipientUser) {
-                return new MeetTalkChatRoomNavigationBarFragment();
-            }
-        });
     }
 
     TapListener tapListener = new TapListener(INSTANCE_KEY) {
