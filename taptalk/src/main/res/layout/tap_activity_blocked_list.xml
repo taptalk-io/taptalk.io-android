@@ -33,16 +33,26 @@
             style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="?attr/actionBarSize"
-            android:layout_marginRight="?attr/actionBarSize"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
             android:text="@string/tap_blocked_contacts"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_edit_save_btn"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_edit_save_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="@color/tapIconTransparentBackgroundBackButton"
+            android:text="@string/tap_edit"
+            android:gravity="center"
+            style="@style/tapClickableLabelStyle"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
