@@ -1080,6 +1080,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
             customNavigationBarFragmentContainerView.setVisibility(View.VISIBLE);
             clActionBar.setVisibility(View.GONE);
 
+            customNavigationBarFragment.setRoom(vm.getRoom());
+            customNavigationBarFragment.setRecipientUser(vm.getOtherUserModel());
             customNavigationBarFragment.setTypingUsers(vm.getGroupTyping());
         }
         else {
@@ -5942,6 +5944,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         hideKeyboards();
         etChat.setText("");
         rvMessageList.disableSwipe();
+
+        if (null != customNavigationBarFragment) {
+            customNavigationBarFragment.onShowMessageSelection(vm.getSelectedMessages());
+        }
     }
 
     private void hideSelectState() {
@@ -5952,6 +5958,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vm.clearSelectedMessages();
         messageAdapter.notifyDataSetChanged();
         rvMessageList.enableSwipe();
+
+        if (null != customNavigationBarFragment) {
+            customNavigationBarFragment.onHideMessageSelection();
+        }
     }
 
     private void forwardMessages() {

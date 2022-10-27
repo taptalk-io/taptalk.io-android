@@ -77,7 +77,7 @@ public class SampleApplication extends MultiDexApplication {
         TapUI.getInstance(INSTANCE_KEY).addChatRoomCustomNavigationBarListener(new TapUIChatRoomCustomNavigationBarListener() {
             @Override
             public TapBaseChatRoomCustomNavigationBarFragment setCustomChatRoomNavigationBar(Activity activity, TAPRoomModel room, TAPUserModel activeUser, @Nullable TAPUserModel recipientUser) {
-                return new MeetTalkChatRoomNavigationBarFragment(room);
+                return new MeetTalkChatRoomNavigationBarFragment();
             }
         });
     }

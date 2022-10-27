@@ -29,11 +29,14 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import java.util.List;
+
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TapUI;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -82,17 +85,17 @@ public class MeetTalkChatRoomNavigationBarFragment extends TapBaseChatRoomCustom
         getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
     }
 
-    public MeetTalkChatRoomNavigationBarFragment(TAPRoomModel room) {
-        super(room);
-    }
-
     @Override
     public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
+        Log.e(">>>>>>>>>>", "Test Fragment onReceiveUpdatedChatRoomData room: " + room.getName());
+        Log.e(">>>>>>>>>>", "Test Fragment onReceiveUpdatedChatRoomData recipientUser: " + (recipientUser != null ? recipientUser.getFullname() : "null"));
         setRoomName();
         setRoomStatus();
         setRoomProfilePicture();
-        Log.e(">>>>>>>>>>", "Test Fragment onReceiveUpdatedChatRoomData room: " + room.getName());
-        Log.e(">>>>>>>>>>", "Test Fragment onReceiveUpdatedChatRoomData recipientUser: " + (recipientUser != null ? recipientUser.getFullname() : "null"));
+        if (null != recipientUser) {
+            setOnlineStatus(TAPOnlineStatusModel.Builder(recipientUser));
+            setChatRoomStatus(getOnlineStatus());
+        }
     }
 
     @Override
@@ -103,14 +106,26 @@ public class MeetTalkChatRoomNavigationBarFragment extends TapBaseChatRoomCustom
 
     @Override
     public void onReceiveStopTyping(String roomID, TAPUserModel user) {
-        setTypingIndicator();
         Log.e(">>>>>>>>>>", "Test Fragment onReceiveStopTyping: " + roomID + " - " + user.getFullname());
+        setTypingIndicator();
     }
 
     @Override
     public void onReceiveOnlineStatus(TAPUserModel user, Boolean isOnline, Long lastActive) {
-        setChatRoomStatus(getOnlineStatus());
         Log.e(">>>>>>>>>>", "Test Fragment onReceiveOnlineStatus: " + user.getFullname() + " - " + isOnline);
+        setChatRoomStatus(new TAPOnlineStatusModel(user, isOnline, lastActive));
+    }
+
+    @Override
+    public void onShowMessageSelection(List<TAPMessageModel> selectedMessages) {
+        Log.e(">>>>>>>>>>", "Test Fragment onShowMessageSelection: " + selectedMessages.size());
+        showSelectState();
+    }
+
+    @Override
+    public void onHideMessageSelection() {
+        Log.e(">>>>>>>>>>", "Test Fragment onHideMessageSelection: ");
+        hideSelectState();
     }
 
     private void bindViews(View view) {

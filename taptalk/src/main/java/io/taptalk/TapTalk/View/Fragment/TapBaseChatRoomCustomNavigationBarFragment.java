@@ -13,11 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TapCoreChatRoomListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -34,10 +36,6 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
 
     public TapBaseChatRoomCustomNavigationBarFragment() {
         
-    }
-
-    public TapBaseChatRoomCustomNavigationBarFragment(TAPRoomModel room) {
-        this.room = room;
     }
 
     @Nullable
@@ -60,13 +58,17 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
         }
     }
 
-    private TapCoreChatRoomListener chatRoomListener = new TapCoreChatRoomListener() {
+    private final TapCoreChatRoomListener chatRoomListener = new TapCoreChatRoomListener() {
         @Override
         public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
+            Log.e(">>>>>>", "onReceiveUpdatedChatRoomData: " + TAPUtils.toJsonString(room));
+            Log.e(">>>>>>", "onReceiveUpdatedChatRoomData user: " + (recipientUser != null ? TAPUtils.toJsonString(recipientUser) : "null"));
             if (null != getRoom() && null != room && getRoom().getRoomID().equals(room.getRoomID())) {
                 setRoom(room);
+                if (null != recipientUser) {
+                    setRecipientUser(recipientUser);
+                }
                 TapBaseChatRoomCustomNavigationBarFragment.this.onReceiveUpdatedChatRoomData(room, recipientUser);
-                Log.e(">>>>>>", "onReceiveUpdatedChatRoomData: " + TAPUtils.toJsonString(room));
             }
         }
 
@@ -115,8 +117,11 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
             }
 
             if (isRoomParticipant) {
-                Log.e(">>>>>", "onReceiveOnlineStatus: TRIGGER onReceiveOnlineStatus");
                 setOnlineStatus(new TAPOnlineStatusModel(user, isOnline, lastActive));
+                if (null != recipientUser) {
+                    setRecipientUser(user);
+                }
+                Log.e(">>>>>", "onReceiveOnlineStatus: TRIGGER onReceiveOnlineStatus " + TAPUtils.toJsonString(getOnlineStatus()));
                 TapBaseChatRoomCustomNavigationBarFragment.this.onReceiveOnlineStatus(user, isOnline, lastActive);
             }
         }
@@ -153,6 +158,14 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
     }
 
     public void onReceiveOnlineStatus(TAPUserModel user, Boolean isOnline, Long lastActive) {
+
+    }
+
+    public void onShowMessageSelection(List<TAPMessageModel> selectedMessages) {
+
+    }
+
+    public void onHideMessageSelection() {
 
     }
 
