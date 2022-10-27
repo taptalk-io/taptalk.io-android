@@ -284,7 +284,7 @@ public class TapTalk implements LifecycleObserver {
         }
 
         if (sdkVersion.isEmpty()) {
-            String version = "2.7.0";
+            String version = "2.7.1";
             sdkVersion = String.format("%s-%s", version, BuildConfig.BUILD_TYPE);
         }
     }
