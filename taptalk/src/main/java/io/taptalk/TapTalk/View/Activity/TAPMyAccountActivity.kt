@@ -245,7 +245,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_password.setOnClickListener { openChangePasswordPage() }
         cl_logout.setOnClickListener { promptUserLogout() }
         btn_blocked_contacts.setOnClickListener {
-
+            TAPBlockedListActivity.start(this, instanceKey)
         }
         btn_delete_my_account.setOnClickListener {
             TapUI.getInstance(instanceKey).triggerDeleteButtonInMyAccountPageTapped(this)
