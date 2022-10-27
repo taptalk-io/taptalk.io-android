@@ -621,15 +621,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         menuItems.add(menuSendMessage)
                     }
 
-                    // Block user
-                    val menuBlock = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_BLOCK,
-                        getString(R.string.tap_block_user),
-                        R.drawable.tap_ic_block_red,
-                        R.color.tapIconChatProfileMenuBlockUser,
-                        R.style.tapChatProfileMenuLabelStyle
-                    )
-
                     // Clear chat
                     val menuClearChat = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_CLEAR_CHAT,
@@ -640,7 +631,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
 
                     // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
-//            menuItems.add(2, menuBlock);
 //            menuItems.add(menuClearChat);
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
                         TapUI.getInstance(instanceKey).isReportButtonInUserProfileVisible) {
@@ -654,6 +644,18 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         )
                         menuItems.add(menuReport)
                     }
+
+                    // TODO: handle block user tapUI MU
+                    // Block user
+                    val menuBlock = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_BLOCK,
+                        getString(R.string.tap_block_user),
+                        R.drawable.tap_ic_block_red,
+                        R.color.tapIconChatProfileMenuBlockUser,
+                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                    )
+                    menuItems.add(menuBlock)
+
                 } else if (vm!!.room.type == RoomType.TYPE_GROUP && null != vm!!.room.admins &&
                     vm!!.room.admins!!
                         .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
@@ -893,6 +895,16 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
                     menuItems.add(menuReport)
                 }
+                // TODO: handle block user tapUI MU
+                // Block user
+                val menuBlock = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_BLOCK,
+                    getString(R.string.tap_block_user),
+                    R.drawable.tap_ic_block_red,
+                    R.color.tapIconChatProfileMenuBlockUser,
+                    R.style.tapChatProfileMenuDestructiveLabelStyle
+                )
+                menuItems.add(menuBlock)
             }
         }
         return menuItems
@@ -915,7 +927,18 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun blockUser() {
-        Log.e(TAG, "blockUser: ")
+        // TODO: add unblock case MU 
+        TapTalkDialog.Builder(this)
+            .setTitle(this.getString(R.string.tap_block_user))
+            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+            .setMessage(getString(R.string.tap_block_user_dialog_wording))
+            .setPrimaryButtonTitle(getString(R.string.tap_block))
+            .setPrimaryButtonListener {
+                // TODO: call block user API
+            }
+            .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
+            .setSecondaryButtonListener { }
+            .show()
     }
 
     private fun clearChat() {
