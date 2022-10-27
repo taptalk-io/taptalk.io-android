@@ -494,5 +494,9 @@
     <string name="tap_block_user_dialog_wording">Blocking someone will not allow them to see your updates, and you will not receive any messages or calls from this contact. Are you sure you want to continue?</string>
     <string name="tap_block">Block</string>
     <string name="tap_blocked_contacts">Blocked Contacts</string>
+    <string name="tap_done">Done</string>
+    <string name="tap_unblock">Unblock</string>
+    <string name="tap_sure_unblock_wording">Unblocking lets user send messages and calls from this contact. Are you sure you want to continue?</string>
+    <string name="tap_empty_blocked_contacts_wording">You don’t have any blocked contact</string>
 
 </resources>
