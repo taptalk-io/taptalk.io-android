@@ -513,7 +513,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 showMuteBottomSheet()
             }
             tv_menu_info.visibility = View.VISIBLE
-            iv_right_arrow.visibility = View.VISIBLE
         } else {
             cl_mute.visibility = View.GONE
         }

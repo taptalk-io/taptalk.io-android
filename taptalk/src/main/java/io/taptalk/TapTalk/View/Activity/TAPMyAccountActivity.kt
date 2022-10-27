@@ -244,6 +244,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_form_container.setOnClickListener { clearAllFocus() }
         cl_password.setOnClickListener { openChangePasswordPage() }
         cl_logout.setOnClickListener { promptUserLogout() }
+        btn_blocked_contacts.setOnClickListener {
+
+        }
         btn_delete_my_account.setOnClickListener {
             TapUI.getInstance(instanceKey).triggerDeleteButtonInMyAccountPageTapped(this)
         }
@@ -295,6 +298,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         btn_delete_my_account.visibility = View.GONE
         et_bio.isEnabled = false
         et_bio.setText(vm.myUserModel.bio)
+        // TODO: handle tapUI for block contacts MU
+        btn_blocked_contacts.visibility = View.VISIBLE
     }
 
     private fun showEditState() {
@@ -330,6 +335,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             btn_delete_my_account.visibility = View.GONE
         }
         et_bio.isEnabled = true
+        btn_blocked_contacts.visibility = View.GONE
     }
 
     private fun setProfileInformation(textView: TextView, group: View, textValue: String?) {
