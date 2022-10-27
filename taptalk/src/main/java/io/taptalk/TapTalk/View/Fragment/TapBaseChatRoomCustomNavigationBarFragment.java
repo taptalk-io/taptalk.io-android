@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.View.Fragment;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TapCoreChatRoomListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
@@ -61,8 +59,6 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
     private final TapCoreChatRoomListener chatRoomListener = new TapCoreChatRoomListener() {
         @Override
         public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
-            Log.e(">>>>>>", "onReceiveUpdatedChatRoomData: " + TAPUtils.toJsonString(room));
-            Log.e(">>>>>>", "onReceiveUpdatedChatRoomData user: " + (recipientUser != null ? TAPUtils.toJsonString(recipientUser) : "null"));
             if (null != getRoom() && null != room && getRoom().getRoomID().equals(room.getRoomID())) {
                 setRoom(room);
                 if (null != recipientUser) {
@@ -91,25 +87,18 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
         @Override
         public void onReceiveOnlineStatus(TAPUserModel user, Boolean isOnline, Long lastActive) {
             if (null == getRoom() || null == user) {
-                Log.e(">>>>>", "onReceiveOnlineStatus: RETURN");
                 return;
             }
-            Log.e(">>>>>", "onReceiveOnlineStatus userID: " + user.getUserID());
-            Log.e(">>>>>", "onReceiveOnlineStatus: " + isOnline);
             boolean isRoomParticipant = false;
             if (getRoom().getType() == TYPE_PERSONAL) {
                 String otherUserID = TAPChatManager.getInstance(getInstanceKey()).getOtherUserIdFromRoom(getRoom().getRoomID());
-                Log.e(">>>>>", "onReceiveOnlineStatus otherUserID: " + otherUserID);
                 if (user.getUserID().equals(otherUserID)) {
-                    Log.e(">>>>>", "onReceiveOnlineStatus: isRoomParticipant");
                     isRoomParticipant = true;
                 }
             }
             else if (null != getRoom().getParticipants()) {
                 for (TAPUserModel participant : getRoom().getParticipants()) {
-                    Log.e(">>>>>", "onReceiveOnlineStatus participantID: " + participant.getUserID());
                     if (user.getUserID().equals(participant.getUserID())) {
-                        Log.e(">>>>>", "onReceiveOnlineStatus: isRoomParticipant");
                         isRoomParticipant = true;
                         break;
                     }
@@ -121,7 +110,6 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
                 if (null != recipientUser) {
                     setRecipientUser(user);
                 }
-                Log.e(">>>>>", "onReceiveOnlineStatus: TRIGGER onReceiveOnlineStatus " + TAPUtils.toJsonString(getOnlineStatus()));
                 TapBaseChatRoomCustomNavigationBarFragment.this.onReceiveOnlineStatus(user, isOnline, lastActive);
             }
         }

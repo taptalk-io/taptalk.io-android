@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,8 +86,6 @@ public class MeetTalkChatRoomNavigationBarFragment extends TapBaseChatRoomCustom
 
     @Override
     public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
-        Log.e(">>>>>>>>>>", "Test Fragment onReceiveUpdatedChatRoomData room: " + room.getName());
-        Log.e(">>>>>>>>>>", "Test Fragment onReceiveUpdatedChatRoomData recipientUser: " + (recipientUser != null ? recipientUser.getFullname() : "null"));
         setRoomName();
         setRoomStatus();
         setRoomProfilePicture();
@@ -101,30 +98,25 @@ public class MeetTalkChatRoomNavigationBarFragment extends TapBaseChatRoomCustom
     @Override
     public void onReceiveStartTyping(String roomID, TAPUserModel user) {
         setTypingIndicator();
-        Log.e(">>>>>>>>>>", "Test Fragment onReceiveStartTyping: " + roomID + " - " + user.getFullname());
     }
 
     @Override
     public void onReceiveStopTyping(String roomID, TAPUserModel user) {
-        Log.e(">>>>>>>>>>", "Test Fragment onReceiveStopTyping: " + roomID + " - " + user.getFullname());
         setTypingIndicator();
     }
 
     @Override
     public void onReceiveOnlineStatus(TAPUserModel user, Boolean isOnline, Long lastActive) {
-        Log.e(">>>>>>>>>>", "Test Fragment onReceiveOnlineStatus: " + user.getFullname() + " - " + isOnline);
         setChatRoomStatus(new TAPOnlineStatusModel(user, isOnline, lastActive));
     }
 
     @Override
     public void onShowMessageSelection(List<TAPMessageModel> selectedMessages) {
-        Log.e(">>>>>>>>>>", "Test Fragment onShowMessageSelection: " + selectedMessages.size());
         showSelectState();
     }
 
     @Override
     public void onHideMessageSelection() {
-        Log.e(">>>>>>>>>>", "Test Fragment onHideMessageSelection: ");
         hideSelectState();
     }
 
