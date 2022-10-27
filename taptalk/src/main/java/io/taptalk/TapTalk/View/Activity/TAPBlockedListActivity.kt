@@ -13,13 +13,14 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapContactListAdapter
-import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel
-import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel.TAPContactListViewModelFactory
+import io.taptalk.TapTalk.ViewModel.TapBlockedListViewModel
 import kotlinx.android.synthetic.main.tap_activity_blocked_list.*
 
 class TAPBlockedListActivity : TAPBaseActivity() {
     private var adapter: TapContactListAdapter? = null
-    private var vm: TAPContactListViewModel? = null
+    val vm: TapBlockedListViewModel by lazy {
+        ViewModelProvider(this)[TapBlockedListViewModel::class.java]
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_blocked_list)
@@ -33,22 +34,15 @@ class TAPBlockedListActivity : TAPBaseActivity() {
     }
 
     private fun initViewModel() {
-        vm = ViewModelProvider(
-            this,
-            TAPContactListViewModelFactory(
-                application, instanceKey
-            )
-        )
-            .get(TAPContactListViewModel::class.java)
-
+        // TODO: for testing purposes only MU
         //Dummy Contacts
-        if (vm!!.contactList.size == 0) {
+        if (vm.blockedList.size == 0) {
             val u1 = TAPUserModel("u1", "Dummy Spam 1")
             val u2 = TAPUserModel("u2", "Dummy Spam 2")
             val u3 = TAPUserModel("u3", "Tummy Spam 3")
-            vm!!.filteredContacts.add(u1)
-            vm!!.filteredContacts.add(u2)
-            vm!!.filteredContacts.add(u3)
+            vm.blockedList.add(u1)
+            vm.blockedList.add(u2)
+            vm.blockedList.add(u3)
         }
         //End Dummy
     }
@@ -58,7 +52,7 @@ class TAPBlockedListActivity : TAPBaseActivity() {
         adapter = TapContactListAdapter(
             instanceKey,
             TAPUtils.generateContactListForRecycler(
-                vm!!.filteredContacts,
+                vm.blockedList,
                 TapContactListModel.TYPE_DEFAULT_CONTACT_LIST
             )
         )
