@@ -644,16 +644,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         menuItems.add(menuReport)
                     }
 
-                    // TODO: handle block user tapUI MU
-                    // Block user
-                    val menuBlock = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_BLOCK,
-                        getString(R.string.tap_block_user),
-                        R.drawable.tap_ic_block_red,
-                        R.color.tapIconChatProfileMenuBlockUser,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
-                    )
-                    menuItems.add(menuBlock)
+                    if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
+                        // Block user
+                        val menuBlock = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_BLOCK,
+                            getString(R.string.tap_block_user),
+                            R.drawable.tap_ic_block_red,
+                            R.color.tapIconChatProfileMenuBlockUser,
+                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                        )
+                        menuItems.add(menuBlock)
+                    }
 
                 } else if (vm!!.room.type == RoomType.TYPE_GROUP && null != vm!!.room.admins &&
                     vm!!.room.admins!!
@@ -894,16 +895,18 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
                     menuItems.add(menuReport)
                 }
-                // TODO: handle block user tapUI MU
-                // Block user
-                val menuBlock = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_BLOCK,
-                    getString(R.string.tap_block_user),
-                    R.drawable.tap_ic_block_red,
-                    R.color.tapIconChatProfileMenuBlockUser,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle
-                )
-                menuItems.add(menuBlock)
+
+                if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
+                    // Block user
+                    val menuBlock = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_BLOCK,
+                        getString(R.string.tap_block_user),
+                        R.drawable.tap_ic_block_red,
+                        R.color.tapIconChatProfileMenuBlockUser,
+                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                    )
+                    menuItems.add(menuBlock)
+                }
             }
         }
         return menuItems

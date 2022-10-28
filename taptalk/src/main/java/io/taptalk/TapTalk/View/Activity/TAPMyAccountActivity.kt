@@ -235,6 +235,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             g_mobile_number.visibility = View.VISIBLE
             tv_mobile_number_view.text = "+" + vm.myUserModel.countryCallingCode + " " + vm.myUserModel.phone
         }
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
+            btn_blocked_contacts.visibility = View.VISIBLE
+        } else {
+            btn_blocked_contacts.visibility = View.GONE
+        }
         setProfileInformation(tv_username_view, g_username, vm.myUserModel.username)
         setProfileInformation(tv_email_view, g_email, vm.myUserModel.email)
         setTextVersionApp()
@@ -298,8 +303,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         btn_delete_my_account.visibility = View.GONE
         et_bio.isEnabled = false
         et_bio.setText(vm.myUserModel.bio)
-        // TODO: handle tapUI for block contacts MU
-        btn_blocked_contacts.visibility = View.VISIBLE
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
+            btn_blocked_contacts.visibility = View.VISIBLE
+        }
     }
 
     private fun showEditState() {
