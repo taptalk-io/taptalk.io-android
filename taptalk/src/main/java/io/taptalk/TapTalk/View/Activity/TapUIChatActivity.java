@@ -1184,9 +1184,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
         };
-        // Disable swipe in deleted user room
-        if ((null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L))) {
+        // Disable swipe in deleted or blocked user room
+        if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
+                ((null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)
+                || (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled() && TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())))) {
             rvMessageList.disableSwipe();
         }
         // Initialize custom keyboard
@@ -4776,6 +4777,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     //disable long press in deleted user room
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
                         if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
+                            if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled() && TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                                return;
+                            }
                             TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
                             chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                             TAPUtils.dismissKeyboard(TapUIChatActivity.this);
