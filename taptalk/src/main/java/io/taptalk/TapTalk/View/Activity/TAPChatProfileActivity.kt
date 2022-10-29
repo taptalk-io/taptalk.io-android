@@ -1401,7 +1401,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 vm!!.room.admins = response.admins
                 getInstance(instanceKey).addGroupData(vm!!.room)
                 updateView()
-                TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm!!.room, vm!!.groupMemberUser)
+                TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm!!.room, null)
             }
         }
     private val getUserView: TAPDefaultDataView<TAPGetUserResponse> =

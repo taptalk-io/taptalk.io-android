@@ -85,13 +85,12 @@ public class MeetTalkChatRoomNavigationBarFragment extends TapBaseChatRoomCustom
     }
 
     @Override
-    public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
+    public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser, TAPOnlineStatusModel onlineStatus) {
         setRoomName();
         setRoomStatus();
         setRoomProfilePicture();
-        if (null != recipientUser) {
-            setOnlineStatus(TAPOnlineStatusModel.Builder(recipientUser));
-            setChatRoomStatus(getOnlineStatus());
+        if (null != onlineStatus) {
+            setChatRoomStatus(onlineStatus);
         }
     }
 
