@@ -361,7 +361,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
-        if (null != TAPChatManager.getInstance(instanceKey).activeUser &&
+        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
             null != messageModel.isSending && !messageModel.isSending!!) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
@@ -479,7 +480,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
-        if (null != TAPChatManager.getInstance(instanceKey).activeUser &&
+        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
             null != messageModel.isSending && !messageModel.isSending!!) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
@@ -680,7 +682,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
-        if (null != TAPChatManager.getInstance(instanceKey).activeUser &&
+        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
             null != messageModel.isSending && !messageModel.isSending!!) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
@@ -761,7 +764,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
-        if (null != TAPChatManager.getInstance(instanceKey).activeUser &&
+        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
             null != messageModel.isSending && !messageModel.isSending!!) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
