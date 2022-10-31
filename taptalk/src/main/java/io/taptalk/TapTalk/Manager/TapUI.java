@@ -123,6 +123,9 @@ public class TapUI {
     private boolean isEmailAddressInChatProfileVisible;
     private boolean isAddContactDisabled;
     private boolean isReportButtonInChatProfileVisible;
+    private boolean isReportButtonInUserProfileVisible;
+    private boolean isReportButtonInGroupProfileVisible;
+    private boolean isReportMessageMenuEnabled;
     private boolean isMarkAsReadRoomListSwipeMenuDisabled;
     private boolean isMarkAsUnreadRoomListSwipeMenuDisabled;
     private boolean isStarMessageMenuDisabled;
@@ -135,6 +138,8 @@ public class TapUI {
     private boolean isLinkPreviewInMessageDisabled;
     private boolean isPinRoomListSwipeMenuDisabled;
     private boolean isDeleteRoomListSwipeMenuDisabled;
+    private boolean isScheduledMessageFeatureDisabled;
+    private boolean isBlockUserMenuEnabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -143,7 +148,7 @@ public class TapUI {
         TYPE_FILE_MESSAGE,
         TYPE_VOICE_MESSAGE,
         TYPE_LOCATION_MESSAGE,
-        TYPE_NONE,
+        TYPE_NONE
     }
 
     public TapUI(String instanceKey) {
@@ -1122,6 +1127,48 @@ public class TapUI {
         isReportButtonInChatProfileVisible = reportButtonInChatProfileVisible;
     }
 
+    public boolean isReportButtonInUserProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportButtonInUserProfileVisible;
+    }
+
+    public void setReportButtonInUserProfileVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportButtonInUserProfileVisible = isVisible;
+    }
+
+    public boolean isReportButtonInGroupProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportButtonInGroupProfileVisible;
+    }
+
+    public void setReportButtonInGroupProfileVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportButtonInGroupProfileVisible = isVisible;
+    }
+
+    public boolean isReportMessageMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportMessageMenuEnabled;
+    }
+
+    public void setReportMessageMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportMessageMenuEnabled = isEnabled;
+    }
+
     public boolean isMarkAsUnreadRoomListSwipeMenuEnabled() {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;
@@ -1247,6 +1294,17 @@ public class TapUI {
         isDeleteRoomListSwipeMenuDisabled = !isEnabled;
     }
 
+    public boolean isScheduledMessageFeatureEnabled() {
+        return !isScheduledMessageFeatureDisabled;
+    }
+
+    public void setScheduledMessageFeatureEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isScheduledMessageFeatureDisabled = !isEnabled;
+    }
+
     /**
      * ==========================================================================================
      * CUSTOM BUBBLE
@@ -1321,6 +1379,20 @@ public class TapUI {
                 listener.onDeleteButtonInMyAccountPageTapped(activity);
             }
         }
+    }
+
+    public boolean isBlockUserMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isBlockUserMenuEnabled;
+    }
+
+    public void setBlockUserMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isBlockUserMenuEnabled = isEnabled;
     }
 
     /**
@@ -1550,6 +1622,18 @@ public class TapUI {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             if (null != listener) {
                 listener.onPinnedMessageTapped(message);
+            }
+        }
+    }
+
+    void triggerReportMessageButtonTapped(Activity activity, TAPMessageModel message) {
+        if (getChatRoomListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            if (null != listener) {
+                listener.onReportMessageButtonTapped(activity, message);
             }
         }
     }

@@ -8,6 +8,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASK
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_BLOCKED_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_CHAT_ROOM_CONTACT_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
@@ -98,11 +99,14 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
@@ -249,6 +253,7 @@ public class TAPDataManager {
         removeMutedRoomIds();
         removePinnedRoomIDs();
         removeStarredMessageIds();
+        removeBlockedUserIds();
     }
 
     /**
@@ -560,6 +565,24 @@ public class TAPDataManager {
     public void removeChatRoomContactActionDismissed() {
         removePreference(K_CHAT_ROOM_CONTACT_ACTION);
     }
+
+
+    public ArrayList<String> getBlockedUserIds() {
+        return Hawk.get(instanceKey + K_BLOCKED_USER, new ArrayList<>());
+    }
+
+    public void saveBlockedUserIds(ArrayList<String> BlockedUserIds) {
+        Hawk.put(instanceKey + K_BLOCKED_USER, BlockedUserIds);
+    }
+
+    public boolean isBlockedUserIdsEmpty() {
+        return getBlockedUserIds().isEmpty();
+    }
+
+    public void removeBlockedUserIds() {
+        removePreference(K_BLOCKED_USER);
+    }
+
 
     /**
      * CHAT ROOM SWIPE BUTTON
@@ -1639,5 +1662,39 @@ public class TAPDataManager {
 
     public void getRoomIdsWithState(TAPDefaultDataView<TapGetRoomIdsWithStateResponse> view) {
         TAPApiManager.getInstance(instanceKey).getRoomIdsWithState(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void createScheduledMessage(TAPMessageModel message, Long scheduledTime, TAPDefaultDataView<TapCreateScheduledMessageResponse> view) {
+        HashMap<String, Object> messageMap = TAPEncryptorManager.getInstance().encryptMessage(message, false);
+        TAPApiManager.getInstance(instanceKey).createScheduledMessage(messageMap, scheduledTime, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getScheduledMessages(String roomId, TAPDefaultDataView<TapGetScheduledMessageListResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getScheduledMessages(roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void editScheduledMessageContent(Integer scheduledMessageId, TAPMessageModel message, TAPDefaultDataView<TAPCommonResponse> view) {
+        HashMap<String, Object> messageMap = TAPEncryptorManager.getInstance().encryptMessage(message, false);
+        TAPApiManager.getInstance(instanceKey).editScheduledMessageContent(scheduledMessageId, messageMap, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void editScheduledMessageTime(Integer scheduledMessageId, Long scheduledTime,  TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).editScheduledMessageTime(scheduledMessageId, scheduledTime, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void deleteScheduledMessages(List<Integer> scheduledMessageIds, String roomId,TAPDefaultDataView<TapIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).deleteScheduledMessages(scheduledMessageIds, roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void sendScheduledMessageNow(List<Integer> scheduledMessageIds, String roomId,TAPDefaultDataView<TapIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).sendScheduledMessageNow(scheduledMessageIds, roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void submitUserReport(String userId, String category, boolean isOtherCategory, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).submitUserReport(userId, category, isOtherCategory, reason, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void submitMessageReport(String messageId, String roomId, String category, boolean isOtherCategory, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).submitMessageReport(messageId, roomId, category, isOtherCategory, reason, new TAPDefaultSubscriber<>(view));
     }
 }

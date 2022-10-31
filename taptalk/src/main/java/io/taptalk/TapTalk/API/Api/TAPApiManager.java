@@ -53,7 +53,10 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapCreateScheduledMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapIdsWithRoomIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdsRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapReportUserRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
@@ -82,15 +85,20 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import okhttp3.MultipartBody;
@@ -752,5 +760,50 @@ public class TAPApiManager {
 
     public void getRoomIdsWithState(Subscriber<TAPBaseResponse<TapGetRoomIdsWithStateResponse>> subscriber) {
         execute(homingPigeon.getRoomIdsWithState(), subscriber);
+    }
+
+    public void createScheduledMessage(HashMap<String, Object> message, Long scheduledTime, Subscriber<TAPBaseResponse<TapCreateScheduledMessageResponse>> subscriber) {
+        TapCreateScheduledMessageRequest request = new TapCreateScheduledMessageRequest(message);
+        request.setScheduledTime(scheduledTime);
+        execute(homingPigeon.createScheduledMessage(request), subscriber);
+    }
+
+    public void getScheduledMessages(String roomId, Subscriber<TAPBaseResponse<TapGetScheduledMessageListResponse>> subscriber) {
+        TAPCommonRequest request = TAPCommonRequest.builderWithRoomID(roomId);
+        execute(homingPigeon.getScheduledMessageList(request), subscriber);
+    }
+
+    public void editScheduledMessageContent(Integer scheduledMessageId, HashMap<String, Object> message, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TapCreateScheduledMessageRequest request = new TapCreateScheduledMessageRequest(message);
+        request.setId(scheduledMessageId);
+        execute(homingPigeon.editScheduledMessageContent(request), subscriber);
+    }
+
+    public void editScheduledMessageTime(Integer scheduledMessageId, Long scheduledTime, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TapScheduledMessageModel request = new TapScheduledMessageModel(scheduledMessageId, scheduledTime);
+        execute(homingPigeon.editScheduledMessageTime(request), subscriber);
+    }
+
+    public void deleteScheduledMessages(List<Integer> scheduledMessageIds, String roomId, Subscriber<TAPBaseResponse<TapIdsResponse>> subscriber) {
+        TapIdsWithRoomIdRequest request = new TapIdsWithRoomIdRequest(scheduledMessageIds, roomId);
+        execute(homingPigeon.deleteScheduledMessages(request), subscriber);
+    }
+
+    public void sendScheduledMessageNow(List<Integer> scheduledMessageIds, String roomId, Subscriber<TAPBaseResponse<TapIdsResponse>> subscriber) {
+        TapIdsWithRoomIdRequest request = new TapIdsWithRoomIdRequest(scheduledMessageIds, roomId);
+        execute(homingPigeon.sendScheduledMessageNow(request), subscriber);
+    }
+
+    public void submitUserReport(String userId, String category, boolean isOtherCategory, String reason, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TapReportUserRequest request = new TapReportUserRequest(category, isOtherCategory, reason);
+        request.setUserID(userId);
+        execute(homingPigeon.submitUserReport(request), subscriber);
+    }
+
+    public void submitMessageReport(String messageId, String roomId, String category, boolean isOtherCategory, String reason, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TapReportUserRequest request = new TapReportUserRequest(category, isOtherCategory, reason);
+        request.setMessageID(messageId);
+        request.setRoomID(roomId);
+        execute(homingPigeon.submitMessageReport(request), subscriber);
     }
 }

@@ -4,6 +4,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import io.taptalk.TapTalk.Interface.TapTalkChatInterface;
+import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -137,6 +138,26 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
 
     @Override
     public void onUnpinRoom(TAPRoomModel room) {
+
+    }
+
+    @Override
+    public void onCreateScheduledMessage(TapScheduledMessageModel scheduledMessage) {
+
+    }
+
+    @Override
+    public void onScheduledSendFailed(TapScheduledMessageModel scheduledMessage) {
+
+    }
+
+    @Override
+    public void onScheduledMessageSent(TapScheduledMessageModel scheduledMessage) {
+
+    }
+
+    @Override
+    public void onGetScheduledMessageList() {
 
     }
 }

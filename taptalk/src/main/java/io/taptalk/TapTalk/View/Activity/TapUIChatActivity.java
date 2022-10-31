@@ -225,6 +225,7 @@ import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
@@ -265,6 +266,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
+import io.taptalk.TapTalk.View.BottomSheet.TapTimePickerBottomSheetFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
@@ -393,6 +395,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TextView tvLinkTitle;
     private TextView tvLinkContent;
     private ImageView ivCloseLink;
+
+    // Schedule Message
+    private CardView cvSchedule;
+    private View vScreen;
+    private Group gScheduleMessage;
+    private ImageView ivSchedule;
+
+    // Blocked Contacts
+    private TextView btnUnblock;
 
     private Handler linkHandler;
     private Runnable linkRunnable;
@@ -723,6 +734,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }
         }
+        if (gScheduleMessage.getVisibility() == View.VISIBLE) {
+            hideScheduleMessageButton();
+        }
     }
 
     @Override
@@ -933,7 +947,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
         clChatComposerAndHistory = (ConstraintLayout) findViewById(R.id.cl_chat_composer_and_history);
         clChatHistory = (ConstraintLayout) findViewById(R.id.cl_chat_history);
-        clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
+        clQuote = (ConstraintLayout) findViewById(R.id.cl_quote_layout);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clUserMentionList = (ConstraintLayout) findViewById(R.id.cl_user_mention_list);
         clRoomStatus = (ConstraintLayout) findViewById(R.id.cl_room_status);
@@ -956,7 +970,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatarEmpty = (CircleImageView) findViewById(R.id.civ_my_avatar_empty);
         civRoomAvatarEmpty = (CircleImageView) findViewById(R.id.civ_room_avatar_empty);
-        rcivQuoteImage = (TAPRoundedCornerImageView) findViewById(R.id.rciv_quote_image);
+        rcivQuoteImage = (TAPRoundedCornerImageView) findViewById(R.id.rciv_quote_layout_image);
         tvRoomName = (TextView) findViewById(R.id.tv_room_name);
         tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
         tvRoomImageLabel = (TextView) findViewById(R.id.tv_room_image_label);
@@ -969,8 +983,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvMyAvatarLabelEmpty = (TextView) findViewById(R.id.tv_my_avatar_label_empty);
         tvRoomAvatarLabelEmpty = (TextView) findViewById(R.id.tv_room_avatar_label_empty);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
-        tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_title);
-        tvQuoteContent = (TextView) findViewById(R.id.tv_quote_content);
+        tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_layout_title);
+        tvQuoteContent = (TextView) findViewById(R.id.tv_quote_layout_content);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
         tvBadgeMentionCount = (TextView) findViewById(R.id.tv_badge_mention_count);
         tvChatHistoryContent = (TextView) findViewById(R.id.tv_chat_history_content);
@@ -982,7 +996,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         etChat = (EditText) findViewById(R.id.et_chat);
         vRoomImage = findViewById(R.id.v_room_image);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
-        vQuoteDecoration = findViewById(R.id.v_quote_decoration);
+        vQuoteDecoration = findViewById(R.id.v_quote_layout_decoration);
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
         ivVoiceNote = findViewById(R.id.iv_voice_note);
         clVoiceNote = findViewById(R.id.cl_voice_note);
@@ -1012,6 +1026,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvLinkContent = findViewById(R.id.tv_link_content);
         ivCloseLink = findViewById(R.id.iv_close_link);
         customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
+        cvSchedule = findViewById(R.id.cv_schedule);
+        vScreen = findViewById(R.id.v_screen);
+        gScheduleMessage = findViewById(R.id.g_schedule_message);
+        ivSchedule = findViewById(R.id.iv_schedule);
+        btnUnblock = findViewById(R.id.btn_unblock);
     }
 
     private boolean initViewModel() {
@@ -1196,9 +1215,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
         };
-        // Disable swipe in deleted user room
-        if ((null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L))) {
+        // Disable swipe in deleted or blocked user room
+        if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
+                ((null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)
+                || (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled() && TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())))) {
             rvMessageList.disableSwipe();
         }
         // Initialize custom keyboard
@@ -1247,8 +1267,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 showChatAsHistory(getString(R.string.tap_group_unavailable));
             }
-        } else if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getDeleted()) {
-            showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+        } else if (null != vm.getOtherUserModel()) {
+            if (null != vm.getOtherUserModel().getDeleted()) {
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+            } else if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                showChatAsBlocked();
+            }
         }
 //        else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
 //            //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
@@ -1293,6 +1317,36 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 pinnedMessageLayoutOnClick();
             }
         });
+        ivButtonSend.setOnLongClickListener(view -> {
+            if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled() && vm.getQuoteAction() == null) {
+                showScheduleMessageButton();
+            }
+            return true;
+        });
+        vScreen.setOnClickListener(v -> hideScheduleMessageButton());
+        // scheduled message icon always shown (temporary)
+        if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+            ivSchedule.setVisibility(View.VISIBLE);
+        }
+        cvSchedule.setOnClickListener(v -> {
+            hideScheduleMessageButton();
+            TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TAPGeneralListener<>() {
+                @Override
+                public void onClick(int position, Long item) {
+                    super.onClick(position, item);
+                    TapScheduledMessageActivity.Companion.start(TapUIChatActivity.this, instanceKey, vm.getRoom(), etChat.getText().toString(), item);
+                    etChat.setText("");
+                }
+            });
+            timePicker.show(getSupportFragmentManager(), "");
+        });
+        // TODO: 11/10/22 handle tapUI for scheduled message icon appearance MU
+        ivSchedule.setOnClickListener(v ->  {
+            if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+                TapScheduledMessageActivity.Companion.start(this, instanceKey, vm.getRoom());
+            }
+        });
+
 
         if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
@@ -1310,6 +1364,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else {
             vSeparator.setVisibility(View.GONE);
             ivVoiceNote.setVisibility(View.GONE);
+        }
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled()) {
+            btnUnblock.setOnClickListener(v -> {
+                new TapTalkDialog.Builder(TapUIChatActivity.this)
+                        .setTitle(String.format(getString(R.string.tap_unblock_s_format), vm.getOtherUserModel().getFullname()))
+                        .setMessage(getString(R.string.tap_sure_unblock_wording))
+                        .setCancelable(true)
+                        .setPrimaryButtonTitle(getString(R.string.tap_yes))
+                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                        .setPrimaryButtonListener(view -> {
+                            // TODO: 28/10/22 call unblock API MU
+                        })
+                        .show();
+            });
         }
 
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
@@ -2274,6 +2342,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     }
 
+    private void showScheduleMessageButton() {
+        gScheduleMessage.setVisibility(View.VISIBLE);
+        hideKeyboards();
+    }
+
+    private void hideScheduleMessageButton() {
+        gScheduleMessage.setVisibility(View.GONE);
+        hideKeyboards();
+    }
+
     private void pinnedMessageLayoutOnClick() {
         scrollToMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()).getLocalID());
         vm.increasePinnedMessageIndex(1);
@@ -2959,6 +3037,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         @Override
+        public void onReportMessage(TAPMessageModel message) {
+            super.onReportMessage(message);
+            TAPChatManager.getInstance(instanceKey).triggerReportMessageButtonTapped(TapUIChatActivity.this, message);
+            TapReportActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, TapReportActivity.ReportType.MESSAGE);
+        }
+
+        @Override
         public void onViewMessageInfo(TAPMessageModel message) {
             super.onViewMessageInfo(message);
             // TODO: 31/10/22 move to message info page MU
@@ -3167,6 +3252,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     setOtherUserModel(updatedContact);
                     if (null == vm.getOtherUserModel()) {
                         initRoom();
+                    } else {
+                        setOtherUserModel(updatedContact);
+                        if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                            showChatAsBlocked();
+                        }
                     }
 
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
@@ -3250,6 +3340,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null != tvChatHistoryContent) {
                 tvChatHistoryContent.setText(message);
             }
+            if (null != btnUnblock) {
+                btnUnblock.setVisibility(View.GONE);
+            }
             if (null != clChatComposer) {
                 TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                 rvCustomKeyboard.setVisibility(View.GONE);
@@ -3267,10 +3360,32 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
     }
 
+    private void showChatAsBlocked() {
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled()) {
+            runOnUiThread(() -> {
+                if (null != clChatHistory) {
+                    clChatHistory.setVisibility(View.GONE);
+                }
+                if (null != clChatComposer) {
+                    TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                    rvCustomKeyboard.setVisibility(View.GONE);
+                    clChatComposer.setVisibility(View.INVISIBLE);
+                    etChat.clearFocus();
+                }
+                if (null != btnUnblock) {
+                    btnUnblock.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+    }
+
     private void showDefaultChatEditText() {
         runOnUiThread(() -> {
             if (null != clChatHistory) {
                 clChatHistory.setVisibility(View.GONE);
+            }
+            if (null != btnUnblock) {
+                btnUnblock.setVisibility(View.GONE);
             }
             if (null != clChatComposer) {
                 clChatComposer.setVisibility(View.VISIBLE);
@@ -4283,6 +4398,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
         }
         ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+        ivButtonSend.setEnabled(false);
     }
 
     private void setSendButtonEnabled() {
@@ -4292,6 +4408,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
         }
         ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+        ivButtonSend.setEnabled(true);
     }
 
     private void checkAndSearchUserMentionList() {
@@ -4704,6 +4821,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     //disable long press in deleted user room
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
                         if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
+                            if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled() && TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                                return;
+                            }
                             TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
                             chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                             TAPUtils.dismissKeyboard(TapUIChatActivity.this);
