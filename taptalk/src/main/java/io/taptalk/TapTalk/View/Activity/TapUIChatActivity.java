@@ -2957,6 +2957,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TapCoreMessageManager.getInstance(instanceKey).pinMessage(message.getRoom().getRoomID(), messageId);
             }
         }
+
+        @Override
+        public void onViewMessageInfo(TAPMessageModel message) {
+            super.onViewMessageInfo(message);
+            // TODO: 31/10/22 move to message info page MU
+        }
     };
 
     private void setChatRoomStatus(TAPOnlineStatusModel onlineStatus) {
