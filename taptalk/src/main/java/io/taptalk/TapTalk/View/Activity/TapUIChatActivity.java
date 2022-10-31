@@ -3139,7 +3139,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                     }).start();
                 }
-                TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getOtherUserModel());
+                TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getRoom().getType() == TYPE_PERSONAL ? vm.getOtherUserModel() : null);
             }
         });
     }
@@ -3469,7 +3469,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
                 }
             });
-            TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getOtherUserModel());
+            TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getRoom().getType() == TYPE_PERSONAL ? vm.getOtherUserModel() : null);
         } else if (vm.getRoom().getType() == TYPE_PERSONAL &&
                 UPDATE_USER.equals(message.getAction()) &&
                 message.getUser().getUserID().equals(vm.getOtherUserID())) {
@@ -3487,7 +3487,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     civRoomImage.post(() -> loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
                 }
             });
-            TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getOtherUserModel());
+            TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getRoom().getType() == TYPE_PERSONAL ? vm.getOtherUserModel() : null);
         }
     }
 
