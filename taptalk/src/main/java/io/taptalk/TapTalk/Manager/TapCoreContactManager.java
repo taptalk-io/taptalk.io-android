@@ -10,6 +10,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreContactListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetContactListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMultipleContactListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
@@ -34,6 +35,8 @@ public class TapCoreContactManager {
 
     private static HashMap<String, TapCoreContactManager> instances;
 
+    private List<TapCoreContactListener> coreContactListeners;
+
     private String instanceKey = "";
 
     public TapCoreContactManager(String instanceKey) {
@@ -54,6 +57,10 @@ public class TapCoreContactManager {
 
     private static HashMap<String, TapCoreContactManager> getInstances() {
         return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    private List<TapCoreContactListener> getCoreContactListeners() {
+        return null == coreContactListeners ? coreContactListeners = new ArrayList<>() : coreContactListeners;
     }
 
     public void getAllUserContacts(TapCoreGetMultipleContactListener listener) {
