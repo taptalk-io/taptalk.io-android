@@ -9,16 +9,4 @@
         <item name="android:statusBarColor">@color/tapColorPrimaryDark</item>
     </style>
 
-    <style name="tapChatRoomNameLabelStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
-        <item name="android:textColor">@color/tapChatRoomNameLabelColor</item>
-        <item name="android:textSize">16sp</item>
-    </style>
-
-    <style name="tapChatRoomStatusLabelStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
-        <item name="android:textColor">@color/tapChatRoomStatusLabelColor</item>
-        <item name="android:textSize">12sp</item>
-    </style>
-
 </resources>
