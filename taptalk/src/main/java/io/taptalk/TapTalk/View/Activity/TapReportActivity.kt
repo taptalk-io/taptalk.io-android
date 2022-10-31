@@ -128,6 +128,7 @@ class TapReportActivity : TAPBaseActivity() {
         if (vm.reportType == ReportType.MESSAGE) {
             tv_title.text = getString(R.string.tap_report_message)
         }
+        et_other.addTextChangedListener(otherTextWatcher)
         et_reason.addTextChangedListener(characterWatcher)
         et_reason.setOnTouchListener { view, motionEvent ->
             if (et_reason.hasFocus()) {
@@ -165,20 +166,41 @@ class TapReportActivity : TAPBaseActivity() {
         rv_options.setHasFixedSize(true)
 
         btn_submit.setOnClickListener {
-            TapTalkDialog.Builder(this)
-                .setTitle(getString(R.string.tap_submit_report))
-                .setMessage(getString(R.string.tap_wording_submit_report))
-                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                .setPrimaryButtonTitle(getString(R.string.tap_submit))
-                .setPrimaryButtonListener {
-                    when (vm.reportType) {
-                        ReportType.USER -> TAPDataManager.getInstance(instanceKey).submitUserReport(vm.user?.userID, vm.selectedReportOption, (vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount -1]), et_reason.text.toString(), submitReportView)
-                        ReportType.MESSAGE -> TAPDataManager.getInstance(instanceKey).submitMessageReport(vm.message?.messageID, vm.message?.room?.roomID, vm.selectedReportOption, (vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount -1]), et_reason.text.toString(), submitReportView)
+            if (et_other.text.isEmpty()) {
+                showOtherError()
+            } else {
+                TapTalkDialog.Builder(this)
+                    .setTitle(getString(R.string.tap_submit_report))
+                    .setMessage(getString(R.string.tap_wording_submit_report))
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setPrimaryButtonTitle(getString(R.string.tap_submit))
+                    .setPrimaryButtonListener {
+                        val isOther = vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount - 1]
+                        val category = if (isOther) et_other.text.toString() else vm.selectedReportOption
+                        when (vm.reportType) {
+                            ReportType.USER -> TAPDataManager.getInstance(instanceKey)
+                                .submitUserReport(
+                                    vm.user?.userID,
+                                    category,
+                                    isOther,
+                                    et_reason.text.toString(),
+                                    submitReportView
+                                )
+                            ReportType.MESSAGE -> TAPDataManager.getInstance(instanceKey)
+                                .submitMessageReport(
+                                    vm.message?.messageID,
+                                    vm.message?.room?.roomID,
+                                    category,
+                                    isOther,
+                                    et_reason.text.toString(),
+                                    submitReportView
+                                )
+                        }
                     }
-                }
-                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                .setSecondaryButtonListener { }
-                .show()
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setSecondaryButtonListener { }
+                    .show()
+            }
         }
         iv_button_back.setOnClickListener {
             onBackPressed()
@@ -226,6 +248,20 @@ class TapReportActivity : TAPBaseActivity() {
         optionsAdapter.setEnabled(true)
     }
 
+    private fun showOtherError() {
+        if (tv_error_other.visibility == View.GONE) {
+            tv_error_other.visibility = View.VISIBLE
+            et_other.setBackgroundResource(R.drawable.tap_bg_text_field_error)
+        }
+    }
+
+    private fun hideOtherError() {
+        if (tv_error_other.visibility == View.VISIBLE) {
+            tv_error_other.visibility = View.GONE
+            et_other.setBackgroundResource(R.drawable.tap_bg_area_text_field)
+        }
+    }
+
     private fun showPopUpError() {
         TapTalkDialog.Builder(this)
             .setTitle(getString(R.string.tap_failed_to_submit_report))
@@ -270,6 +306,16 @@ class TapReportActivity : TAPBaseActivity() {
             super.onError(errorMessage)
             endLoading()
             showPopUpError()
+        }
+    }
+
+    private val otherTextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        override fun afterTextChanged(text: Editable?) {
+            hideOtherError()
         }
     }
 
