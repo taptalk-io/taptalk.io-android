@@ -456,5 +456,6 @@
     <string name="tap_deleting_conversation_dots">Deleting conversation...</string>
     <string name="tap_fail_delete_chatroom">Oops! Failed to delete chat room</string>
     <string name="tap_loading_dots">Loading...</string>
+    <string name="tap_message_info">Message Info</string>
 
 </resources>
