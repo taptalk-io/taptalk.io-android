@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Barrier;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Group;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -401,6 +402,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TextView tvLinkTitle;
         private TextView tvLinkContent;
         private TAPRoundedCornerImageView rcivLinkImage;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -430,6 +434,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvLinkTitle = itemView.findViewById(R.id.tv_link_title);
             tvLinkContent = itemView.findViewById(R.id.tv_link_content);
             rcivLinkImage = itemView.findViewById(R.id.rciv_link_image);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            gReadCount = itemView.findViewById(R.id.g_read_count);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -590,6 +597,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
 
         private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
@@ -997,6 +1007,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
+        private ImageView ivReadCountBody;
+        private TextView tvReadCountBody;
 
         private TAPMessageModel obtainedItem;
         private Uri videoUri;
@@ -1037,6 +1052,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivSelect = itemView.findViewById(R.id.iv_select);
             tvEdited = itemView.findViewById(R.id.tv_edited);
             tvEditedBody = itemView.findViewById(R.id.tv_edited_body);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            gReadCount = itemView.findViewById(R.id.g_read_count);
+            ivReadCountBody = itemView.findViewById(R.id.iv_read_count_body);
+            tvReadCountBody = itemView.findViewById(R.id.tv_read_count_body);
 
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -1466,6 +1486,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
 
         private Uri fileUri;
 
@@ -1497,6 +1520,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            gReadCount = itemView.findViewById(R.id.g_read_count);
 
             if (bubbleType == TYPE_BUBBLE_FILE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -1758,6 +1784,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
 
         private Uri fileUri;
 
@@ -1788,6 +1817,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             seekBar = itemView.findViewById(R.id.seek_bar);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            gReadCount = itemView.findViewById(R.id.g_read_count);
 
             if (bubbleType == TYPE_BUBBLE_VOICE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -2042,6 +2074,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -2072,6 +2107,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            gReadCount = itemView.findViewById(R.id.g_read_count);
 
             if (bubbleType == TYPE_BUBBLE_LOCATION_LEFT) {
                 clBubbleTop = itemView.findViewById(R.id.cl_bubble_top);
