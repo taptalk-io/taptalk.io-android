@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Listener;
 
 import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
 
 import io.taptalk.TapTalk.Interface.TapTalkChatInterface;
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
@@ -8,6 +9,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 @Keep
 public abstract class TAPChatListener implements TapTalkChatInterface {
@@ -89,6 +91,11 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
 
     @Override
     public void onBubbleExpanded() {
+    }
+
+    @Override
+    public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
+
     }
 
     @Override
