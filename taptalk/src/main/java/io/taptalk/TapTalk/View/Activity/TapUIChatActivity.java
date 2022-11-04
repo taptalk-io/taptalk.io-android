@@ -2661,8 +2661,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void run() {
                 runOnUiThread(() -> {
-                    // TODO: 04/07/22 prevent crash zero duration MU
-                    if (vm.getMediaPlayer() != null) {
+                    if (vm.getMediaPlayer() != null && vm.getDuration() > 0) {
                         seekBar.setProgress(vm.getMediaPlayer().getCurrentPosition() * seekBar.getMax() / vm.getDuration());
                     }
                 });
