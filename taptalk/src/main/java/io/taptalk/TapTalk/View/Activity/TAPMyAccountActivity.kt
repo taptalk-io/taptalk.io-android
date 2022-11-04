@@ -205,6 +205,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             val profilePictureModel = TapPhotosItemModel()
             profilePictureModel.fullsizeImageURL = vm.currentProfilePicture
             vm.profilePictureList.add(profilePictureModel)
+            vp_profile_picture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack))
             vp_profile_picture.adapter = profilePicturePagerAdapter
             tv_profile_picture_label.visibility = View.GONE
         }
@@ -736,6 +737,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
             vm.profilePictureList.addAll(photoList)
+            vp_profile_picture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack))
             vp_profile_picture.adapter = profilePicturePagerAdapter
             if (vm.profilePictureList.size > 1) {
                 tab_layout.visibility = View.VISIBLE
