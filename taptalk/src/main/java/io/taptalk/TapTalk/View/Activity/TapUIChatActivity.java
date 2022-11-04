@@ -1828,6 +1828,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 vm.addSelectedMessage(message);
             }
+            // handle read count
+            if (!TapUI.getInstance(instanceKey).isReadStatusHidden()) {
+                // TODO: 04/11/22 call get read by API MU
+                // TODO: 04/11/22 show read count if hidden MU
+            }
             messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
             String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
             tvForwardCount.setText(forwardCountText);
