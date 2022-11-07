@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/tap_bg_profile_menu_button_top"
+    android:elevation="6dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tv_cancel_btn"
+        style="@style/tapDeletedChatRoomInfoContentStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        android:padding="14dp"
+        android:text="@string/tap_cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/tapNavBarTitleLabelStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/tap_scheduled_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <NumberPicker
+        android:id="@+id/np_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:selectionDividerHeight="0dp"
+        android:descendantFocusability="blocksDescendants"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/np_hour"/>
+
+    <NumberPicker
+        android:id="@+id/np_hour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:selectionDividerHeight="0dp"
+        android:descendantFocusability="blocksDescendants"
+        app:layout_constraintTop_toTopOf="@id/np_date"
+        app:layout_constraintStart_toEndOf="@id/np_date"
+        app:layout_constraintEnd_toStartOf="@id/np_minute"/>
+
+    <NumberPicker
+        android:id="@+id/np_minute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:selectionDividerHeight="0dp"
+        android:descendantFocusability="blocksDescendants"
+        app:layout_constraintTop_toTopOf="@id/np_date"
+        app:layout_constraintStart_toEndOf="@id/np_hour"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginBottom="51dp"
+        android:background="@color/tapColorPrimary"
+        app:layout_constraintTop_toTopOf="@id/np_date"
+        app:layout_constraintBottom_toBottomOf="@id/np_date" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="51dp"
+        android:background="@color/tapColorPrimary"
+        app:layout_constraintTop_toTopOf="@id/np_date"
+        app:layout_constraintBottom_toBottomOf="@id/np_date" />
+
+    <Button
+        android:id="@+id/btn_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="28dp"
+        style="@style/tapPrimaryButtonStyle"
+        tools:text="@string/tap_send"
+        app:layout_constraintTop_toBottomOf="@id/np_date"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

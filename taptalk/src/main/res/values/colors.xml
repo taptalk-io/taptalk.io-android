@@ -176,6 +176,8 @@
     <color name="tapIconLongPressActionEditMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressActionPinMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressSharedMedia">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconLongPressSendNow">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconLongPressReschedule">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachDocuments">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachCamera">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachGallery">@color/tapColorPrimaryIcon</color>

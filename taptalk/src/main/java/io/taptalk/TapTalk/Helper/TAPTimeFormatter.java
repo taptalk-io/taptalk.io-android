@@ -196,6 +196,17 @@ public class TAPTimeFormatter {
         return timeSdf.format(timestamp);
     }
 
+    public static String formatScheduledDate(long timestamp) {
+        String pattern;
+        if (formatYear(timestamp).equals(formatYear(System.currentTimeMillis()))) {
+            pattern = "dd MMMM";
+        } else {
+            pattern = "dd MMMM yyyy";
+        }
+        SimpleDateFormat timeSdf = new SimpleDateFormat(pattern, Locale.getDefault());
+        return timeSdf.format(timestamp);
+    }
+
     public static String formatDay(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("EEE", Locale.getDefault());
         return timeSdf.format(timestamp);
@@ -203,6 +214,11 @@ public class TAPTimeFormatter {
 
     public static String formatMonth(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+        return timeSdf.format(timestamp);
+    }
+
+    public static String formatYear(long timestamp) {
+        SimpleDateFormat timeSdf = new SimpleDateFormat("yyyy", Locale.getDefault());
         return timeSdf.format(timestamp);
     }
 

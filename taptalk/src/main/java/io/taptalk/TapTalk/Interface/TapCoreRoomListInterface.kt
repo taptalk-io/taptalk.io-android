@@ -10,4 +10,8 @@ interface TapCoreRoomListInterface {
     fun onChatRoomPinned(roomID : String)
 
     fun onChatRoomUnpinned(roomID : String)
+
+    fun onChatRoomMarkedAsUnread(roomID : String)
+
+    fun onChatRoomMarkedAsRead(roomID : String)
 }

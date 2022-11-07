@@ -43,11 +43,13 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_FORWARD;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_OPEN_LINK;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_PIN;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_REPLY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_RESCHEDULE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_DOWNLOADS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_IMAGE_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_VIDEO_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_MESSAGE;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_NOW;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_SMS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SHARED_MEDIA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_STAR;
@@ -256,6 +258,12 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                 case LONG_PRESS_SHARED_MEDIA:
                     setComponentColors(R.color.tapIconLongPressSharedMedia, R.style.tapActionSheetDefaultLabelStyle);
                     break;
+                case LONG_PRESS_SEND_NOW:
+                    setComponentColors(R.color.tapIconLongPressSendNow, R.style.tapActionSheetDefaultLabelStyle);
+                    break;
+                case LONG_PRESS_RESCHEDULE:
+                    setComponentColors(R.color.tapIconLongPressReschedule, R.style.tapActionSheetDefaultLabelStyle);
+                    break;
             }
 
             if (getItemCount() - 1 == position) {
@@ -367,6 +375,12 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case LONG_PRESS_SHARED_MEDIA:
                     attachmentListener.onViewInChat(message);
+                    break;
+                case LONG_PRESS_SEND_NOW:
+                    attachmentListener.onSendNow(message);
+                    break;
+                case LONG_PRESS_RESCHEDULE:
+                    attachmentListener.onRescheduleMessage(message);
                     break;
             }
             onClickListener.onClick(itemView);
