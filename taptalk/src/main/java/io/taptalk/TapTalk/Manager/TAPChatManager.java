@@ -898,20 +898,23 @@ public class TAPChatManager {
         TAPDataManager.getInstance(instanceKey).editScheduledMessageContent(scheduledMessageID, message, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
-                super.onSuccess(response);
-                listener.onSuccess(response.getMessage());
+                if (null != listener) {
+                    listener.onSuccess(response.getMessage());
+                }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }

@@ -1843,7 +1843,6 @@ public class TapCoreMessageManager {
         TAPDataManager.getInstance(instanceKey).getScheduledMessages(roomID, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetScheduledMessageListResponse response) {
-                super.onSuccess(response);
                 if (response.getItems() != null) {
                     List<TapScheduledMessageModel> scheduledMessages = new ArrayList<>();
                     for (TapGetScheduledMessageItem item : response.getItems()) {
@@ -1855,22 +1854,26 @@ public class TapCoreMessageManager {
                                 TAPEncryptorManager.getInstance().decryptMessage(item.getMessage())
                         ));
                     }
-                    listener.onSuccess(scheduledMessages);
-                } else {
+                    if (null != listener) {
+                        listener.onSuccess(scheduledMessages);
+                    }
+                } else if (null != listener) {
                     listener.onSuccess(new ArrayList<>());
                 }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }
@@ -1885,24 +1888,27 @@ public class TapCoreMessageManager {
         TAPDataManager.getInstance(instanceKey).sendScheduledMessageNow(scheduledMessageIDs, roomID, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapIdsResponse response) {
-                super.onSuccess(response);
-                if (response.getIds() != null) {
-                    listener.onSuccess(new ArrayList<>(response.getIds()));
-                } else {
-                    listener.onSuccess(new ArrayList<>());
+                if (null != listener) {
+                    if (response.getIds() != null) {
+                        listener.onSuccess(new ArrayList<>(response.getIds()));
+                    } else {
+                        listener.onSuccess(new ArrayList<>());
+                    }
                 }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }
@@ -1919,20 +1925,23 @@ public class TapCoreMessageManager {
         TAPDataManager.getInstance(instanceKey).editScheduledMessageTime(scheduledMessageID, scheduledTime, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
-                super.onSuccess(response);
-                listener.onSuccess(response.getMessage());
+                if (null != listener) {
+                    listener.onSuccess(response.getMessage());
+                }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }
@@ -1947,24 +1956,27 @@ public class TapCoreMessageManager {
         TAPDataManager.getInstance(instanceKey).deleteScheduledMessages(scheduledMessageIDs, roomID, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapIdsResponse response) {
-                super.onSuccess(response);
-                if (response.getIds() != null) {
-                    listener.onSuccess(new ArrayList<>(response.getIds()));
-                } else {
-                    listener.onSuccess(new ArrayList<>());
+                if (null != listener) {
+                    if (response.getIds() != null) {
+                        listener.onSuccess(new ArrayList<>(response.getIds()));
+                    } else {
+                        listener.onSuccess(new ArrayList<>());
+                    }
                 }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }
