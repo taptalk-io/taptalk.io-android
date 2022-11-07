@@ -141,6 +141,7 @@ public class TapUI {
     private boolean isScheduledMessageFeatureDisabled;
     private boolean isBlockUserMenuEnabled;
     private boolean isMessageInfoMenuDisabled;
+    private boolean isGroupInCommonMenuDisabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -1315,6 +1316,20 @@ public class TapUI {
             return;
         }
         isMessageInfoMenuDisabled = !isEnabled;
+    }
+
+    public boolean isGroupInCommonMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isGroupInCommonMenuDisabled;
+    }
+
+    public void setGroupInCommonMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isGroupInCommonMenuDisabled = !isEnabled;
     }
 
     /**
