@@ -1288,6 +1288,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     private fun openGroupsInCommon() {
         // TODO: open group in common MU
+        TAPChatManager.getInstance(instanceKey)
+            .triggerChatProfileGroupsInCommonButtonTapped(this, vm!!.room)
     }
 
     private fun showMuteBottomSheet() {
