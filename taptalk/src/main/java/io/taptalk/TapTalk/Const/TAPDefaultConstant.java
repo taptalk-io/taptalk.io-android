@@ -490,6 +490,7 @@ public class TAPDefaultConstant {
     public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
     public static final String K_STARRED_MESSAGE = "kTAPStarredMessage";
     public static final String K_BLOCKED_USER = "kTAPBlockedUser";
+    public static final String K_MESSAGE_READ_COUNT = "kTAPBlockedUser";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 
