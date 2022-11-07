@@ -23,4 +23,9 @@ public abstract class TapUIChatProfileListener implements TapUIChatProfileInterf
     public void onReportGroupButtonTapped(Activity activity, TAPRoomModel room) {
 
     }
+
+    @Override
+    public void onGroupInCommonItemTapped(Activity activity, TAPRoomModel room) {
+
+    }
 }
