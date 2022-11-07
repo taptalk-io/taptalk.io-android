@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -1199,7 +1200,16 @@ public class TAPFileUploadManager {
                 messageModel.setData(imageDataMap);
             }
 
-            new Thread(() -> TAPChatManager.getInstance(instanceKey).sendImageMessageToServer(messageModel)).start();
+            if (TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.containsKey(messageModel.getLocalID())) {
+                TapScheduledMessageModel scheduledMessage = TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.get(messageModel.getLocalID());
+                if (scheduledMessage != null) {
+                    new Thread(() -> TAPChatManager.getInstance(instanceKey).sendImageMessageToServer(messageModel, scheduledMessage.getScheduledTime())).start();
+                } else {
+                    new Thread(() -> TAPChatManager.getInstance(instanceKey).sendImageMessageToServer(messageModel)).start();
+                }
+            } else {
+                new Thread(() -> TAPChatManager.getInstance(instanceKey).sendImageMessageToServer(messageModel)).start();
+            }
 
             //removeUploadProgressMap(localID);
             Intent intent = new Intent(UploadProgressFinish);
@@ -1240,7 +1250,16 @@ public class TAPFileUploadManager {
                 messageModel.setData(fileDataMap);
             }
 
-            new Thread(() -> TAPChatManager.getInstance(instanceKey).sendFileMessageToServer(messageModel)).start();
+            if (TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.containsKey(messageModel.getLocalID())) {
+                TapScheduledMessageModel scheduledMessage = TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.get(messageModel.getLocalID());
+                if (scheduledMessage != null) {
+                    new Thread(() -> TAPChatManager.getInstance(instanceKey).sendFileMessageToServer(messageModel, scheduledMessage.getScheduledTime())).start();
+                } else {
+                    new Thread(() -> TAPChatManager.getInstance(instanceKey).sendFileMessageToServer(messageModel)).start();
+                }
+            } else {
+                new Thread(() -> TAPChatManager.getInstance(instanceKey).sendFileMessageToServer(messageModel)).start();
+            }
 
             //removeUploadProgressMap(localID);
             Intent intent = new Intent(UploadProgressFinish);
@@ -1282,7 +1301,16 @@ public class TAPFileUploadManager {
         if (messageModel.getType() == TYPE_IMAGE) {
             //Log.e(TAG, "onFileUploadFromExternalServerFinished: send image");
             // Send image message to server
-            new Thread(() -> TAPChatManager.getInstance(instanceKey).sendImageMessageToServer(messageModel)).start();
+            if (TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.containsKey(messageModel.getLocalID())) {
+                TapScheduledMessageModel scheduledMessage = TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.get(messageModel.getLocalID());
+                if (scheduledMessage != null) {
+                    new Thread(() -> TAPChatManager.getInstance(instanceKey).sendImageMessageToServer(messageModel, scheduledMessage.getScheduledTime())).start();
+                } else {
+                    new Thread(() -> TAPChatManager.getInstance(instanceKey).sendImageMessageToServer(messageModel)).start();
+                }
+            } else {
+                new Thread(() -> TAPChatManager.getInstance(instanceKey).sendImageMessageToServer(messageModel)).start();
+            }
 
             // Notify message sent
             Intent intent = new Intent(UploadProgressFinish);
@@ -1301,8 +1329,16 @@ public class TAPFileUploadManager {
                     TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase(), fileUri);
 
             // Send video/file message to server
-            new Thread(() -> TAPChatManager.getInstance(instanceKey).sendFileMessageToServer(messageModel)).start();
-
+            if (TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.containsKey(messageModel.getLocalID())) {
+                TapScheduledMessageModel scheduledMessage = TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.get(messageModel.getLocalID());
+                if (scheduledMessage != null) {
+                    new Thread(() -> TAPChatManager.getInstance(instanceKey).sendFileMessageToServer(messageModel, scheduledMessage.getScheduledTime())).start();
+                } else {
+                    new Thread(() -> TAPChatManager.getInstance(instanceKey).sendFileMessageToServer(messageModel)).start();
+                }
+            } else {
+                new Thread(() -> TAPChatManager.getInstance(instanceKey).sendFileMessageToServer(messageModel)).start();
+            }
             // Notify message sent
             Intent intent = new Intent(UploadProgressFinish);
             intent.putExtra(UploadLocalID, localID);

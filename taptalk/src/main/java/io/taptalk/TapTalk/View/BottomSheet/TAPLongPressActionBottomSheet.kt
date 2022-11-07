@@ -33,7 +33,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         PHONE_TYPE,
         MENTION_TYPE,
         IMAGE_TYPE,
-        SHARED_MEDIA_TYPE
+        SHARED_MEDIA_TYPE,
+        SCHEDULED_TYPE
     }
 
     private var instanceKey = ""
@@ -260,6 +261,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
             LongPressType.SHARED_MEDIA_TYPE -> {
                 val menus = createSharedMediaLongPressMenu()
+                if (menus.isEmpty()) {
+                    dismiss()
+                } else {
+                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+                }
+            }
+            LongPressType.SCHEDULED_TYPE -> {
+                val menus = createScheduledMessageLongPressMenu()
                 if (menus.isEmpty()) {
                     dismiss()
                 } else {
@@ -944,6 +953,36 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             R.drawable.tap_ic_view_in_chat,
             R.string.tap_view_in_chat,
             TAPAttachmentModel.LONG_PRESS_SHARED_MEDIA))
+        return attachMenus
+    }
+
+    private fun createScheduledMessageLongPressMenu() : List<TAPAttachmentModel> {
+        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+        // Send Now
+        attachMenus.add(TAPAttachmentModel(
+            R.drawable.tap_ic_circle_arrow_up_primary,
+            R.string.tap_send_now,
+            TAPAttachmentModel.LONG_PRESS_SEND_NOW))
+        // Reschedule
+        attachMenus.add(TAPAttachmentModel(
+            R.drawable.tap_ic_clock_grey,
+            R.string.tap_reschedule,
+            TAPAttachmentModel.LONG_PRESS_RESCHEDULE))
+        // Copy
+        attachMenus.add(TAPAttachmentModel(
+            R.drawable.tap_ic_copy_orange,
+            R.string.tap_copy,
+            TAPAttachmentModel.LONG_PRESS_COPY))
+        // Edit
+        attachMenus.add(TAPAttachmentModel(
+            R.drawable.tap_ic_edit_orange,
+            R.string.tap_edit,
+            TAPAttachmentModel.LONG_PRESS_EDIT))
+        // Delete
+        attachMenus.add(TAPAttachmentModel(
+            R.drawable.tap_ic_delete_red,
+            R.string.tap_delete,
+            TAPAttachmentModel.LONG_PRESS_DELETE))
         return attachMenus
     }
 }

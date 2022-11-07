@@ -63,8 +63,9 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
                 setRoom(room);
                 if (null != recipientUser) {
                     setRecipientUser(recipientUser);
+                    setOnlineStatus(new TAPOnlineStatusModel(recipientUser, recipientUser.getOnline(), recipientUser.getLastActivity()));
                 }
-                TapBaseChatRoomCustomNavigationBarFragment.this.onReceiveUpdatedChatRoomData(room, recipientUser);
+                TapBaseChatRoomCustomNavigationBarFragment.this.onReceiveUpdatedChatRoomData(room, recipientUser, getOnlineStatus());
             }
         }
 
@@ -133,7 +134,7 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
         TapCoreChatRoomManager.getInstance(getInstanceKey()).removeChatRoomListener(chatRoomListener);
     }
 
-    public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
+    public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser, @Nullable TAPOnlineStatusModel onlineStatus) {
 
     }
 

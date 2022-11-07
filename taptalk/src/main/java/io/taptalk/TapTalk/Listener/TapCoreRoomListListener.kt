@@ -24,4 +24,12 @@ abstract class TapCoreRoomListListener : TapCoreRoomListInterface{
     override fun onChatRoomUnpinned(roomID: String) {
 
     }
+
+    override fun onChatRoomMarkedAsRead(roomID: String) {
+
+    }
+
+    override fun onChatRoomMarkedAsUnread(roomID: String) {
+
+    }
 }

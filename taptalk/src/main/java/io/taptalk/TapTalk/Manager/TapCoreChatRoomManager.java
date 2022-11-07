@@ -739,6 +739,7 @@ public class TapCoreChatRoomManager {
                         TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                         TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomID);
                         TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomID);
+                        TAPDataManager.getInstance(instanceKey).removeUnreadRoomID(roomID);
                         if (null != listener) {
                             listener.onSuccess("Successfully deleted chat room messages.");
                         }
