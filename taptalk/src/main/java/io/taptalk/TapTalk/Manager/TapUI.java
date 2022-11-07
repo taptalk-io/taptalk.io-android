@@ -1601,6 +1601,18 @@ public class TapUI {
         }
     }
 
+    void triggerChatProfileGroupsInCommonButtonTapped(Activity activity, TAPRoomModel room) {
+        if (getChatProfileListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatProfileListener listener : getChatProfileListeners()) {
+            if (null != listener) {
+                listener.onGroupInCommonItemTapped(activity, room);
+            }
+        }
+    }
+
     void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
         if (getChatRoomListeners().isEmpty()) {
             TapStarredMessagesActivity.Companion.start(activity, instanceKey, room);
