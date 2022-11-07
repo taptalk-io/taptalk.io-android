@@ -499,5 +499,7 @@
     <string name="tap_empty_blocked_contacts_wording">You don’t have any blocked contact</string>
     <string name="tap_unblock_s_format">Unblock %s?</string>
     <string name="tap_groups_in_common">Groups in Common</string>
+    <string name="tap_one_group_in_common">1 Group in Common</string>
+    <string name="tap_no_groups_in_common">You have no groups in common</string>
 
 </resources>
