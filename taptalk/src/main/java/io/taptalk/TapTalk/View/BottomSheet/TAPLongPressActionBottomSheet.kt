@@ -361,6 +361,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
+        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+            null != messageModel.isSending && !messageModel.isSending!!) {
+            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+            titleResIds.add(R.string.tap_message_info)
+            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+        }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
@@ -371,6 +379,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_delete_red)
             titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+        }
+
+        // TODO: change tapUI case MU
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+            // Report
+            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+            titleResIds.add(R.string.tap_report)
+            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
         }
 
         val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
@@ -464,6 +480,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
+        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+            null != messageModel.isSending && !messageModel.isSending!!) {
+            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+            titleResIds.add(R.string.tap_message_info)
+            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+        }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
@@ -474,6 +498,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_delete_red)
             titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+        }
+
+        // TODO: change tapUI case MU
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+            // Report
+            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+            titleResIds.add(R.string.tap_report)
+            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
         }
 
         val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
@@ -576,6 +608,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
+        // TODO: change tapUI case MU
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+            // Report
+            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+            titleResIds.add(R.string.tap_report)
+            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
+        }
+
         val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
         val size = imageResIds.size
         for (index in 0 until size) {
@@ -642,6 +682,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
+        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+            null != messageModel.isSending && !messageModel.isSending!!) {
+            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+            titleResIds.add(R.string.tap_message_info)
+            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+        }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
@@ -652,6 +700,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_delete_red)
             titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+        }
+
+        // TODO: change tapUI case MU
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+            // Report
+            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+            titleResIds.add(R.string.tap_report)
+            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
         }
 
         val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
@@ -708,6 +764,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
+        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+            null != messageModel.isSending && !messageModel.isSending!!) {
+            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+            titleResIds.add(R.string.tap_message_info)
+            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+        }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
@@ -718,6 +782,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_delete_red)
             titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+        }
+
+        // TODO: change tapUI case MU
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+            // Report
+            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+            titleResIds.add(R.string.tap_report)
+            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
         }
 
         val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
@@ -792,6 +864,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_delete_red)
             titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+        }
+
+        // TODO: change tapUI case MU
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+            // Report
+            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+            titleResIds.add(R.string.tap_report)
+            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
         }
 
         val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()

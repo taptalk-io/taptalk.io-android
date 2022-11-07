@@ -8,6 +8,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASK
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_BLOCKED_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_CHAT_ROOM_CONTACT_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
@@ -18,6 +19,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_F
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_ROOM_MESSAGE_DELETE_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MESSAGE_READ_COUNT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MUTED_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_ROOM_LIST;
@@ -252,6 +254,8 @@ public class TAPDataManager {
         removeMutedRoomIds();
         removePinnedRoomIDs();
         removeStarredMessageIds();
+        removeBlockedUserIds();
+        removeMessagesReadCount();
     }
 
     /**
@@ -564,6 +568,24 @@ public class TAPDataManager {
         removePreference(K_CHAT_ROOM_CONTACT_ACTION);
     }
 
+
+    public ArrayList<String> getBlockedUserIds() {
+        return Hawk.get(instanceKey + K_BLOCKED_USER, new ArrayList<>());
+    }
+
+    public void saveBlockedUserIds(ArrayList<String> BlockedUserIds) {
+        Hawk.put(instanceKey + K_BLOCKED_USER, BlockedUserIds);
+    }
+
+    public boolean isBlockedUserIdsEmpty() {
+        return getBlockedUserIds().isEmpty();
+    }
+
+    public void removeBlockedUserIds() {
+        removePreference(K_BLOCKED_USER);
+    }
+
+
     /**
      * CHAT ROOM SWIPE BUTTON
      */
@@ -658,6 +680,48 @@ public class TAPDataManager {
 
     public void removeStarredMessageIds() {
         removePreference(K_STARRED_MESSAGE);
+    }
+
+    /**
+     * MESSAGE READ COUNT
+     */
+
+    public void saveMessagesReadCountInRoom(String roomID, HashMap<String, Integer> messagesMap) {
+        HashMap<String, HashMap<String, Integer>> messageReadCountMap = Hawk.get(instanceKey + K_MESSAGE_READ_COUNT, null);
+        if (messageReadCountMap == null) {
+            messageReadCountMap = new LinkedHashMap<>();
+        }
+        messageReadCountMap.put(roomID, messagesMap);
+        Hawk.put(instanceKey + K_MESSAGE_READ_COUNT, messageReadCountMap);
+    }
+
+    public HashMap<String, Integer> getMessagesReadCountInRoom(String roomID) {
+        HashMap<String, HashMap<String, Integer>> messageReadCountMap = Hawk.get(instanceKey + K_MESSAGE_READ_COUNT, null);
+        if (messageReadCountMap != null) {
+            return messageReadCountMap.get(roomID);
+        } else return null;
+    }
+
+    public void saveMessageReadCount(String roomID, String messageID, Integer readCount) {
+        HashMap<String, Integer> messagesMap =  getMessagesReadCountInRoom(roomID);
+        if (messagesMap == null) {
+            messagesMap = new LinkedHashMap<>();
+        }
+        messagesMap.put(messageID, readCount);
+        saveMessagesReadCountInRoom(roomID, messagesMap);
+    }
+
+    public Integer getMessageReadCount(String roomID, String messageID) {
+        HashMap<String, Integer> messagesMap =  getMessagesReadCountInRoom(roomID);
+        if (messagesMap != null) {
+            if (messagesMap.get(messageID) != null) {
+                return messagesMap.get(messageID);
+            } else return 0;
+        } else return 0;
+    }
+
+    public void removeMessagesReadCount() {
+        removePreference(K_MESSAGE_READ_COUNT);
     }
 
     /**
@@ -1674,5 +1738,13 @@ public class TAPDataManager {
 
     public void sendScheduledMessageNow(List<Integer> scheduledMessageIds, String roomId,TAPDefaultDataView<TapIdsResponse> view) {
         TAPApiManager.getInstance(instanceKey).sendScheduledMessageNow(scheduledMessageIds, roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void submitUserReport(String userId, String category, boolean isOtherCategory, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).submitUserReport(userId, category, isOtherCategory, reason, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void submitMessageReport(String messageId, String roomId, String category, boolean isOtherCategory, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).submitMessageReport(messageId, roomId, category, isOtherCategory, reason, new TAPDefaultSubscriber<>(view));
     }
 }

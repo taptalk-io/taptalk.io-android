@@ -171,6 +171,8 @@ public class TAPDefaultConstant {
         public static final String SOCKET_CONNECTED = "kSocketConnected";
         public static final String IS_NEED_REFRESH = "kNeedRefresh";
         public static final String TIME = "kTAPExtraTime";
+        public static final String USER = "kTAPExtraUser";
+        public static final String REPORT_TYPE = "kTAPExtraReportType";
     }
 
     public static final class RequestCode {
@@ -199,6 +201,7 @@ public class TAPDefaultConstant {
         public static final int OPEN_PINNED_MESSAGES = 96;
         public static final int OPEN_SHARED_MEDIA = 97;
         public static final int OPEN_SCHEDULED_MESSAGES = 98;
+        public static final int OPEN_REPORT_USER = 99;
     }
 
     public static final class PermissionRequest {
@@ -488,6 +491,8 @@ public class TAPDefaultConstant {
     public static final String K_MUTED_ROOM_LIST = "kTAPMutedRoomList";
     public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
     public static final String K_STARRED_MESSAGE = "kTAPStarredMessage";
+    public static final String K_BLOCKED_USER = "kTAPBlockedUser";
+    public static final String K_MESSAGE_READ_COUNT = "kTAPBlockedUser";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 

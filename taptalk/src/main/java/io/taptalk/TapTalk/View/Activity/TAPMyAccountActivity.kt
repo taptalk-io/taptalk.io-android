@@ -235,6 +235,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             g_mobile_number.visibility = View.VISIBLE
             tv_mobile_number_view.text = "+" + vm.myUserModel.countryCallingCode + " " + vm.myUserModel.phone
         }
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
+            btn_blocked_contacts.visibility = View.VISIBLE
+        } else {
+            btn_blocked_contacts.visibility = View.GONE
+        }
         setProfileInformation(tv_username_view, g_username, vm.myUserModel.username)
         setProfileInformation(tv_email_view, g_email, vm.myUserModel.email)
         setTextVersionApp()
@@ -244,6 +249,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_form_container.setOnClickListener { clearAllFocus() }
         cl_password.setOnClickListener { openChangePasswordPage() }
         cl_logout.setOnClickListener { promptUserLogout() }
+        btn_blocked_contacts.setOnClickListener {
+            TAPBlockedListActivity.start(this, instanceKey)
+        }
         btn_delete_my_account.setOnClickListener {
             TapUI.getInstance(instanceKey).triggerDeleteButtonInMyAccountPageTapped(this)
         }
@@ -295,6 +303,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         btn_delete_my_account.visibility = View.GONE
         et_bio.isEnabled = false
         et_bio.setText(vm.myUserModel.bio)
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
+            btn_blocked_contacts.visibility = View.VISIBLE
+        }
     }
 
     private fun showEditState() {
@@ -330,6 +341,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             btn_delete_my_account.visibility = View.GONE
         }
         et_bio.isEnabled = true
+        btn_blocked_contacts.visibility = View.GONE
     }
 
     private fun setProfileInformation(textView: TextView, group: View, textValue: String?) {

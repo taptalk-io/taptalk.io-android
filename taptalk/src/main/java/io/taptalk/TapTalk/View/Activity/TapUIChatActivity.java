@@ -402,6 +402,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private Group gScheduleMessage;
     private ImageView ivSchedule;
 
+    // Blocked Contacts
+    private TextView btnUnblock;
+
     private Handler linkHandler;
     private Runnable linkRunnable;
 
@@ -1022,11 +1025,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvLinkTitle = findViewById(R.id.tv_link_title);
         tvLinkContent = findViewById(R.id.tv_link_content);
         ivCloseLink = findViewById(R.id.iv_close_link);
+        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
         cvSchedule = findViewById(R.id.cv_schedule);
         vScreen = findViewById(R.id.v_screen);
         gScheduleMessage = findViewById(R.id.g_schedule_message);
         ivSchedule = findViewById(R.id.iv_schedule);
         customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
+        btnUnblock = findViewById(R.id.btn_unblock);
     }
 
     private boolean initViewModel() {
@@ -1211,9 +1216,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
         };
-        // Disable swipe in deleted user room
-        if ((null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L))) {
+        // Disable swipe in deleted or blocked user room
+        if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
+                ((null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)
+                || (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled() && TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())))) {
             rvMessageList.disableSwipe();
         }
         // Initialize custom keyboard
@@ -1262,8 +1268,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 showChatAsHistory(getString(R.string.tap_group_unavailable));
             }
-        } else if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getDeleted()) {
-            showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+        } else if (null != vm.getOtherUserModel()) {
+            if (null != vm.getOtherUserModel().getDeleted()) {
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+            } else if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                showChatAsBlocked();
+            }
         }
 //        else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
 //            //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
@@ -1355,6 +1365,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else {
             vSeparator.setVisibility(View.GONE);
             ivVoiceNote.setVisibility(View.GONE);
+        }
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled()) {
+            btnUnblock.setOnClickListener(v -> {
+                new TapTalkDialog.Builder(TapUIChatActivity.this)
+                        .setTitle(String.format(getString(R.string.tap_unblock_s_format), vm.getOtherUserModel().getFullname()))
+                        .setMessage(getString(R.string.tap_sure_unblock_wording))
+                        .setCancelable(true)
+                        .setPrimaryButtonTitle(getString(R.string.tap_yes))
+                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                        .setPrimaryButtonListener(view -> {
+                            // TODO: 28/10/22 call unblock API MU
+                        })
+                        .show();
+            });
         }
 
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
@@ -1804,6 +1828,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.removeSelectedMessage(message);
             } else {
                 vm.addSelectedMessage(message);
+            }
+            // handle read count
+            if (!TapUI.getInstance(instanceKey).isReadStatusHidden()) {
+                // TODO: 04/11/22 call get read by API MU
+                // TODO: 04/11/22 show read count if hidden MU
             }
             messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
             String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
@@ -3012,6 +3041,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TapCoreMessageManager.getInstance(instanceKey).pinMessage(message.getRoom().getRoomID(), messageId);
             }
         }
+
+        @Override
+        public void onReportMessage(TAPMessageModel message) {
+            super.onReportMessage(message);
+            TAPChatManager.getInstance(instanceKey).triggerReportMessageButtonTapped(TapUIChatActivity.this, message);
+            TapReportActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, TapReportActivity.ReportType.MESSAGE);
+        }
+
+        @Override
+        public void onViewMessageInfo(TAPMessageModel message) {
+            super.onViewMessageInfo(message);
+            // TODO: 31/10/22 move to message info page MU
+        }
     };
 
     private void setChatRoomStatus(TAPOnlineStatusModel onlineStatus) {
@@ -3216,6 +3258,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     setOtherUserModel(updatedContact);
                     if (null == vm.getOtherUserModel()) {
                         initRoom();
+                    } else {
+                        setOtherUserModel(updatedContact);
+                        if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                            showChatAsBlocked();
+                        }
                     }
 
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
@@ -3299,6 +3346,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null != tvChatHistoryContent) {
                 tvChatHistoryContent.setText(message);
             }
+            if (null != btnUnblock) {
+                btnUnblock.setVisibility(View.GONE);
+            }
             if (null != clChatComposer) {
                 TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                 rvCustomKeyboard.setVisibility(View.GONE);
@@ -3316,10 +3366,32 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
     }
 
+    private void showChatAsBlocked() {
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled()) {
+            runOnUiThread(() -> {
+                if (null != clChatHistory) {
+                    clChatHistory.setVisibility(View.GONE);
+                }
+                if (null != clChatComposer) {
+                    TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                    rvCustomKeyboard.setVisibility(View.GONE);
+                    clChatComposer.setVisibility(View.INVISIBLE);
+                    etChat.clearFocus();
+                }
+                if (null != btnUnblock) {
+                    btnUnblock.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+    }
+
     private void showDefaultChatEditText() {
         runOnUiThread(() -> {
             if (null != clChatHistory) {
                 clChatHistory.setVisibility(View.GONE);
+            }
+            if (null != btnUnblock) {
+                btnUnblock.setVisibility(View.GONE);
             }
             if (null != clChatComposer) {
                 clChatComposer.setVisibility(View.VISIBLE);
@@ -4755,6 +4827,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     //disable long press in deleted user room
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
                         if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
+                            if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled() && TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                                return;
+                            }
                             TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
                             chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                             TAPUtils.dismissKeyboard(TapUIChatActivity.this);

@@ -115,6 +115,11 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
 
     }
 
+    @Override
+    public void onReportMessageButtonTapped(Activity activity, TAPMessageModel message) {
+
+    }
+
     private void openTapTalkChatProfile(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
         if (null == activity) {
             return;

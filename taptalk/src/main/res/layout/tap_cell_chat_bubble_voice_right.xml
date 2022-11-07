@@ -205,7 +205,37 @@
                 android:visibility="gone"
                 app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
-                app:layout_constraintEnd_toStartOf="@id/iv_star_message" />
+                app:layout_constraintEnd_toStartOf="@id/iv_read_count" />
+
+            <ImageView
+                android:id="@+id/iv_read_count"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/tap_ic_eye_white"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/tv_read_count" />
+
+            <TextView
+                android:id="@+id/tv_read_count"
+                style="@style/tapRightBubbleMessageTimestampStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/iv_star_message"
+                tools:text="1705 •" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/g_read_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="iv_read_count, tv_read_count"
+                android:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/iv_star_message"
