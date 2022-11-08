@@ -709,16 +709,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         R.style.tapChatProfileMenuStarredLabelStyle
                     )
                     menuItems.add(menuSharedMedia)
-                    if (TapUI.getInstance(instanceKey).isGroupInCommonMenuEnabled) {
-                        val menuGroupInCommon = TapChatProfileItemModel(
-                            ChatProfileMenuType.MENU_GROUP_IN_COMMON,
-                            getString(R.string.tap_groups_in_common),
-                            R.drawable.tap_ic_users_primary,
-                            R.color.tapIconChatProfileMenuGroupInCommon,
-                            R.style.tapChatProfileMenuStarredLabelStyle
-                        )
-                        menuItems.add(menuGroupInCommon)
-                    }
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
                         TapUI.getInstance(instanceKey).isReportButtonInGroupProfileVisible) {
                         // Report group
@@ -785,16 +775,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         R.style.tapChatProfileMenuStarredLabelStyle
                     )
                     menuItems.add(menuSharedMedia)
-                    if (TapUI.getInstance(instanceKey).isGroupInCommonMenuEnabled) {
-                        val menuGroupInCommon = TapChatProfileItemModel(
-                            ChatProfileMenuType.MENU_GROUP_IN_COMMON,
-                            getString(R.string.tap_groups_in_common),
-                            R.drawable.tap_ic_users_primary,
-                            R.color.tapIconChatProfileMenuGroupInCommon,
-                            R.style.tapChatProfileMenuStarredLabelStyle
-                        )
-                        menuItems.add(menuGroupInCommon)
-                    }
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
                         TapUI.getInstance(instanceKey).isReportButtonInGroupProfileVisible) {
                         // Report group
