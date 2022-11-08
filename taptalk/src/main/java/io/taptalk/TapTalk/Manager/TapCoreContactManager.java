@@ -63,6 +63,14 @@ public class TapCoreContactManager {
         return null == coreContactListeners ? coreContactListeners = new ArrayList<>() : coreContactListeners;
     }
 
+    public void addContactListener(TapCoreContactListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getCoreContactListeners().remove(listener);
+        getCoreContactListeners().add(listener);
+    }
+
     public void getAllUserContacts(TapCoreGetMultipleContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
@@ -404,5 +412,23 @@ public class TapCoreContactManager {
                 }
             }
         });
+    }
+
+    public void triggerContactBlocked(TAPUserModel userModel) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        for (TapCoreContactListener listener : getCoreContactListeners()) {
+            listener.onContactBlocked(userModel);
+        }
+    }
+
+    public void triggerContactUnblocked(TAPUserModel userModel) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        for (TapCoreContactListener listener : getCoreContactListeners()) {
+            listener.onContactUnblocked(userModel);
+        }
     }
 }
