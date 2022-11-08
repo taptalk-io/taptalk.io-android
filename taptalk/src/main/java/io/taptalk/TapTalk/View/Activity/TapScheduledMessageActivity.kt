@@ -83,6 +83,7 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class TapScheduledMessageActivity: TAPBaseActivity() {
 
@@ -697,15 +698,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             if (response?.items?.isNotEmpty() == true) {
                 messageAdapter.clearItems()
                 vm.dateSeparators.clear()
-                val firstItem = response.items[0]
-                var previousModel : TapScheduledMessageModel? = TapScheduledMessageModel(
-                    firstItem.updatedTime,
-                    firstItem.scheduledTime,
-                    firstItem.createdTime,
-                    firstItem.id,
-                    TAPEncryptorManager.getInstance().decryptMessage(firstItem.message))
-                val firstDateSeparator = generateDateSeparator(previousModel?.scheduledTime)
-                messageAdapter.addMessage(firstDateSeparator)
+                var previousModel : TapScheduledMessageModel? = null
 
                 for (scheduledMessage in response.items) {
                     if (scheduledMessage.message != null) {
@@ -719,10 +712,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                             message.created = scheduledMessage.scheduledTime
                         }
                         // add date separator
-                        if (previousModel != null && TAPTimeFormatter.formatDate(previousModel.scheduledTime!!) != TAPTimeFormatter.formatDate(scheduledMessage.scheduledTime!!)) {
+                        if (previousModel == null || TAPTimeFormatter.formatDate(previousModel.scheduledTime!!) != TAPTimeFormatter.formatDate(scheduledMessage.scheduledTime!!)) {
                             val dateSeparator = generateDateSeparator(scheduledMessage.scheduledTime)
                             vm.dateSeparators[dateSeparator.body] = dateSeparator
-                            vm.dateSeparatorIndexes[dateSeparator.body] = messageAdapter.items.indexOf(previousModel.message)
+                            vm.dateSeparatorIndexes[dateSeparator.body] = messageAdapter.items.indexOf(previousModel?.message)
                             messageAdapter.addMessage(dateSeparator)
                         }
                         messageAdapter.addMessage(message)

@@ -110,6 +110,18 @@ public class TapCoreRoomListManager {
                         super.onUnpinRoom(room);
                         listener.onChatRoomUnpinned(room.getRoomID());
                     }
+
+                    @Override
+                    public void onMarkRoomAsRead(String roomID) {
+                        super.onMarkRoomAsRead(roomID);
+                        listener.onChatRoomMarkedAsRead(roomID);
+                    }
+
+                    @Override
+                    public void onMarkRoomAsUnread(String roomID) {
+                        super.onMarkRoomAsUnread(roomID);
+                        listener.onChatRoomMarkedAsUnread(roomID);
+                    }
                 };
                 TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
             }

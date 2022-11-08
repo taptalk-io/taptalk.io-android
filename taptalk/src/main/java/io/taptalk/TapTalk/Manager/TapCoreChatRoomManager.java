@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import android.net.Uri;
 
 import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,6 +85,15 @@ public class TapCoreChatRoomManager {
         if (getCoreChatRoomListeners().isEmpty()) {
             if (null == chatListener) {
                 chatListener = new TAPChatListener() {
+                    @Override
+                    public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
+                        for (TapCoreChatRoomListener listener : getCoreChatRoomListeners()) {
+                            if (null != listener) {
+                                listener.onReceiveUpdatedChatRoomData(room, recipientUser);
+                            }
+                        }
+                    }
+
                     @Override
                     public void onReceiveStartTyping(TAPTypingModel typingModel) {
                         for (TapCoreChatRoomListener listener : getCoreChatRoomListeners()) {
@@ -729,6 +739,7 @@ public class TapCoreChatRoomManager {
                         TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                         TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomID);
                         TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomID);
+                        TAPDataManager.getInstance(instanceKey).removeUnreadRoomID(roomID);
                         if (null != listener) {
                             listener.onSuccess("Successfully deleted chat room messages.");
                         }

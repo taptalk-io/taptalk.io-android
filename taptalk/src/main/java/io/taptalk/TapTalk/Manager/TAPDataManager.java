@@ -604,6 +604,12 @@ public class TAPDataManager {
         removePreference(K_UNREAD_ROOM_LIST);
     }
 
+    public void removeUnreadRoomID(String roomId) {
+        ArrayList<String> unreadRoomIDs = getUnreadRoomIDs();
+        unreadRoomIDs.remove(roomId);
+        saveUnreadRoomIDs(unreadRoomIDs);
+    }
+
     public HashMap<String, Long> getMutedRoomIDs() {
         return Hawk.get(instanceKey + K_MUTED_ROOM_LIST, new HashMap<>());
     }

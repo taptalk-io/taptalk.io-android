@@ -52,7 +52,6 @@ import kotlinx.android.synthetic.main.tap_activity_chat_profile.*
 import kotlinx.android.synthetic.main.tap_cell_profile_menu_button.*
 import kotlinx.android.synthetic.main.tap_layout_basic_information.*
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
-import java.util.*
 
 class TAPChatProfileActivity : TAPBaseActivity() {
    
@@ -1435,6 +1434,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 vm!!.room.admins = response.admins
                 getInstance(instanceKey).addGroupData(vm!!.room)
                 updateView()
+                TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm!!.room, null)
             }
         }
     private val getUserView: TAPDefaultDataView<TAPGetUserResponse> =
@@ -1445,6 +1445,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 vm!!.room.imageURL = user.imageURL
                 vm!!.room.name = user.fullname
                 updateView()
+                val updatedContact = TAPContactManager.getInstance(instanceKey).getUserData(response.user.userID)
+                TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm!!.room, updatedContact)
             }
         }
 
