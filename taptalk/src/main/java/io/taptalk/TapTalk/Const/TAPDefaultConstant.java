@@ -39,6 +39,8 @@ public class TAPDefaultConstant {
         public static final String kSocketMarkAsReadRoom = "room/markAsRead";
         public static final String kSocketMarkAsUnreadRoom = "room/markAsUnread";
         public static final String kSocketScheduleMessageRoom = "room/scheduleMessage";
+        public static final String kSocketBlockUser = "user/block";
+        public static final String kSocketUnblockUser = "user/unblock";
     }
 
     public static final class RoomType {
