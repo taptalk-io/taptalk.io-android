@@ -17,11 +17,13 @@ import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreContactListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetContactListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMultipleContactListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
@@ -499,6 +501,32 @@ public class TapCoreContactManager {
             public void onSuccess(TAPGetMultipleUserResponse response) {
                 super.onSuccess(response);
                 listener.onSuccess(response.getUsers());
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void getBlockedUserIds(TapCoreGetStringArrayListener listener) {
+        TAPDataManager.getInstance(instanceKey).getBlockedUserIds(new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetUnreadRoomIdsResponse response) {
+                super.onSuccess(response);
+                listener.onSuccess(new ArrayList<>(response.getUnreadRoomIDs()));
             }
 
             @Override
