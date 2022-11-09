@@ -1715,4 +1715,8 @@ public class TAPDataManager {
     public void getBlockedUserList(TAPDefaultDataView<TAPGetMultipleUserResponse> view) {
         TAPApiManager.getInstance(instanceKey).getBlockedUserList(new TAPDefaultSubscriber<>(view));
     }
+
+    public void getBlockedUserIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getBlockedUserIds(new TAPDefaultSubscriber<>(view));
+    }
 }

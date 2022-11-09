@@ -292,4 +292,7 @@ public interface TAPTalkApiService {
 
     @POST("client/contact/get_blocked_list")
     Observable<TAPBaseResponse<TAPGetMultipleUserResponse>> getBlockedUserList();
+
+    @POST("client/contact/get_blocked_user_ids")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> getBlockedUserIds();
 }

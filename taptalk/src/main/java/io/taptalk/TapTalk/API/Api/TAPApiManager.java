@@ -820,4 +820,8 @@ public class TAPApiManager {
     public void getBlockedUserList(Subscriber<TAPBaseResponse<TAPGetMultipleUserResponse>> subscriber) {
         execute(homingPigeon.getBlockedUserList(), subscriber);
     }
+
+    public void getBlockedUserIds(Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        execute(homingPigeon.getBlockedUserIds(), subscriber);
+    }
 }
