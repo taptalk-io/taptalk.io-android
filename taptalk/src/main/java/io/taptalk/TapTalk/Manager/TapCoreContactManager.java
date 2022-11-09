@@ -464,4 +464,37 @@ public class TapCoreContactManager {
             }
         });
     }
+
+    public void unblockUser(String userID, TapCoreGetContactListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPDataManager.getInstance(instanceKey).unblockUser(userID, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPCommonResponse response) {
+                super.onSuccess(response);
+                TAPUserModel user  = TAPContactManager.getInstance(instanceKey).getUserData(userID);
+                triggerContactUnblocked(user);
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
 }
