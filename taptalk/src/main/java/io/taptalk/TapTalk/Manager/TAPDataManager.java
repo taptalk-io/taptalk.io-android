@@ -1711,4 +1711,8 @@ public class TAPDataManager {
     public void unblockUser(String userId, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance(instanceKey).unblockUser(userId, new TAPDefaultSubscriber<>(view));
     }
+
+    public void getBlockedUserList(TAPDefaultDataView<TAPGetMultipleUserResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getBlockedUserList(new TAPDefaultSubscriber<>(view));
+    }
 }

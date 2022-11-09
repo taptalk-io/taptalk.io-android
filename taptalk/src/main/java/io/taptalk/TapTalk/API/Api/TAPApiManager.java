@@ -816,4 +816,8 @@ public class TAPApiManager {
         TAPUserIdRequest request = new TAPUserIdRequest(userId);
         execute(homingPigeon.unblockUser(request), subscriber);
     }
+
+    public void getBlockedUserList(Subscriber<TAPBaseResponse<TAPGetMultipleUserResponse>> subscriber) {
+        execute(homingPigeon.getBlockedUserList(), subscriber);
+    }
 }
