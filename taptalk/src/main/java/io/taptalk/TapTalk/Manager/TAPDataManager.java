@@ -1707,4 +1707,8 @@ public class TAPDataManager {
     public void blockUser(String userId, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance(instanceKey).blockUser(userId, new TAPDefaultSubscriber<>(view));
     }
+
+    public void unblockUser(String userId, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unblockUser(userId, new TAPDefaultSubscriber<>(view));
+    }
 }

@@ -811,4 +811,9 @@ public class TAPApiManager {
         TAPUserIdRequest request = new TAPUserIdRequest(userId);
         execute(homingPigeon.blockUser(request), subscriber);
     }
+
+    public void unblockUser(String userId, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPUserIdRequest request = new TAPUserIdRequest(userId);
+        execute(homingPigeon.unblockUser(request), subscriber);
+    }
 }
