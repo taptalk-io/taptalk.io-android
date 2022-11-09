@@ -806,4 +806,9 @@ public class TAPApiManager {
         request.setRoomID(roomId);
         execute(homingPigeon.submitMessageReport(request), subscriber);
     }
+
+    public void blockUser(String userId, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPUserIdRequest request = new TAPUserIdRequest(userId);
+        execute(homingPigeon.blockUser(request), subscriber);
+    }
 }

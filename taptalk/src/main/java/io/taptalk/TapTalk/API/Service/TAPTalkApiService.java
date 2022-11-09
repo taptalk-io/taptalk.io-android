@@ -283,4 +283,7 @@ public interface TAPTalkApiService {
 
     @POST("client/chat_report/submit_message")
     Observable<TAPBaseResponse<TAPCommonResponse>> submitMessageReport(@Body TapReportUserRequest request);
+
+    @POST("client/contact/block")
+    Observable<TAPBaseResponse<TAPCommonResponse>> blockUser(@Body TAPUserIdRequest request);
 }
