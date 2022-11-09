@@ -16,6 +16,7 @@ import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
@@ -47,45 +48,11 @@ class TAPBlockedListActivity : TAPBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_blocked_list)
-        initViewModel()
-        initView()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        getBlockedUsers()
-    }
-
-    override fun onBackPressed() {
-        if (adapter?.isEditState() == true) {
-            adapter?.setViewState()
-            tv_edit_save_btn.text = getString(R.string.tap_edit)
-        } else {
-            super.onBackPressed()
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
-        }
-    }
-
-    private fun initViewModel() {
-        // TODO: for testing purposes only MU
-        //Dummy Contacts
-        if (vm.blockedList.size == 0) {
-            val u1 = TAPUserModel("u1", "Dummy Spam 1")
-            val u2 = TAPUserModel("u2", "Dummy Spam 2")
-            val u3 = TAPUserModel("u3", "Tummy Spam 3")
-            vm.blockedList.add(u1)
-            vm.blockedList.add(u2)
-            vm.blockedList.add(u3)
-        }
-        //End Dummy
-    }
-
-    private fun initView() {
         window.setBackgroundDrawable(null)
         adapter = TapBlockedListAdapter(
-                vm.blockedList,
-                blockedContactsListener
-            )
+            vm.blockedList,
+            blockedContactsListener
+        )
         rv_blocked_list.adapter = adapter
         rv_blocked_list.layoutManager = LinearLayoutManager(
             this,
@@ -108,6 +75,21 @@ class TAPBlockedListActivity : TAPBaseActivity() {
         iv_button_back.setOnClickListener { onBackPressed() }
     }
 
+    override fun onResume() {
+        super.onResume()
+        getBlockedUsers()
+    }
+
+    override fun onBackPressed() {
+        if (adapter?.isEditState() == true) {
+            adapter?.setViewState()
+            tv_edit_save_btn.text = getString(R.string.tap_edit)
+        } else {
+            super.onBackPressed()
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+        }
+    }
+
     private fun showLoading() {
         ll_loading.visibility = View.VISIBLE
     }
@@ -117,7 +99,7 @@ class TAPBlockedListActivity : TAPBaseActivity() {
     }
 
     private fun getBlockedUsers() {
-        // TODO: call get unblocked users API MU
+        TAPDataManager.getInstance(instanceKey).getBlockedUserList(getBlockedUserListView)
     }
 
     private fun showErrorDialog(message : String?) {
@@ -192,6 +174,31 @@ class TAPBlockedListActivity : TAPBaseActivity() {
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
             endLoading()
+            showErrorDialog(errorMessage)
+        }
+    }
+
+    private val getBlockedUserListView = object : TAPDefaultDataView<TAPGetMultipleUserResponse>() {
+
+        override fun onSuccess(response: TAPGetMultipleUserResponse?) {
+            super.onSuccess(response)
+            vm.blockedList.clear()
+            if (response?.users?.isNotEmpty() == true) {
+                vm.blockedList.addAll(response.users)
+            }
+            runOnUiThread {
+                adapter?.items = vm.blockedList
+                adapter?.notifyDataSetChanged()
+            }
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            showErrorDialog(error?.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
             showErrorDialog(errorMessage)
         }
     }
