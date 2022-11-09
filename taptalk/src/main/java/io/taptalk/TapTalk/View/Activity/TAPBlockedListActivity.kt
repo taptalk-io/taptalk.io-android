@@ -4,14 +4,19 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
@@ -44,6 +49,11 @@ class TAPBlockedListActivity : TAPBaseActivity() {
         setContentView(R.layout.tap_activity_blocked_list)
         initViewModel()
         initView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getBlockedUsers()
     }
 
     override fun onBackPressed() {
@@ -99,11 +109,25 @@ class TAPBlockedListActivity : TAPBaseActivity() {
     }
 
     private fun showLoading() {
-
+        ll_loading.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
+        ll_loading.visibility = View.GONE
+    }
 
+    private fun getBlockedUsers() {
+        // TODO: call get unblocked users API MU
+    }
+
+    private fun showErrorDialog(message : String?) {
+        TapTalkDialog.Builder(this)
+            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+            .setTitle(getString(R.string.tap_error))
+            .setCancelable(true)
+            .setMessage(message)
+            .setPrimaryButtonTitle(getString(R.string.tap_ok))
+            .show()
     }
 
     private val blockedContactsListener = object : TAPGeneralListener<TAPUserModel>() {
@@ -134,12 +158,41 @@ class TAPBlockedListActivity : TAPBaseActivity() {
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_yes))
                 .setPrimaryButtonListener {
-                    // TODO: call unblock api MU
+                    TAPDataManager.getInstance(instanceKey).unblockUser(item.userID, unblockUserView)
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                 .setSecondaryButtonListener(true) {}
                 .show()
+        }
+    }
+
+    private val unblockUserView = object : TAPDefaultDataView<TAPCommonResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+            showLoading()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+            hideLoading()
+        }
+
+        override fun onSuccess(response: TAPCommonResponse?) {
+            super.onSuccess(response)
+            getBlockedUsers()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            endLoading()
+            showErrorDialog(error?.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            endLoading()
+            showErrorDialog(errorMessage)
         }
     }
 }

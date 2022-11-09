@@ -251,6 +251,7 @@ import io.taptalk.TapTalk.Manager.TapCoreContactManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -1376,7 +1377,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         .setPrimaryButtonTitle(getString(R.string.tap_yes))
                         .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                         .setPrimaryButtonListener(view -> {
-                            // TODO: 28/10/22 call unblock API MU
+                            TAPDataManager.getInstance(instanceKey).unblockUser(vm.getOtherUserID(), unblockUserView);
                         })
                         .show();
             });
@@ -5983,6 +5984,34 @@ public class TapUIChatActivity extends TAPBaseActivity {
         public void onSuccess(TAPAddContactResponse response) {
             TAPUserModel newContact = response.getUser().setUserAsContact();
             TAPContactManager.getInstance(instanceKey).updateUserData(newContact);
+        }
+    };
+
+    private TAPDefaultDataView<TAPCommonResponse> unblockUserView = new TAPDefaultDataView<>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+            showLoadingPopup();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+            hideLoadingPopup();
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            super.onError(error);
+            endLoading();
+            showErrorDialog(getString(R.string.tap_error), error.getMessage());
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            super.onError(errorMessage);
+            endLoading();
+            showErrorDialog(getString(R.string.tap_error), errorMessage);
         }
     };
 
