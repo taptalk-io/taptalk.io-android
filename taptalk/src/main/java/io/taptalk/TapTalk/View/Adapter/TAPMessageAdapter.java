@@ -481,7 +481,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
             setPinnedIcon(item.getMessageID(), ivPinMessage);
-            setReadCountIcon(gReadCount, tvReadCount, item.getMessageID());
 
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
@@ -601,9 +600,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageView ivReadCount;
         private TextView tvReadCount;
         private Group gReadCount;
-        private ImageView ivReadCountBody;
-        private TextView tvReadCountBody;
-        private Group gReadCountBody;
 
         private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
@@ -642,12 +638,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivSelect = itemView.findViewById(R.id.iv_select);
             tvEdited = itemView.findViewById(R.id.tv_edited);
             tvEditedBody = itemView.findViewById(R.id.tv_edited_body);
-            ivReadCount = itemView.findViewById(R.id.iv_read_count);
-            tvReadCount = itemView.findViewById(R.id.tv_read_count);
-            gReadCount = itemView.findViewById(R.id.g_read_count);
-            ivReadCountBody = itemView.findViewById(R.id.iv_read_count_body);
-            tvReadCountBody = itemView.findViewById(R.id.tv_read_count_body);
-            gReadCountBody = itemView.findViewById(R.id.g_read_count_body);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -780,7 +770,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
                 setPinnedIcon(item.getMessageID(), ivPinMessageBody);
-                setReadCountIcon(gReadCountBody, tvReadCountBody, item.getMessageID());
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
             } else {
                 // Hide caption
@@ -794,7 +783,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
                 setPinnedIcon(item.getMessageID(), ivPinMessage);
-                setReadCountIcon(ivReadCount, tvReadCount, item.getMessageID());
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
             }
 
@@ -1024,7 +1012,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private Group gReadCount;
         private ImageView ivReadCountBody;
         private TextView tvReadCountBody;
-        private Group gReadCountBody;
 
         private TAPMessageModel obtainedItem;
         private Uri videoUri;
@@ -1070,7 +1057,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             gReadCount = itemView.findViewById(R.id.g_read_count);
             ivReadCountBody = itemView.findViewById(R.id.iv_read_count_body);
             tvReadCountBody = itemView.findViewById(R.id.tv_read_count_body);
-            gReadCountBody = itemView.findViewById(R.id.g_read_count_body);
 
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -1173,7 +1159,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
                 setPinnedIcon(item.getMessageID(), ivPinMessageBody);
-                setReadCountIcon(gReadCountBody, tvReadCountBody, item.getMessageID());
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
             } else {
                 // Hide caption
@@ -1187,7 +1172,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
                 setPinnedIcon(item.getMessageID(), ivPinMessage);
-                setReadCountIcon(ivReadCount, tvReadCount, item.getMessageID());
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
             }
 
@@ -1582,7 +1566,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
             setPinnedIcon(item.getMessageID(), ivPinMessage);
-            setReadCountIcon(gReadCount, tvReadCount, item.getMessageID());
             setOriginalMessageButton(item, ibOriginalMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
@@ -1870,7 +1853,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
             setPinnedIcon(item.getMessageID(), ivPinMessage);
-            setReadCountIcon(gReadCount, tvReadCount, item.getMessageID());
             setOriginalMessageButton(item, ibOriginalMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
@@ -2195,7 +2177,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), vMapBorder, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
             setPinnedIcon(item.getMessageID(), ivPinMessage);
-            setReadCountIcon(gReadCount, tvReadCount, item.getMessageID());
 
             vMapBorder.setOnClickListener(v -> {
                 if (isBubbleTapOnly()) {
@@ -3613,20 +3594,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         hiddenTextView.setVisibility(View.GONE);
         hiddenImage.setVisibility(View.GONE);
 
-    }
-
-    private void setReadCountIcon(View view, TextView tvReadCount, String messageId) {
-        if (!TapUI.getInstance(instanceKey).isReadStatusHidden()) {
-            int readCount = TAPDataManager.getInstance(instanceKey).getMessageReadCount(vm.getRoom().getRoomID(), messageId);
-            if (view.getVisibility() != View.VISIBLE && readCount > 0) {
-                view.setVisibility(View.VISIBLE);
-                tvReadCount.setVisibility(View.VISIBLE);
-                tvReadCount.setText(String.valueOf(readCount));
-            } else {
-                view.setVisibility(View.GONE);
-                tvReadCount.setVisibility(View.GONE);
-            }
-        }
     }
 
     // update list when context use star message feature
