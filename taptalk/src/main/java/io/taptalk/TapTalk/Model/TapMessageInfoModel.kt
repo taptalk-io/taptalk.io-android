@@ -9,8 +9,8 @@ data class TapMessageInfoModel(
     val user : TAPUserModel?,
 
     @JsonProperty("read")
-    val readTime : Long,
+    val readTime : Long?,
 
     @JsonProperty("delivered")
-    val deliveredTime : Long
+    val deliveredTime : Long?
 )

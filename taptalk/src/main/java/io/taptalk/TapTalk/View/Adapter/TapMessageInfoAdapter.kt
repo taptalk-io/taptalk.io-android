@@ -147,7 +147,7 @@ class TapMessageInfoAdapter (users: List<TapMessageInfoModel?>) :
         val title: TextView = itemView.findViewById(R.id.tv_section_title)
         val icon: ImageView = itemView.findViewById(R.id.iv_section_icon)
         override fun onBind(item: TapMessageInfoModel, position: Int) {
-            if (item.readTime > -1) {
+            if (item.readTime != null && item.readTime > -1) {
                 // read section
                 title.text = String.format(itemView.context.getString(R.string.tap_read_by_d_format), item.readTime)
                 icon.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_read_orange))
