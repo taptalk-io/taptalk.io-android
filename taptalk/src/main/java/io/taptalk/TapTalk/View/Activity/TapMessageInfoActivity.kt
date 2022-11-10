@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TapMessageInfoModel
 import io.taptalk.TapTalk.R
@@ -49,7 +50,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
         rv_message_info.adapter = adapter
         rv_message_info.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rv_message_info.setHasFixedSize(true)
-        
+
         for (item in messageInfoList) {
             if (item.readTime != null && item.readTime > 0) {
                 vm.readList.add(item)
@@ -57,7 +58,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
                 vm.deliveredList.add(item)
             }
         }
-        if (vm.readList.isNotEmpty()) {
+        if (vm.readList.isNotEmpty() && !TapUI.getInstance(instanceKey).isReadStatusHidden) {
             resultList.add(TapMessageInfoModel(null, vm.readList.size.toLong(), null))
             resultList.addAll(vm.readList)
             if (vm.deliveredList.isNotEmpty()) {

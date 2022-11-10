@@ -156,7 +156,6 @@ class TapMessageInfoAdapter (users: List<TapMessageInfoModel?>) :
                 title.text = String.format(itemView.context.getString(R.string.tap_delivered_to_d_format), item.deliveredTime)
                 icon.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_delivered_grey))
             }
-            // TODO: add tapUI for read by handler MU
         }
     }
 }
