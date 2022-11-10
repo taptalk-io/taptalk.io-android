@@ -200,6 +200,7 @@ public class TAPDefaultConstant {
         public static final int OPEN_SHARED_MEDIA = 97;
         public static final int OPEN_SCHEDULED_MESSAGES = 98;
         public static final int OPEN_REPORT_USER = 99;
+        public static final int OPEN_MESSAGE_INFO = 100;
     }
 
     public static final class PermissionRequest {
