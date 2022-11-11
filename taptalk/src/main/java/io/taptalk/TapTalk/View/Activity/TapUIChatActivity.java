@@ -3050,7 +3050,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onViewMessageInfo(TAPMessageModel message) {
             super.onViewMessageInfo(message);
-            // TODO: 31/10/22 move to message info page MU
+            TapMessageInfoActivity.Companion.start(TapUIChatActivity.this, instanceKey, message);
         }
     };
 
