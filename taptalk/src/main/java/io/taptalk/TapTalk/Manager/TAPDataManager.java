@@ -1747,4 +1747,20 @@ public class TAPDataManager {
     public void submitMessageReport(String messageId, String roomId, String category, boolean isOtherCategory, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance(instanceKey).submitMessageReport(messageId, roomId, category, isOtherCategory, reason, new TAPDefaultSubscriber<>(view));
     }
+
+    public void blockUser(String userId, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).blockUser(userId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unblockUser(String userId, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unblockUser(userId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getBlockedUserList(TAPDefaultDataView<TAPGetMultipleUserResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getBlockedUserList(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getBlockedUserIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getBlockedUserIds(new TAPDefaultSubscriber<>(view));
+    }
 }

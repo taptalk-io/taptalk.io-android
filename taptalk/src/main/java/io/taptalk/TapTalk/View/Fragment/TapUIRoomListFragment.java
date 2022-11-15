@@ -85,6 +85,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -1106,6 +1107,18 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
+    private void getBlockedUserIds() {
+        TAPDataManager.getInstance(instanceKey).getBlockedUserIds(blockedUserIdsView);
+    }
+
+    private final TAPDefaultDataView<TapGetUnreadRoomIdsResponse> blockedUserIdsView = new TAPDefaultDataView<>() {
+        @Override
+        public void onSuccess(TapGetUnreadRoomIdsResponse response) {
+            super.onSuccess(response);
+            TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(new ArrayList<>(response.getUnreadRoomIDs()));
+        }
+    };
+
     private TAPDefaultDataView<TAPGetRoomListResponse> roomListView = new TAPDefaultDataView<TAPGetRoomListResponse>() {
         @Override
         public void startLoading() {
@@ -1202,6 +1215,7 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setFetchingMessageListAndUnread(false);
 
             getRoomIdsWithState(true);
+            getBlockedUserIds();
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
@@ -1293,6 +1307,7 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
             getRoomIdsWithState(false);
+            getBlockedUserIds();
         }
 
         @Override

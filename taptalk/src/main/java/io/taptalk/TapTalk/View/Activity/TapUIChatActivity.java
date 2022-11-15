@@ -228,6 +228,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreContactListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
@@ -246,9 +247,11 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
+import io.taptalk.TapTalk.Manager.TapCoreContactManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -1032,6 +1035,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivSchedule = findViewById(R.id.iv_schedule);
         customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
         btnUnblock = findViewById(R.id.btn_unblock);
+        btnUnblock = findViewById(R.id.btn_unblock);
+        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
     }
 
     private boolean initViewModel() {
@@ -1375,7 +1380,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         .setPrimaryButtonTitle(getString(R.string.tap_yes))
                         .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                         .setPrimaryButtonListener(view -> {
-                            // TODO: 28/10/22 call unblock API MU
+                            TAPDataManager.getInstance(instanceKey).unblockUser(vm.getOtherUserID(), unblockUserView);
                         })
                         .show();
             });
@@ -1416,6 +1421,25 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     }
 
+    private void setRoomState() {
+        if (vm.getRoom().isDeleted()) {
+            //showRoomIsUnavailableState();
+            if (vm.getRoom().getType() == TYPE_PERSONAL) {
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+            } else {
+                showChatAsHistory(getString(R.string.tap_group_unavailable));
+            }
+        } else if (null != vm.getOtherUserModel()) {
+            if (null != vm.getOtherUserModel().getDeleted()) {
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+            } else if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                showChatAsBlocked();
+            } else {
+                showDefaultChatEditText();
+            }
+        }
+    }
+
     private void showAttachmentButton() {
         // Show / hide attachment button
         if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
@@ -1443,6 +1467,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void initListener() {
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
+        TapCoreContactManager.getInstance(instanceKey).addContactListener(coreContactListener);
 
         socketListener = new TAPSocketListener() {
             @Override
@@ -1908,6 +1933,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                 });
             }
+        }
+    };
+
+    private final TapCoreContactListener coreContactListener = new TapCoreContactListener() {
+        @Override
+        public void onContactBlocked(@NonNull TAPUserModel user) {
+            super.onContactBlocked(user);
+            showChatAsBlocked();
+        }
+
+        @Override
+        public void onContactUnblocked(@NonNull TAPUserModel user) {
+            super.onContactUnblocked(user);
+            setRoomState();
         }
     };
 
@@ -5959,6 +5998,34 @@ public class TapUIChatActivity extends TAPBaseActivity {
         public void onSuccess(TAPAddContactResponse response) {
             TAPUserModel newContact = response.getUser().setUserAsContact();
             TAPContactManager.getInstance(instanceKey).updateUserData(newContact);
+        }
+    };
+
+    private TAPDefaultDataView<TAPCommonResponse> unblockUserView = new TAPDefaultDataView<>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+            showLoadingPopup();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+            hideLoadingPopup();
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            super.onError(error);
+            endLoading();
+            showErrorDialog(getString(R.string.tap_error), error.getMessage());
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            super.onError(errorMessage);
+            endLoading();
+            showErrorDialog(getString(R.string.tap_error), errorMessage);
         }
     };
 

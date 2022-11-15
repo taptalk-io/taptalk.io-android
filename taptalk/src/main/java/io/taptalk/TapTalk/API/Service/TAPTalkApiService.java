@@ -283,4 +283,16 @@ public interface TAPTalkApiService {
 
     @POST("client/chat_report/submit_message")
     Observable<TAPBaseResponse<TAPCommonResponse>> submitMessageReport(@Body TapReportUserRequest request);
+
+    @POST("client/contact/block")
+    Observable<TAPBaseResponse<TAPCommonResponse>> blockUser(@Body TAPUserIdRequest request);
+
+    @POST("client/contact/unblock")
+    Observable<TAPBaseResponse<TAPCommonResponse>> unblockUser(@Body TAPUserIdRequest request);
+
+    @POST("client/contact/get_blocked_list")
+    Observable<TAPBaseResponse<TAPGetMultipleUserResponse>> getBlockedUserList();
+
+    @POST("client/contact/get_blocked_user_ids")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> getBlockedUserIds();
 }

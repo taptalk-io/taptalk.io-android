@@ -4,14 +4,20 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
@@ -42,40 +48,11 @@ class TAPBlockedListActivity : TAPBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_blocked_list)
-        initViewModel()
-        initView()
-    }
-
-    override fun onBackPressed() {
-        if (adapter?.isEditState() == true) {
-            adapter?.setViewState()
-            tv_edit_save_btn.text = getString(R.string.tap_edit)
-        } else {
-            super.onBackPressed()
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
-        }
-    }
-
-    private fun initViewModel() {
-        // TODO: for testing purposes only MU
-        //Dummy Contacts
-        if (vm.blockedList.size == 0) {
-            val u1 = TAPUserModel("u1", "Dummy Spam 1")
-            val u2 = TAPUserModel("u2", "Dummy Spam 2")
-            val u3 = TAPUserModel("u3", "Tummy Spam 3")
-            vm.blockedList.add(u1)
-            vm.blockedList.add(u2)
-            vm.blockedList.add(u3)
-        }
-        //End Dummy
-    }
-
-    private fun initView() {
         window.setBackgroundDrawable(null)
         adapter = TapBlockedListAdapter(
-                vm.blockedList,
-                blockedContactsListener
-            )
+            vm.blockedList,
+            blockedContactsListener
+        )
         rv_blocked_list.adapter = adapter
         rv_blocked_list.layoutManager = LinearLayoutManager(
             this,
@@ -98,12 +75,41 @@ class TAPBlockedListActivity : TAPBaseActivity() {
         iv_button_back.setOnClickListener { onBackPressed() }
     }
 
-    private fun showLoading() {
+    override fun onResume() {
+        super.onResume()
+        getBlockedUsers()
+    }
 
+    override fun onBackPressed() {
+        if (adapter?.isEditState() == true) {
+            adapter?.setViewState()
+            tv_edit_save_btn.text = getString(R.string.tap_edit)
+        } else {
+            super.onBackPressed()
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+        }
+    }
+
+    private fun showLoading() {
+        ll_loading.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
+        ll_loading.visibility = View.GONE
+    }
 
+    private fun getBlockedUsers() {
+        TAPDataManager.getInstance(instanceKey).getBlockedUserList(getBlockedUserListView)
+    }
+
+    private fun showErrorDialog(message : String?) {
+        TapTalkDialog.Builder(this)
+            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+            .setTitle(getString(R.string.tap_error))
+            .setCancelable(true)
+            .setMessage(message)
+            .setPrimaryButtonTitle(getString(R.string.tap_ok))
+            .show()
     }
 
     private val blockedContactsListener = object : TAPGeneralListener<TAPUserModel>() {
@@ -134,12 +140,66 @@ class TAPBlockedListActivity : TAPBaseActivity() {
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_yes))
                 .setPrimaryButtonListener {
-                    // TODO: call unblock api MU
+                    TAPDataManager.getInstance(instanceKey).unblockUser(item.userID, unblockUserView)
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                 .setSecondaryButtonListener(true) {}
                 .show()
+        }
+    }
+
+    private val unblockUserView = object : TAPDefaultDataView<TAPCommonResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+            showLoading()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+            hideLoading()
+        }
+
+        override fun onSuccess(response: TAPCommonResponse?) {
+            super.onSuccess(response)
+            getBlockedUsers()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            endLoading()
+            showErrorDialog(error?.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            endLoading()
+            showErrorDialog(errorMessage)
+        }
+    }
+
+    private val getBlockedUserListView = object : TAPDefaultDataView<TAPGetMultipleUserResponse>() {
+
+        override fun onSuccess(response: TAPGetMultipleUserResponse?) {
+            super.onSuccess(response)
+            vm.blockedList.clear()
+            if (response?.users?.isNotEmpty() == true) {
+                vm.blockedList.addAll(response.users)
+            }
+            runOnUiThread {
+                adapter?.items = vm.blockedList
+                adapter?.notifyDataSetChanged()
+            }
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            showErrorDialog(error?.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            showErrorDialog(errorMessage)
         }
     }
 }
