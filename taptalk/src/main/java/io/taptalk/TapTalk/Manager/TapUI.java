@@ -14,12 +14,15 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
 import io.taptalk.TapTalk.Listener.TapUIChatProfileListener;
 import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
+import io.taptalk.TapTalk.Listener.TapUIChatRoomCustomNavigationBarListener;
 import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
 import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -27,9 +30,11 @@ import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
@@ -40,6 +45,7 @@ import io.taptalk.TapTalk.View.Activity.TapPinnedMessagesActivity;
 import io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
+import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
 
@@ -69,6 +75,7 @@ public class TapUI {
     private List<TapUIChatRoomListener> tapUIChatRoomListeners;
     private List<TapUIChatProfileListener> tapUIChatProfileListeners;
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
+    private List<TapUIChatRoomCustomNavigationBarListener> tapUIChatRoomCustomNavigationBarListeners;
     private List<TapUIMyAccountListener> tapUIMyAccountListeners;
     private HashMap<Integer, LongPressMenuType> longPressMenuMap;
 
@@ -243,6 +250,25 @@ public class TapUI {
             return;
         }
         getCustomKeyboardListeners().remove(listener);
+    }
+
+    private List<TapUIChatRoomCustomNavigationBarListener> getChatRoomCustomNavigationBarListeners() {
+        return null == tapUIChatRoomCustomNavigationBarListeners ? tapUIChatRoomCustomNavigationBarListeners = new ArrayList<>() : tapUIChatRoomCustomNavigationBarListeners;
+    }
+
+    public void addChatRoomCustomNavigationBarListener(TapUIChatRoomCustomNavigationBarListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getChatRoomCustomNavigationBarListeners().remove(listener);
+        getChatRoomCustomNavigationBarListeners().add(listener);
+    }
+
+    public void removeChatRoomCustomNavigationBarListener(TapUIChatRoomCustomNavigationBarListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getChatRoomCustomNavigationBarListeners().remove(listener);
     }
 
     private List<TapUIMyAccountListener> getMyAccountListeners() {
@@ -1613,6 +1639,15 @@ public class TapUI {
                 listener.onCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, recipientUser);
             }
         }
+    }
+
+    TapBaseChatRoomCustomNavigationBarFragment getChatRoomCustomNavigationBar(Activity activity, TAPRoomModel room, TAPUserModel activeUser, @Nullable TAPUserModel recipientUser) {
+        for (TapUIChatRoomCustomNavigationBarListener listener : getChatRoomCustomNavigationBarListeners()) {
+            if (null != listener) {
+                return listener.setCustomChatRoomNavigationBar(activity, room, activeUser, recipientUser);
+            }
+        }
+        return null;
     }
 
     String getRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {

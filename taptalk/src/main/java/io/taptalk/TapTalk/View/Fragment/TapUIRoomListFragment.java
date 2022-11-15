@@ -292,7 +292,6 @@ public class TapUIRoomListFragment extends Fragment {
                 TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
                 if (roomListModel != null && roomListModel.isMarkedAsUnread()) {
                     TapCoreMessageManager.getInstance(instanceKey).markMessageAsRead(roomListModel.getLastMessage().getMessageID());
-                    removeUnreadRoomFromPreference(roomID);
                 }
                 updateUnreadCountPerRoom(roomID);
             }
@@ -313,6 +312,8 @@ public class TapUIRoomListFragment extends Fragment {
                 activity.runOnUiThread(() -> {
                     int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
                     updatePinnedRooms(room.getRoomID(), false);
+                    updateRoomUnreadMark(room.getRoomID(), false);
+                    updateMutedRooms(room.getRoomID(), false);
                     vm.getRoomList().remove(index);
                     vm.getRoomPointer().remove(room.getRoomID());
                     adapter.notifyItemRemoved(index);
@@ -374,6 +375,26 @@ public class TapUIRoomListFragment extends Fragment {
                         adapter.notifyItemChanged(finalTargetIndex);
                         rvContactList.scrollToPosition(0);
                     });
+                }
+            }
+
+            @Override
+            public void onMarkRoomAsRead(String roomID) {
+                super.onMarkRoomAsRead(roomID);
+                boolean isMarkedAsUnread = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs().contains(roomID);
+                updateRoomUnreadMark(roomID, isMarkedAsUnread);
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
+                }
+            }
+
+            @Override
+            public void onMarkRoomAsUnread(String roomID) {
+                super.onMarkRoomAsUnread(roomID);
+                boolean isMarkedAsUnread = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs().contains(roomID);
+                updateRoomUnreadMark(roomID, isMarkedAsUnread);
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
                 }
             }
         };
@@ -1016,6 +1037,7 @@ public class TapUIRoomListFragment extends Fragment {
             public void onSuccess(TapGetRoomIdsWithStateResponse response) {
                 super.onSuccess(response);
                 if (response.getUnreadRoomIDs() != null) {
+                    TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(new ArrayList<>(response.getUnreadRoomIDs()));
                     for (String id : response.getUnreadRoomIDs()) {
                         updateRoomUnreadMark(id, true);
                         activity.runOnUiThread(() -> {
@@ -1355,14 +1377,10 @@ public class TapUIRoomListFragment extends Fragment {
             if (room.isMarkedAsUnread() || room.getNumberOfUnreadMessages() > 0) {
                 // read button
                 TapCoreMessageManager.getInstance(instanceKey).markAllMessagesInRoomAsRead(roomId);
-                updateRoomUnreadMark(roomId, false);
             } else {
                 // unread button
                 TapCoreRoomListManager.getInstance(instanceKey).markChatRoomAsUnread(roomId, null);
-                //addUnreadRoomToPreference(roomId);
-                updateRoomUnreadMark(roomId, true);
             }
-            adapter.notifyItemChanged(position);
         }
 
         @Override
@@ -1417,6 +1435,7 @@ public class TapUIRoomListFragment extends Fragment {
                                 super.onSuccess(successMessage);
                                 hideDeleteRoomLoading();
                                 updatePinnedRooms(roomId, false);
+                                updateRoomUnreadMark(roomId, false);
                             }
 
                             @Override
@@ -1491,13 +1510,6 @@ public class TapUIRoomListFragment extends Fragment {
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_ok)))
                 .show();
-    }
-
-    private void removeUnreadRoomFromPreference(String roomId) {
-        ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
-        unreadRoomListIds.remove(roomId);
-        TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRoomListIds);
-        updateRoomUnreadMark(roomId, false);
     }
 
 //    private void addUnreadRoomToPreference(String roomId) {

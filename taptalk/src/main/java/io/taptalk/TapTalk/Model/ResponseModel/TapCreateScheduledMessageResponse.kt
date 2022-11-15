@@ -11,5 +11,5 @@ data class TapCreateScheduledMessageResponse(
 	val message: String? = null,
 
 	@field:JsonProperty("createdItem")
-	val createdItem: TapScheduledMessageModel? = null
+	val createdItem: TapScheduledMessageModelWithMap? = null
 )

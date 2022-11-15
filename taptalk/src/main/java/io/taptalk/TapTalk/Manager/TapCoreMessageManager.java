@@ -67,6 +67,7 @@ import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreCreateScheduledMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreFileDownloadListener;
 import io.taptalk.TapTalk.Listener.TapCoreFileUploadListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetAllMessageListener;
@@ -83,6 +84,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageItem;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
@@ -1839,11 +1841,43 @@ public class TapCoreMessageManager {
         });
     }
 
+    public void createScheduledMessage(TAPMessageModel message, long scheduledTime, TapCoreCreateScheduledMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).createScheduledMessage(message, scheduledTime, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapCreateScheduledMessageResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    TapScheduledMessageModel resultModel = new TapScheduledMessageModel(
+                            response.getCreatedItem().getUpdatedTime(),
+                            response.getCreatedItem().getScheduledTime(),
+                            response.getCreatedItem().getCreatedTime(),
+                            response.getCreatedItem().getId(),
+                            TAPEncryptorManager.getInstance().decryptMessage(response.getCreatedItem().getMessage())
+                    );
+                    listener.onSuccess(resultModel);
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
     public void getScheduledMessages(String roomID, TapCoreGetScheduledMessagesListener listener) {
         TAPDataManager.getInstance(instanceKey).getScheduledMessages(roomID, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetScheduledMessageListResponse response) {
-                super.onSuccess(response);
                 if (response.getItems() != null) {
                     List<TapScheduledMessageModel> scheduledMessages = new ArrayList<>();
                     for (TapGetScheduledMessageItem item : response.getItems()) {
@@ -1855,27 +1889,31 @@ public class TapCoreMessageManager {
                                 TAPEncryptorManager.getInstance().decryptMessage(item.getMessage())
                         ));
                     }
-                    listener.onSuccess(scheduledMessages);
-                } else {
+                    if (null != listener) {
+                        listener.onSuccess(scheduledMessages);
+                    }
+                } else if (null != listener) {
                     listener.onSuccess(new ArrayList<>());
                 }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }
 
-    public void sendScheduledMessagesNow(Integer scheduledMessageID, String roomID, TapCoreGetIntegerArrayListener listener) {
+    public void sendScheduledMessageNow(Integer scheduledMessageID, String roomID, TapCoreGetIntegerArrayListener listener) {
         List<Integer> scheduledMessageIDs = new ArrayList<>();
         scheduledMessageIDs.add(scheduledMessageID);
         sendScheduledMessagesNow(scheduledMessageIDs, roomID, listener);
@@ -1885,24 +1923,27 @@ public class TapCoreMessageManager {
         TAPDataManager.getInstance(instanceKey).sendScheduledMessageNow(scheduledMessageIDs, roomID, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapIdsResponse response) {
-                super.onSuccess(response);
-                if (response.getIds() != null) {
-                    listener.onSuccess(new ArrayList<>(response.getIds()));
-                } else {
-                    listener.onSuccess(new ArrayList<>());
+                if (null != listener) {
+                    if (response.getIds() != null) {
+                        listener.onSuccess(new ArrayList<>(response.getIds()));
+                    } else {
+                        listener.onSuccess(new ArrayList<>());
+                    }
                 }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }
@@ -1919,20 +1960,23 @@ public class TapCoreMessageManager {
         TAPDataManager.getInstance(instanceKey).editScheduledMessageTime(scheduledMessageID, scheduledTime, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
-                super.onSuccess(response);
-                listener.onSuccess(response.getMessage());
+                if (null != listener) {
+                    listener.onSuccess(response.getMessage());
+                }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }
@@ -1940,31 +1984,34 @@ public class TapCoreMessageManager {
     public void deleteScheduledMessage(Integer scheduledMessageID, String roomID, TapCoreGetIntegerArrayListener listener) {
         List<Integer> scheduledMessageIDs = new ArrayList<>();
         scheduledMessageIDs.add(scheduledMessageID);
-        deleteScheduledMessage(scheduledMessageIDs, roomID, listener);
+        deleteScheduledMessages(scheduledMessageIDs, roomID, listener);
     }
 
-    public void deleteScheduledMessage(List<Integer> scheduledMessageIDs, String roomID, TapCoreGetIntegerArrayListener listener) {
+    public void deleteScheduledMessages(List<Integer> scheduledMessageIDs, String roomID, TapCoreGetIntegerArrayListener listener) {
         TAPDataManager.getInstance(instanceKey).deleteScheduledMessages(scheduledMessageIDs, roomID, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapIdsResponse response) {
-                super.onSuccess(response);
-                if (response.getIds() != null) {
-                    listener.onSuccess(new ArrayList<>(response.getIds()));
-                } else {
-                    listener.onSuccess(new ArrayList<>());
+                if (null != listener) {
+                    if (response.getIds() != null) {
+                        listener.onSuccess(new ArrayList<>(response.getIds()));
+                    } else {
+                        listener.onSuccess(new ArrayList<>());
+                    }
                 }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }

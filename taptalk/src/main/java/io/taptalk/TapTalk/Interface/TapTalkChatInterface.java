@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
+import androidx.annotation.Nullable;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -48,6 +49,8 @@ public interface TapTalkChatInterface {
 
     void onBubbleExpanded();
 
+    void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser);
+
     void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus);
 
     void onReadMessage(String roomID);
@@ -65,6 +68,10 @@ public interface TapTalkChatInterface {
     void onPinRoom(TAPRoomModel room);
 
     void onUnpinRoom(TAPRoomModel room);
+
+    void onMarkRoomAsRead(String roomID);
+
+    void onMarkRoomAsUnread(String roomID);
 
     void onCreateScheduledMessage(TapScheduledMessageModel scheduledMessage);
 
