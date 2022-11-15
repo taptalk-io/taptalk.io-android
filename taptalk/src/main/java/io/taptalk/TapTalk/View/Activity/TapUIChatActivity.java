@@ -1856,8 +1856,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
             // handle read count
             if (!TapUI.getInstance(instanceKey).isReadStatusHidden()) {
-                // TODO: 04/11/22 call get read by API MU
-                // TODO: 04/11/22 show read count if hidden MU
+                // TODO: 04/11/22 call get read count API MU
             }
             messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
             String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
@@ -3091,7 +3090,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onViewMessageInfo(TAPMessageModel message) {
             super.onViewMessageInfo(message);
-            // TODO: 31/10/22 move to message info page MU
+            TapMessageInfoActivity.Companion.start(TapUIChatActivity.this, instanceKey, message);
         }
     };
 
