@@ -173,6 +173,8 @@ public class TAPDefaultConstant {
         public static final String TIME = "kTAPExtraTime";
         public static final String USER = "kTAPExtraUser";
         public static final String REPORT_TYPE = "kTAPExtraReportType";
+        public static final String IS_STARRED = "kTAPExtraIsStarred";
+        public static final String IS_PINNED = "kTAPExtraIsPinned";
     }
 
     public static final class RequestCode {

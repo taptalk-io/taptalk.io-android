@@ -3051,7 +3051,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onViewMessageInfo(TAPMessageModel message) {
             super.onViewMessageInfo(message);
-            TapMessageInfoActivity.Companion.start(TapUIChatActivity.this, instanceKey, message);
+            TapMessageInfoActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, vm.getRoom(), vm.getStarredMessageIds().contains(message.getMessageID()), vm.getPinnedMessageIds().contains(message.getMessageID()));
         }
     };
 

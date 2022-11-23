@@ -187,7 +187,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPChatViewModel vm;
 
     public enum RoomType {
-        DEFAULT, STARRED, PINNED
+        DEFAULT, STARRED, PINNED, DETAIL
     }
 
     public TAPMessageAdapter(
@@ -222,6 +222,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         this.vm = vm;
         this.messageMentionIndexes = vm.getMessageMentionIndexes();
         this.roomType = roomType;
+        pendingAnimationMessages = new ArrayList<>();
+        animatingMessages = new ArrayList<>();
+    }
+
+    public TAPMessageAdapter(
+            String instanceKey,
+            RequestManager glide,
+            TAPChatViewModel vm
+    ) {
+        myUserModel = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        this.instanceKey = instanceKey;
+        this.chatListener = new TAPChatListener() {};
+        this.glide = glide;
+        this.vm = vm;
+        this.messageMentionIndexes = vm.getMessageMentionIndexes();
+        this.roomType = RoomType.DETAIL;
         pendingAnimationMessages = new ArrayList<>();
         animatingMessages = new ArrayList<>();
     }
@@ -3849,6 +3865,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private boolean isBubbleTapOnly() {
-        return roomType == RoomType.STARRED || roomType == RoomType.PINNED;
+        return roomType == RoomType.STARRED || roomType == RoomType.PINNED || roomType == RoomType.DETAIL;
     }
 }
