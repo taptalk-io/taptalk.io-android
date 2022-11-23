@@ -24,6 +24,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapCreateScheduledMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdsWithRoomIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapReportUserRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
@@ -54,6 +55,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageDetailResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
@@ -283,4 +285,7 @@ public interface TAPTalkApiService {
 
     @POST("client/chat_report/submit_message")
     Observable<TAPBaseResponse<TAPCommonResponse>> submitMessageReport(@Body TapReportUserRequest request);
+
+    @POST("chat/message/get_details")
+    Observable<TAPBaseResponse<TapGetMessageDetailResponse>> getMessageDetails(@Body TapMessageIdRequest request);
 }
