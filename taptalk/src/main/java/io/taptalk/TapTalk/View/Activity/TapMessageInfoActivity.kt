@@ -8,12 +8,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Manager.TapUI
+import io.taptalk.TapTalk.Model.ResponseModel.TapMessageRecipientModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
-import io.taptalk.TapTalk.Model.TapMessageInfoModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapMessageInfoAdapter
 import io.taptalk.TapTalk.ViewModel.TapMessageInfoViewModel
-import kotlinx.android.synthetic.main.activity_tap_report.*
 import kotlinx.android.synthetic.main.tap_activity_message_info.*
 
 class TapMessageInfoActivity : TAPBaseActivity() {
@@ -29,7 +28,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             message: TAPMessageModel
         ) {
             if (context is Activity) {
-                val intent = Intent(context, TapReportActivity::class.java)
+                val intent = Intent(context, TapMessageInfoActivity::class.java)
                 intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
                 intent.putExtra(TAPDefaultConstant.Extras.MESSAGE, message)
                 context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER)
@@ -44,8 +43,8 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             vm.message = intent.getParcelableExtra(TAPDefaultConstant.Extras.MESSAGE)
         }
         // TODO: get list from API MU
-        val messageInfoList = ArrayList<TapMessageInfoModel>()
-        val resultList = ArrayList<TapMessageInfoModel>()
+        val messageInfoList = ArrayList<TapMessageRecipientModel>()
+        val resultList = ArrayList<TapMessageRecipientModel>()
         val adapter = TapMessageInfoAdapter(resultList)
         rv_message_info.adapter = adapter
         rv_message_info.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -59,14 +58,14 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             }
         }
         if (vm.readList.isNotEmpty() && !TapUI.getInstance(instanceKey).isReadStatusHidden) {
-            resultList.add(TapMessageInfoModel(null, vm.readList.size.toLong(), null))
+            resultList.add(TapMessageRecipientModel(vm.readList.size.toLong(), null))
             resultList.addAll(vm.readList)
             if (vm.deliveredList.isNotEmpty()) {
-                resultList.add(TapMessageInfoModel(null, null, vm.deliveredList.size.toLong()))
+                resultList.add(TapMessageRecipientModel(null, vm.deliveredList.size.toLong()))
                 resultList.addAll(vm.deliveredList)
             }
         } else {
-            resultList.add(TapMessageInfoModel(null, null, vm.deliveredList.size.toLong()))
+            resultList.add(TapMessageRecipientModel(null, vm.deliveredList.size.toLong()))
             if (vm.deliveredList.isNotEmpty()) {
                 resultList.addAll(vm.deliveredList)
             }

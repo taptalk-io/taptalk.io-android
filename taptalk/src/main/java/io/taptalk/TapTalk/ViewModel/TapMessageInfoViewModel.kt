@@ -1,11 +1,11 @@
 package io.taptalk.TapTalk.ViewModel
 
 import androidx.lifecycle.ViewModel
+import io.taptalk.TapTalk.Model.ResponseModel.TapMessageRecipientModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
-import io.taptalk.TapTalk.Model.TapMessageInfoModel
 
 class TapMessageInfoViewModel : ViewModel() {
     var message : TAPMessageModel? = null
-    var readList = ArrayList<TapMessageInfoModel>()
-    var deliveredList = ArrayList<TapMessageInfoModel>()
+    var readList = ArrayList<TapMessageRecipientModel>()
+    var deliveredList = ArrayList<TapMessageRecipientModel>()
 }

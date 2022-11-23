@@ -22,4 +22,6 @@ data class TapMessageRecipientModel(
 
     @field:JsonProperty("userID")
     val userID: String? = null
-)
+) {
+    constructor(readTime: Long?, deliveredTime: Long?) : this(null, null, readTime, null, deliveredTime, null)
+}
