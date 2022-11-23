@@ -79,6 +79,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketClearChat;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMarkAsReadRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMarkAsUnreadRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMuteRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
@@ -274,6 +276,7 @@ public class TAPChatManager {
                     TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                     TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
                     TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomId);
+                    TAPDataManager.getInstance(instanceKey).removeUnreadRoomID(roomId);
                     TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
                         @Override
                         public void onSuccess(String successMessage) {
@@ -323,6 +326,28 @@ public class TAPChatManager {
                     TAPDataManager.getInstance(instanceKey).removePinnedRoomID(unpinnedRoomId);
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         chatListener.onUnpinRoom(unpinRoomData.getRoom());
+                    }
+                    break;
+                case kSocketMarkAsReadRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> markAsReadRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse markAsReadRoomData = markAsReadRoomEmit.getData();
+                    String readRoomId = markAsReadRoomData.getRoom().getRoomID();
+                    TAPDataManager.getInstance(instanceKey).removeUnreadRoomID(readRoomId);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onMarkRoomAsRead(markAsReadRoomData.getRoom().getRoomID());
+                    }
+                    break;
+                case kSocketMarkAsUnreadRoom:
+                    TAPEmitModel<TAPUpdateRoomResponse> markAsUnreadRoomEmit = TAPUtils.fromJSON(new TypeReference<>() {}, emitData);
+                    TAPUpdateRoomResponse markAsUnreadRoomData = markAsUnreadRoomEmit.getData();
+                    String unreadRoomId = markAsUnreadRoomData.getRoom().getRoomID();
+                    ArrayList<String> unreadRooms = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+                    if (!unreadRooms.contains(unreadRoomId)) {
+                        unreadRooms.add(unreadRoomId);
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRooms);
+                    for (TAPChatListener chatListener : chatListenersCopy) {
+                        chatListener.onMarkRoomAsUnread(markAsUnreadRoomData.getRoom().getRoomID());
                     }
                     break;
                 case kSocketScheduleMessageRoom:
@@ -873,20 +898,23 @@ public class TAPChatManager {
         TAPDataManager.getInstance(instanceKey).editScheduledMessageContent(scheduledMessageID, message, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
-                super.onSuccess(response);
-                listener.onSuccess(response.getMessage());
+                if (null != listener) {
+                    listener.onSuccess(response.getMessage());
+                }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }

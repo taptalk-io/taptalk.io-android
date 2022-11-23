@@ -70,6 +70,10 @@ public interface TapTalkChatInterface {
 
     void onUnpinRoom(TAPRoomModel room);
 
+    void onMarkRoomAsRead(String roomID);
+
+    void onMarkRoomAsUnread(String roomID);
+
     void onCreateScheduledMessage(TapScheduledMessageModel scheduledMessage);
 
     void onScheduledSendFailed(TapScheduledMessageModel scheduledMessage);

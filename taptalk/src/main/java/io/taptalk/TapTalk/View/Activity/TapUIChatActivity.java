@@ -1031,6 +1031,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         gScheduleMessage = findViewById(R.id.g_schedule_message);
         ivSchedule = findViewById(R.id.iv_schedule);
         btnUnblock = findViewById(R.id.btn_unblock);
+        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
     }
 
     private boolean initViewModel() {
