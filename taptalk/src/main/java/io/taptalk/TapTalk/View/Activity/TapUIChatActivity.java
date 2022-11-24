@@ -2166,17 +2166,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     String fileUrl = (String) message.getData().get(FILE_URL);
                     if (null != fileUrl && !fileUrl.isEmpty()) {
                         drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
+                        if (null == drawable) {
+                            glide.load(fileUrl).into(rcivQuoteImage);
+                        }
                     }
                 }
                 if (null != drawable) {
                     rcivQuoteImage.setImageDrawable(drawable);
-                } else {
+                }
+                else if (null == rcivQuoteImage.getDrawable() && null != message.getData().get(THUMBNAIL)) {
                     // Show small thumbnail
                     Drawable thumbnail = new BitmapDrawable(
                             getResources(),
-                            TAPFileUtils.decodeBase64(
-                                    (String) (null == message.getData().get(THUMBNAIL) ? "" :
-                                            message.getData().get(THUMBNAIL))));
+                            TAPFileUtils.decodeBase64((String) message.getData().get(THUMBNAIL))
+                    );
                     rcivQuoteImage.setImageDrawable(thumbnail);
                 }
                 rcivQuoteImage.setColorFilter(null);
