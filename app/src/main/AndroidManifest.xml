@@ -6,6 +6,24 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="oppo.permission.OPPO_COMPONENT_SAFE" />
 
+    <!--Permission for sync contacts-->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!--Permission for media messages-->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!--Permission for location messages-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!--Permission for voice messages-->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+    <!--Permission to install apps from file messages-->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
         android:name="io.moselo.SampleApps.SampleApplication"
         android:allowBackup="true"
