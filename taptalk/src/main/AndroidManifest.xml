@@ -26,7 +26,7 @@
 
         <service
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
-            android:exported="false"
+            android:exported="true"
             android:stopWithTask="false" />
 
         <service
@@ -35,7 +35,7 @@
 
         <receiver
             android:name="io.taptalk.TapTalk.Manager.TAPNetworkStateManager$TapNetworkBroadcastReceiver"
-            android:exported="false"
+            android:exported="true"
             android:label="NetworkChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
