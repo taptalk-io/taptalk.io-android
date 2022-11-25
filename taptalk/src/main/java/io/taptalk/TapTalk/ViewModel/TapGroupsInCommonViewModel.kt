@@ -6,5 +6,5 @@ import io.taptalk.TapTalk.Model.TAPSearchChatModel
 
 class TapGroupsInCommonViewModel : ViewModel() {
     var groups = ArrayList<TAPSearchChatModel>()
-    var room : TAPRoomModel? = null
+    var userId : String? = null
 }

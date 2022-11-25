@@ -505,5 +505,6 @@
     <string name="tap_no_groups_in_common">You have no groups in common</string>
     <string name="tap_read_by_d_format">Read by (%d)</string>
     <string name="tap_delivered_to_d_format">Delivered to (%d)</string>
+    <string name="tap_s_format_groups_in_common">%s Groups in common</string>
 
 </resources>
