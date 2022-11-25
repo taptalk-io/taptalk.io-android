@@ -1288,7 +1288,12 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun openGroupsInCommon() {
-        // TODO: open group in common MU
+       val userId = if (null != vm!!.groupMemberUser) {
+            vm!!.groupMemberUser.userID
+        } else {
+            vm!!.userDataFromManager.userID
+        }
+        TapGroupsInCommonActivity.start(this, instanceKey, userId)
         TAPChatManager.getInstance(instanceKey)
             .triggerChatProfileGroupsInCommonButtonTapped(this, vm!!.room)
     }
