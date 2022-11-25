@@ -123,6 +123,9 @@ public class TapUI {
     private boolean isEmailAddressInChatProfileVisible;
     private boolean isAddContactDisabled;
     private boolean isReportButtonInChatProfileVisible;
+    private boolean isReportButtonInUserProfileVisible;
+    private boolean isReportButtonInGroupProfileVisible;
+    private boolean isReportMessageMenuEnabled;
     private boolean isMarkAsReadRoomListSwipeMenuDisabled;
     private boolean isMarkAsUnreadRoomListSwipeMenuDisabled;
     private boolean isStarMessageMenuDisabled;
@@ -1123,6 +1126,48 @@ public class TapUI {
         isReportButtonInChatProfileVisible = reportButtonInChatProfileVisible;
     }
 
+    public boolean isReportButtonInUserProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportButtonInUserProfileVisible;
+    }
+
+    public void setReportButtonInUserProfileVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportButtonInUserProfileVisible = isVisible;
+    }
+
+    public boolean isReportButtonInGroupProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportButtonInGroupProfileVisible;
+    }
+
+    public void setReportButtonInGroupProfileVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportButtonInGroupProfileVisible = isVisible;
+    }
+
+    public boolean isReportMessageMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportMessageMenuEnabled;
+    }
+
+    public void setReportMessageMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportMessageMenuEnabled = isEnabled;
+    }
+
     public boolean isMarkAsUnreadRoomListSwipeMenuEnabled() {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;
@@ -1562,6 +1607,18 @@ public class TapUI {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             if (null != listener) {
                 listener.onPinnedMessageTapped(message);
+            }
+        }
+    }
+
+    void triggerReportMessageButtonTapped(Activity activity, TAPMessageModel message) {
+        if (getChatRoomListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            if (null != listener) {
+                listener.onReportMessageButtonTapped(activity, message);
             }
         }
     }

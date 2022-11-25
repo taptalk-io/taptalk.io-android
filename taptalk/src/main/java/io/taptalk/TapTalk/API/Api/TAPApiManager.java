@@ -56,6 +56,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapCreateScheduledMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdsWithRoomIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdsRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapReportUserRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
@@ -791,5 +792,18 @@ public class TAPApiManager {
     public void sendScheduledMessageNow(List<Integer> scheduledMessageIds, String roomId, Subscriber<TAPBaseResponse<TapIdsResponse>> subscriber) {
         TapIdsWithRoomIdRequest request = new TapIdsWithRoomIdRequest(scheduledMessageIds, roomId);
         execute(homingPigeon.sendScheduledMessageNow(request), subscriber);
+    }
+
+    public void submitUserReport(String userId, String category, boolean isOtherCategory, String reason, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TapReportUserRequest request = new TapReportUserRequest(category, isOtherCategory, reason);
+        request.setUserID(userId);
+        execute(homingPigeon.submitUserReport(request), subscriber);
+    }
+
+    public void submitMessageReport(String messageId, String roomId, String category, boolean isOtherCategory, String reason, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TapReportUserRequest request = new TapReportUserRequest(category, isOtherCategory, reason);
+        request.setMessageID(messageId);
+        request.setRoomID(roomId);
+        execute(homingPigeon.submitMessageReport(request), subscriber);
     }
 }
