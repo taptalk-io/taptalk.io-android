@@ -1036,6 +1036,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
         btnUnblock = findViewById(R.id.btn_unblock);
         btnUnblock = findViewById(R.id.btn_unblock);
+        btnUnblock = findViewById(R.id.btn_unblock);
         customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
     }
 
@@ -3090,7 +3091,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onViewMessageInfo(TAPMessageModel message) {
             super.onViewMessageInfo(message);
-            TapMessageInfoActivity.Companion.start(TapUIChatActivity.this, instanceKey, message);
+            TapMessageInfoActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, vm.getRoom(), vm.getStarredMessageIds().contains(message.getMessageID()), vm.getPinnedMessageIds().contains(message.getMessageID()));
         }
     };
 

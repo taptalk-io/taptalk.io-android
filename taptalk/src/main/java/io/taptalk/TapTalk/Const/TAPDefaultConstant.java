@@ -175,6 +175,8 @@ public class TAPDefaultConstant {
         public static final String TIME = "kTAPExtraTime";
         public static final String USER = "kTAPExtraUser";
         public static final String REPORT_TYPE = "kTAPExtraReportType";
+        public static final String IS_STARRED = "kTAPExtraIsStarred";
+        public static final String IS_PINNED = "kTAPExtraIsPinned";
     }
 
     public static final class RequestCode {
@@ -496,7 +498,7 @@ public class TAPDefaultConstant {
     public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
     public static final String K_STARRED_MESSAGE = "kTAPStarredMessage";
     public static final String K_BLOCKED_USER = "kTAPBlockedUser";
-    public static final String K_MESSAGE_READ_COUNT = "kTAPBlockedUser";
+    public static final String K_MESSAGE_READ_COUNT = "kTAPMessageReadCount";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 
