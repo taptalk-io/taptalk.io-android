@@ -8,9 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import io.taptalk.TapTalkSample.R;
 
-import static io.moselo.SampleApps.SampleApplication.INSTANCE_KEY_DEV;
-import static io.moselo.SampleApps.SampleApplication.INSTANCE_KEY_STAGING;
-
 public class TAPLandingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +17,8 @@ public class TAPLandingActivity extends AppCompatActivity {
         Button launchDev = findViewById(R.id.button_taptalk_dev);
         Button launchStaging = findViewById(R.id.button_taptalk_staging);
 
-        launchDev.setOnClickListener(v -> startMainActivity(INSTANCE_KEY_DEV));
-        launchStaging.setOnClickListener(v -> startMainActivity(INSTANCE_KEY_STAGING));
+        launchDev.setOnClickListener(v -> startMainActivity(""));
+        launchStaging.setOnClickListener(v -> startMainActivity(""));
     }
 
     private void startMainActivity(String instanceKey) {

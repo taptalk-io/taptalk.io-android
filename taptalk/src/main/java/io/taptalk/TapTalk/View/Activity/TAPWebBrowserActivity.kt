@@ -22,7 +22,7 @@ class TAPWebBrowserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_web_browser)
-        var url: String = intent.getStringExtra(EXTRA_URL)
+        var url: String = intent.getStringExtra(EXTRA_URL) ?: ""
 
         iv_close_btn.setOnClickListener { v: View? ->
             run {
@@ -66,7 +66,7 @@ class TAPWebBrowserActivity : AppCompatActivity() {
         webView.loadUrl(url)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             android.R.id.home -> {
                 onBackPressed()

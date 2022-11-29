@@ -711,7 +711,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 }
                 UploadProgressFinish -> {
                     val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)
-                    vm.currentProfilePicture = updatedUserModel.avatarURL.thumbnail
+                    vm.currentProfilePicture = updatedUserModel?.avatarURL?.thumbnail
                     if (updatedUserModel?.userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
                         enableEditing()

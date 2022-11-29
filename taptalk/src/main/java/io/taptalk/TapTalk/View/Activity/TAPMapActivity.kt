@@ -158,7 +158,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         super.onDestroy()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             android.R.id.home -> {
                 finish()
@@ -257,7 +257,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         }
     }
 
-    override fun onLocationChanged(location: Location?) {
+    override fun onLocationChanged(location: Location) {
         currentLatitude = location?.latitude ?: currentLatitude
         currentLongitude = location?.longitude ?: currentLongitude
         if (isFirstTriggered) {
@@ -270,11 +270,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
 
     }
 
-    override fun onProviderEnabled(provider: String?) {
+    override fun onProviderEnabled(provider: String) {
 
     }
 
-    override fun onProviderDisabled(provider: String?) {
+    override fun onProviderDisabled(provider: String) {
 
     }
 
