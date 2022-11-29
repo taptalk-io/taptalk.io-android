@@ -184,11 +184,18 @@ class TAPBlockedListActivity : TAPBaseActivity() {
             super.onSuccess(response)
             vm.blockedList.clear()
             if (response?.users?.isNotEmpty() == true) {
+                tv_edit_save_btn.visibility = View.VISIBLE
+                rv_blocked_list.visibility = View.VISIBLE
+                g_empty_state.visibility = View.GONE
                 vm.blockedList.addAll(response.users)
-            }
-            runOnUiThread {
-                adapter?.items = vm.blockedList
-                adapter?.notifyDataSetChanged()
+                runOnUiThread {
+                    adapter?.items = vm.blockedList
+                    adapter?.notifyDataSetChanged()
+                }
+            } else {
+                tv_edit_save_btn.visibility = View.GONE
+                rv_blocked_list.visibility = View.GONE
+                g_empty_state.visibility = View.VISIBLE
             }
         }
 
