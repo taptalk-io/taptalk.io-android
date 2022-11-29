@@ -12,7 +12,7 @@ android {
         minSdk 16
         targetSdk 31
         versionCode 102
-        versionName '1.4.0.1'
+        versionName '1.4.0.2'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -139,8 +139,9 @@ project.afterEvaluate {
             release(MavenPublication) {
                 from components.release
                 artifact androidSourcesJar // optional sources
-//                groupId = 'com.github.taptalk-io'
-//                artifactId = 'taptalk.io-android'
+                groupId = 'com.github.taptalk-io'
+                artifactId = 'taptalk.io-android'
+                version = "1.4.0.2"
 //                version = "\"${defaultConfig.versionName}\""
             }
         }
