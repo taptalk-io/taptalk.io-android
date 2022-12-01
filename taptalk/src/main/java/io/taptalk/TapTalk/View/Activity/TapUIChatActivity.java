@@ -105,7 +105,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
-import static io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity.RESULT_FILE_PATH;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
@@ -166,7 +165,6 @@ import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -806,8 +804,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPChatManager.getInstance(instanceKey).sendLocationMessage(vm.getRoom(), address, latitude, longitude);
                     break;
                 case SEND_FILE:
-                    File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
+                    File tempFile;
+                    Uri uri = null;
+                    if (null != intent.getClipData()) {
+                        for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+                            uri = intent.getClipData().getItemAt(i).getUri();
+                        }
+                    } else {
+                        uri = intent.getData();
+                    }
+//                    if (uri != null) {
+//                        tempFile = new File(uri.getPath());
+//                    }
+
+                    tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri);
+
+//                    File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                     if (null != tempFile) {
+                        Log.e(">>>>", "onActivityResult SEND_FILE: " + uri.toString() + " - length: " + tempFile.length());
                         if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length())) {
                             TAPChatManager.getInstance(instanceKey).sendFileMessage(TapUIChatActivity.this, vm.getRoom(), tempFile);
                         } else {
@@ -2799,7 +2813,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onDocumentSelected() {
-            TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+            TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
         }
 
         @Override

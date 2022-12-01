@@ -1235,7 +1235,13 @@ public class TAPFileUploadManager {
             //}
             addUploadProgressMap(localID, 100, response.getSize());
 
-            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), (String) messageModel.getData().get(FILE_URI));
+            if (null != messageModel.getData()) {
+                String fileUriString = (String) messageModel.getData().get(FILE_URI);
+                Log.e(">>>>>>", "saveFileMessageUri: " + fileUriString);
+                if (fileUriString != null && !fileUriString.isEmpty()) {
+                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileUriString);
+                }
+            }
             TAPDataFileModel fileDataModel = TAPDataFileModel.Builder(
                     response.getId(),
                     response.getFileURL(),
