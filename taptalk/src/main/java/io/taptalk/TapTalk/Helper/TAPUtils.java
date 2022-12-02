@@ -972,6 +972,28 @@ public class TAPUtils {
         }
     }
 
+    public static void openDocumentPicker(Activity activity, int requestCode) {
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Check read storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_FILE);
+        } else {
+            // Permission granted
+            Intent intent;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                String[] mimeTypes = {INTENT_TYPE_ALL};
+                intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+//                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
+            } else {
+                intent = new Intent(Intent.ACTION_GET_CONTENT);
+            }
+            intent.setType(INTENT_TYPE_ALL);
+            if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+                activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
+            }
+        }
+    }
+
     public static boolean isListEmpty(List t) {
         return null == t || 0 >= t.size();
     }

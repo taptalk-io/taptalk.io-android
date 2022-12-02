@@ -683,7 +683,7 @@ public class TAPFileDownloadManager {
         return null == downloadTaskMap ? downloadTaskMap = new HashMap<>() : downloadTaskMap;
     }
 
-    private void scanFile(Context context, File f, String mimeType) {
+    public void scanFile(Context context, File f, String mimeType) {
         MediaScannerConnection
                 .scanFile(context, new String[]{f.getAbsolutePath()},
                         new String[]{mimeType}, null);

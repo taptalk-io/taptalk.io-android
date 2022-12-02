@@ -166,7 +166,6 @@ import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -806,7 +805,28 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPChatManager.getInstance(instanceKey).sendLocationMessage(vm.getRoom(), address, latitude, longitude);
                     break;
                 case SEND_FILE:
-                    File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
+                    File tempFile = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        Uri uri = null;
+                        if (null != intent.getClipData()) {
+                            for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+                                uri = intent.getClipData().getItemAt(i).getUri();
+                            }
+                        } else {
+                            uri = intent.getData();
+                        }
+
+                        if (uri != null) {
+                            // Write temporary file to cache for upload for Android 11+
+                            tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri);
+                        }
+                    } else {
+                        String filePath = intent.getStringExtra(RESULT_FILE_PATH);
+                        if (filePath != null && !filePath.isEmpty()) {
+                            tempFile = new File(filePath);
+                        }
+                    }
+
                     if (null != tempFile) {
                         if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length())) {
                             TAPChatManager.getInstance(instanceKey).sendFileMessage(TapUIChatActivity.this, vm.getRoom(), tempFile);
@@ -883,7 +903,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
-                    TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
+                    } else {
+                        TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+                    }
                     break;
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO:
                     if (null != attachmentListener) {
@@ -2799,7 +2823,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onDocumentSelected() {
-            TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
+            } else {
+                TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+            }
         }
 
         @Override
