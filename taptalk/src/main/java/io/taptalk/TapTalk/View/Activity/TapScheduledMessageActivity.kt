@@ -49,6 +49,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE
 import io.taptalk.TapTalk.Helper.*
+import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
@@ -242,23 +243,27 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     timePicker.show(supportFragmentManager, "")
                 }
                 RequestCode.SEND_FILE -> {
-//                    val filePath = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
-                    var tempFile: File? = null
-                    var uri: Uri? = null
-                    if (null != data?.clipData) {
-                        for (i in 0 until data.clipData!!.itemCount) {
-                            uri = data.clipData!!.getItemAt(i).uri
-                        }
-                    } else {
-                        uri = data?.data
+                    if (null == data) {
+                        return
                     }
-
-                    if (uri != null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    var tempFile: File? = null
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        var uri: Uri? = null
+                        if (null != data.clipData) {
+                            for (i in 0 until data.clipData!!.itemCount) {
+                                uri = data.clipData!!.getItemAt(i).uri
+                            }
+                        } else {
+                            uri = data.data
+                        }
+                        if (uri != null) {
                             // Write temporary file to cache for upload for Android 11+
                             tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri)
-                        } else if (!uri.path.isNullOrEmpty()) {
-                            tempFile = File(uri.path!!)
+                        }
+                    } else {
+                        val filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
+                        if (!filePath.isNullOrEmpty()) {
+                            tempFile = File(filePath)
                         }
                     }
 
@@ -344,9 +349,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     true
                 )
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE -> messageAdapter.notifyDataSetChanged()
-                PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE -> TAPUtils.openDocumentPicker(
-                    this@TapScheduledMessageActivity, SEND_FILE
-                )
+                PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity, SEND_FILE)
+                    } else {
+                        TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)
+                    }
+                }
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO -> attachmentListener.onSaveVideoToGallery(vm.pendingDownloadMessage)
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE -> startFileDownload(
                     vm.pendingDownloadMessage
@@ -1304,7 +1313,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
 
             override fun onDocumentSelected() {
-                TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity, SEND_FILE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity, SEND_FILE)
+                } else {
+                    TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)
+                }
             }
 
             override fun onCopySelected(text: String) {

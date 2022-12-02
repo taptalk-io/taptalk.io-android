@@ -105,6 +105,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity.RESULT_FILE_PATH;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
@@ -804,23 +805,25 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPChatManager.getInstance(instanceKey).sendLocationMessage(vm.getRoom(), address, latitude, longitude);
                     break;
                 case SEND_FILE:
-//                    File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                     File tempFile = null;
-                    Uri uri = null;
-                    if (null != intent.getClipData()) {
-                        for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
-                            uri = intent.getClipData().getItemAt(i).getUri();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        Uri uri = null;
+                        if (null != intent.getClipData()) {
+                            for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+                                uri = intent.getClipData().getItemAt(i).getUri();
+                            }
+                        } else {
+                            uri = intent.getData();
                         }
-                    } else {
-                        uri = intent.getData();
-                    }
 
-                    if (uri != null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        if (uri != null) {
                             // Write temporary file to cache for upload for Android 11+
                             tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri);
-                        } else {
-                            tempFile = new File(uri.getPath());
+                        }
+                    } else {
+                        String filePath = intent.getStringExtra(RESULT_FILE_PATH);
+                        if (filePath != null && !filePath.isEmpty()) {
+                            tempFile = new File(filePath);
                         }
                     }
 
@@ -900,7 +903,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
-                    TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
+                    } else {
+                        TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+                    }
                     break;
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO:
                     if (null != attachmentListener) {
@@ -2816,7 +2823,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onDocumentSelected() {
-            TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
+            } else {
+                TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+            }
         }
 
         @Override
