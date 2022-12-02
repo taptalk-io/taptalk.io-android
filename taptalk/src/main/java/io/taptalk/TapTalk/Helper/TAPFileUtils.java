@@ -514,7 +514,6 @@ public class TAPFileUtils {
             while ((count = input.read(data)) != -1) {
                 output.write(data, 0, count);
             }
-            Log.e(">>>>", "createTemporaryCachedFile: " + tempFile.getPath() + " - " + tempFile.length());
             return tempFile;
         } catch (Exception e) {
             e.printStackTrace();

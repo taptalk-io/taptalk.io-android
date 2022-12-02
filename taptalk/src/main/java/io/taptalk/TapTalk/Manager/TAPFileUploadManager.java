@@ -1122,6 +1122,9 @@ public class TAPFileUploadManager {
      * Check upload queue and restart upload sequence
      */
     public void uploadNextSequence(Context context, String roomID) {
+        if (getUploadQueue(roomID) == null || getUploadQueue(roomID).isEmpty()) {
+            return;
+        }
         getUploadQueue(roomID).remove(0);
         uploadNextFromQueue(context, roomID);
     }
@@ -1246,12 +1249,9 @@ public class TAPFileUploadManager {
                 TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileProviderUri);
                 TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, storageFile.getAbsolutePath());
                 TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, storageFile, TAPUtils.getFileMimeType(storageFile));
-                Log.e(">>>>>", "sendFileMessageAfterUploadSuccess storageFile: " + storageFile.getPath() + " - " + storageFile.length());
-                Log.e(">>>>>", "sendFileMessageAfterUploadSuccess FileProviderPath: " + storageFile.getAbsolutePath());
             }
             else if (null != messageModel.getData()) {
                 String fileUriString = (String) messageModel.getData().get(FILE_URI);
-                Log.e(">>>>>>", "saveFileMessageUri: " + fileUriString);
                 if (fileUriString != null && !fileUriString.isEmpty()) {
                     TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileUriString);
                 }

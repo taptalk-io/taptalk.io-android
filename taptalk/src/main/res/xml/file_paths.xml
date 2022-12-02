@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <root-path name="root" path="." />
     <files-path name="Files" path="." />
     <external-path name="TapTalkFiles" path="." />
     <cache-path name="TapTalkCache" path="."/>
-    <external-files-path name="ExternalFiles" path="." />
-    <external-media-path name="ExternalMedias" path="." />
 </paths>

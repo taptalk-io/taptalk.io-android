@@ -825,7 +825,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
 
                     if (null != tempFile) {
-                        Log.e(">>>>", "onActivityResult SEND_FILE: " + uri + " - length: " + tempFile.length());
                         if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length())) {
                             TAPChatManager.getInstance(instanceKey).sendFileMessage(TapUIChatActivity.this, vm.getRoom(), tempFile);
                         } else {
