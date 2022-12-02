@@ -49,7 +49,6 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE
 import io.taptalk.TapTalk.Helper.*
-import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
@@ -246,12 +245,12 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 //                    val filePath = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
                     var tempFile: File? = null
                     var uri: Uri? = null
-                    if (null != intent.clipData) {
-                        for (i in 0 until intent.clipData!!.itemCount) {
-                            uri = intent.clipData!!.getItemAt(i).uri
+                    if (null != data?.clipData) {
+                        for (i in 0 until data.clipData!!.itemCount) {
+                            uri = data.clipData!!.getItemAt(i).uri
                         }
                     } else {
-                        uri = intent.data
+                        uri = data?.data
                     }
 
                     if (uri != null) {
