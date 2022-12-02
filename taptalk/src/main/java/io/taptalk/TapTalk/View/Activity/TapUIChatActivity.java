@@ -804,7 +804,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPChatManager.getInstance(instanceKey).sendLocationMessage(vm.getRoom(), address, latitude, longitude);
                     break;
                 case SEND_FILE:
-                    File tempFile;
+                    File tempFile = null;
                     Uri uri = null;
                     if (null != intent.getClipData()) {
                         for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
@@ -813,11 +813,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     } else {
                         uri = intent.getData();
                     }
-//                    if (uri != null) {
-//                        tempFile = new File(uri.getPath());
-//                    }
 
-                    tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri);
+                    if (uri != null) {
+//                        tempFile = new File(uri.getPath());
+                        tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri);
+                    }
 
 //                    File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                     if (null != tempFile) {
