@@ -1103,7 +1103,6 @@ public class TAPChatManager {
         }
 
         File file = new File(filePath);
-        Log.e(">>>>", "createFileMessageModel: " + filePath);
         return createFileMessageModel(context, file, roomModel, listener);
     }
 
@@ -1117,7 +1116,6 @@ public class TAPChatManager {
             // Build message model
             TAPMessageModel messageModel;
             Uri fileUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
-            Log.e(">>>>>", "createFileMessageModel file provider Uri: " + fileUri.toString());
             HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap();
             data.put(FILE_URI, fileUri.toString());
             if (null == getQuotedMessage(roomModel.getRoomID())) {

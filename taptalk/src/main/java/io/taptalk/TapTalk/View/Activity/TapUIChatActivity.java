@@ -804,6 +804,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPChatManager.getInstance(instanceKey).sendLocationMessage(vm.getRoom(), address, latitude, longitude);
                     break;
                 case SEND_FILE:
+//                    File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                     File tempFile = null;
                     Uri uri = null;
                     if (null != intent.getClipData()) {
@@ -815,13 +816,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
 
                     if (uri != null) {
-//                        tempFile = new File(uri.getPath());
-                        tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            // Write temporary file to cache for upload for Android 11+
+                            tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri);
+                        } else {
+                            tempFile = new File(uri.getPath());
+                        }
                     }
 
-//                    File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                     if (null != tempFile) {
-                        Log.e(">>>>", "onActivityResult SEND_FILE: " + uri.toString() + " - length: " + tempFile.length());
+                        Log.e(">>>>", "onActivityResult SEND_FILE: " + uri + " - length: " + tempFile.length());
                         if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length())) {
                             TAPChatManager.getInstance(instanceKey).sendFileMessage(TapUIChatActivity.this, vm.getRoom(), tempFile);
                         } else {
@@ -897,7 +901,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
-                    TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+                    TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
                     break;
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO:
                     if (null != attachmentListener) {

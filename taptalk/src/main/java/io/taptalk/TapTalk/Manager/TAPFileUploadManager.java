@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -1232,45 +1233,29 @@ public class TAPFileUploadManager {
                                                    TAPUploadFileResponse response) {
         try {
             String localID = messageModel.getLocalID();
-            //long size = 0L;
-            //if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
-            //    size = ((Number) messageModel.getData().get(SIZE)).longValue();
-            //}
             addUploadProgressMap(localID, 100, response.getSize());
 
-//            String folder = " Files";
-//            File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.getClientAppName(instanceKey) + "/" + folder);
-//            dir.mkdirs();
-//
-//            File noMediaFile = new File(dir, ".nomedia");
-//            if (!noMediaFile.exists()) {
-//                try {
-//                    noMediaFile.createNewFile();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            File storageFile = new File(dir, file.getName());
-            File storageFile = new File(context.getFilesDir(), file.getName());
-            storageFile = TAPFileUtils.renameDuplicateFile(storageFile);
-            TAPFileDownloadManager.getInstance(instanceKey).copyFile(file, storageFile);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // Copy file to storage for Android 11+
+                // Message file will need to be downloaded if not saved
+                File storageFile = new File(context.getFilesDir(), file.getName());
+                storageFile = TAPFileUtils.renameDuplicateFile(storageFile);
+                TAPFileDownloadManager.getInstance(instanceKey).copyFile(file, storageFile);
 
-            Uri fileProviderUri = FileProvider.getUriForFile(appContext, FILEPROVIDER_AUTHORITY, storageFile);
-            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileProviderUri);
-            TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, storageFile.getAbsolutePath());
-            TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, storageFile, TAPUtils.getFileMimeType(storageFile));
-            Log.e(">>>>>", "sendFileMessageAfterUploadSuccess storageFile: " + storageFile.getPath() + " - " + storageFile.length());
-            Log.e(">>>>>", "sendFileMessageAfterUploadSuccess FileProviderPath: " + storageFile.getAbsolutePath());
-            
-            // TODO: FOR BELOW ANDROID 11
-//            if (null != messageModel.getData()) {
-//                String fileUriString = (String) messageModel.getData().get(FILE_URI);
-//                Log.e(">>>>>>", "saveFileMessageUri: " + fileUriString);
-//                if (fileUriString != null && !fileUriString.isEmpty()) {
-//                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileUriString);
-//                }
-//            }
+                Uri fileProviderUri = FileProvider.getUriForFile(appContext, FILEPROVIDER_AUTHORITY, storageFile);
+                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileProviderUri);
+                TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, storageFile.getAbsolutePath());
+                TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, storageFile, TAPUtils.getFileMimeType(storageFile));
+                Log.e(">>>>>", "sendFileMessageAfterUploadSuccess storageFile: " + storageFile.getPath() + " - " + storageFile.length());
+                Log.e(">>>>>", "sendFileMessageAfterUploadSuccess FileProviderPath: " + storageFile.getAbsolutePath());
+            }
+            else if (null != messageModel.getData()) {
+                String fileUriString = (String) messageModel.getData().get(FILE_URI);
+                Log.e(">>>>>>", "saveFileMessageUri: " + fileUriString);
+                if (fileUriString != null && !fileUriString.isEmpty()) {
+                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileUriString);
+                }
+            }
 
             TAPDataFileModel fileDataModel = TAPDataFileModel.Builder(
                     response.getId(),
