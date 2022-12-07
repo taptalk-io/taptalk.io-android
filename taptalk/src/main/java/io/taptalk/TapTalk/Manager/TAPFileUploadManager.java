@@ -1238,8 +1238,8 @@ public class TAPFileUploadManager {
             String localID = messageModel.getLocalID();
             addUploadProgressMap(localID, 100, response.getSize());
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                // Copy file to storage for Android 11+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Copy file to storage for Android 10+
                 // Message file will need to be downloaded if not saved
                 File storageFile = new File(context.getFilesDir(), file.getName());
                 storageFile = TAPFileUtils.renameDuplicateFile(storageFile);

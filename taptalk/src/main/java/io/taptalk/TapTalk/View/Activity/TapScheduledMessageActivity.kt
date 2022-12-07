@@ -247,7 +247,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         return
                     }
                     var tempFile: File? = null
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         var uri: Uri? = null
                         if (null != data.clipData) {
                             for (i in 0 until data.clipData!!.itemCount) {
@@ -350,7 +350,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 )
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE -> messageAdapter.notifyDataSetChanged()
                 PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity, SEND_FILE)
                     } else {
                         TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)
@@ -1313,7 +1313,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
 
             override fun onDocumentSelected() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity, SEND_FILE)
                 } else {
                     TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)

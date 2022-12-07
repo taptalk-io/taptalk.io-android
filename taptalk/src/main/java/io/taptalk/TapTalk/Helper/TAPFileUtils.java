@@ -460,6 +460,16 @@ public class TAPFileUtils {
             try {
                 if (cursor != null && cursor.moveToFirst()) {
                     result = cursor.getString(Math.max(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME), 0));
+                    if (result == null || result.isEmpty()) {
+                        result = cursor.getString(Math.max(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE), 0));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result = uri.getPath();
+                int cut = result.lastIndexOf('/');
+                if (cut != -1) {
+                    result = result.substring(cut + 1);
                 }
             } finally {
                 cursor.close();
