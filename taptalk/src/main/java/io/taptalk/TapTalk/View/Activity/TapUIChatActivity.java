@@ -806,7 +806,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
                 case SEND_FILE:
                     File tempFile = null;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         Uri uri = null;
                         if (null != intent.getClipData()) {
                             for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
@@ -903,7 +903,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
                     } else {
                         TAPUtils.openDocumentPicker(TapUIChatActivity.this);
@@ -2823,7 +2823,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onDocumentSelected() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
             } else {
                 TAPUtils.openDocumentPicker(TapUIChatActivity.this);
