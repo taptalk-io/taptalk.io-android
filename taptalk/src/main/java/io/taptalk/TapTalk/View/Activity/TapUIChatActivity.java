@@ -738,6 +738,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.DEFAULT); // For file picker
         if (resultCode == RESULT_OK) {
             // Set active room to prevent null pointer when returning to chat
             TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
@@ -904,6 +905,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON);
                         TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
                     } else {
                         TAPUtils.openDocumentPicker(TapUIChatActivity.this);
@@ -2824,6 +2826,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onDocumentSelected() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON);
                 TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
             } else {
                 TAPUtils.openDocumentPicker(TapUIChatActivity.this);

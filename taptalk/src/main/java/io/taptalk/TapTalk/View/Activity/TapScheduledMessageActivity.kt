@@ -171,6 +171,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.DEFAULT)
         if (resultCode == RESULT_OK) {
             when (requestCode) {
                 RequestCode.SEND_IMAGE_FROM_CAMERA -> {
@@ -351,6 +352,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE -> messageAdapter.notifyDataSetChanged()
                 PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON)
                         TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity, SEND_FILE)
                     } else {
                         TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)
@@ -1314,6 +1316,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
             override fun onDocumentSelected() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON)
                     TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity, SEND_FILE)
                 } else {
                     TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)
