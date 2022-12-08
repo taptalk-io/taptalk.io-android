@@ -12,7 +12,7 @@ android {
         minSdk 16
         targetSdk 31
         versionCode 126
-        versionName '2.8.4'
+        versionName '2.8.5'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -144,7 +144,7 @@ project.afterEvaluate {
                 artifact androidSourcesJar // optional sources
                 groupId = 'com.github.taptalk-io'
                 artifactId = 'taptalk.io-android'
-                version = "2.8.4"
+                version = "2.8.5"
 //                version = "\"${defaultConfig.versionName}\""
             }
         }
