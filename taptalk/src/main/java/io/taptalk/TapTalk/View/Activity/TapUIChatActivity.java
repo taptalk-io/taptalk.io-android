@@ -228,6 +228,7 @@ import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreContactListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetMessageDetailsListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
@@ -254,6 +255,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapMessageRecipientModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
@@ -1799,6 +1801,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             } else {
                 openGroupMemberProfile(message.getUser());
+            }
+        }
+
+        @Override
+        public void onBubbleTapped(TAPMessageModel message) {
+            if (vm.getMyUserModel().getUserID().equals(message.getUser().getUserID())) {
+                getMessageInfo(message);
             }
         }
 
@@ -6205,6 +6214,31 @@ public class TapUIChatActivity extends TAPBaseActivity {
             vm.setOtherUserModel(TAPChatManager.getInstance(instanceKey).getActiveUser());
         } else {
             vm.setOtherUserModel(otherUserModel);
+        }
+    }
+
+    private void getMessageInfo(TAPMessageModel message) {
+        if (message.getIsRead() != null && message.getIsRead() &&
+            TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled() &&
+            !TapUI.getInstance(instanceKey).isReadStatusHidden()
+        ) {
+            TapCoreMessageManager.getInstance(instanceKey).getMessageDetails(message.getMessageID(), new TapCoreGetMessageDetailsListener() {
+                @Override
+                public void onSuccess(@NonNull TAPMessageModel message, @Nullable List<TapMessageRecipientModel> deliveredTo, @Nullable List<TapMessageRecipientModel> readBy) {
+                    if (readBy != null) {
+                        vm.getMessageReadCountMap().put(message.getMessageID(), readBy.size());
+                        int index = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
+                        if (index >= 0) {
+                            messageAdapter.notifyItemChanged(index);
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
+
+                }
+            });
         }
     }
 

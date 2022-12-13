@@ -257,7 +257,6 @@ public class TAPDataManager {
         removePinnedRoomIDs();
         removeStarredMessageIds();
         removeBlockedUserIds();
-        removeMessagesReadCount();
     }
 
     /**
@@ -691,43 +690,6 @@ public class TAPDataManager {
      * MESSAGE READ COUNT
      */
 
-    public void saveMessagesReadCountInRoom(String roomID, HashMap<String, Integer> messagesMap) {
-        HashMap<String, HashMap<String, Integer>> messageReadCountMap = Hawk.get(instanceKey + K_MESSAGE_READ_COUNT, null);
-        if (messageReadCountMap == null) {
-            messageReadCountMap = new LinkedHashMap<>();
-        }
-        messageReadCountMap.put(roomID, messagesMap);
-        Hawk.put(instanceKey + K_MESSAGE_READ_COUNT, messageReadCountMap);
-    }
-
-    public HashMap<String, Integer> getMessagesReadCountInRoom(String roomID) {
-        HashMap<String, HashMap<String, Integer>> messageReadCountMap = Hawk.get(instanceKey + K_MESSAGE_READ_COUNT, null);
-        if (messageReadCountMap != null) {
-            return messageReadCountMap.get(roomID);
-        } else return null;
-    }
-
-    public void saveMessageReadCount(String roomID, String messageID, Integer readCount) {
-        HashMap<String, Integer> messagesMap =  getMessagesReadCountInRoom(roomID);
-        if (messagesMap == null) {
-            messagesMap = new LinkedHashMap<>();
-        }
-        messagesMap.put(messageID, readCount);
-        saveMessagesReadCountInRoom(roomID, messagesMap);
-    }
-
-    public Integer getMessageReadCount(String roomID, String messageID) {
-        HashMap<String, Integer> messagesMap =  getMessagesReadCountInRoom(roomID);
-        if (messagesMap != null) {
-            if (messagesMap.get(messageID) != null) {
-                return messagesMap.get(messageID);
-            } else return 0;
-        } else return 0;
-    }
-
-    public void removeMessagesReadCount() {
-        removePreference(K_MESSAGE_READ_COUNT);
-    }
 
     /**
      * MY COUNTRY CODE

@@ -86,6 +86,10 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     }
 
     @Override
+    public void onBubbleTapped(TAPMessageModel message) {
+    }
+
+    @Override
     public void onOutsideClicked(TAPMessageModel message) {
     }
 

@@ -48,6 +48,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LinkedHashMap<String, TAPUserModel> groupTyping;
     private LinkedHashMap<String, TAPMessageModel> dateSeparators;
     private LinkedHashMap<String, Integer> dateSeparatorIndexes;
+    private LinkedHashMap<String, Integer> messageReadCountMap;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages, pinnedMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private ArrayList<String> starredMessageIds;
@@ -375,6 +376,10 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public LinkedHashMap<String, Integer> getDateSeparatorIndexes() {
         return null == dateSeparatorIndexes ? dateSeparatorIndexes = new LinkedHashMap<>() : dateSeparatorIndexes;
+    }
+
+    public LinkedHashMap<String, Integer> getMessageReadCountMap() {
+        return null == messageReadCountMap ? messageReadCountMap = new LinkedHashMap<>() : messageReadCountMap;
     }
 
     public TAPMessageModel generateDateSeparator(Context context, TAPMessageModel message) {

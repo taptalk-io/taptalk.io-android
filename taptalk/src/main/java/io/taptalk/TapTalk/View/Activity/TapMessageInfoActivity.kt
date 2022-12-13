@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Listener.TapCoreGetMessageDetailsListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TapCoreMessageManager
 import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageDetailResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TapMessageRecipientModel
@@ -89,30 +91,26 @@ class TapMessageInfoActivity : TAPBaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        TAPDataManager.getInstance(instanceKey).getMessageDetails(vm.message?.messageID, messageInfoView)
+        ll_loading.visibility = View.VISIBLE
+        TapCoreMessageManager.getInstance(instanceKey).getMessageDetails(vm.message?.messageID, messageInfoView)
     }
 
-    private val messageInfoView = object : TAPDefaultDataView<TapGetMessageDetailResponse>() {
-        override fun startLoading() {
-            super.startLoading()
-            ll_loading.visibility = View.VISIBLE
-        }
-
-        override fun endLoading() {
-            super.endLoading()
+    private val messageInfoView = object : TapCoreGetMessageDetailsListener() {
+        override fun onSuccess(
+            message: TAPMessageModel,
+            deliveredTo: List<TapMessageRecipientModel>?,
+            readBy: List<TapMessageRecipientModel>?
+        ) {
             ll_loading.visibility = View.GONE
-        }
 
-        override fun onSuccess(response: TapGetMessageDetailResponse?) {
-            super.onSuccess(response)
             vm.readList.clear()
             val resultList = ArrayList<TapMessageRecipientModel>()
-            if (response?.readBy != null) {
-                vm.readList.addAll(ArrayList(response.readBy))
+            if (readBy != null) {
+                vm.readList.addAll(ArrayList(readBy))
             }
             vm.deliveredList.clear()
-            if (response?.deliveredTo != null) {
-                vm.deliveredList.addAll(ArrayList(response.deliveredTo))
+            if (deliveredTo != null) {
+                vm.deliveredList.addAll(ArrayList(deliveredTo))
             }
             if (vm.readList.isNotEmpty() && !TapUI.getInstance(instanceKey).isReadStatusHidden) {
                 resultList.add(TapMessageRecipientModel(vm.readList.size.toLong(), null))
@@ -130,16 +128,8 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             (rv_message_info.adapter as TapMessageInfoAdapter).items = resultList
         }
 
-        override fun onError(error: TAPErrorModel?) {
-            super.onError(error)
-            endLoading()
-            Toast.makeText(this@TapMessageInfoActivity, error?.message, Toast.LENGTH_SHORT).show()
-            finish()
-        }
-
-        override fun onError(errorMessage: String?) {
-            super.onError(errorMessage)
-            endLoading()
+        override fun onError(errorCode: String?, errorMessage: String?) {
+            ll_loading.visibility = View.GONE
             Toast.makeText(this@TapMessageInfoActivity, errorMessage, Toast.LENGTH_SHORT).show()
             finish()
         }

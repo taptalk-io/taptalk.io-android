@@ -1301,7 +1301,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     private fun isUserBlocked() : Boolean {
         return if (null != vm!!.groupMemberUser) {
             TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(vm!!.groupMemberUser.userID)
-        } else if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
+        } else if (vm!!.room.type == RoomType.TYPE_PERSONAL && null != vm!!.userDataFromManager) {
             TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(vm!!.userDataFromManager.userID)
         } else {
             false
