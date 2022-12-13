@@ -22,6 +22,9 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapCreateScheduledMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapIdsWithRoomIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapReportUserRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdsRequest;
@@ -50,12 +53,16 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -252,4 +259,28 @@ public interface TAPTalkApiService {
 
     @POST("client/room/get_room_ids_with_state")
     Observable<TAPBaseResponse<TapGetRoomIdsWithStateResponse>> getRoomIdsWithState();
+
+    @POST("chat/scheduled_message/create")
+    Observable<TAPBaseResponse<TapCreateScheduledMessageResponse>> createScheduledMessage(@Body TapCreateScheduledMessageRequest request);
+
+    @POST("chat/scheduled_message/get_scheduled_list")
+    Observable<TAPBaseResponse<TapGetScheduledMessageListResponse>> getScheduledMessageList(@Body TAPCommonRequest request);
+
+    @POST("chat/scheduled_message/edit_content")
+    Observable<TAPBaseResponse<TAPCommonResponse>> editScheduledMessageContent(@Body TapCreateScheduledMessageRequest request);
+
+    @POST("chat/scheduled_message/edit_scheduled_time")
+    Observable<TAPBaseResponse<TAPCommonResponse>> editScheduledMessageTime(@Body TapScheduledMessageModel request);
+
+    @POST("chat/scheduled_message/delete")
+    Observable<TAPBaseResponse<TapIdsResponse>> deleteScheduledMessages(@Body TapIdsWithRoomIdRequest request);
+
+    @POST("chat/scheduled_message/send_now")
+    Observable<TAPBaseResponse<TapIdsResponse>> sendScheduledMessageNow(@Body TapIdsWithRoomIdRequest request);
+
+    @POST("client/chat_report/submit_user")
+    Observable<TAPBaseResponse<TAPCommonResponse>> submitUserReport(@Body TapReportUserRequest request);
+
+    @POST("client/chat_report/submit_message")
+    Observable<TAPBaseResponse<TAPCommonResponse>> submitMessageReport(@Body TapReportUserRequest request);
 }

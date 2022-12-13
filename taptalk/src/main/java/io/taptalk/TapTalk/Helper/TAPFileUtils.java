@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Helper;
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,26 +11,40 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Base64;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.R;
+import okio.BufferedSink;
+import okio.Okio;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPFileUtils {
 
@@ -438,13 +453,23 @@ public class TAPFileUtils {
         return file;
     }
 
-    private static String getFileName(Context context, Uri uri) {
+    public static String getFileName(Context context, Uri uri) {
         String result = null;
         if ("content".equals(uri.getScheme())) {
             Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
                     result = cursor.getString(Math.max(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME), 0));
+                    if (result == null || result.isEmpty()) {
+                        result = cursor.getString(Math.max(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE), 0));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result = uri.getPath();
+                int cut = result.lastIndexOf('/');
+                if (cut != -1) {
+                    result = result.substring(cut + 1);
                 }
             } finally {
                 cursor.close();
@@ -485,5 +510,24 @@ public class TAPFileUtils {
             return Uri.parse(String.valueOf(fileUri));
         }
         return uri;
+    }
+
+    public static File createTemporaryCachedFile(Context context, Uri uri) {
+        try {
+            ParcelFileDescriptor parcelFileDescriptor = context.getContentResolver().openFileDescriptor(uri, "r");
+            InputStream input = new FileInputStream(parcelFileDescriptor.getFileDescriptor());
+            File tempFile = new File(context.getCacheDir(), TAPFileUtils.getFileName(context, uri));
+            FileOutputStream output = new FileOutputStream(tempFile);
+
+            byte[] data = new byte[4096];
+            int count;
+            while ((count = input.read(data)) != -1) {
+                output.write(data, 0, count);
+            }
+            return tempFile;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -131,4 +131,19 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     public void onViewInChat(TAPMessageModel message) {
 
     }
+
+    @Override
+    public void onSendNow(TAPMessageModel message) {
+
+    }
+
+    @Override
+    public void onRescheduleMessage(TAPMessageModel message) {
+
+    }
+
+    @Override
+    public void onReportMessage(TAPMessageModel message) {
+
+    }
 }

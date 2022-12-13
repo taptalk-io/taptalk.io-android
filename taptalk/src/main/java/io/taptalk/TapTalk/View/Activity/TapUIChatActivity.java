@@ -166,7 +166,6 @@ import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -225,6 +224,7 @@ import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
@@ -265,6 +265,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
+import io.taptalk.TapTalk.View.BottomSheet.TapTimePickerBottomSheetFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
@@ -393,6 +394,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TextView tvLinkTitle;
     private TextView tvLinkContent;
     private ImageView ivCloseLink;
+
+    // Schedule Message
+    private CardView cvSchedule;
+    private View vScreen;
+    private Group gScheduleMessage;
+    private ImageView ivSchedule;
 
     private Handler linkHandler;
     private Runnable linkRunnable;
@@ -723,11 +730,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }
         }
+        if (gScheduleMessage.getVisibility() == View.VISIBLE) {
+            hideScheduleMessageButton();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.DEFAULT); // For file picker
         if (resultCode == RESULT_OK) {
             // Set active room to prevent null pointer when returning to chat
             TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
@@ -795,7 +806,28 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPChatManager.getInstance(instanceKey).sendLocationMessage(vm.getRoom(), address, latitude, longitude);
                     break;
                 case SEND_FILE:
-                    File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
+                    File tempFile = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        Uri uri = null;
+                        if (null != intent.getClipData()) {
+                            for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+                                uri = intent.getClipData().getItemAt(i).getUri();
+                            }
+                        } else {
+                            uri = intent.getData();
+                        }
+
+                        if (uri != null) {
+                            // Write temporary file to cache for upload for Android 11+
+                            tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri);
+                        }
+                    } else {
+                        String filePath = intent.getStringExtra(RESULT_FILE_PATH);
+                        if (filePath != null && !filePath.isEmpty()) {
+                            tempFile = new File(filePath);
+                        }
+                    }
+
                     if (null != tempFile) {
                         if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length())) {
                             TAPChatManager.getInstance(instanceKey).sendFileMessage(TapUIChatActivity.this, vm.getRoom(), tempFile);
@@ -872,7 +904,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
-                    TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON);
+                        TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
+                    } else {
+                        TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+                    }
                     break;
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO:
                     if (null != attachmentListener) {
@@ -933,7 +970,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
         clChatComposerAndHistory = (ConstraintLayout) findViewById(R.id.cl_chat_composer_and_history);
         clChatHistory = (ConstraintLayout) findViewById(R.id.cl_chat_history);
-        clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
+        clQuote = (ConstraintLayout) findViewById(R.id.cl_quote_layout);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clUserMentionList = (ConstraintLayout) findViewById(R.id.cl_user_mention_list);
         clRoomStatus = (ConstraintLayout) findViewById(R.id.cl_room_status);
@@ -956,7 +993,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatarEmpty = (CircleImageView) findViewById(R.id.civ_my_avatar_empty);
         civRoomAvatarEmpty = (CircleImageView) findViewById(R.id.civ_room_avatar_empty);
-        rcivQuoteImage = (TAPRoundedCornerImageView) findViewById(R.id.rciv_quote_image);
+        rcivQuoteImage = (TAPRoundedCornerImageView) findViewById(R.id.rciv_quote_layout_image);
         tvRoomName = (TextView) findViewById(R.id.tv_room_name);
         tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
         tvRoomImageLabel = (TextView) findViewById(R.id.tv_room_image_label);
@@ -969,8 +1006,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvMyAvatarLabelEmpty = (TextView) findViewById(R.id.tv_my_avatar_label_empty);
         tvRoomAvatarLabelEmpty = (TextView) findViewById(R.id.tv_room_avatar_label_empty);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
-        tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_title);
-        tvQuoteContent = (TextView) findViewById(R.id.tv_quote_content);
+        tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_layout_title);
+        tvQuoteContent = (TextView) findViewById(R.id.tv_quote_layout_content);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
         tvBadgeMentionCount = (TextView) findViewById(R.id.tv_badge_mention_count);
         tvChatHistoryContent = (TextView) findViewById(R.id.tv_chat_history_content);
@@ -982,7 +1019,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         etChat = (EditText) findViewById(R.id.et_chat);
         vRoomImage = findViewById(R.id.v_room_image);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
-        vQuoteDecoration = findViewById(R.id.v_quote_decoration);
+        vQuoteDecoration = findViewById(R.id.v_quote_layout_decoration);
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
         ivVoiceNote = findViewById(R.id.iv_voice_note);
         clVoiceNote = findViewById(R.id.cl_voice_note);
@@ -1011,6 +1048,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvLinkTitle = findViewById(R.id.tv_link_title);
         tvLinkContent = findViewById(R.id.tv_link_content);
         ivCloseLink = findViewById(R.id.iv_close_link);
+        cvSchedule = findViewById(R.id.cv_schedule);
+        vScreen = findViewById(R.id.v_screen);
+        gScheduleMessage = findViewById(R.id.g_schedule_message);
+        ivSchedule = findViewById(R.id.iv_schedule);
         customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
     }
 
@@ -1293,6 +1334,36 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 pinnedMessageLayoutOnClick();
             }
         });
+        ivButtonSend.setOnLongClickListener(view -> {
+            if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled() && vm.getQuoteAction() == null) {
+                showScheduleMessageButton();
+            }
+            return true;
+        });
+        vScreen.setOnClickListener(v -> hideScheduleMessageButton());
+        // scheduled message icon always shown (temporary)
+        if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+            ivSchedule.setVisibility(View.VISIBLE);
+        }
+        cvSchedule.setOnClickListener(v -> {
+            hideScheduleMessageButton();
+            TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TAPGeneralListener<>() {
+                @Override
+                public void onClick(int position, Long item) {
+                    super.onClick(position, item);
+                    TapScheduledMessageActivity.Companion.start(TapUIChatActivity.this, instanceKey, vm.getRoom(), etChat.getText().toString(), item);
+                    etChat.setText("");
+                }
+            });
+            timePicker.show(getSupportFragmentManager(), "");
+        });
+        // TODO: 11/10/22 handle tapUI for scheduled message icon appearance MU
+        ivSchedule.setOnClickListener(v ->  {
+            if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+                TapScheduledMessageActivity.Companion.start(this, instanceKey, vm.getRoom());
+            }
+        });
+
 
         if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
@@ -2121,17 +2192,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     String fileUrl = (String) message.getData().get(FILE_URL);
                     if (null != fileUrl && !fileUrl.isEmpty()) {
                         drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
+                        if (null == drawable) {
+                            glide.load(fileUrl).into(rcivQuoteImage);
+                        }
                     }
                 }
                 if (null != drawable) {
                     rcivQuoteImage.setImageDrawable(drawable);
-                } else {
+                }
+                else if (null == rcivQuoteImage.getDrawable() && null != message.getData().get(THUMBNAIL)) {
                     // Show small thumbnail
                     Drawable thumbnail = new BitmapDrawable(
                             getResources(),
-                            TAPFileUtils.decodeBase64(
-                                    (String) (null == message.getData().get(THUMBNAIL) ? "" :
-                                            message.getData().get(THUMBNAIL))));
+                            TAPFileUtils.decodeBase64((String) message.getData().get(THUMBNAIL))
+                    );
                     rcivQuoteImage.setImageDrawable(thumbnail);
                 }
                 rcivQuoteImage.setColorFilter(null);
@@ -2272,6 +2346,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             });
         }
+    }
+
+    private void showScheduleMessageButton() {
+        gScheduleMessage.setVisibility(View.VISIBLE);
+        hideKeyboards();
+    }
+
+    private void hideScheduleMessageButton() {
+        gScheduleMessage.setVisibility(View.GONE);
+        hideKeyboards();
     }
 
     private void pinnedMessageLayoutOnClick() {
@@ -2740,7 +2824,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onDocumentSelected() {
-            TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON);
+                TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
+            } else {
+                TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+            }
         }
 
         @Override
@@ -2955,6 +3044,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 //pin
                 TapCoreMessageManager.getInstance(instanceKey).pinMessage(message.getRoom().getRoomID(), messageId);
             }
+        }
+
+        @Override
+        public void onReportMessage(TAPMessageModel message) {
+            super.onReportMessage(message);
+            TAPChatManager.getInstance(instanceKey).triggerReportMessageButtonTapped(TapUIChatActivity.this, message);
+            TapReportActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, TapReportActivity.ReportType.MESSAGE);
         }
     };
 
@@ -4276,6 +4372,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
         }
         ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+        ivButtonSend.setEnabled(false);
     }
 
     private void setSendButtonEnabled() {
@@ -4285,6 +4382,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
         }
         ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+        ivButtonSend.setEnabled(true);
     }
 
     private void checkAndSearchUserMentionList() {

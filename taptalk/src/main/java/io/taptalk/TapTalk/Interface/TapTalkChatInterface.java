@@ -1,7 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
+import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import androidx.annotation.Nullable;
-
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -68,4 +68,16 @@ public interface TapTalkChatInterface {
     void onPinRoom(TAPRoomModel room);
 
     void onUnpinRoom(TAPRoomModel room);
+
+    void onMarkRoomAsRead(String roomID);
+
+    void onMarkRoomAsUnread(String roomID);
+
+    void onCreateScheduledMessage(TapScheduledMessageModel scheduledMessage);
+
+    void onScheduledSendFailed(TapScheduledMessageModel scheduledMessage);
+
+    void onScheduledMessageSent(TapScheduledMessageModel scheduledMessage);
+
+    void onGetScheduledMessageList();
 }

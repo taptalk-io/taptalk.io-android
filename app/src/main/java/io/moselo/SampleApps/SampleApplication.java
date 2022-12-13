@@ -6,27 +6,20 @@ import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_SECRET;
 import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
 
 import android.app.Activity;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
 
 import io.moselo.SampleApps.Activity.TAPLoginActivity;
 import io.moselo.SampleApps.Activity.TapDeleteAccountActivity;
-import io.moselo.SampleApps.Fragment.MeetTalkChatRoomNavigationBarFragment;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
-import io.taptalk.TapTalk.Listener.TapUIChatRoomCustomNavigationBarListener;
 import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
-import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalkSample.BuildConfig;
 import io.taptalk.TapTalkSample.R;
 
@@ -60,6 +53,8 @@ public class SampleApplication extends MultiDexApplication {
         TapUI.getInstance(INSTANCE_KEY).setLogoutButtonVisible(true);
         TapUI.getInstance(INSTANCE_KEY).setConnectionStatusIndicatorVisible(false);
         TapUI.getInstance(INSTANCE_KEY).setDeleteAccountButtonVisible(true);
+        TapUI.getInstance(INSTANCE_KEY).setReportButtonInUserProfileVisible(true);
+        TapUI.getInstance(INSTANCE_KEY).setReportMessageMenuEnabled(true);
         TapUI.getInstance(INSTANCE_KEY).addMyAccountListener(new TapUIMyAccountListener() {
             @Override
             public void onDeleteButtonInMyAccountPageTapped(@NonNull Activity activity) {

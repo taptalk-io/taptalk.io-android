@@ -98,11 +98,14 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
@@ -459,6 +462,9 @@ public class TAPDataManager {
      */
 
     public void saveNewestPinnedMessage(String roomID, TAPMessageModel message) {
+        if (roomID == null || message == null) {
+            return;
+        }
         HashMap<String, TAPMessageModel> newestPinnedMessages = Hawk.get(instanceKey + K_PINNED_MESSAGE, null);
         if (newestPinnedMessages == null) {
             newestPinnedMessages = new LinkedHashMap<>();
@@ -579,6 +585,12 @@ public class TAPDataManager {
 
     public void removeUnreadRoomIDs() {
         removePreference(K_UNREAD_ROOM_LIST);
+    }
+
+    public void removeUnreadRoomID(String roomId) {
+        ArrayList<String> unreadRoomIDs = getUnreadRoomIDs();
+        unreadRoomIDs.remove(roomId);
+        saveUnreadRoomIDs(unreadRoomIDs);
     }
 
     public HashMap<String, Long> getMutedRoomIDs() {
@@ -1639,5 +1651,39 @@ public class TAPDataManager {
 
     public void getRoomIdsWithState(TAPDefaultDataView<TapGetRoomIdsWithStateResponse> view) {
         TAPApiManager.getInstance(instanceKey).getRoomIdsWithState(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void createScheduledMessage(TAPMessageModel message, Long scheduledTime, TAPDefaultDataView<TapCreateScheduledMessageResponse> view) {
+        HashMap<String, Object> messageMap = TAPEncryptorManager.getInstance().encryptMessage(message, false);
+        TAPApiManager.getInstance(instanceKey).createScheduledMessage(messageMap, scheduledTime, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getScheduledMessages(String roomId, TAPDefaultDataView<TapGetScheduledMessageListResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getScheduledMessages(roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void editScheduledMessageContent(Integer scheduledMessageId, TAPMessageModel message, TAPDefaultDataView<TAPCommonResponse> view) {
+        HashMap<String, Object> messageMap = TAPEncryptorManager.getInstance().encryptMessage(message, false);
+        TAPApiManager.getInstance(instanceKey).editScheduledMessageContent(scheduledMessageId, messageMap, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void editScheduledMessageTime(Integer scheduledMessageId, Long scheduledTime,  TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).editScheduledMessageTime(scheduledMessageId, scheduledTime, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void deleteScheduledMessages(List<Integer> scheduledMessageIds, String roomId,TAPDefaultDataView<TapIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).deleteScheduledMessages(scheduledMessageIds, roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void sendScheduledMessageNow(List<Integer> scheduledMessageIds, String roomId,TAPDefaultDataView<TapIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).sendScheduledMessageNow(scheduledMessageIds, roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void submitUserReport(String userId, String category, boolean isOtherCategory, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).submitUserReport(userId, category, isOtherCategory, reason, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void submitMessageReport(String messageId, String roomId, String category, boolean isOtherCategory, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).submitMessageReport(messageId, roomId, category, isOtherCategory, reason, new TAPDefaultSubscriber<>(view));
     }
 }

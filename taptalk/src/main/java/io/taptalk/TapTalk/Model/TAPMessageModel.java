@@ -687,6 +687,10 @@ public class TAPMessageModel implements Parcelable {
         return messageStatusText;
     }
 
+    public void setMessageStatusText(@Nullable String messageStatusText) {
+        this.messageStatusText = messageStatusText;
+    }
+
     @Override
     public int describeContents() {
         return 0;

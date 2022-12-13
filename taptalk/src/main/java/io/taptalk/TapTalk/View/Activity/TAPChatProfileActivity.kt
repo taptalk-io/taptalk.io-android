@@ -641,12 +641,13 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
 //            menuItems.add(2, menuBlock);
 //            menuItems.add(menuClearChat);
-                    if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+                    if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
+                        TapUI.getInstance(instanceKey).isReportButtonInUserProfileVisible) {
                         // Report user
                         val menuReport = TapChatProfileItemModel(
                             ChatProfileMenuType.MENU_REPORT,
                             getString(R.string.tap_report_user),
-                            R.drawable.tap_ic_flag_black,
+                            R.drawable.tap_ic_warning_triangle_red,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
                             R.style.tapChatProfileMenuDestructiveLabelStyle
                         )
@@ -696,12 +697,13 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         R.style.tapChatProfileMenuStarredLabelStyle
                     )
                     menuItems.add(menuSharedMedia)
-                    if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+                    if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
+                        TapUI.getInstance(instanceKey).isReportButtonInGroupProfileVisible) {
                         // Report group
                         val menuReport = TapChatProfileItemModel(
                             ChatProfileMenuType.MENU_REPORT,
                             getString(R.string.tap_report_group),
-                            R.drawable.tap_ic_flag_black,
+                            R.drawable.tap_ic_warning_triangle_red,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
                             R.style.tapChatProfileMenuDestructiveLabelStyle
                         )
@@ -761,12 +763,13 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         R.style.tapChatProfileMenuStarredLabelStyle
                     )
                     menuItems.add(menuSharedMedia)
-                    if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+                    if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
+                        TapUI.getInstance(instanceKey).isReportButtonInGroupProfileVisible) {
                         // Report group
                         val menuReport = TapChatProfileItemModel(
                             ChatProfileMenuType.MENU_REPORT,
                             getString(R.string.tap_report_group),
-                            R.drawable.tap_ic_flag_black,
+                            R.drawable.tap_ic_warning_triangle_red,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
                             R.style.tapChatProfileMenuDestructiveLabelStyle
                         )
@@ -877,12 +880,13 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
                     menuItems.add(menuRemoveMember)
                 }
-                if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+                if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
+                    TapUI.getInstance(instanceKey).isReportButtonInUserProfileVisible) {
                     // Report user
                     val menuReport = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_REPORT,
                         getString(R.string.tap_report_user),
-                        R.drawable.tap_ic_flag_black,
+                        R.drawable.tap_ic_warning_triangle_red,
                         R.color.tapIconChatProfileMenuReportUserOrGroup,
                         R.style.tapChatProfileMenuDestructiveLabelStyle
                     )
@@ -1057,12 +1061,16 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         if (null != vm!!.groupMemberUser) {
             TAPChatManager.getInstance(instanceKey)
                 .triggerChatProfileReportUserButtonTapped(this, vm!!.room, vm!!.groupMemberUser)
+            TapReportActivity.start(this, instanceKey, vm!!.groupMemberUser)
         } else if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
             TAPChatManager.getInstance(instanceKey)
                 .triggerChatProfileReportUserButtonTapped(this, vm!!.room, vm!!.userDataFromManager)
+            TapReportActivity.start(this, instanceKey, vm!!.userDataFromManager)
         } else {
+            // Handle Group Report
             TAPChatManager.getInstance(instanceKey)
                 .triggerChatProfileReportGroupButtonTapped(this, vm!!.room)
+            TapReportActivity.start(this, instanceKey, vm!!.room)
         }
     }
 

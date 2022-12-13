@@ -36,6 +36,9 @@ public class TAPDefaultConstant {
         public static final String kSocketUnmuteRoom = "room/unmute";
         public static final String kSocketPinRoom = "room/pin";
         public static final String kSocketUnpinRoom = "room/unpin";
+        public static final String kSocketMarkAsReadRoom = "room/markAsRead";
+        public static final String kSocketMarkAsUnreadRoom = "room/markAsUnread";
+        public static final String kSocketScheduleMessageRoom = "room/scheduleMessage";
     }
 
     public static final class RoomType {
@@ -167,6 +170,9 @@ public class TAPDefaultConstant {
         public static final String FROM_NOTIF = "kTAPFromNotification";
         public static final String SOCKET_CONNECTED = "kSocketConnected";
         public static final String IS_NEED_REFRESH = "kNeedRefresh";
+        public static final String TIME = "kTAPExtraTime";
+        public static final String USER = "kTAPExtraUser";
+        public static final String REPORT_TYPE = "kTAPExtraReportType";
     }
 
     public static final class RequestCode {
@@ -194,6 +200,8 @@ public class TAPDefaultConstant {
         public static final int OPEN_STARRED_MESSAGES = 95;
         public static final int OPEN_PINNED_MESSAGES = 96;
         public static final int OPEN_SHARED_MEDIA = 97;
+        public static final int OPEN_SCHEDULED_MESSAGES = 98;
+        public static final int OPEN_REPORT_USER = 99;
     }
 
     public static final class PermissionRequest {
