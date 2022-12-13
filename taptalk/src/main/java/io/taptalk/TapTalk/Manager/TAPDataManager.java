@@ -8,6 +8,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASK
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_BLOCKED_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_CHAT_ROOM_CONTACT_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
@@ -252,6 +253,7 @@ public class TAPDataManager {
         removeMutedRoomIds();
         removePinnedRoomIDs();
         removeStarredMessageIds();
+        removeBlockedUserIds();
     }
 
     /**
@@ -566,6 +568,24 @@ public class TAPDataManager {
     public void removeChatRoomContactActionDismissed() {
         removePreference(K_CHAT_ROOM_CONTACT_ACTION);
     }
+
+
+    public ArrayList<String> getBlockedUserIds() {
+        return Hawk.get(instanceKey + K_BLOCKED_USER, new ArrayList<>());
+    }
+
+    public void saveBlockedUserIds(ArrayList<String> BlockedUserIds) {
+        Hawk.put(instanceKey + K_BLOCKED_USER, BlockedUserIds);
+    }
+
+    public boolean isBlockedUserIdsEmpty() {
+        return getBlockedUserIds().isEmpty();
+    }
+
+    public void removeBlockedUserIds() {
+        removePreference(K_BLOCKED_USER);
+    }
+
 
     /**
      * CHAT ROOM SWIPE BUTTON
@@ -1685,5 +1705,21 @@ public class TAPDataManager {
 
     public void submitMessageReport(String messageId, String roomId, String category, boolean isOtherCategory, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance(instanceKey).submitMessageReport(messageId, roomId, category, isOtherCategory, reason, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void blockUser(String userId, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).blockUser(userId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unblockUser(String userId, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unblockUser(userId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getBlockedUserList(TAPDefaultDataView<TAPGetMultipleUserResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getBlockedUserList(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getBlockedUserIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getBlockedUserIds(new TAPDefaultSubscriber<>(view));
     }
 }

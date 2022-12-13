@@ -39,6 +39,8 @@ public class TAPDefaultConstant {
         public static final String kSocketMarkAsReadRoom = "room/markAsRead";
         public static final String kSocketMarkAsUnreadRoom = "room/markAsUnread";
         public static final String kSocketScheduleMessageRoom = "room/scheduleMessage";
+        public static final String kSocketBlockUser = "user/block";
+        public static final String kSocketUnblockUser = "user/unblock";
     }
 
     public static final class RoomType {
@@ -491,6 +493,7 @@ public class TAPDefaultConstant {
     public static final String K_MUTED_ROOM_LIST = "kTAPMutedRoomList";
     public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
     public static final String K_STARRED_MESSAGE = "kTAPStarredMessage";
+    public static final String K_BLOCKED_USER = "kTAPBlockedUser";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 

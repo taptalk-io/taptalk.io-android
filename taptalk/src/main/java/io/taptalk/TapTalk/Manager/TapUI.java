@@ -139,6 +139,7 @@ public class TapUI {
     private boolean isPinRoomListSwipeMenuDisabled;
     private boolean isDeleteRoomListSwipeMenuDisabled;
     private boolean isScheduledMessageFeatureDisabled;
+    private boolean isBlockUserMenuEnabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -147,7 +148,7 @@ public class TapUI {
         TYPE_FILE_MESSAGE,
         TYPE_VOICE_MESSAGE,
         TYPE_LOCATION_MESSAGE,
-        TYPE_NONE,
+        TYPE_NONE
     }
 
     public TapUI(String instanceKey) {
@@ -1378,6 +1379,20 @@ public class TapUI {
                 listener.onDeleteButtonInMyAccountPageTapped(activity);
             }
         }
+    }
+
+    public boolean isBlockUserMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isBlockUserMenuEnabled;
+    }
+
+    public void setBlockUserMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isBlockUserMenuEnabled = isEnabled;
     }
 
     /**

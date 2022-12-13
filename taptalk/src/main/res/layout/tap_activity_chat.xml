@@ -1218,6 +1218,18 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/btn_unblock"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            style="@style/tapClickableLabelStyle"
+            android:background="@color/tapWhite"
+            android:elevation="10dp"
+            android:gravity="center"
+            android:text="@string/tap_unblock"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_chat_history"
             android:layout_width="match_parent"

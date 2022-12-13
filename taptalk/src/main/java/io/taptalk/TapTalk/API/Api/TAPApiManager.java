@@ -830,4 +830,22 @@ public class TAPApiManager {
         request.setRoomID(roomId);
         execute(homingPigeon.submitMessageReport(request), subscriber);
     }
+
+    public void blockUser(String userId, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPUserIdRequest request = new TAPUserIdRequest(userId);
+        execute(homingPigeon.blockUser(request), subscriber);
+    }
+
+    public void unblockUser(String userId, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPUserIdRequest request = new TAPUserIdRequest(userId);
+        execute(homingPigeon.unblockUser(request), subscriber);
+    }
+
+    public void getBlockedUserList(Subscriber<TAPBaseResponse<TAPGetMultipleUserResponse>> subscriber) {
+        execute(homingPigeon.getBlockedUserList(), subscriber);
+    }
+
+    public void getBlockedUserIds(Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        execute(homingPigeon.getBlockedUserIds(), subscriber);
+    }
 }

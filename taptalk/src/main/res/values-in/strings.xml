@@ -489,5 +489,13 @@
     <string name="tap_thank_you_for_reporting">Thank you for reporting!</string>
     <string name="tap_failed_to_submit_report">Failed to submit report</string>
     <string name="tap_failed_submit_report_wording">There has been an error while submitting, please try again.</string>
+    <string name="tap_block_user_dialog_wording">Blocking someone will not allow them to see your updates, and you will not receive any messages or calls from this contact. Are you sure you want to continue?</string>
+    <string name="tap_block">Block</string>
+    <string name="tap_blocked_contacts">Blocked Contacts</string>
+    <string name="tap_done">Done</string>
+    <string name="tap_unblock">Unblock</string>
+    <string name="tap_sure_unblock_wording">Unblocking lets user send messages and calls from this contact. Are you sure you want to continue?</string>
+    <string name="tap_empty_blocked_contacts_wording">You don’t have any blocked contact</string>
+    <string name="tap_unblock_s_format">Unblock %s?</string>
 
 </resources>

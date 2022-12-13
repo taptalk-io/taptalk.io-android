@@ -33,10 +33,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
-import io.taptalk.TapTalk.Listener.TAPAttachmentListener
-import io.taptalk.TapTalk.Listener.TAPDatabaseListener
-import io.taptalk.TapTalk.Listener.TAPGeneralListener
-import io.taptalk.TapTalk.Listener.TapCommonListener
+import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Model.*
@@ -245,6 +242,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 tv_title.setText(R.string.tap_group_details)
             }
         }
+        // init listener
+        TapCoreContactManager.getInstance(instanceKey).addContactListener(coreContactListener)
     }
 
     private fun updateView() {
@@ -512,7 +511,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 showMuteBottomSheet()
             }
             tv_menu_info.visibility = View.VISIBLE
-            iv_right_arrow.visibility = View.VISIBLE
         } else {
             cl_mute.visibility = View.GONE
         }
@@ -620,15 +618,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         menuItems.add(menuSendMessage)
                     }
 
-                    // Block user
-                    val menuBlock = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_BLOCK,
-                        getString(R.string.tap_block_user),
-                        R.drawable.tap_ic_block_red,
-                        R.color.tapIconChatProfileMenuBlockUser,
-                        R.style.tapChatProfileMenuLabelStyle
-                    )
-
                     // Clear chat
                     val menuClearChat = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_CLEAR_CHAT,
@@ -639,7 +628,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
 
                     // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
-//            menuItems.add(2, menuBlock);
 //            menuItems.add(menuClearChat);
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
                         TapUI.getInstance(instanceKey).isReportButtonInUserProfileVisible) {
@@ -653,6 +641,19 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         )
                         menuItems.add(menuReport)
                     }
+
+                    if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
+                        // Block user
+                        val menuBlock = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_BLOCK,
+                            if (isUserBlocked()) getString(R.string.tap_unblock_user) else getString(R.string.tap_block_user),
+                            R.drawable.tap_ic_block_red,
+                            R.color.tapIconChatProfileMenuBlockUser,
+                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                        )
+                        menuItems.add(menuBlock)
+                    }
+
                 } else if (vm!!.room.type == RoomType.TYPE_GROUP && null != vm!!.room.admins &&
                     vm!!.room.admins!!
                         .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
@@ -892,6 +893,18 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
                     menuItems.add(menuReport)
                 }
+
+                if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
+                    // Block user
+                    val menuBlock = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_BLOCK,
+                        if (isUserBlocked()) getString(R.string.tap_unblock_user) else getString(R.string.tap_block_user),
+                        R.drawable.tap_ic_block_red,
+                        R.color.tapIconChatProfileMenuBlockUser,
+                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                    )
+                    menuItems.add(menuBlock)
+                }
             }
         }
         return menuItems
@@ -914,7 +927,40 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun blockUser() {
-        Log.e(TAG, "blockUser: ")
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
+            val user: TAPUserModel = if (null != vm!!.groupMemberUser) {
+                vm!!.groupMemberUser
+            } else {
+                vm!!.userDataFromManager
+            }
+            if (isUserBlocked()) {
+                TapTalkDialog.Builder(this)
+                    .setTitle(
+                        String.format(this.getString(R.string.tap_unblock_s_format, user.fullname))
+                    )
+                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                    .setMessage(getString(R.string.tap_sure_unblock_wording))
+                    .setPrimaryButtonTitle(getString(R.string.tap_yes))
+                    .setPrimaryButtonListener {
+                        TAPDataManager.getInstance(instanceKey).unblockUser(user.userID, blockUnblockUserView)
+                    }
+                    .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
+                    .setSecondaryButtonListener { }
+                    .show()
+            } else {
+                TapTalkDialog.Builder(this)
+                    .setTitle(this.getString(R.string.tap_block_user))
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setMessage(getString(R.string.tap_block_user_dialog_wording))
+                    .setPrimaryButtonTitle(getString(R.string.tap_block))
+                    .setPrimaryButtonListener {
+                        TAPDataManager.getInstance(instanceKey).blockUser(user.userID, blockUnblockUserView)
+                    }
+                    .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
+                    .setSecondaryButtonListener { }
+                    .show()
+            }
+        }
     }
 
     private fun clearChat() {
@@ -1156,7 +1202,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         fl_loading!!.visibility = View.GONE
     }
 
-    private fun showErrorDialog(title: String, message: String) {
+    private fun showErrorDialog(title: String, message: String?) {
         TapTalkDialog.Builder(this)
             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
             .setTitle(title)
@@ -1219,6 +1265,16 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     private fun openSharedMedia() {
         TapSharedMediaActivity.start(this, instanceKey, vm!!.room)
+    }
+
+    private fun isUserBlocked() : Boolean {
+        return if (null != vm!!.groupMemberUser) {
+            TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(vm!!.groupMemberUser.userID)
+        } else if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
+            TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(vm!!.userDataFromManager.userID)
+        } else {
+            false
+        }
     }
 
     private fun showMuteBottomSheet() {
@@ -1401,6 +1457,23 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             // TODO: 15 October 2019
         }
     }
+
+    private val coreContactListener = object : TapCoreContactListener() {
+        override fun onContactBlocked(user: TAPUserModel) {
+            super.onContactBlocked(user)
+            runOnUiThread {
+                updateView()
+            }
+        }
+
+        override fun onContactUnblocked(user: TAPUserModel) {
+            super.onContactUnblocked(user)
+            runOnUiThread {
+                updateView()
+            }
+        }
+    }
+
     private val getRoomView: TAPDefaultDataView<TAPCreateRoomResponse> =
         object : TAPDefaultDataView<TAPCreateRoomResponse>() {
             override fun onSuccess(response: TAPCreateRoomResponse) {
@@ -1629,6 +1702,31 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 }.start()
             }
         }
+
+    private val blockUnblockUserView = object : TAPDefaultDataView<TAPCommonResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+            showLoadingPopup(getString(R.string.tap_loading))
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+            hideLoadingPopup()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            endLoading()
+            showErrorDialog(getString(R.string.tap_error), error?.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            endLoading()
+            showErrorDialog(getString(R.string.tap_error), errorMessage)
+        }
+    }
+
     private val downloadProgressReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
