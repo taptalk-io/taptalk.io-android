@@ -377,7 +377,7 @@ public class TAPChatManager {
                     TAPOnlineStatusModel unblockUserEmitData = unblockUserEmit.getData();
                     TAPUserModel unblockedUser = unblockUserEmitData.getUser();
                     ArrayList<String> blockedUserList = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
-                    blockedUserList.remove(unblockedUser);
+                    blockedUserList.remove(unblockedUser.getUserID());
                     TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserList);
                     TapCoreContactManager.getInstance(instanceKey).triggerContactUnblocked(unblockedUser);
                     break;
