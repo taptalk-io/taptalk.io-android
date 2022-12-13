@@ -1054,6 +1054,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvLinkTitle = findViewById(R.id.tv_link_title);
         tvLinkContent = findViewById(R.id.tv_link_content);
         ivCloseLink = findViewById(R.id.iv_close_link);
+        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
         cvSchedule = findViewById(R.id.cv_schedule);
         vScreen = findViewById(R.id.v_screen);
         gScheduleMessage = findViewById(R.id.g_schedule_message);
@@ -1876,6 +1877,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.removeSelectedMessage(message);
             } else {
                 vm.addSelectedMessage(message);
+            }
+            // handle read count
+            if (!TapUI.getInstance(instanceKey).isReadStatusHidden()) {
+                // TODO: 04/11/22 call get read count API MU
             }
             messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
             String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
@@ -3111,6 +3116,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             super.onReportMessage(message);
             TAPChatManager.getInstance(instanceKey).triggerReportMessageButtonTapped(TapUIChatActivity.this, message);
             TapReportActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, TapReportActivity.ReportType.MESSAGE);
+        }
+
+        @Override
+        public void onViewMessageInfo(TAPMessageModel message) {
+            super.onViewMessageInfo(message);
+            TapMessageInfoActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, vm.getRoom(), vm.getStarredMessageIds().contains(message.getMessageID()), vm.getPinnedMessageIds().contains(message.getMessageID()));
         }
     };
 

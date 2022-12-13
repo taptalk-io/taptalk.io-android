@@ -55,6 +55,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapCreateScheduledMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdsWithRoomIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapReportUserRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
@@ -86,6 +87,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageDetailResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
@@ -847,5 +849,10 @@ public class TAPApiManager {
 
     public void getBlockedUserIds(Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
         execute(homingPigeon.getBlockedUserIds(), subscriber);
+    }
+
+    public void getMessageDetails(String messageId, Subscriber<TAPBaseResponse<TapGetMessageDetailResponse>> subscriber) {
+        TapMessageIdRequest request = new TapMessageIdRequest(messageId);
+        execute(homingPigeon.getMessageDetails(request), subscriber);
     }
 }

@@ -1185,9 +1185,9 @@
             android:id="@+id/cl_forward"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:elevation="10dp"
-            android:visibility="gone"
             android:background="@color/tapWhite"
+            android:elevation="9dp"
+            android:visibility="gone"
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintBottom_toBottomOf="parent">

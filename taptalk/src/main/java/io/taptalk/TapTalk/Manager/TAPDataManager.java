@@ -19,6 +19,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_F
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_ROOM_MESSAGE_DELETE_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MESSAGE_READ_COUNT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MUTED_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_ROOM_LIST;
@@ -100,6 +101,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageDetailResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
@@ -254,6 +256,7 @@ public class TAPDataManager {
         removePinnedRoomIDs();
         removeStarredMessageIds();
         removeBlockedUserIds();
+        removeMessagesReadCount();
     }
 
     /**
@@ -681,6 +684,48 @@ public class TAPDataManager {
 
     public void removeStarredMessageIds() {
         removePreference(K_STARRED_MESSAGE);
+    }
+
+    /**
+     * MESSAGE READ COUNT
+     */
+
+    public void saveMessagesReadCountInRoom(String roomID, HashMap<String, Integer> messagesMap) {
+        HashMap<String, HashMap<String, Integer>> messageReadCountMap = Hawk.get(instanceKey + K_MESSAGE_READ_COUNT, null);
+        if (messageReadCountMap == null) {
+            messageReadCountMap = new LinkedHashMap<>();
+        }
+        messageReadCountMap.put(roomID, messagesMap);
+        Hawk.put(instanceKey + K_MESSAGE_READ_COUNT, messageReadCountMap);
+    }
+
+    public HashMap<String, Integer> getMessagesReadCountInRoom(String roomID) {
+        HashMap<String, HashMap<String, Integer>> messageReadCountMap = Hawk.get(instanceKey + K_MESSAGE_READ_COUNT, null);
+        if (messageReadCountMap != null) {
+            return messageReadCountMap.get(roomID);
+        } else return null;
+    }
+
+    public void saveMessageReadCount(String roomID, String messageID, Integer readCount) {
+        HashMap<String, Integer> messagesMap =  getMessagesReadCountInRoom(roomID);
+        if (messagesMap == null) {
+            messagesMap = new LinkedHashMap<>();
+        }
+        messagesMap.put(messageID, readCount);
+        saveMessagesReadCountInRoom(roomID, messagesMap);
+    }
+
+    public Integer getMessageReadCount(String roomID, String messageID) {
+        HashMap<String, Integer> messagesMap =  getMessagesReadCountInRoom(roomID);
+        if (messagesMap != null) {
+            if (messagesMap.get(messageID) != null) {
+                return messagesMap.get(messageID);
+            } else return 0;
+        } else return 0;
+    }
+
+    public void removeMessagesReadCount() {
+        removePreference(K_MESSAGE_READ_COUNT);
     }
 
     /**
@@ -1721,5 +1766,9 @@ public class TAPDataManager {
 
     public void getBlockedUserIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
         TAPApiManager.getInstance(instanceKey).getBlockedUserIds(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getMessageDetails(String messageId, TAPDefaultDataView<TapGetMessageDetailResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getMessageDetails(messageId, new TAPDefaultSubscriber<>(view));
     }
 }
