@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
+import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Manager.TAPCacheManager
@@ -361,10 +363,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
+
         if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            messageModel.room.type != TYPE_PERSONAL &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!) {
+            null != messageModel.isSending && !messageModel.isSending!!
+        ) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
             titleResIds.add(R.string.tap_message_info)
             ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
@@ -480,10 +485,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
+
         if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            messageModel.room.type != TYPE_PERSONAL &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!) {
+            null != messageModel.isSending && !messageModel.isSending!!
+        ) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
             titleResIds.add(R.string.tap_message_info)
             ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
@@ -598,9 +606,11 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            messageModel.room.type != TYPE_PERSONAL &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!) {
+            null != messageModel.isSending && !messageModel.isSending!!
+        ) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
             titleResIds.add(R.string.tap_message_info)
             ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
@@ -691,10 +701,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
+
         if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            messageModel.room.type != TYPE_PERSONAL &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!) {
+            null != messageModel.isSending && !messageModel.isSending!!
+        ) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
             titleResIds.add(R.string.tap_message_info)
             ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
@@ -773,10 +786,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
+
         if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            messageModel.room.type != TYPE_PERSONAL &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!) {
+            null != messageModel.isSending && !messageModel.isSending!!
+        ) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
             titleResIds.add(R.string.tap_message_info)
             ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
@@ -865,9 +881,11 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+            messageModel.room.type != TYPE_PERSONAL &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!) {
+            null != messageModel.isSending && !messageModel.isSending!!
+        ) {
             imageResIds.add(R.drawable.tap_ic_info_outline_primary)
             titleResIds.add(R.string.tap_message_info)
             ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
