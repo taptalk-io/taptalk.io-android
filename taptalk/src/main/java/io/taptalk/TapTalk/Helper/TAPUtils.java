@@ -959,6 +959,9 @@ public class TAPUtils {
         activity.startActivity(mapIntent);
     }
 
+    /**
+     * Custom File Picker
+     */
     public static void openDocumentPicker(Activity activity) {
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             // Check read storage permission
@@ -967,8 +970,35 @@ public class TAPUtils {
             // Permission granted
             Intent intent = new Intent(activity, FilePickerActivity.class);
             intent.putExtra(FilePickerActivity.ARG_HIDDEN, true);
+            intent.setType(INTENT_TYPE_ALL);
             activity.startActivityForResult(intent, SEND_FILE);
             activity.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        }
+    }
+
+    /**
+     * Default File Picker
+     */
+    public static void openDocumentPicker(Activity activity, int requestCode) {
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Check read storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_FILE);
+        } else {
+            // Permission granted
+            Intent intent;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                String[] mimeTypes = {INTENT_TYPE_ALL};
+                intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType(INTENT_TYPE_ALL);
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+//                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
+            } else {
+                intent = new Intent(Intent.ACTION_GET_CONTENT);
+            }
+            intent.setType(INTENT_TYPE_ALL);
+            if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+                activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
+            }
         }
     }
 

@@ -464,6 +464,9 @@ public class TAPDataManager {
      */
 
     public void saveNewestPinnedMessage(String roomID, TAPMessageModel message) {
+        if (roomID == null || message == null) {
+            return;
+        }
         HashMap<String, TAPMessageModel> newestPinnedMessages = Hawk.get(instanceKey + K_PINNED_MESSAGE, null);
         if (newestPinnedMessages == null) {
             newestPinnedMessages = new LinkedHashMap<>();
