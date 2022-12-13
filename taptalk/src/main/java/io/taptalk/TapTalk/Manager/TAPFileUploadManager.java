@@ -8,10 +8,13 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.ByteArrayOutputStream;
@@ -52,6 +55,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_USER_PHOTO_MAX_FILE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID;
@@ -814,7 +818,7 @@ public class TAPFileUploadManager {
 
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
-                sendFileMessageAfterUploadSuccess(context, roomID, videoFile.getName(), mimeType, messageModel.copyMessageModel(), response);
+                sendFileMessageAfterUploadSuccess(context, roomID, videoFile, mimeType, messageModel.copyMessageModel(), response);
                 if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
                     long size = 0L;
                     if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
@@ -873,7 +877,7 @@ public class TAPFileUploadManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
-                sendFileMessageAfterUploadSuccess(context, roomID, file.getName(), mimeType, messageModel.copyMessageModel(), response);
+                sendFileMessageAfterUploadSuccess(context, roomID, file, mimeType, messageModel.copyMessageModel(), response);
                 if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
                     long size = 0L;
                     if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
@@ -932,7 +936,7 @@ public class TAPFileUploadManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
-                sendFileMessageAfterUploadSuccess(context, roomID, audioFile.getName(), mimeType, messageModel.copyMessageModel(), response);
+                sendFileMessageAfterUploadSuccess(context, roomID, audioFile, mimeType, messageModel.copyMessageModel(), response);
                 if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
                     long size = 0L;
                     if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
@@ -1118,6 +1122,9 @@ public class TAPFileUploadManager {
      * Check upload queue and restart upload sequence
      */
     public void uploadNextSequence(Context context, String roomID) {
+        if (getUploadQueue(roomID) == null || getUploadQueue(roomID).isEmpty()) {
+            return;
+        }
         getUploadQueue(roomID).remove(0);
         uploadNextFromQueue(context, roomID);
     }
@@ -1224,22 +1231,36 @@ public class TAPFileUploadManager {
         }
     }
 
-    private void sendFileMessageAfterUploadSuccess(Context context, String roomID, String fileName,
+    private void sendFileMessageAfterUploadSuccess(Context context, String roomID, File file,
                                                    String mimetype, TAPMessageModel messageModel,
                                                    TAPUploadFileResponse response) {
         try {
             String localID = messageModel.getLocalID();
-            //long size = 0L;
-            //if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
-            //    size = ((Number) messageModel.getData().get(SIZE)).longValue();
-            //}
             addUploadProgressMap(localID, 100, response.getSize());
 
-            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), (String) messageModel.getData().get(FILE_URI));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Copy file to storage for Android 10+
+                // Message file will need to be downloaded if not saved
+                File storageFile = new File(context.getFilesDir(), file.getName());
+                storageFile = TAPFileUtils.renameDuplicateFile(storageFile);
+                TAPFileDownloadManager.getInstance(instanceKey).copyFile(file, storageFile);
+
+                Uri fileProviderUri = FileProvider.getUriForFile(appContext, FILEPROVIDER_AUTHORITY, storageFile);
+                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileProviderUri);
+                TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, storageFile.getAbsolutePath());
+                TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, storageFile, TAPUtils.getFileMimeType(storageFile));
+            }
+            else if (null != messageModel.getData()) {
+                String fileUriString = (String) messageModel.getData().get(FILE_URI);
+                if (fileUriString != null && !fileUriString.isEmpty()) {
+                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileUriString);
+                }
+            }
+
             TAPDataFileModel fileDataModel = TAPDataFileModel.Builder(
                     response.getId(),
                     response.getFileURL(),
-                    fileName,
+                    file.getName(),
                     mimetype,
                     response.getSize());
             HashMap<String, Object> fileDataMap = fileDataModel.toHashMap();
