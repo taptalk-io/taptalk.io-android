@@ -84,6 +84,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
         rv_message_info.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rv_message_info.setHasFixedSize(true)
 
+        iv_button_back.setOnClickListener { onBackPressed() }
     }
 
     override fun onResume() {

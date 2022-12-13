@@ -523,7 +523,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public void getBlockedUserIds(TapCoreGetStringArrayListener listener) {
+    public void getBlockedUserIDs(TapCoreGetStringArrayListener listener) {
         TAPDataManager.getInstance(instanceKey).getBlockedUserIds(new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
