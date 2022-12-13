@@ -141,6 +141,7 @@ public class TapUI {
     private boolean isScheduledMessageFeatureDisabled;
     private boolean isBlockUserMenuEnabled;
     private boolean isMessageInfoMenuDisabled;
+    private boolean isGroupInCommonMenuDisabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -1317,6 +1318,20 @@ public class TapUI {
         isMessageInfoMenuDisabled = !isEnabled;
     }
 
+    public boolean isGroupInCommonMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isGroupInCommonMenuDisabled;
+    }
+
+    public void setGroupInCommonMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isGroupInCommonMenuDisabled = !isEnabled;
+    }
+
     /**
      * ==========================================================================================
      * CUSTOM BUBBLE
@@ -1582,6 +1597,18 @@ public class TapUI {
         for (TapUIChatProfileListener listener : getChatProfileListeners()) {
             if (null != listener) {
                 listener.onReportGroupButtonTapped(activity, room);
+            }
+        }
+    }
+
+    void triggerChatProfileGroupsInCommonButtonTapped(Activity activity, TAPRoomModel room) {
+        if (getChatProfileListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatProfileListener listener : getChatProfileListeners()) {
+            if (null != listener) {
+                listener.onGroupInCommonItemTapped(activity, room);
             }
         }
     }

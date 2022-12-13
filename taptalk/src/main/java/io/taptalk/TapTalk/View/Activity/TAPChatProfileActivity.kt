@@ -586,6 +586,16 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         R.style.tapChatProfileMenuStarredLabelStyle
                     )
                     menuItems.add(menuSharedMedia)
+                    if (TapUI.getInstance(instanceKey).isGroupInCommonMenuEnabled) {
+                        val menuGroupInCommon = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_GROUP_IN_COMMON,
+                            getString(R.string.tap_groups_in_common),
+                            R.drawable.tap_ic_users_primary,
+                            R.color.tapIconChatProfileMenuGroupInCommon,
+                            R.style.tapChatProfileMenuStarredLabelStyle
+                        )
+                        menuItems.add(menuGroupInCommon)
+                    }
                     // Add to contacts
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
                             instanceKey
@@ -809,6 +819,16 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     R.style.tapChatProfileMenuStarredLabelStyle
                 )
                 menuItems.add(menuSharedMedia)
+                if (TapUI.getInstance(instanceKey).isGroupInCommonMenuEnabled) {
+                    val menuGroupInCommon = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_GROUP_IN_COMMON,
+                        getString(R.string.tap_groups_in_common),
+                        R.drawable.tap_ic_users_primary,
+                        R.color.tapIconChatProfileMenuGroupInCommon,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuGroupInCommon)
+                }
                 // Add to contacts
                 if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
                         instanceKey
@@ -1267,6 +1287,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         TapSharedMediaActivity.start(this, instanceKey, vm!!.room)
     }
 
+    private fun openGroupsInCommon() {
+       val userId = if (null != vm!!.groupMemberUser) {
+            vm!!.groupMemberUser.userID
+        } else {
+            vm!!.userDataFromManager.userID
+        }
+        TapGroupsInCommonActivity.start(this, instanceKey, userId)
+        TAPChatManager.getInstance(instanceKey)
+            .triggerChatProfileGroupsInCommonButtonTapped(this, vm!!.room)
+    }
+
     private fun isUserBlocked() : Boolean {
         return if (null != vm!!.groupMemberUser) {
             TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(vm!!.groupMemberUser.userID)
@@ -1396,6 +1427,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ChatProfileMenuType.MENU_REPORT -> triggerReportButtonTapped()
                 ChatProfileMenuType.MENU_STARRED_MESSAGES -> openStarredMessages()
                 ChatProfileMenuType.MENU_SHARED_MEDIA -> openSharedMedia()
+                ChatProfileMenuType.MENU_GROUP_IN_COMMON -> openGroupsInCommon()
             }
         }
 

@@ -64,6 +64,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapRoomModelsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
@@ -300,4 +301,7 @@ public interface TAPTalkApiService {
 
     @POST("chat/message/get_details")
     Observable<TAPBaseResponse<TapGetMessageDetailResponse>> getMessageDetails(@Body TapMessageIdRequest request);
+
+    @POST("client/room/groups_in_common")
+    Observable<TAPBaseResponse<TapRoomModelsResponse>> getGroupsInCommon(@Body TAPUserIdRequest request);
 }

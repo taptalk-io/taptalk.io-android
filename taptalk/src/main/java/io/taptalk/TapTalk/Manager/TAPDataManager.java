@@ -110,6 +110,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapRoomModelsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
@@ -1770,5 +1771,9 @@ public class TAPDataManager {
 
     public void getMessageDetails(String messageId, TAPDefaultDataView<TapGetMessageDetailResponse> view) {
         TAPApiManager.getInstance(instanceKey).getMessageDetails(messageId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getGroupsInCommon(String userId, TAPDefaultDataView<TapRoomModelsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getGroupsInCommon(userId, new TAPDefaultSubscriber<>(view));
     }
 }

@@ -1,8 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
-import androidx.annotation.Nullable;
-
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
+import androidx.annotation.Nullable;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;

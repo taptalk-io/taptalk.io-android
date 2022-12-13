@@ -500,7 +500,11 @@
     <string name="tap_sure_unblock_wording">Unblocking lets user send messages and calls from this contact. Are you sure you want to continue?</string>
     <string name="tap_empty_blocked_contacts_wording">You don’t have any blocked contact</string>
     <string name="tap_unblock_s_format">Unblock %s?</string>
+    <string name="tap_groups_in_common">Groups in Common</string>
+    <string name="tap_one_group_in_common">1 Group in Common</string>
+    <string name="tap_no_groups_in_common">You have no groups in common</string>
     <string name="tap_read_by_d_format">Read by (%d)</string>
     <string name="tap_delivered_to_d_format">Delivered to (%d)</string>
+    <string name="tap_s_format_groups_in_common">%s Groups in common</string>
 
 </resources>

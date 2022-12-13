@@ -2759,6 +2759,10 @@ public class TAPChatManager {
         TapUI.getInstance(instanceKey).triggerChatProfileReportGroupButtonTapped(activity, room);
     }
 
+    public void triggerChatProfileGroupsInCommonButtonTapped(Activity activity, TAPRoomModel room) {
+        TapUI.getInstance(instanceKey).triggerChatProfileGroupsInCommonButtonTapped(activity, room);
+    }
+
     public void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
         TapUI.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(activity, room);
     }
