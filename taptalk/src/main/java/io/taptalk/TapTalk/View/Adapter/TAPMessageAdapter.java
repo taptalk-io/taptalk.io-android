@@ -276,7 +276,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (null != customBubble) {
                     return customBubble.createCustomViewHolder(parent, this, myUserModel, customBubble.getCustomBubbleListener());
                 }
-                return new UnsupportedVH(parent, R.layout.tap_cell_chat_bubble_text_left, viewType);
+                return new TextVH(parent, R.layout.tap_cell_chat_bubble_text_left, viewType);
+//                return new UnsupportedVH(parent, R.layout.tap_cell_chat_bubble_text_left, viewType);
 //                return new EmptyVH(parent, R.layout.tap_cell_empty);
         }
     }
@@ -351,7 +352,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 case TYPE_DATE_SEPARATOR:
                     return TYPE_BUBBLE_DATE_SEPARATOR;
                 default:
-                    return messageType;
+                    TAPBaseCustomBubble customBubble = TAPCustomBubbleManager.getInstance(instanceKey).getCustomBubbleMap().get(messageType);
+                    if (null != customBubble) {
+                        return messageType;
+                    }
+                    if (isMessageFromMySelf(messageModel)) {
+                        return TYPE_BUBBLE_TEXT_RIGHT;
+                    } else {
+                        return TYPE_BUBBLE_TEXT_LEFT;
+                    }
             }
         } catch (Exception e) {
             return TYPE_LOG;
