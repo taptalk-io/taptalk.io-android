@@ -583,11 +583,11 @@
             android:src="@drawable/tap_img_empty_scheduled_message" />
 
         <TextView
+            style="@style/tapActionSheetDefaultLabelStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center"
-            style="@style/tapActionSheetDefaultLabelStyle"
             android:text="@string/tap_empty_scheduled_message" />
     </LinearLayout>
 
@@ -923,8 +923,8 @@
                 android:paddingStart="12dp"
                 android:paddingLeft="12dp"
                 android:paddingTop="6dp"
-                android:paddingEnd="44dp"
-                android:paddingRight="44dp"
+                android:paddingEnd="72dp"
+                android:paddingRight="72dp"
                 android:paddingBottom="6dp"
                 android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -937,21 +937,25 @@
             <ImageView
                 android:id="@+id/iv_schedule"
                 android:layout_width="24dp"
-                android:layout_height="32dp"
-                android:src="@drawable/tap_ic_clock_grey"
+                android:layout_height="24dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
                 android:scaleType="centerInside"
+                android:src="@drawable/tap_ic_clock_grey"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="@id/iv_attach"
                 app:layout_constraintBottom_toBottomOf="@id/iv_attach"
                 app:layout_constraintEnd_toStartOf="@id/iv_attach"
+                app:layout_constraintTop_toTopOf="@id/iv_attach"
                 app:tint="@color/tapIconChatComposerAttach" />
 
             <ImageView
                 android:id="@+id/iv_attach"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginBottom="2dp"
-                android:src="@drawable/tap_ic_attach_grey"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginBottom="6dp"
+                android:src="@drawable/tap_ic_attachment"
                 app:layout_constraintBottom_toBottomOf="@id/et_chat"
                 app:layout_constraintEnd_toEndOf="@id/et_chat"
                 app:tint="@color/tapIconChatComposerAttach" />
@@ -1003,7 +1007,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/cl_voice_note"
             app:layout_constraintStart_toStartOf="parent">
-
 
             <ImageView
                 android:id="@+id/iv_remove_voice_note"
@@ -1185,11 +1188,11 @@
             android:id="@+id/cl_forward"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:elevation="9dp"
-            android:visibility="gone"
             android:background="@color/tapWhite"
             android:clickable="true"
+            android:elevation="9dp"
             android:focusable="true"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
@@ -1220,9 +1223,9 @@
 
         <TextView
             android:id="@+id/btn_unblock"
+            style="@style/tapClickableLabelStyle"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            style="@style/tapClickableLabelStyle"
             android:background="@color/tapWhite"
             android:elevation="10dp"
             android:gravity="center"
@@ -1442,27 +1445,27 @@
         android:id="@+id/v_screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="10dp"
-        android:background="@color/tapTransparentBlack1920" />
+        android:background="@color/tapTransparentBlack1920"
+        android:elevation="10dp" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_schedule"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        app:cardBackgroundColor="@color/tapWhite"
         app:cardCornerRadius="8dp"
         app:cardElevation="11dp"
-        app:cardBackgroundColor="@color/tapWhite"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history">
-        
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
+        app:layout_constraintEnd_toEndOf="parent">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="8dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="8dp">
 
             <ImageView
                 android:layout_width="18dp"
@@ -1472,10 +1475,10 @@
                 app:tint="@color/tapColorPrimary" />
 
             <TextView
+                style="@style/tapInfoLabelBodyStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/tap_schedule_message"
-                style="@style/tapInfoLabelBodyStyle" />
+                android:text="@string/tap_schedule_message" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

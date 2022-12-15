@@ -1359,10 +1359,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             return true;
         });
         vScreen.setOnClickListener(v -> hideScheduleMessageButton());
-        // scheduled message icon always shown (temporary)
-        if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
-            ivSchedule.setVisibility(View.VISIBLE);
-        }
+
         cvSchedule.setOnClickListener(v -> {
             hideScheduleMessageButton();
             TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TAPGeneralListener<>() {
@@ -1477,21 +1474,30 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
         ) {
             ivButtonAttach.setVisibility(View.GONE);
-            etChat.setPadding(
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6),
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6)
-            );
         } else {
             ivButtonAttach.setVisibility(View.VISIBLE);
-            etChat.setPadding(
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6),
-                    TAPUtils.dpToPx(44),
-                    TAPUtils.dpToPx(6)
-            );
         }
+
+        // Show / hide scheduled message button
+        if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+            ivSchedule.setVisibility(View.VISIBLE);
+        } else {
+            ivSchedule.setVisibility(View.GONE);
+        }
+
+        int rightPaddingDp = 12;
+        if (ivButtonAttach.getVisibility() == View.VISIBLE && ivSchedule.getVisibility() == View.VISIBLE) {
+            rightPaddingDp = 72;
+        }
+        else if (ivButtonAttach.getVisibility() == View.VISIBLE) {
+            rightPaddingDp = 44;
+        }
+        etChat.setPadding(
+                TAPUtils.dpToPx(12),
+                TAPUtils.dpToPx(6),
+                TAPUtils.dpToPx(rightPaddingDp),
+                TAPUtils.dpToPx(6)
+        );
     }
 
     private void initListener() {
@@ -2623,6 +2629,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void hideChatField() {
         etChat.setVisibility(View.GONE);
         ivButtonAttach.setVisibility(View.GONE);
+        ivSchedule.setVisibility(View.GONE);
         ivChatMenu.setVisibility(View.GONE);
     }
 
