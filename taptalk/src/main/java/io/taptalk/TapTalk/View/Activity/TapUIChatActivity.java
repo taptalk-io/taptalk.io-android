@@ -1806,9 +1806,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onBubbleTapped(TAPMessageModel message) {
-            if (vm.getMyUserModel().getUserID().equals(message.getUser().getUserID())) {
-                getMessageInfo(message);
+            if ((null != message.getIsFailedSend() && message.getIsFailedSend()) ||
+                (null != message.getIsSending() && message.getIsSending()) ||
+                (null != message.getIsDeleted() && message.getIsDeleted())
+            ) {
+                return;
             }
+            getMessageInfo(message);
         }
 
         @Override
