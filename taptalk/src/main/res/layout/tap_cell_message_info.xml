@@ -7,7 +7,6 @@
     android:layout_height="64dp"
     android:animateLayoutChanges="true"
     android:background="@color/tapWhite"
-    android:elevation="2dp"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical">
 

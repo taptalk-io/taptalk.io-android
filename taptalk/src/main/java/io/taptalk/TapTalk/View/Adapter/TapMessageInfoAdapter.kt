@@ -9,8 +9,10 @@ import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.bumptech.glide.Glide
@@ -52,6 +54,8 @@ class TapMessageInfoAdapter (users: List<TapMessageRecipientModel?>) :
     }
 
     inner class MessageInfoViewHolder(parent: ViewGroup, viewType: Int) : TAPBaseViewHolder<TapMessageRecipientModel>(parent, viewType) {
+
+        val clContainer: ConstraintLayout = itemView.findViewById(R.id.cl_container)
         val civAvatar: CircleImageView = itemView.findViewById(R.id.civ_avatar)
         val tvAvatarLabel: TextView = itemView.findViewById(R.id.tv_avatar_label)
         val tvFullName: TextView = itemView.findViewById(R.id.tv_full_name)
@@ -133,12 +137,24 @@ class TapMessageInfoAdapter (users: List<TapMessageRecipientModel?>) :
                 itemView.visibility = View.GONE
             }
 
+            if (clContainer.layoutParams is MarginLayoutParams) {
+                if (absoluteAdapterPosition == items.size - 1) {
+                    (clContainer.layoutParams as MarginLayoutParams).bottomMargin = TAPUtils.dpToPx(24)
+                }
+                else {
+                    (clContainer.layoutParams as MarginLayoutParams).bottomMargin = 0
+                }
+                clContainer.requestLayout()
+            }
         }
     }
 
     inner class SectionViewHolder(parent: ViewGroup, viewType: Int) : TAPBaseViewHolder<TapMessageRecipientModel>(parent, viewType) {
-        val title: TextView = itemView.findViewById(R.id.tv_section_title)
-        val icon: ImageView = itemView.findViewById(R.id.iv_section_icon)
+
+        private val clSectionContainer: ConstraintLayout = itemView.findViewById(R.id.cl_section_container)
+        private val title: TextView = itemView.findViewById(R.id.tv_section_title)
+        private val icon: ImageView = itemView.findViewById(R.id.iv_section_icon)
+
         override fun onBind(item: TapMessageRecipientModel, position: Int) {
             if (item.readTime != null && item.readTime > -1) {
                 // read section
@@ -148,6 +164,16 @@ class TapMessageInfoAdapter (users: List<TapMessageRecipientModel?>) :
                 // delivered section
                 title.text = String.format(itemView.context.getString(R.string.tap_delivered_to_d_format), item.deliveredTime)
                 icon.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_delivered_grey))
+            }
+
+            if (clSectionContainer.layoutParams is MarginLayoutParams) {
+                if (absoluteAdapterPosition == 0) {
+                    (clSectionContainer.layoutParams as MarginLayoutParams).topMargin = TAPUtils.dpToPx(16)
+                }
+                else {
+                    (clSectionContainer.layoutParams as MarginLayoutParams).topMargin = TAPUtils.dpToPx(24)
+                }
+                clSectionContainer.requestLayout()
             }
         }
     }
