@@ -228,6 +228,7 @@ import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreContactListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetIntegerListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageDetailsListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
@@ -1818,7 +1819,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ) {
                 return;
             }
-            getMessageInfo(message);
+            getMessageReadCount(message);
         }
 
         @Override
@@ -6228,16 +6229,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     }
 
-    private void getMessageInfo(TAPMessageModel message) {
-        if (message.getIsRead() != null && message.getIsRead() &&
+    private void getMessageReadCount(TAPMessageModel message) {
+        if (vm.getRoom().getType() != TYPE_PERSONAL &&
+            message.getIsRead() != null && message.getIsRead() &&
             TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled() &&
             !TapUI.getInstance(instanceKey).isReadStatusHidden()
         ) {
-            TapCoreMessageManager.getInstance(instanceKey).getMessageDetails(message.getMessageID(), new TapCoreGetMessageDetailsListener() {
+            TapCoreMessageManager.getInstance(instanceKey).getMessageTotalRead(message.getMessageID(), new TapCoreGetIntegerListener() {
                 @Override
-                public void onSuccess(@NonNull TAPMessageModel message, @Nullable List<TapMessageRecipientModel> deliveredTo, @Nullable List<TapMessageRecipientModel> readBy) {
-                    if (readBy != null) {
-                        vm.getMessageReadCountMap().put(message.getMessageID(), readBy.size());
+                public void onSuccess(int readCount) {
+                    if (readCount > 0) {
+                        vm.getMessageReadCountMap().put(message.getMessageID(), readCount);
                         int index = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
                         if (index >= 0) {
                             messageAdapter.notifyItemChanged(index);

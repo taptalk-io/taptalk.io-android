@@ -102,6 +102,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageDetailResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageTotalReadResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
@@ -1733,6 +1734,10 @@ public class TAPDataManager {
 
     public void getMessageDetails(String messageId, TAPDefaultDataView<TapGetMessageDetailResponse> view) {
         TAPApiManager.getInstance(instanceKey).getMessageDetails(messageId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getMessageTotalRead(String messageId, TAPDefaultDataView<TapGetMessageTotalReadResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getMessageTotalRead(messageId, new TAPDefaultSubscriber<>(view));
     }
 
     public void getGroupsInCommon(String userId, TAPDefaultDataView<TapRoomModelsResponse> view) {

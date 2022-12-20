@@ -88,6 +88,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageDetailResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageTotalReadResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
@@ -855,6 +856,11 @@ public class TAPApiManager {
     public void getMessageDetails(String messageId, Subscriber<TAPBaseResponse<TapGetMessageDetailResponse>> subscriber) {
         TapMessageIdRequest request = new TapMessageIdRequest(messageId);
         execute(homingPigeon.getMessageDetails(request), subscriber);
+    }
+
+    public void getMessageTotalRead(String messageId, Subscriber<TAPBaseResponse<TapGetMessageTotalReadResponse>> subscriber) {
+        TapMessageIdRequest request = new TapMessageIdRequest(messageId);
+        execute(homingPigeon.getMessageTotalRead(request), subscriber);
     }
 
     public void getGroupsInCommon(String userId, Subscriber<TAPBaseResponse<TapRoomModelsResponse>> subscriber) {
