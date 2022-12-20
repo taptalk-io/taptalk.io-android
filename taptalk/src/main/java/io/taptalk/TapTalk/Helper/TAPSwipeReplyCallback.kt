@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
+import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPBaseChatViewHolder
@@ -57,7 +59,17 @@ class TAPSwipeReplyCallback(
             if (null != viewHolder.item.isFailedSend && viewHolder.item.isFailedSend!!) {
                 // Disable swipe for messages that failed to send
                 return 0
-            } else if (viewHolder.item.type != TYPE_TEXT &&
+            }
+            else if (
+                viewHolder.item?.room?.roomID != null &&
+                TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(
+                    TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(viewHolder.item?.room?.roomID)
+                )
+            ) {
+                // Disable swipe for blocked user chat room
+                return 0
+            }
+            else if (viewHolder.item.type != TYPE_TEXT &&
                     viewHolder.item.type != TYPE_LINK &&
                     viewHolder.item.type != TYPE_IMAGE &&
                     viewHolder.item.type != TYPE_VIDEO &&

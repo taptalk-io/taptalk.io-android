@@ -1985,6 +1985,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.getRoom().getRoomID().equals(TAPChatManager.getInstance(instanceKey).arrangeRoomId(vm.getMyUserModel().getUserID(), user.getUserID()))
             ) {
                 showUnblockButton();
+                runOnUiThread(() -> clContactAction.setVisibility(View.GONE));
             }
         }
 
@@ -3357,9 +3358,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
 
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
-                            TapUI.getInstance(instanceKey).isAddToContactsButtonInChatRoomVisible() &&
-                            !TAPDataManager.getInstance(instanceKey).isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
-                            (null == updatedContact.getIsContact() || updatedContact.getIsContact() == 0)) {
+                        TapUI.getInstance(instanceKey).isAddToContactsButtonInChatRoomVisible() &&
+                        !TAPDataManager.getInstance(instanceKey).isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
+                        !TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID()) &&
+                        (null == updatedContact.getIsContact() || updatedContact.getIsContact() == 0)
+                    ) {
                         clContactAction.setVisibility(View.VISIBLE);
                     } else {
                         clContactAction.setVisibility(View.GONE);
