@@ -229,7 +229,6 @@ import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreContactListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetIntegerListener;
-import io.taptalk.TapTalk.Listener.TapCoreGetMessageDetailsListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
@@ -256,7 +255,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TapMessageRecipientModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
@@ -1064,8 +1062,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivSchedule = findViewById(R.id.iv_schedule);
         customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
         btnUnblock = findViewById(R.id.btn_unblock);
-        btnUnblock = findViewById(R.id.btn_unblock);
-        btnUnblock = findViewById(R.id.btn_unblock);
         customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
     }
 
@@ -1307,7 +1303,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null != vm.getOtherUserModel().getDeleted()) {
                 showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
             } else if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
-                showChatAsBlocked();
+                showUnblockButton();
             }
         }
 //        else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
@@ -1460,7 +1456,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null != vm.getOtherUserModel().getDeleted()) {
                 showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
             } else if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
-                showChatAsBlocked();
+                showUnblockButton();
             } else {
                 showDefaultChatEditText();
             }
@@ -1985,13 +1981,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private final TapCoreContactListener coreContactListener = new TapCoreContactListener() {
         @Override
         public void onContactBlocked(@NonNull TAPUserModel user) {
-            super.onContactBlocked(user);
-            showChatAsBlocked();
+            if (vm.getRoom().getType() == TYPE_PERSONAL &&
+                vm.getRoom().getRoomID().equals(TAPChatManager.getInstance(instanceKey).arrangeRoomId(vm.getMyUserModel().getUserID(), user.getUserID()))
+            ) {
+                showUnblockButton();
+            }
         }
 
         @Override
         public void onContactUnblocked(@NonNull TAPUserModel user) {
-            super.onContactUnblocked(user);
             setRoomState();
         }
     };
@@ -3354,7 +3352,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     } else {
                         setOtherUserModel(updatedContact);
                         if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
-                            showChatAsBlocked();
+                            showUnblockButton();
                         }
                     }
 
@@ -3459,7 +3457,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
     }
 
-    private void showChatAsBlocked() {
+    private void showUnblockButton() {
         if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled()) {
             runOnUiThread(() -> {
                 if (null != clChatHistory) {
