@@ -166,7 +166,8 @@ class TapReportActivity : TAPBaseActivity() {
         rv_options.setHasFixedSize(true)
 
         btn_submit.setOnClickListener {
-            if (et_other.text.isEmpty()) {
+            val isOther = vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount - 1]
+            if (isOther && et_other.text.isEmpty()) {
                 showOtherError()
             } else {
                 TapTalkDialog.Builder(this)
@@ -175,7 +176,6 @@ class TapReportActivity : TAPBaseActivity() {
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setPrimaryButtonTitle(getString(R.string.tap_submit))
                     .setPrimaryButtonListener {
-                        val isOther = vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount - 1]
                         val category = if (isOther) et_other.text.toString() else vm.selectedReportOption
                         when (vm.reportType) {
                             ReportType.USER -> TAPDataManager.getInstance(instanceKey)

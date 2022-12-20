@@ -24,11 +24,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            app:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavigationBarBackButton" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -53,8 +53,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:overScrollMode="never"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
-        app:layout_constraintBottom_toBottomOf="parent" >
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -62,115 +62,119 @@
 
             <TextView
                 android:id="@+id/tv_report_description"
+                style="@style/tapFormTextFieldStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="16dp"
+                android:lineSpacingExtra="4sp"
                 android:text="@string/tap_report_user_description_wording"
-                style="@style/tapFormTextFieldStyle"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_options"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:layout_marginTop="8dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
+                android:nestedScrollingEnabled="false"
                 app:layout_constraintTop_toBottomOf="@id/tv_report_description" />
 
             <EditText
                 android:id="@+id/et_other"
+                style="@style/tapAreaEditText"
                 android:layout_width="0dp"
                 android:layout_height="36dp"
                 android:layout_marginTop="4dp"
-                style="@style/tapAreaEditText"
                 android:gravity="start"
                 android:hint="@string/tap_please_specify_reason"
+                android:inputType="text"
+                android:maxLength="100"
+                android:maxLines="1"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="@id/tv_report_description"
                 app:layout_constraintEnd_toEndOf="@id/tv_report_description"
+                app:layout_constraintStart_toStartOf="@id/tv_report_description"
                 app:layout_constraintTop_toBottomOf="@id/rv_options" />
 
             <TextView
                 android:id="@+id/tv_error_other"
+                style="@style/tapFormErrorInfoRegularStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="4dp"
-                android:visibility="gone"
                 android:text="@string/tap_this_field_is_required"
-                style="@style/tapFormErrorInfoRegularStyle"
-                app:layout_constraintTop_toBottomOf="@id/et_other"
-                app:layout_constraintStart_toStartOf="@id/et_other" />
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/et_other"
+                app:layout_constraintTop_toBottomOf="@id/et_other" />
 
             <TextView
                 android:id="@+id/tv_label_optional"
+                style="@style/tapSectionLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="@string/tap_why_report_user"
-                style="@style/tapSectionLabelStyle"
-                app:layout_constraintStart_toStartOf="@id/tv_report_description"
                 app:layout_constraintEnd_toEndOf="@id/tv_report_description"
+                app:layout_constraintStart_toStartOf="@id/tv_report_description"
                 app:layout_constraintTop_toBottomOf="@id/tv_error_other" />
 
             <EditText
                 android:id="@+id/et_reason"
+                style="@style/tapAreaEditText"
                 android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:layout_marginTop="8dp"
-                style="@style/tapAreaEditText"
-                android:maxLength="2000"
                 android:gravity="start"
+                android:hint="@string/tap_tell_us_why_dots"
                 android:inputType="textMultiLine"
+                android:maxLength="2000"
                 android:scrollbarStyle="insideInset"
                 android:scrollbars="vertical"
-                android:hint="@string/tap_tell_us_why_dots"
-                app:layout_constraintStart_toStartOf="@id/tv_report_description"
                 app:layout_constraintEnd_toEndOf="@id/tv_report_description"
+                app:layout_constraintStart_toStartOf="@id/tv_report_description"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_optional" />
 
             <TextView
                 android:id="@+id/tv_character_count"
+                style="@style/tapAlbumCountLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="10dp"
                 android:text="0/2000"
-                style="@style/tapAlbumCountLabelStyle"
-                app:layout_constraintTop_toBottomOf="@id/et_reason"
-                app:layout_constraintEnd_toEndOf="@id/et_reason" />
+                app:layout_constraintEnd_toEndOf="@id/et_reason"
+                app:layout_constraintTop_toBottomOf="@id/et_reason" />
 
             <Button
                 android:id="@+id/btn_submit"
+                style="@style/tapDestructiveButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="20dp"
                 android:text="@string/tap_submit_report"
-                style="@style/tapDestructiveButtonStyle"
-                app:layout_constraintTop_toBottomOf="@id/tv_character_count"
-                app:layout_constraintStart_toStartOf="@id/tv_report_description"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/tv_report_description"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintStart_toStartOf="@id/tv_report_description"
+                app:layout_constraintTop_toBottomOf="@id/tv_character_count" />
 
             <ProgressBar
                 android:id="@+id/pb_loading"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:padding="12dp"
-                android:indeterminateTint="@color/tapWhite"
                 android:clickable="true"
+                android:indeterminateTint="@color/tapWhite"
+                android:padding="12dp"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="@id/btn_submit"
+                app:layout_constraintBottom_toBottomOf="@id/btn_submit"
                 app:layout_constraintEnd_toEndOf="@id/btn_submit"
-                app:layout_constraintTop_toTopOf="@id/btn_submit"
-                app:layout_constraintBottom_toBottomOf="@id/btn_submit" />
+                app:layout_constraintStart_toStartOf="@id/btn_submit"
+                app:layout_constraintTop_toTopOf="@id/btn_submit" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

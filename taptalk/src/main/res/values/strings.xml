@@ -484,8 +484,8 @@
     <string name="tap_report_message_options_4">Violence</string>
     <string name="tap_wording_submit_report">You will submit a report for this user, you can tell us why so we can help you. Are you sure you want to submit now?</string>
     <string name="tap_submit">Submit</string>
-    <string name="tap_you_havent_submit_report">You haven’t submit your report</string>
-    <string name="tap_havent_submit_report_wording">Your report has not been submitted, are you sure you want to go back before submitting?</string>
+    <string name="tap_you_havent_submit_report">You haven’t submitted your report</string>
+    <string name="tap_havent_submit_report_wording">Your report has not been submitted, are you sure you want to cancel and discard the report?</string>
     <string name="tap_report_might_not_submitted">Your report might have not been submitted</string>
     <string name="tap_report_might_not_submitted_wording">Your report might have not been submitted because you clicked back while we are trying to submit your report, are you sure you want to go back?</string>
     <string name="tap_report_has_been_submitted">Report has been submitted</string>

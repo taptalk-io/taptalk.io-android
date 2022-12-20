@@ -386,8 +386,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
-        // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+        ) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -508,8 +509,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
-        // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+        ) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -627,8 +629,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
-        // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+        ) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -724,8 +727,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
-        // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+        ) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -809,8 +813,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
-        // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+        ) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
@@ -902,8 +907,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
-        // TODO: change tapUI case MU
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled) {
+        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+        ) {
             // Report
             imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
             titleResIds.add(R.string.tap_report)
