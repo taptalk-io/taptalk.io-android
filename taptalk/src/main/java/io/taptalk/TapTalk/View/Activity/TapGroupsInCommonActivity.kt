@@ -16,6 +16,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TapRoomModelsResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPSearchChatModel
+import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPSearchChatAdapter
 import io.taptalk.TapTalk.ViewModel.TapGroupsInCommonViewModel
@@ -32,12 +33,12 @@ class TapGroupsInCommonActivity : TAPBaseActivity() {
         fun start(
             context: Context,
             instanceKey: String?,
-            userId: String
+            user: TAPUserModel
         ) {
             if (context is Activity) {
                 val intent = Intent(context, TapGroupsInCommonActivity::class.java)
                 intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
-                intent.putExtra(Extras.USER, userId)
+                intent.putExtra(Extras.USER, user)
                 context.startActivity(intent)
             }
         }
@@ -46,9 +47,13 @@ class TapGroupsInCommonActivity : TAPBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_groups_in_common)
-        if (intent.getStringExtra(Extras.USER) != null) {
-            vm.userId = intent.getStringExtra(Extras.USER)
+
+        val user = intent.getParcelableExtra<TAPUserModel>(Extras.USER)
+        if (user != null) {
+            vm.userId = user.userID
+            tv_title.text = user.fullname
         }
+
         adapter = TAPSearchChatAdapter(
             instanceKey,
             vm.groups,
