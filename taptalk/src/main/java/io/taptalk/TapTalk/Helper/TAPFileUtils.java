@@ -330,14 +330,24 @@ public class TAPFileUtils {
 
         try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                final int index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(index);
+//                final int index = cursor.getColumnIndexOrThrow(column);
+                final int index = cursor.getColumnIndex(column);
+                if (index >= 0) {
+                    return cursor.getString(index);
+                } else {
+                    // column '_data' does not exist
+                    File file = createTemporaryCachedFile(context, uri);
+                    String destinationPath = "";
+                    if (file != null) {
+                        destinationPath = file.getAbsolutePath();
+                    }
+                    return destinationPath;
+                }
             }
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             // Path could not be retrieved using ContentResolver, therefore copy file to accessible cache using streams
             String fileName = getFileName(context, uri);
-            //
             File cacheDir = getShareCacheDir(context);
             File file = new File(cacheDir, fileName);
             String destinationPath = null;
