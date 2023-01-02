@@ -157,49 +157,51 @@ class TapReportActivity : TAPBaseActivity() {
         }
 
         optionsAdapter = TapSelectableStringListAdapter(vm.reportOptions, onClickListener)
-        if (vm.selectedReportOption.isEmpty()) {
-            vm.selectedReportOption = vm.reportOptions[0]
-        }
-        optionsAdapter.setSelectedText(vm.selectedReportOption)
         rv_options.adapter = optionsAdapter
         rv_options.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rv_options.setHasFixedSize(true)
 
         btn_submit.setOnClickListener {
-            val isOther = vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount - 1]
-            if (isOther && et_other.text.isEmpty()) {
-                showOtherError()
-            } else {
-                TapTalkDialog.Builder(this)
-                    .setTitle(getString(R.string.tap_submit_report))
-                    .setMessage(getString(R.string.tap_wording_submit_report))
-                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setPrimaryButtonTitle(getString(R.string.tap_submit))
-                    .setPrimaryButtonListener {
-                        val category = if (isOther) et_other.text.toString() else vm.selectedReportOption
-                        when (vm.reportType) {
-                            ReportType.USER -> TAPDataManager.getInstance(instanceKey)
-                                .submitUserReport(
-                                    vm.user?.userID,
-                                    category,
-                                    isOther,
-                                    et_reason.text.toString(),
-                                    submitReportView
-                                )
-                            ReportType.MESSAGE -> TAPDataManager.getInstance(instanceKey)
-                                .submitMessageReport(
-                                    vm.message?.messageID,
-                                    vm.message?.room?.roomID,
-                                    category,
-                                    isOther,
-                                    et_reason.text.toString(),
-                                    submitReportView
-                                )
+            if (vm.selectedReportOption.isEmpty()) {
+                showOtherError(R.string.tap_please_select_a_category)
+            }
+            else {
+                val isOther = vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount - 1]
+                if (isOther && et_other.text.isEmpty()) {
+                    showOtherError(R.string.tap_this_field_is_required)
+                }
+                else {
+                    TapTalkDialog.Builder(this)
+                        .setTitle(getString(R.string.tap_submit_report))
+                        .setMessage(getString(R.string.tap_wording_submit_report))
+                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                        .setPrimaryButtonTitle(getString(R.string.tap_submit))
+                        .setPrimaryButtonListener {
+                            val category = if (isOther) et_other.text.toString() else vm.selectedReportOption
+                            when (vm.reportType) {
+                                ReportType.USER -> TAPDataManager.getInstance(instanceKey)
+                                    .submitUserReport(
+                                        vm.user?.userID,
+                                        category,
+                                        isOther,
+                                        et_reason.text.toString(),
+                                        submitReportView
+                                    )
+                                ReportType.MESSAGE -> TAPDataManager.getInstance(instanceKey)
+                                    .submitMessageReport(
+                                        vm.message?.messageID,
+                                        vm.message?.room?.roomID,
+                                        category,
+                                        isOther,
+                                        et_reason.text.toString(),
+                                        submitReportView
+                                    )
+                            }
                         }
-                    }
-                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                    .setSecondaryButtonListener { }
-                    .show()
+                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                        .setSecondaryButtonListener { }
+                        .show()
+                }
             }
         }
         iv_button_back.setOnClickListener {
@@ -248,8 +250,9 @@ class TapReportActivity : TAPBaseActivity() {
         optionsAdapter.setEnabled(true)
     }
 
-    private fun showOtherError() {
+    private fun showOtherError(stringRes: Int) {
         if (tv_error_other.visibility == View.GONE) {
+            tv_error_other.text = getString(stringRes)
             tv_error_other.visibility = View.VISIBLE
             et_other.setBackgroundResource(R.drawable.tap_bg_text_field_error)
         }
@@ -349,6 +352,7 @@ class TapReportActivity : TAPBaseActivity() {
                 }
                 optionsAdapter.setSelectedText(vm.selectedReportOption)
                 optionsAdapter.notifyDataSetChanged()
+                hideOtherError()
             }
         }
     }
