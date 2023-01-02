@@ -29,10 +29,8 @@ public class TAPRoomListModel {
         this.lastMessageTimestamp = TAPTimeFormatter.durationString(lastMessage.getCreated());
 
         TAPRoomModel room = lastMessage.getRoom();
-        if (null == room.getImageURL() || room.getImageURL().getThumbnail().isEmpty()) {
-            if (null != TapTalk.appContext) {
-                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getName());
-            }
+        if (null != TapTalk.appContext) {
+            defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getName());
         }
     }
 
@@ -44,7 +42,7 @@ public class TAPRoomListModel {
             if (null != TapTalk.appContext) {
                 defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, "");
             }
-        } else if (null == room.getImageURL() || room.getImageURL().getThumbnail().isEmpty()) {
+        } else {
             if (null != TapTalk.appContext) {
                 defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getName());
             }
@@ -57,7 +55,7 @@ public class TAPRoomListModel {
         roomListModel.setLastMessageTimestamp(TAPTimeFormatter.durationString(lastMessage.getCreated()));
 
         TAPRoomModel room = lastMessage.getRoom();
-        if (null == room.getImageURL() || room.getImageURL().getThumbnail().isEmpty() && null != TapTalk.appContext) {
+        if (null != TapTalk.appContext) {
             roomListModel.setDefaultAvatarBackgroundColor(TAPUtils.getRandomColor(TapTalk.appContext, room.getName()));
         }
 

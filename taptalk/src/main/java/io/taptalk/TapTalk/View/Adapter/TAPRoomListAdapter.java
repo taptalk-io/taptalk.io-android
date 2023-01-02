@@ -1,5 +1,10 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
+
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -9,13 +14,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.DiffUtil;
 
@@ -40,14 +43,9 @@ import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
-import io.taptalk.TapTalk.R;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 
 public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
 
@@ -169,30 +167,31 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
-            } else if (null != user  && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
-                // Load user avatar
-                glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        // Show initial
-                        if (itemView.getContext() instanceof Activity) {
-                            ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(item.getDefaultAvatarBackgroundColor()));
-                                civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                                tvAvatarLabel.setText(TAPUtils.getInitials(room.getName(), room.getType() == TYPE_PERSONAL ? 2 : 1));
-                                tvAvatarLabel.setVisibility(View.VISIBLE);
-                            });
+            } else if (null != user) {
+                if (null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+                    // Load user avatar
+                    glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            // Show initial
+                            if (itemView.getContext() instanceof Activity) {
+                                showInitial((Activity) itemView.getContext(), item, civAvatar, tvAvatarLabel);
+                            }
+                            return false;
                         }
-                        return false;
-                    }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        return false;
-                    }
-                }).into(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, null);
-                tvAvatarLabel.setVisibility(View.GONE);
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            ImageViewCompat.setImageTintList(civAvatar, null);
+                            tvAvatarLabel.setVisibility(View.GONE);
+                            return false;
+                        }
+                    }).into(civAvatar);
+                } else if (itemView.getContext() instanceof Activity) {
+                    // No profile picture / blocked
+                    glide.clear(civAvatar);
+                    showInitial((Activity) itemView.getContext(), item, civAvatar, tvAvatarLabel);
+                }
             } else if (null != group && !group.isDeleted() && null != group.getImageURL() &&
                     !group.getImageURL().getThumbnail().isEmpty()) {
                 // Load group image
@@ -204,13 +203,10 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 glide.load(room.getImageURL().getThumbnail()).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
-            } else {
+            } else if (itemView.getContext() instanceof Activity) {
                 // Show initial
                 glide.clear(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(item.getDefaultAvatarBackgroundColor()));
-                civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                tvAvatarLabel.setText(TAPUtils.getInitials(room.getName(), room.getType() == TYPE_PERSONAL ? 2 : 1));
-                tvAvatarLabel.setVisibility(View.VISIBLE);
+                showInitial((Activity) itemView.getContext(), item, civAvatar, tvAvatarLabel);
             }
 
             // Change avatar icon and background
@@ -416,6 +412,15 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
             //itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
         }
+    }
+
+    private void showInitial(Activity activity, TAPRoomListModel item, ImageView civAvatar, TextView tvAvatarLabel) {
+        activity.runOnUiThread(() -> {
+            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(item.getDefaultAvatarBackgroundColor()));
+            civAvatar.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_bg_circle_9b9b9b));
+            tvAvatarLabel.setText(TAPUtils.getInitials(item.getLastMessage().getRoom().getName(), item.getLastMessage().getRoom().getType() == TYPE_PERSONAL ? 2 : 1));
+            tvAvatarLabel.setVisibility(View.VISIBLE);
+        });
     }
 
     private void onRoomClicked(View itemView, TAPRoomListModel item, int position) {

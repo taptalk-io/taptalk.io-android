@@ -1148,36 +1148,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvRoomName.setText(vm.getRoom().getName());
             }
 
-            if (!TapUI.getInstance(instanceKey).isProfileButtonVisible()) {
-                civRoomImage.setVisibility(View.GONE);
-                vRoomImage.setVisibility(View.GONE);
-                tvRoomImageLabel.setVisibility(View.GONE);
-            } else if (null != vm.getRoom() &&
-                    TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                    (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)) {
-                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civRoomImage);
-                ImageViewCompat.setImageTintList(civRoomImage, null);
-                tvRoomImageLabel.setVisibility(View.GONE);
-                clRoomStatus.setVisibility(View.GONE);
-            } else if (null != vm.getRoom() &&
-                    TYPE_PERSONAL == vm.getRoom().getType() && TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
-                glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civRoomImage);
-                ImageViewCompat.setImageTintList(civRoomImage, null);
-                tvRoomImageLabel.setVisibility(View.GONE);
-                clRoomStatus.setVisibility(View.GONE);
-            } else if (null != vm.getRoom() &&
-                    TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                    null != vm.getOtherUserModel().getImageURL().getThumbnail() &&
-                    !vm.getOtherUserModel().getImageURL().getThumbnail().isEmpty()) {
-                // Load user avatar URL
-                loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
-                vm.getRoom().setImageURL(vm.getOtherUserModel().getImageURL());
-            } else if (null != vm.getRoom() && !vm.getRoom().isDeleted() && null != vm.getRoom().getImageURL() && !vm.getRoom().getImageURL().getThumbnail().isEmpty()) {
-                // Load room image
-                loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
-            } else {
-                loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
-            }
+            setNavigationBarProfilePicture();
 
             // TODO: 1 February 2019 SET ROOM ICON FROM ROOM MODEL
             if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getUserRole() &&
@@ -1441,6 +1412,51 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivToBottom.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             ivMentionAnchor.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             clUnreadButton.setBackground(getDrawable(R.drawable.tap_bg_white_rounded_8dp_ripple));
+        }
+    }
+
+    private void setNavigationBarProfilePicture() {
+        if (!TapUI.getInstance(instanceKey).isProfileButtonVisible()) {
+            civRoomImage.setVisibility(View.GONE);
+            vRoomImage.setVisibility(View.GONE);
+            tvRoomImageLabel.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
+                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)
+        ) {
+            // Deleted user
+            glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civRoomImage);
+            ImageViewCompat.setImageTintList(civRoomImage, null);
+            tvRoomImageLabel.setVisibility(View.GONE);
+            clRoomStatus.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getType() &&
+                TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)
+        ) {
+            // Saved Messages
+            glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civRoomImage);
+            ImageViewCompat.setImageTintList(civRoomImage, null);
+            tvRoomImageLabel.setVisibility(View.GONE);
+            clRoomStatus.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getType() &&
+                null != vm.getOtherUserModel()
+        ) {
+            if (null != vm.getOtherUserModel().getImageURL().getThumbnail() &&
+                    !vm.getOtherUserModel().getImageURL().getThumbnail().isEmpty()
+            ) {
+                // Load user avatar URL
+                loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
+            } else {
+                // No profile picture / blocked
+                loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
+            }
+            vm.getRoom().setImageURL(vm.getOtherUserModel().getImageURL());
+        } else if (null != vm.getRoom() && !vm.getRoom().isDeleted() && null != vm.getRoom().getImageURL() && !vm.getRoom().getImageURL().getThumbnail().isEmpty()) {
+            // Load room image
+            loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
+        } else {
+            loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
         }
     }
 
@@ -3303,13 +3319,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.getRoom().setParticipants(response.getParticipants());
                 TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(vm.getRoom());
 
-                if (null != vm.getRoom() && null != vm.getRoom().getImageURL() && !vm.getRoom().getImageURL().getThumbnail().isEmpty()) {
-                    // Load room image
-                    loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
-                } else {
-                    // Room image is empty
-                    loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
-                }
+                setNavigationBarProfilePicture();
+
                 if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)){
                     tvRoomName.setText(R.string.tap_saved_messages);
                 } else {
@@ -3687,7 +3698,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     tvRoomName.setText(vm.getRoom().getName());
                 }
                 if (null != vm.getRoom().getImageURL()) {
-                    civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
+                    civRoomImage.post(this::setNavigationBarProfilePicture);
                 }
             });
             TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getRoom().getType() == TYPE_PERSONAL ? vm.getOtherUserModel() : null);
@@ -3705,7 +3716,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     tvRoomName.setText(vm.getOtherUserModel().getFullname());
                 }
                 if (null != vm.getRoom().getImageURL()) {
-                    civRoomImage.post(() -> loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
+                    civRoomImage.post(this::setNavigationBarProfilePicture);
                 }
             });
             TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getRoom().getType() == TYPE_PERSONAL ? vm.getOtherUserModel() : null);
