@@ -153,17 +153,17 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         override fun onSelectFinishedWithUnreadCount(entities: MutableList<TAPMessageEntity>?, unreadMap: MutableMap<String, Int>?, mentionCount: MutableMap<String, Int>?) {
             val messageModels: MutableList<TAPRoomListModel> = ArrayList()
             vm?.roomPointer?.clear()
+            val blockedUserIDs = TAPDataManager.getInstance(instanceKey).blockedUserIds
             for (entity in entities!!) {
                 val model = TAPMessageModel.fromMessageEntity(entity)
                 val roomModel = TAPRoomListModel.buildWithLastMessage(model)
                 roomModel.type = TAPRoomListModel.Type.SELECTABLE_ROOM
-                if (TAPUtils.isSavedMessagesRoom(model.room.roomID, instanceKey)) {
-                    if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled) {
-                        messageModels.add(0, roomModel)
-                    } else {
-                        messageModels.add(roomModel)
-                    }
-                } else {
+                if (TAPUtils.isSavedMessagesRoom(model.room.roomID, instanceKey) && TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled) {
+                    messageModels.add(0, roomModel)
+                }
+                else if (model.room.type != TYPE_PERSONAL ||
+                         !blockedUserIDs.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(model.room.roomID))
+                ) {
                     messageModels.add(roomModel)
                 }
                 vm?.addRoomPointer(roomModel)
@@ -201,6 +201,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 return
             }
             val myId = TAPChatManager.getInstance(instanceKey).activeUser.userID
+            val blockedUserIDs = TAPDataManager.getInstance(instanceKey).blockedUserIds
             if (entities.isNotEmpty()) {
                 for (entity in entities) {
                     // Exclude active user's own room
@@ -217,7 +218,10 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                         } else {
                             vm?.groupContacts?.add(result)
                         }
-                    } else if (entity.roomID != TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId)) {
+                    }
+                    else if (entity.roomID != TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId) &&
+                             (entity.roomType != TYPE_PERSONAL || !blockedUserIDs.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(entity.roomID)))
+                    ) {
                         val result = TAPRoomListModel()
                         // Convert message to room model
                         val room = TAPRoomModel.Builder(entity)
@@ -287,6 +291,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                         tv_empty_room.visibility = View.GONE
                         rv_search_list.visibility = View.VISIBLE
                     }
+                    val blockedUserIDs = TAPDataManager.getInstance(instanceKey).blockedUserIds
                     for (contact in entities) {
                         val result = TAPRoomListModel(TAPRoomListModel.Type.SELECTABLE_CONTACT)
                         // Convert contact to room model
@@ -297,8 +302,8 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                             contact.imageURL,
                             ""
                         )
-                        // Check if result already contains contact from chat room query
-                        if (!vm?.resultContainsRoom(room.roomID)!!) {
+                        // Check if result already contains contact from chat room query / user is blocked
+                        if (!vm?.resultContainsRoom(room.roomID)!! && !blockedUserIDs.contains(contact.userID)) {
                             result.lastMessage.room = room
                             if (room.type == TYPE_PERSONAL) {
                                 if (vm?.personalContacts!!.isEmpty()) {
