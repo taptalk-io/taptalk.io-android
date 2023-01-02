@@ -1,5 +1,17 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_ADD_NEW_CONTACT;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_ADD_NEW_CONTACT;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_CREATE_NEW_GROUP;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_SCAN_QR_CODE;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_DEFAULT_CONTACT_LIST;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -38,31 +50,19 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TapContactListListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetMultipleContactListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TapCoreContactManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
-import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Adapter.TapContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_ADD_NEW_CONTACT;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_ADD_NEW_CONTACT;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_CREATE_NEW_GROUP;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_SCAN_QR_CODE;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_DEFAULT_CONTACT_LIST;
 
 public class TAPNewChatActivity extends TAPBaseActivity {
 
@@ -173,7 +173,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        new Thread(() -> TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(getContactView)).start();
+        TapCoreContactManager.getInstance(instanceKey).fetchAllUserContactsFromServer(getContactListener);
 
         getWindow().setBackgroundDrawable(null);
 
@@ -542,26 +542,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         });
     }
 
-    private TAPDefaultDataView<TAPContactResponse> getContactView = new TAPDefaultDataView<TAPContactResponse>() {
+    private TapCoreGetMultipleContactListener getContactListener = new TapCoreGetMultipleContactListener() {
         @Override
-        public void onSuccess(TAPContactResponse response) {
-            try {
-                // Insert contacts to database
-                if (null == response.getContacts() || response.getContacts().isEmpty()) {
-                    permissionCheckAndSyncContactList();
-                    return;
-                }
-                new Thread(() -> {
-                    List<TAPUserModel> users = new ArrayList<>();
-                    for (TAPContactModel contact : response.getContacts()) {
-                        users.add(contact.getUser().setUserAsContact());
-                    }
-                    TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(users);
-                    permissionCheckAndSyncContactList();
-                }).start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        public void onSuccess(List<TAPUserModel> users) {
+            permissionCheckAndSyncContactList();
         }
     };
 

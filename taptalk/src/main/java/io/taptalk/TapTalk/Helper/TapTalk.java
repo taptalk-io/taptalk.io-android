@@ -85,6 +85,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Manager.TapCoreContactManager;
 import io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager;
 import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
 import io.taptalk.TapTalk.Manager.TapLocaleManager;
@@ -443,18 +444,8 @@ public class TapTalk implements LifecycleObserver {
                     updateFirebaseTokenToServer(instanceKey, new TapCommonListener() {
                     });
 
-                    new Thread(() -> TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(new TAPDefaultDataView<TAPContactResponse>() {
-                        @Override
-                        public void onSuccess(TAPContactResponse response) {
-                            List<TAPUserModel> userModels = new ArrayList<>();
-                            for (TAPContactModel contact : response.getContacts()) {
-                                TAPUserModel contactUser = contact.getUser().setUserAsContact();
-                                userModels.add(contactUser);
-                            }
-                            TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(userModels);
-                            TAPDataManager.getInstance(instanceKey).setContactListUpdated();
-                        }
-                    })).start();
+                    // Sync contacts
+                    TapCoreContactManager.getInstance(instanceKey).fetchAllUserContactsFromServer(null);
 
                     TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
                     TAPApiManager.getInstance(instanceKey).setLoggedOut(false);

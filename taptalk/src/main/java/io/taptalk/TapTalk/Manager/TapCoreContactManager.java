@@ -22,10 +22,12 @@ import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapRoomModelsResponse;
+import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
@@ -87,6 +89,66 @@ public class TapCoreContactManager {
 
             @Override
             public void onSelectFailed(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void fetchAllUserContactsFromServer(TapCoreGetMultipleContactListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(new TAPDefaultDataView<TAPContactResponse>() {
+            @Override
+            public void onSuccess(TAPContactResponse response) {
+                List<TAPUserModel> responseContacts = new ArrayList<>();
+                List<String> contactIDs = new ArrayList<>();
+                for (TAPContactModel contact : response.getContacts()) {
+                    TAPUserModel contactUser = contact.getUser().setUserAsContact();
+                    responseContacts.add(contactUser);
+                    contactIDs.add(contactUser.getUserID());
+                }
+                if (null != listener) {
+                    listener.onSuccess(responseContacts);
+                }
+
+                // Sync contacts to database
+                new Thread(() -> getAllUserContacts(new TapCoreGetMultipleContactListener() {
+                    @Override
+                    public void onSuccess(List<TAPUserModel> users) {
+                        List<TAPUserModel> updatedContacts = new ArrayList<>(responseContacts);
+                        for (TAPUserModel user : users) {
+                            if (!contactIDs.contains(user.getUserID())) {
+                                user.setIsContact(0);
+                                updatedContacts.add(user);
+                            }
+                        }
+                        TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(updatedContacts);
+                        TAPDataManager.getInstance(instanceKey).setContactListUpdated();
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(responseContacts);
+                        TAPDataManager.getInstance(instanceKey).setContactListUpdated();
+                    }
+                })).start();
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
                 if (null != listener) {
                     listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }
