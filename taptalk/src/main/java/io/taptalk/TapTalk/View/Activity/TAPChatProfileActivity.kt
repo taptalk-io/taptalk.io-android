@@ -426,6 +426,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     private fun setInitialToProfilePicture(itemLabel: String?) {
         vp_profile_picture.setBackgroundColor(TAPUtils.getRandomColor(this, itemLabel))
+        vp_profile_picture.adapter = null
         tv_profile_picture_label.text = TAPUtils.getInitials(
             itemLabel, 2
         )
