@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
@@ -28,6 +29,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
+import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -539,7 +541,15 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     }
 
     private fun handleFileType(uri: Uri, roomModel: TAPRoomModel?, caption: String) {
-        val file = File(TAPFileUtils.getFilePath(this, uri))
+        val file: File? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Write temporary file to cache for upload for Android 11+
+            TAPFileUtils.createTemporaryCachedFile(this, uri)
+        } else {
+            File(TAPFileUtils.getFilePath(this, uri))
+        }
+        if (file == null) {
+            return
+        }
         if (caption.isNotEmpty()) {
             TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
         }
