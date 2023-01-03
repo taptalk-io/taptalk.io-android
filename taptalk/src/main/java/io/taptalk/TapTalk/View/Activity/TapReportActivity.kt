@@ -56,6 +56,7 @@ class TapReportActivity : TAPBaseActivity() {
                 intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
                 intent.putExtra(TAPDefaultConstant.Extras.USER, user)
                 context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER)
+                context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
             }
         }
 
@@ -69,6 +70,7 @@ class TapReportActivity : TAPBaseActivity() {
                 intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
                 intent.putExtra(TAPDefaultConstant.Extras.ROOM, room)
                 context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER)
+                context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
             }
         }
 
@@ -84,6 +86,7 @@ class TapReportActivity : TAPBaseActivity() {
                 intent.putExtra(TAPDefaultConstant.Extras.MESSAGE, message)
                 intent.putExtra(TAPDefaultConstant.Extras.REPORT_TYPE, reportType)
                 context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER)
+                context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
             }
         }
     }
@@ -215,21 +218,30 @@ class TapReportActivity : TAPBaseActivity() {
         if (isLoading) {
             title = getString(R.string.tap_report_might_not_submitted)
             message = getString(R.string.tap_report_might_not_submitted_wording)
-        } else {
+        } else if (vm.selectedReportOption.isNotEmpty() || vm.reportReason.isNotEmpty()) {
             title = getString(R.string.tap_you_havent_submit_report)
             message = getString(R.string.tap_havent_submit_report_wording)
+        } else {
+            title = ""
+            message = ""
         }
-        TapTalkDialog.Builder(this)
-            .setTitle(title)
-            .setMessage(message)
-            .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-            .setPrimaryButtonTitle(getString(R.string.tap_yes))
-            .setPrimaryButtonListener {
-                finish()
-            }
-            .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-            .setSecondaryButtonListener { }
-            .show()
+        if (title.isNotEmpty()) {
+            TapTalkDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                .setPrimaryButtonTitle(getString(R.string.tap_yes))
+                .setPrimaryButtonListener {
+                    finish()
+                    overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+                }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setSecondaryButtonListener { }
+                .show()
+        } else {
+            finish()
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+        }
     }
 
     private fun showLoading() {
