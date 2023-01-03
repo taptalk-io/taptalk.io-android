@@ -6081,6 +6081,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         @Override
+        public void onSuccess(TAPCommonResponse response) {
+            ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
+            blockedUserIDs.remove(vm.getOtherUserID());
+            TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserIDs);
+            setRoomState();
+        }
+
+        @Override
         public void onError(TAPErrorModel error) {
             super.onError(error);
             endLoading();
