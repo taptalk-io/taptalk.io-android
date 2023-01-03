@@ -862,9 +862,9 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
                 // Promote admin
                 if (null != vm!!.room.admins &&
-                    vm!!.room.admins!!
-                        .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID) &&
-                    !vm!!.room.admins!!.contains(vm!!.groupMemberUser.userID)
+                    vm!!.room.admins!!.contains(TAPChatManager.getInstance(instanceKey).activeUser.userID) &&
+                    !vm!!.room.admins!!.contains(vm!!.groupMemberUser.userID) &&
+                    vm!!.room.participants?.contains(vm!!.groupMemberUser) == true
                 ) {
                     val menuPromoteAdmin = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_PROMOTE_ADMIN,
@@ -875,8 +875,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
                     menuItems.add(menuPromoteAdmin)
                 } else if (null != vm!!.room.admins &&
-                    vm!!.room.admins!!
-                        .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
+                    vm!!.room.admins!!.contains(TAPChatManager.getInstance(instanceKey).activeUser.userID) &&
+                    vm!!.room.participants?.contains(vm!!.groupMemberUser) == true
                 ) {
                     val menuDemoteAdmin = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_DEMOTE_ADMIN,
@@ -890,8 +890,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
                 // Remove member
                 if (null != vm!!.room.admins &&
-                    vm!!.room.admins!!
-                        .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
+                    vm!!.room.admins!!.contains(TAPChatManager.getInstance(instanceKey).activeUser.userID) &&
+                    vm!!.room.participants?.contains(vm!!.groupMemberUser) == true
                 ) {
                     val menuRemoveMember = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_REMOVE_MEMBER,
@@ -1300,9 +1300,9 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun isUserBlocked() : Boolean {
-        return if (null != vm!!.groupMemberUser) {
+        return if (null != vm?.groupMemberUser) {
             TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(vm!!.groupMemberUser.userID)
-        } else if (vm!!.room.type == RoomType.TYPE_PERSONAL && null != vm!!.userDataFromManager) {
+        } else if (vm?.room?.type == RoomType.TYPE_PERSONAL && null != vm?.userDataFromManager) {
             TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(vm!!.userDataFromManager.userID)
         } else {
             false
