@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -398,6 +399,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     tab_layout.visibility = View.VISIBLE
                     tab_layout.setupWithViewPager(vp_profile_picture)
                 }
+                vp_profile_picture.setBackgroundColor(Color.TRANSPARENT)
                 tv_profile_picture_label.visibility = View.GONE
             } else {
                 setInitialToProfilePicture(itemLabel)
@@ -477,6 +479,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             } else {
                 tab_layout.visibility = View.GONE
             }
+            vp_profile_picture.setBackgroundColor(Color.TRANSPARENT)
             tv_profile_picture_label.visibility = View.GONE
         }
     }
