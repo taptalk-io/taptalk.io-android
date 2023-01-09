@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageDetailsListener
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager
 import io.taptalk.TapTalk.Manager.TapUI
@@ -122,6 +123,10 @@ class TapMessageInfoActivity : TAPBaseActivity() {
                 }
             }
             (rv_message_info.adapter as TapMessageInfoAdapter).items = resultList
+
+            rv_message_info.post {
+                nsv_message_info.smoothScrollTo(0, rv_message_info.top + (TAPUtils.getScreenHeight() / 2))
+            }
         }
 
         override fun onError(errorCode: String?, errorMessage: String?) {
