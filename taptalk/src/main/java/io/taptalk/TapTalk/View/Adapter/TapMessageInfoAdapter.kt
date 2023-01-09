@@ -108,10 +108,9 @@ class TapMessageInfoAdapter (users: List<TapMessageRecipientModel?>) :
                 vSeparator.visibility = View.VISIBLE
             }
 
-            val datePattern = "dd/MM/yyyy HH:mm"
             if (item?.readTime != null && item. readTime > 0) {
                 tvRead.visibility = View.VISIBLE
-                val readTimeString = "read ${TAPTimeFormatter.formatTime(item.readTime, datePattern)}"
+                val readTimeString = "read ${TAPTimeFormatter.durationChatString(itemView.context, item.readTime)}"
                 val spannable = SpannableString(readTimeString)
                 spannable.setSpan(
                     StyleSpan(BOLD),
@@ -124,7 +123,7 @@ class TapMessageInfoAdapter (users: List<TapMessageRecipientModel?>) :
                 tvRead.visibility = View.GONE
             }
             if (item?.deliveredTime != null && item. deliveredTime > 0) {
-                val deliveredTimeString = "delivered ${TAPTimeFormatter.formatTime(item.deliveredTime, datePattern)}"
+                val deliveredTimeString = "delivered ${TAPTimeFormatter.durationChatString(itemView.context, item.deliveredTime)}"
                 val spannable = SpannableString(deliveredTimeString)
                 spannable.setSpan(
                     StyleSpan(BOLD),
