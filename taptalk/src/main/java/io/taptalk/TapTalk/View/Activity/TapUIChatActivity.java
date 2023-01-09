@@ -1347,7 +1347,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         });
 
-
         if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
                 showTooltip();
@@ -1500,7 +1499,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         int rightPaddingDp = 12;
         if (ivButtonAttach.getVisibility() == View.VISIBLE && ivSchedule.getVisibility() == View.VISIBLE) {
-            rightPaddingDp = 72;
+            rightPaddingDp = 80;
         }
         else if (ivButtonAttach.getVisibility() == View.VISIBLE) {
             rightPaddingDp = 44;

@@ -11,6 +11,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -695,6 +696,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 return;
             }
             TAPGroupManager.Companion.getInstance(instanceKey).updateGroupDataFromResponse(response);
+            Log.e(">>>>>>>>>>>>", "addMemberView onSuccess: " + TAPUtils.toJsonString(response));
 
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(response.getParticipants()));

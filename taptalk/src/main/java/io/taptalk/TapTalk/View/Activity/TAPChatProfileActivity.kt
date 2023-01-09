@@ -687,7 +687,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     // Edit group
                     val menuEditGroup = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_EDIT_GROUP,
-                        getString(R.string.tap_edit_group_small),
+                        getString(R.string.tap_edit_group),
                         R.drawable.tap_ic_edit_orange,
                         R.color.tapIconGroupProfileMenuEditGroup,
                         R.style.tapChatProfileMenuLabelStyle

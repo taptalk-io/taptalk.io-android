@@ -6,8 +6,8 @@
     <string name="tap_chats_and_contacts">Chat dan Kontak</string>
     <string name="tap_clear_chat">Hapus Chat</string>
     <string name="tap_conversation_color">Warna Chat</string>
-    <string name="tap_leave_group">Keluar grup</string>
-    <string name="tap_delete_group">Hapus grup</string>
+    <string name="tap_leave_group">Keluar Grup</string>
+    <string name="tap_delete_group">Hapus Grup</string>
     <string name="tap_forward">Teruskan</string>
     <string name="tap_group_details">Detail Grup</string>
     <string name="tap_group_subject">Subjek Grup</string>
@@ -28,7 +28,7 @@
     <string name="tap_scan_qr_code">Pindai Kode QR</string>
     <string name="tap_user_details">Detail Pengguna</string>
     <string name="tap_show_qr_code">Tampilkan Kode QR</string>
-    <string name="tap_view_members">Lihat anggota</string>
+    <string name="tap_view_members">Lihat Anggota</string>
     <string name="tap_welcome">Selamat Datang</string>
 
     <!--Chat Room List-->
@@ -72,12 +72,11 @@
     <!--Group Chat-->
     <string name="tap_add_members">Tambah Anggota</string>
     <string name="tap_format_dd_selected_member_count">Anggota Grup (%d/%d)</string>
-    <string name="tap_format_d_group_member_count">%d anggota</string>
+    <string name="tap_format_d_group_member_count">%d Anggota</string>
     <string name="tap_group_name">Nama Grup</string>
     <string name="tap_group_picture">Foto Grup</string>
     <string name="tap_create_group">Buat Grup</string>
     <string name="tap_edit_group">Ubah Grup</string>
-    <string name="tap_edit_group_small">Ubah grup</string>
     <string name="tap_change_avatar">Ganti Gambar</string>
     <string name="tap_group_members">Anggota Grup</string>
     <string name="tap_remove_group_member">Keluarkan Anggota</string>
