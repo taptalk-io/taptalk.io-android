@@ -4,6 +4,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.Keep;
 
 import java.util.ArrayList;
@@ -113,9 +116,6 @@ public class TapCoreContactManager {
                     responseContacts.add(contactUser);
                     contactIDs.add(contactUser.getUserID());
                 }
-                if (null != listener) {
-                    listener.onSuccess(responseContacts);
-                }
 
                 // Sync contacts to database
                 new Thread(() -> getAllUserContacts(new TapCoreGetMultipleContactListener() {
@@ -130,12 +130,22 @@ public class TapCoreContactManager {
                         }
                         TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(updatedContacts);
                         TAPDataManager.getInstance(instanceKey).setContactListUpdated();
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            if (null != listener) {
+                                listener.onSuccess(responseContacts);
+                            }
+                        });
                     }
 
                     @Override
                     public void onError(String errorCode, String errorMessage) {
                         TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(responseContacts);
                         TAPDataManager.getInstance(instanceKey).setContactListUpdated();
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            if (null != listener) {
+                                listener.onSuccess(responseContacts);
+                            }
+                        });
                     }
                 })).start();
             }
@@ -505,7 +515,11 @@ public class TapCoreContactManager {
             public void onSuccess(TAPCommonResponse response) {
                 super.onSuccess(response);
                 TAPUserModel user  = TAPContactManager.getInstance(instanceKey).getUserData(userID);
+                TAPContactManager.getInstance(instanceKey).removeFromContacts(userID);
                 triggerContactBlocked(user);
+                if (null != listener) {
+                    listener.onSuccess(user);
+                }
             }
 
             @Override
@@ -537,8 +551,25 @@ public class TapCoreContactManager {
             @Override
             public void onSuccess(TAPCommonResponse response) {
                 super.onSuccess(response);
-                TAPUserModel user  = TAPContactManager.getInstance(instanceKey).getUserData(userID);
-                triggerContactUnblocked(user);
+                fetchAllUserContactsFromServer(new TapCoreGetMultipleContactListener() {
+                    @Override
+                    public void onSuccess(List<TAPUserModel> users) {
+                        onFinish();
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        onFinish();
+                    }
+
+                    private void onFinish() {
+                        TAPUserModel user  = TAPContactManager.getInstance(instanceKey).getUserData(userID);
+                        triggerContactUnblocked(user);
+                        if (null != listener) {
+                            listener.onSuccess(user);
+                        }
+                    }
+                });
             }
 
             @Override
@@ -564,7 +595,9 @@ public class TapCoreContactManager {
             @Override
             public void onSuccess(TAPGetMultipleUserResponse response) {
                 super.onSuccess(response);
-                listener.onSuccess(response.getUsers());
+                if (null != listener) {
+                    listener.onSuccess(response.getUsers());
+                }
             }
 
             @Override
@@ -590,7 +623,9 @@ public class TapCoreContactManager {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
                 super.onSuccess(response);
-                listener.onSuccess(new ArrayList<>(response.getUnreadRoomIDs()));
+                if (null != listener) {
+                    listener.onSuccess(new ArrayList<>(response.getUnreadRoomIDs()));
+                }
             }
 
             @Override
