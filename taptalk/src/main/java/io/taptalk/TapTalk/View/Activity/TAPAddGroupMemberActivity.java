@@ -634,13 +634,17 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             // Save user response to database
             TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
 
+            ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
             if (!vm.getContactListPointer().containsKey(userResponse.getUserID())) {
                 // Add user response to pointer
                 TapContactListModel contactListResponse = new TapContactListModel(userResponse, TYPE_SELECTABLE_CONTACT_LIST);
                 vm.getContactListPointer().put(userResponse.getUserID(), contactListResponse);
             }
 
-            if (!vm.getFilteredContacts().contains(userResponse) && !vm.getExistingMembers().contains(userResponse)) {
+            if (!vm.getFilteredContacts().contains(userResponse) &&
+                !vm.getExistingMembers().contains(userResponse) &&
+                !blockedUserIDs.contains(userResponse.getUserID())
+            ) {
                 // Add user response to view
                 if (vm.getNonContactSearchResult().isEmpty()) {
                     vm.getAdapterItems().add(new TapContactListModel(getString(R.string.tap_global_search)));

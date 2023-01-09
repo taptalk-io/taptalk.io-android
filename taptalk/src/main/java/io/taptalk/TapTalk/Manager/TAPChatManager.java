@@ -368,6 +368,7 @@ public class TAPChatManager {
                         blockedUsers.add(blockedUser.getUserID());
                     }
                     TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUsers);
+                    TAPContactManager.getInstance(instanceKey).updateUserData(blockedUser);
                     TapCoreContactManager.getInstance(instanceKey).triggerContactBlocked(blockedUser);
                     break;
                 case kSocketUnblockUser:
@@ -379,6 +380,7 @@ public class TAPChatManager {
                     ArrayList<String> blockedUserList = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
                     blockedUserList.remove(unblockedUser.getUserID());
                     TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserList);
+                    TAPContactManager.getInstance(instanceKey).updateUserData(unblockedUser);
                     TapCoreContactManager.getInstance(instanceKey).triggerContactUnblocked(unblockedUser);
                     break;
             }

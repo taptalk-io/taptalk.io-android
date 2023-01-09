@@ -609,7 +609,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             TAPChatManager.getInstance(instanceKey)
                                 .getOtherUserIdFromRoom(vm!!.room.roomID)
                         )
-                        if (null == contact || null == contact.isContact || contact.isContact == 0) {
+                        if ((null == contact || null == contact.isContact || contact.isContact == 0) && !isUserBlocked()) {
                             val menuAddToContact = TapChatProfileItemModel(
                                 ChatProfileMenuType.MENU_ADD_TO_CONTACTS,
                                 getString(R.string.tap_add_to_contacts),
@@ -841,7 +841,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     val contact = TAPContactManager.getInstance(instanceKey).getUserData(
                         vm!!.groupMemberUser.userID
                     )
-                    if (null == contact || null == contact.isContact || contact.isContact == 0) {
+                    if ((null == contact || null == contact.isContact || contact.isContact == 0) && !isUserBlocked()) {
                         val menuAddToContact = TapChatProfileItemModel(
                             ChatProfileMenuType.MENU_ADD_TO_CONTACTS,
                             getString(R.string.tap_add_to_contacts),
@@ -966,7 +966,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     .setMessage(getString(R.string.tap_sure_unblock_wording))
                     .setPrimaryButtonTitle(getString(R.string.tap_yes))
                     .setPrimaryButtonListener {
-                        TAPDataManager.getInstance(instanceKey).unblockUser(user.userID, blockUnblockUserView)
+                        showLoadingPopup(getString(R.string.tap_loading))
+                        TapCoreContactManager.getInstance(instanceKey).unblockUser(user.userID, blockUnblockUserView)
                     }
                     .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                     .setSecondaryButtonListener { }
@@ -978,7 +979,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     .setMessage(getString(R.string.tap_block_user_dialog_wording))
                     .setPrimaryButtonTitle(getString(R.string.tap_block))
                     .setPrimaryButtonListener {
-                        TAPDataManager.getInstance(instanceKey).blockUser(user.userID, blockUnblockUserView)
+                        showLoadingPopup(getString(R.string.tap_loading))
+                        TapCoreContactManager.getInstance(instanceKey).blockUser(user.userID, blockUnblockUserView)
                     }
                     .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                     .setSecondaryButtonListener { }
@@ -1739,26 +1741,16 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
 
-    private val blockUnblockUserView = object : TAPDefaultDataView<TAPCommonResponse>() {
-        override fun startLoading() {
-            super.startLoading()
-            showLoadingPopup(getString(R.string.tap_loading))
-        }
-
-        override fun endLoading() {
-            super.endLoading()
+    private val blockUnblockUserView = object : TapCoreGetContactListener() {
+        override fun onSuccess(user: TAPUserModel?) {
+            super.onSuccess(user)
             hideLoadingPopup()
+            updateView()
         }
 
-        override fun onError(error: TAPErrorModel?) {
-            super.onError(error)
-            endLoading()
-            showErrorDialog(getString(R.string.tap_error), error?.message)
-        }
-
-        override fun onError(errorMessage: String?) {
-            super.onError(errorMessage)
-            endLoading()
+        override fun onError(errorCode: String?, errorMessage: String?) {
+            super.onError(errorCode, errorMessage)
+            hideLoadingPopup()
             showErrorDialog(getString(R.string.tap_error), errorMessage)
         }
     }
