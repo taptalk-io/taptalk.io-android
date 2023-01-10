@@ -2726,14 +2726,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void setMessageBodyText(TextView tvMessageBody, TAPMessageModel item, String body) {
         String originalText;
         String spaceAppend = "";
-        if (item.getType() == TYPE_TEXT || item.getType() == TYPE_LINK) {
-            originalText = item.getBody();
-        } else if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO) && null != item.getData()) {
+        if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO) && null != item.getData()) {
             originalText = (String) item.getData().get(CAPTION);
         } else if (item.getType() == TYPE_LOCATION && null != item.getData()) {
             originalText = (String) item.getData().get(ADDRESS);
         } else {
-            return;
+            originalText = item.getBody();
         }
         if (null == originalText) {
             return;
