@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -155,11 +156,16 @@ public class TAPNotificationManager {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE);
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private PendingIntent addPendingIntentForSummaryNotification(Context context, Class aClass) {
         Intent intent = new Intent(context, aClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(INSTANCE_KEY, instanceKey);
-        return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT);
+        } else {
+            return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+        }
     }
 
     //buat create notification when the apps is in background
@@ -439,8 +445,7 @@ public class TAPNotificationManager {
                         .setLabel(REPLY).build();
                 Intent intent = new Intent(context, TAPReplyBroadcastReceiver.class);
                 intent.setAction(K_TEXT_REPLY);
-                PendingIntent replyPendingIntent = PendingIntent.getBroadcast(context, K_REPLY_REQ_CODE,
-                        intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent replyPendingIntent = PendingIntent.getBroadcast(context, K_REPLY_REQ_CODE, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
                 NotificationCompat.Action action = new NotificationCompat.Action.Builder(smallIcon,
                         REPLY, replyPendingIntent)

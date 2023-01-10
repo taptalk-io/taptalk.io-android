@@ -487,13 +487,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     public static PendingIntent generatePendingIntent(Context context, String instanceKey, TAPRoomModel roomModel) {
         Intent intent = new Intent(context, TapUIChatActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         intent.putExtra(ROOM, roomModel);
         intent.putExtra(SOCKET_CONNECTED, TapTalk.isConnected(instanceKey));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT);
+        } else {
+            return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+        }
     }
 
     /**
