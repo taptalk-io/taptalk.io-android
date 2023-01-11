@@ -64,12 +64,14 @@ public class TAPChatViewModel extends AndroidViewModel {
     private String lastUnreadMessageLocalID;
     private Integer quoteAction;
     private TAPGetMessageListByRoomResponse pendingAfterResponse;
-    private long lastTimestamp = 0;
+    private long lastTimestamp = 0L;
+    private long lastBeforeTimestamp = 0L;
     private int initialUnreadCount, numUsers, containerAnimationState, firstVisibleItemIndex;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
             isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading,
             isScrollFromKeyboard, isAllUnreadMessagesHidden, deleteGroup;
     private boolean isHasMoreData = true;
+    private boolean isAllMessagesHidden = true;
     public final int IDLE = 0;
     public final int ANIMATING = 1;
     public final int PROCESSING = 2;
@@ -214,13 +216,13 @@ public class TAPChatViewModel extends AndroidViewModel {
         getUnreadMentions().clear();
     }
 
-    public void getMessageEntities(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
-        TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, listener);
-    }
-
-    public void getMessageByTimestamp(String roomID, TAPDatabaseListener<TAPMessageEntity> listener, long lastTimestamp) {
-        TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
-    }
+//    public void getMessageEntities(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+//        TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, listener);
+//    }
+//
+//    public void getMessageByTimestamp(String roomID, TAPDatabaseListener<TAPMessageEntity> listener, long lastTimestamp) {
+//        TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
+//    }
 
     public List<TAPMessageModel> getMessageModels() {
         return messageModels == null ? messageModels = new ArrayList<>() : messageModels;
@@ -419,6 +421,14 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setLastTimestamp(long lastTimestamp) {
         this.lastTimestamp = lastTimestamp;
+    }
+
+    public long getLastBeforeTimestamp() {
+        return lastBeforeTimestamp;
+    }
+
+    public void setLastBeforeTimestamp(long lastBeforeTimestamp) {
+        this.lastBeforeTimestamp = lastBeforeTimestamp;
     }
 
     public int getNumUsers() {
@@ -635,6 +645,14 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setHasMoreData(boolean hasMoreData) {
         isHasMoreData = hasMoreData;
+    }
+
+    public boolean isAllMessagesHidden() {
+        return isAllMessagesHidden;
+    }
+
+    public void setAllMessagesHidden(boolean allMessagesHidden) {
+        isAllMessagesHidden = allMessagesHidden;
     }
 
     public File getAudioFile() {
