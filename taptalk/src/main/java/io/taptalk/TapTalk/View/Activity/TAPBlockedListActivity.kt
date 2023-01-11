@@ -13,8 +13,10 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Listener.TapCoreGetContactListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TapCoreContactManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -140,7 +142,8 @@ class TAPBlockedListActivity : TAPBaseActivity() {
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_yes))
                 .setPrimaryButtonListener {
-                    TAPDataManager.getInstance(instanceKey).unblockUser(item.userID, unblockUserView)
+                    showLoading()
+                    TapCoreContactManager.getInstance(instanceKey).unblockUser(item.userID, unblockUserView)
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
@@ -149,31 +152,14 @@ class TAPBlockedListActivity : TAPBaseActivity() {
         }
     }
 
-    private val unblockUserView = object : TAPDefaultDataView<TAPCommonResponse>() {
-        override fun startLoading() {
-            super.startLoading()
-            showLoading()
-        }
-
-        override fun endLoading() {
-            super.endLoading()
+    private val unblockUserView = object : TapCoreGetContactListener() {
+        override fun onSuccess(user: TAPUserModel?) {
             hideLoading()
-        }
-
-        override fun onSuccess(response: TAPCommonResponse?) {
-            super.onSuccess(response)
             getBlockedUsers()
         }
 
-        override fun onError(error: TAPErrorModel?) {
-            super.onError(error)
-            endLoading()
-            showErrorDialog(error?.message)
-        }
-
-        override fun onError(errorMessage: String?) {
-            super.onError(errorMessage)
-            endLoading()
+        override fun onError(errorCode: String?, errorMessage: String?) {
+            hideLoading()
             showErrorDialog(errorMessage)
         }
     }

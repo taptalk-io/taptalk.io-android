@@ -228,6 +228,7 @@ import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreContactListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetContactListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetIntegerListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
@@ -1379,7 +1380,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         .setPrimaryButtonTitle(getString(R.string.tap_yes))
                         .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                         .setPrimaryButtonListener(view -> {
-                            TAPDataManager.getInstance(instanceKey).unblockUser(vm.getOtherUserID(), unblockUserView);
+                            showLoadingPopup();
+                            TapCoreContactManager.getInstance(instanceKey).unblockUser(vm.getOtherUserID(), unblockUserView);
                         })
                         .show();
             });
@@ -6072,21 +6074,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     };
 
-    private TAPDefaultDataView<TAPCommonResponse> unblockUserView = new TAPDefaultDataView<>() {
+    private TapCoreGetContactListener unblockUserView = new TapCoreGetContactListener() {
         @Override
-        public void startLoading() {
-            super.startLoading();
-            showLoadingPopup();
-        }
-
-        @Override
-        public void endLoading() {
-            super.endLoading();
+        public void onSuccess(TAPUserModel user) {
             hideLoadingPopup();
-        }
-
-        @Override
-        public void onSuccess(TAPCommonResponse response) {
             ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
             blockedUserIDs.remove(vm.getOtherUserID());
             TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserIDs);
@@ -6094,16 +6085,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void onError(TAPErrorModel error) {
-            super.onError(error);
-            endLoading();
-            showErrorDialog(getString(R.string.tap_error), error.getMessage());
-        }
-
-        @Override
-        public void onError(String errorMessage) {
-            super.onError(errorMessage);
-            endLoading();
+        public void onError(String errorCode, String errorMessage) {
+            hideLoadingPopup();
             showErrorDialog(getString(R.string.tap_error), errorMessage);
         }
     };
