@@ -3866,12 +3866,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         // Scroll recycler to bottom if recycler is already on bottom
                         vm.setScrollFromKeyboard(true);
                         scrollToBottom();
-                    } else if (ownMessage && !(newMessage.getAction().equals(PIN_MESSAGE) || newMessage.getAction().equals(UNPIN_MESSAGE))) {
+                    } else if (ownMessage && !(PIN_MESSAGE.equals(newMessage.getAction()) || UNPIN_MESSAGE.equals(newMessage.getAction()))) {
                         // Scroll recycler to bottom if own message
                         scrollToBottom();
                     } else {
                         // Message from other people is received when recycler is scrolled up
-                        if (newMessage.getAction() == null || !newMessage.getAction().equals(UNPIN_MESSAGE)) {
+                        if (newMessage.getAction() == null || !UNPIN_MESSAGE.equals(newMessage.getAction())) {
                             vm.addUnreadMessage(newMessage);
                             updateUnreadCount();
                         }
