@@ -6081,15 +6081,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            setRecyclerViewAnimator();
-            hideLoadingOlderMessagesIndicator();
+            onError(error.getMessage() != null ? error.getMessage() : "");
         }
 
         @Override
-        public void onError(Throwable throwable) {
+        public void onError(String errorMessage) {
             setRecyclerViewAnimator();
             hideLoadingOlderMessagesIndicator();
-            insertDateSeparatorToLastIndex(false);
         }
 
         private void setRecyclerViewAnimator() {
