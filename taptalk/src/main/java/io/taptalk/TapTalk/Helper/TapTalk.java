@@ -449,6 +449,8 @@ public class TapTalk implements LifecycleObserver {
 
                     TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
                     TAPApiManager.getInstance(instanceKey).setLoggedOut(false);
+                    // Run message status scheduler
+                    TAPChatManager.getInstance(instanceKey).triggerSaveNewMessage();
                     if (connectOnSuccess && TapTalk.getTapTalkSocketConnectionMode(instanceKey) != TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
                         TAPConnectionManager.getInstance(instanceKey).connect();
                     }
