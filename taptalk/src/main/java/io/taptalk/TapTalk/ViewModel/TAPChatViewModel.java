@@ -65,8 +65,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Integer quoteAction;
     private TAPGetMessageListByRoomResponse pendingAfterResponse;
     private long lastTimestamp = 0L;
-    private long lastBeforeTimestamp = 0L;
-    private int initialUnreadCount, numUsers, containerAnimationState, firstVisibleItemIndex;
+    private long lastBeforeTimestamp = System.currentTimeMillis();
+    private int initialUnreadCount, numUsers, containerAnimationState, firstVisibleItemIndex, visibleMessageBubbleCount;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
             isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading,
             isScrollFromKeyboard, isAllUnreadMessagesHidden, deleteGroup;
@@ -453,6 +453,14 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setFirstVisibleItemIndex(int firstVisibleItemIndex) {
         this.firstVisibleItemIndex = firstVisibleItemIndex;
+    }
+
+    public int getVisibleMessageBubbleCount() {
+        return visibleMessageBubbleCount;
+    }
+
+    public void setVisibleMessageBubbleCount(int visibleMessageBubbleCount) {
+        this.visibleMessageBubbleCount = visibleMessageBubbleCount;
     }
 
     public boolean isActiveUserTyping() {

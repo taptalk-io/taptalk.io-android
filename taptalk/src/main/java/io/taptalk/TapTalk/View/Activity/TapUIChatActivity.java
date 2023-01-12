@@ -427,7 +427,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private boolean isLastMessageNeedRefresh = false;
     private boolean isArrowButtonTapped = false;
 
-    private STATE state = STATE.WORKING;
+    private STATE state = STATE.LOADED;
     private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
 
     // Star and Pin Messages
@@ -2138,7 +2138,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void updateMessageDecoration() {
         // Update decoration for the top item in recycler view
         runOnUiThread(() -> {
-            if (rvMessageList.getItemDecorationCount() > 0) {
+            while (rvMessageList.getItemDecorationCount() > 0) {
                 rvMessageList.removeItemDecorationAt(0);
             }
             rvMessageList.addItemDecoration(new TAPVerticalDecoration(TAPUtils.dpToPx(10), 0, messageAdapter.getItemCount() - 1));
@@ -5020,10 +5020,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void loadMessagesFromDatabase() {
-        if (vm.getRoom() == null || vm.getRoom().getRoomID().isEmpty()) {
+        if (state != STATE.LOADED || vm.getRoom() == null || vm.getRoom().getRoomID().isEmpty()) {
+            Log.e(">>>>>", "loadMessagesFromDatabase: RETURN");
             return;
         }
 
+        state = STATE.WORKING;
         final boolean isFirstLoad = vm.getLastTimestamp() == 0L;
 
         TAPDatabaseListener<TAPMessageEntity> listener = new TAPDatabaseListener<>() {
@@ -5056,7 +5058,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
                 LinkedHashMap<String, TAPMessageModel> dateSeparators = new LinkedHashMap<>();
                 LinkedHashMap<String, Integer> dateSeparatorIndex = new LinkedHashMap<>();
-                int hiddenCount = 0;
+                int visibleCount = 0;
 
                 if (0 < entities.size()) {
                     vm.setLastTimestamp(entities.get(entities.size() - 1).getCreated());
@@ -5071,12 +5073,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
 //                        Log.e(">>>>>", "dbListener: " + model.getIsHidden() + " - " + model.getBody());
 
-                        if (null != model.getIsHidden() && model.getIsHidden()) {
-                            hiddenCount++;
-                        }
-                        else if (vm.isAllMessagesHidden()) {
-                            Log.e(">>>>>", "dbListener: setAllMessagesHidden(false)");
-                            vm.setAllMessagesHidden(false);
+                        if (null == model.getIsHidden() || !model.getIsHidden()) {
+                            visibleCount++;
+                            if (vm.isAllMessagesHidden()) {
+                                Log.e(">>>>>", "dbListener: setAllMessagesHidden(false)");
+                                vm.setAllMessagesHidden(false);
+                            }
                         }
 
                         updateMessageMentionIndexes(model);
@@ -5106,7 +5108,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                 }
 
-                Log.e(">>>>>", "dbListener hidden: " + hiddenCount);
+                Log.e(">>>>>", "dbListener visibleCount: " + visibleCount);
 
 //                TAPMessageModel lastUnreadMessage = vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID());
 //                if (null != lastUnreadMessage && !vm.isAllUnreadMessagesHidden()) {
@@ -5122,8 +5124,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
                 insertDateSeparators(dateSeparators, dateSeparatorIndex, models);
 
+                vm.setVisibleMessageBubbleCount(vm.getVisibleMessageBubbleCount() + visibleCount);
 
-                int finalHiddenCount = hiddenCount;
+                if (state == STATE.WORKING) {
+                    state = STATE.LOADED;
+                }
+
+                int currentVisibleCount = visibleCount;
                 runOnUiThread(() -> {
                     messageAdapter.addMessage(models);
                     Log.e(">>>>>", "dbListener messageAdapter itemCount: " + messageAdapter.getItemCount());
@@ -5175,10 +5182,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                 loadInitialsToProfilePicture(civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                             }
 
-
-                            if (STATE.WORKING == state) {
-                                state = STATE.LOADED;
-                            }
+//                            if (STATE.WORKING == state) {
+//                                state = STATE.LOADED;
+//                            }
                         }
                         else if (models.isEmpty() && STATE.DONE != state) {
                             Log.e(">>>>>", "dbListener: no message, call before API");
@@ -5227,14 +5233,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             scrollToMessage(vm.getTappedMessageLocalID());
                         }
 
-                        if (finalHiddenCount > (MAX_ITEMS_PER_PAGE / 2)) {
+                        if (vm.getVisibleMessageBubbleCount() < MAX_ITEMS_PER_PAGE && currentVisibleCount < (MAX_ITEMS_PER_PAGE / 2)) {
                             // Load more messages if half or more loaded items are hidden
                             Log.e(">>>>>>", "dbListener: half++ loaded messages hidden, load more");
                             loadMessagesFromDatabase();
                         }
-                        else if (STATE.WORKING == state) {
-                            state = STATE.LOADED;
-                        }
+//                        else if (state == STATE.WORKING) {
+//                            state = STATE.LOADED;
+//                        }
                     }
 
                     if (isFirstLoad) {
@@ -5919,9 +5925,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void fetchBeforeMessageFromAPIAndUpdateUI(TAPDefaultDataView<TAPGetMessageListByRoomResponse> beforeView) {
-        if (vm.getLastTimestamp() >= vm.getLastBeforeTimestamp()) {
+        if (vm.getLastTimestamp() >= vm.getLastBeforeTimestamp() || state == STATE.WORKING) {
+            Log.e(">>>>>>>>>>", "fetchBeforeMessageFromAPI: RETURN state: " + state);
+            Log.e(">>>>>>>>>>", "lastTimestamp (<): " + vm.getLastTimestamp());
+            Log.e(">>>>>>>>>>", "lastBeforeTimestamp (>): " + vm.getLastBeforeTimestamp());
+            Log.e(">>>>>>>>>>", "=====================================================================");
             return;
         }
+        state = STATE.WORKING;
         new Thread(() -> {
             long timestamp;
             if (0 < vm.getMessageModels().size()) {
@@ -5949,7 +5960,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             List<TAPMessageModel> messageBeforeModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
             LinkedHashMap<String, TAPMessageModel> dateSeparators = new LinkedHashMap<>();
             LinkedHashMap<String, Integer> dateSeparatorIndex = new LinkedHashMap<>();
-            int hiddenCount = 0;
+            int visibleCount = 0;
 
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
@@ -5958,8 +5969,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     responseMessages.add(TAPMessageEntity.fromMessageModel(message));
                     updateMessageMentionIndexes(message);
 
-                    if (message.getIsHidden() != null && message.getIsHidden()) {
-                        hiddenCount++;
+                    if (message.getIsHidden() == null || !message.getIsHidden()) {
+                        visibleCount++;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -5968,7 +5979,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
             // Check if room has more messages
             state = response.getHasMore() ? STATE.LOADED : STATE.DONE;
-            Log.e(">>>>>>>>>>>>", "messageBeforeView STATE: " + state);
+            Log.e(">>>>>>>>>>>>", "messageBeforeView hasMore: " + response.getHasMore() + " STATE: " + state + " visibleCount: " + visibleCount);
 
             vm.setLastBeforeTimestamp(vm.getLastTimestamp());
             if (0 < messageBeforeModels.size()) {
@@ -6020,10 +6031,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     previousMessage = message;
                 }
             }
+
             insertDateSeparators(dateSeparators, dateSeparatorIndex, messageBeforeModels);
 
+            vm.setVisibleMessageBubbleCount(vm.getVisibleMessageBubbleCount() + visibleCount);
+
             List<TAPMessageModel> finalMessageBeforeModels = messageBeforeModels;
-            int finalHiddenCount = hiddenCount;
+            int currentVisibleCount = visibleCount;
             runOnUiThread(() -> {
                 if (0 < finalMessageBeforeModels.size()) {
                     showMessageList();
@@ -6062,18 +6076,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
                 if (state == STATE.DONE) {
                     insertDateSeparatorToLastIndex(false);
+                    updateMessageDecoration();
                 }
                 else {
                     if (state == STATE.LOADED) {
                         rvMessageList.addOnScrollListener(endlessScrollListener);
                     }
-                    if (finalHiddenCount > (MAX_ITEMS_PER_PAGE / 2)) {
+                    if (vm.getVisibleMessageBubbleCount() < MAX_ITEMS_PER_PAGE &&  currentVisibleCount < (MAX_ITEMS_PER_PAGE / 2)) {
                         // Load more messages if half or more loaded items are hidden
                         Log.e(">>>>>>", "beforeView: half++ loaded messages hidden, load more");
                         loadMessagesFromDatabase();
                     }
                 }
-                updateMessageDecoration();
             });
 
             TAPDataManager.getInstance(instanceKey).insertToDatabase(responseMessages, false, new TAPDatabaseListener<TAPMessageEntity>() {});
