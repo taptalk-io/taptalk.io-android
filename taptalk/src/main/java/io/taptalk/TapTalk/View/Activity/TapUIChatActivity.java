@@ -5558,7 +5558,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void fetchBeforeMessageFromAPIAndUpdateUI(TAPDefaultDataView<TAPGetMessageListByRoomResponse> beforeView) {
-        if (vm.getLastTimestamp() >= vm.getLastBeforeTimestamp() || state == STATE.WORKING) {
+        if (state != STATE.LOADED || vm.getLastTimestamp() >= vm.getLastBeforeTimestamp()) {
             return;
         }
         state = STATE.WORKING;
