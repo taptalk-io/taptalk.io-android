@@ -332,7 +332,6 @@
                 app:layout_constraintEnd_toStartOf="@id/iv_pin_body"
                 app:layout_constraintStart_toEndOf="@id/tv_edited_body"
                 app:layout_constraintTop_toBottomOf="@id/tv_message_body"
-                app:layout_goneMarginEnd="10dp"
                 tools:text="17:05" />
 
             <ImageView

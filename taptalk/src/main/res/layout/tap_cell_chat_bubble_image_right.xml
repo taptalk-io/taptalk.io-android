@@ -280,7 +280,6 @@
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:padding="2dp"
-                app:layout_goneMarginStart="10dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
                 android:layout_gravity="center"
