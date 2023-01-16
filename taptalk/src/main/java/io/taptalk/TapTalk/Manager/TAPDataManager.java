@@ -1716,7 +1716,7 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).submitMessageReport(messageId, roomId, category, isOtherCategory, reason, new TAPDefaultSubscriber<>(view));
     }
 
-    public void blockUser(String userId, TAPDefaultDataView<TAPCommonResponse> view) {
+    public void blockUser(String userId, TAPDefaultDataView<TAPAddContactResponse> view) {
         TAPApiManager.getInstance(instanceKey).blockUser(userId, new TAPDefaultSubscriber<>(view));
     }
 

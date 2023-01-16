@@ -289,7 +289,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPCommonResponse>> submitMessageReport(@Body TapReportUserRequest request);
 
     @POST("client/contact/block")
-    Observable<TAPBaseResponse<TAPCommonResponse>> blockUser(@Body TAPUserIdRequest request);
+    Observable<TAPBaseResponse<TAPAddContactResponse>> blockUser(@Body TAPUserIdRequest request);
 
     @POST("client/contact/unblock")
     Observable<TAPBaseResponse<TAPCommonResponse>> unblockUser(@Body TAPUserIdRequest request);

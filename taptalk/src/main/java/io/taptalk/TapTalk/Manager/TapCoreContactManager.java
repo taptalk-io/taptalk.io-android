@@ -512,19 +512,16 @@ public class TapCoreContactManager {
         }
         TAPDataManager.getInstance(instanceKey).blockUser(userID, new TAPDefaultDataView<>() {
             @Override
-            public void onSuccess(TAPCommonResponse response) {
-                super.onSuccess(response);
-                TAPUserModel user  = TAPContactManager.getInstance(instanceKey).getUserData(userID);
+            public void onSuccess(TAPAddContactResponse response) {
                 TAPContactManager.getInstance(instanceKey).removeFromContacts(userID);
-                triggerContactBlocked(user);
+                triggerContactBlocked(response.getUser());
                 if (null != listener) {
-                    listener.onSuccess(user);
+                    listener.onSuccess(response.getUser());
                 }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
                 if (null != listener) {
                     listener.onError(error.getCode(), error.getMessage());
                 }
@@ -532,7 +529,6 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
                 if (null != listener) {
                     listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }
@@ -550,7 +546,6 @@ public class TapCoreContactManager {
         TAPDataManager.getInstance(instanceKey).unblockUser(userID, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
-                super.onSuccess(response);
                 fetchAllUserContactsFromServer(new TapCoreGetMultipleContactListener() {
                     @Override
                     public void onSuccess(List<TAPUserModel> users) {
@@ -574,7 +569,6 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(TAPErrorModel error) {
-                super.onError(error);
                 if (null != listener) {
                     listener.onError(error.getCode(), error.getMessage());
                 }
@@ -582,7 +576,6 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
                 if (null != listener) {
                     listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }

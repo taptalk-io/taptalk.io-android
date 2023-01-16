@@ -835,7 +835,7 @@ public class TAPApiManager {
         execute(homingPigeon.submitMessageReport(request), subscriber);
     }
 
-    public void blockUser(String userId, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+    public void blockUser(String userId, Subscriber<TAPBaseResponse<TAPAddContactResponse>> subscriber) {
         TAPUserIdRequest request = new TAPUserIdRequest(userId);
         execute(homingPigeon.blockUser(request), subscriber);
     }
