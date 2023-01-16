@@ -33,16 +33,18 @@
     <TextView
         android:id="@+id/tv_forwarded_from"
         style="@style/tapRightBubbleQuoteTitleStyle"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
         android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
         android:layout_marginTop="2dp"
         android:ellipsize="end"
         android:maxLines="1"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tv_label_from"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/tv_label_from"
         app:layout_constraintTop_toBottomOf="@id/tv_label_forwarded"
         tools:text="Rob Janoff" />
 

@@ -1520,6 +1520,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TextView tvFileName;
         private TextView tvFileInfo;
         private TextView tvFileInfoDummy;
+        private TextView tvMessageBody;
         private TextView tvMessageTimestamp;
         private TextView tvMessageStatus;
         private TextView tvForwardedFrom;
@@ -1557,6 +1558,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvFileName = itemView.findViewById(R.id.tv_file_name);
             tvFileInfo = itemView.findViewById(R.id.tv_file_info);
             tvFileInfoDummy = itemView.findViewById(R.id.tv_file_info_dummy);
+            tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageTimestamp = itemView.findViewById(R.id.tv_message_timestamp);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
@@ -1611,6 +1613,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setFileProgress(item);
+            setFileCaption(item);
 
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
@@ -1762,6 +1765,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     pbProgress.setProgress(downloadProgressPercent);
                     flFileIcon.setOnClickListener(v -> cancelDownload(item));
                 }
+            }
+        }
+
+        private void setFileCaption(TAPMessageModel item) {
+            if (item.getData() != null) {
+                String caption = (String) item.getData().get(CAPTION);
+                if (caption != null && !caption.isEmpty()) {
+                    setMessageBodyText(tvMessageBody, item, caption);
+                    tvMessageBody.setVisibility(View.VISIBLE);
+                } else {
+                    tvMessageBody.setVisibility(View.GONE);
+                }
+            } else {
+                tvMessageBody.setVisibility(View.GONE);
             }
         }
 
@@ -2822,7 +2839,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void setMessageBodyText(TextView tvMessageBody, TAPMessageModel item, String body) {
         String originalText;
         String spaceAppend = "";
-        if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO) && null != item.getData()) {
+        if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO || item.getType() == TYPE_FILE) && null != item.getData()) {
             originalText = (String) item.getData().get(CAPTION);
         } else if (item.getType() == TYPE_LOCATION && null != item.getData()) {
             originalText = (String) item.getData().get(ADDRESS);
