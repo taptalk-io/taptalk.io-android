@@ -427,7 +427,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clLink;
         private TextView tvLinkTitle;
         private TextView tvLinkContent;
-        private TAPRoundedCornerImageView rcivLinkImage;
+        private ImageView ivLinkImage;
         private ImageView ivReadCount;
         private TextView tvReadCount;
         private Group gReadCount;
@@ -459,7 +459,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clLink = itemView.findViewById(R.id.cl_link);
             tvLinkTitle = itemView.findViewById(R.id.tv_link_title);
             tvLinkContent = itemView.findViewById(R.id.tv_link_content);
-            rcivLinkImage = itemView.findViewById(R.id.rciv_link_image);
+            ivLinkImage = itemView.findViewById(R.id.iv_link_image);
             ivReadCount = itemView.findViewById(R.id.iv_read_count);
             tvReadCount = itemView.findViewById(R.id.tv_read_count);
             gReadCount = itemView.findViewById(R.id.g_read_count);
@@ -567,7 +567,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     String url = (String) item.getData().get(URL);
                     String image = (String) item.getData().get(IMAGE);
                     clLink.setVisibility(View.VISIBLE);
-                    tvLinkTitle.setText(title);
+                    if (!title.isEmpty()) {
+                        tvLinkTitle.setText(title);
+                        tvLinkTitle.setVisibility(View.VISIBLE);
+                    } else {
+                        tvLinkTitle.setVisibility(View.GONE);
+                    }
                     if (description == null || description.isEmpty()) {
                         tvLinkContent.setVisibility(View.GONE);
                     } else {
@@ -575,10 +580,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         tvLinkContent.setText(description);
                     }
                     if (image == null || image.isEmpty()) {
-                        rcivLinkImage.setVisibility(View.GONE);
+                        ivLinkImage.setVisibility(View.GONE);
                     } else {
-                        rcivLinkImage.setVisibility(View.VISIBLE);
-                        glide.load(image).fitCenter().into(rcivLinkImage);
+                        ivLinkImage.setVisibility(View.VISIBLE);
+                        glide.load(image).fitCenter().into(ivLinkImage);
                     }
                     clLink.setOnClickListener(view -> TAPUtils.openCustomTabLayout((Activity) itemView.getContext(), url));
                 } else {
