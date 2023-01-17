@@ -3732,6 +3732,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (null != vm.getRoom().getImageURL()) {
                     civRoomImage.post(this::setNavigationBarProfilePicture);
                 }
+                setChatRoomStatus(TAPOnlineStatusModel.Builder(message.getUser()));
             });
             TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getRoom().getType() == TYPE_PERSONAL ? vm.getOtherUserModel() : null);
         }
