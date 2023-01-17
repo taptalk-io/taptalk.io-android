@@ -110,11 +110,9 @@ public class TAPContactManager {
     }
 
     private void saveUserDataToMap(List<TAPUserModel> userModels) {
-        userDataMap = new HashMap<>();
-        userDataMapByUsername = new HashMap<>();
         for (TAPUserModel userModel : userModels) {
-            userDataMap.put(userModel.getUserID(), userModel);
-            userDataMapByUsername.put(userModel.getUsername(), userModel);
+            getUserDataMap().put(userModel.getUserID(), userModel);
+            getUserDataMapByUsername().put(userModel.getUsername(), userModel);
         }
     }
 
@@ -159,14 +157,12 @@ public class TAPContactManager {
         return userModelList;
     }
 
-    private TAPDatabaseListener<TAPUserModel> getAllUserDataListener = new TAPDatabaseListener<TAPUserModel>() {
+    private final TAPDatabaseListener<TAPUserModel> getAllUserDataListener = new TAPDatabaseListener<TAPUserModel>() {
         @Override
         public void onSelectFinished(List<TAPUserModel> entities) {
-            userDataMap = new HashMap<>();
-            userDataMapByUsername = new HashMap<>();
             for (TAPUserModel userModel : entities) {
-                userDataMap.put(userModel.getUserID(), userModel);
-                userDataMapByUsername.put(userModel.getUsername(), userModel);
+                getUserDataMap().put(userModel.getUserID(), userModel);
+                getUserDataMapByUsername().put(userModel.getUsername(), userModel);
             }
         }
     };

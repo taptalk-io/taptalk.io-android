@@ -17,7 +17,6 @@ import io.taptalk.TapTalk.Listener.TapCoreGetContactListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TapCoreContactManager
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
@@ -129,7 +128,7 @@ class TAPBlockedListActivity : TAPBaseActivity() {
                 user.imageURL,
                 ""
             )
-            TAPChatProfileActivity.start(this@TAPBlockedListActivity, instanceKey, roomModel, user, false)
+            TAPChatProfileActivity.start(this@TAPBlockedListActivity, instanceKey, roomModel, user)
         }
 
         override fun onClick(position: Int, item: TAPUserModel?) {
@@ -176,7 +175,6 @@ class TAPBlockedListActivity : TAPBaseActivity() {
                 vm.blockedList.addAll(response.users)
                 runOnUiThread {
                     adapter?.items = vm.blockedList
-                    adapter?.notifyDataSetChanged()
                 }
             } else {
                 tv_edit_save_btn.visibility = View.GONE

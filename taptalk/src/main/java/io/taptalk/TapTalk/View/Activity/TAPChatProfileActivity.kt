@@ -413,7 +413,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         vm!!.adapterItems.addAll(vm!!.menuItems)
         if (null != adapter) {
             adapter!!.items = vm!!.adapterItems
-            adapter!!.notifyDataSetChanged()
         }
     }
 
