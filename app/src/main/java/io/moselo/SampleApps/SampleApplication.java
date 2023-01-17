@@ -53,6 +53,7 @@ public class SampleApplication extends MultiDexApplication {
         TapUI.getInstance(INSTANCE_KEY).setLogoutButtonVisible(true);
         TapUI.getInstance(INSTANCE_KEY).setConnectionStatusIndicatorVisible(false);
         TapUI.getInstance(INSTANCE_KEY).setDeleteAccountButtonVisible(true);
+        TapUI.getInstance(INSTANCE_KEY).setMobileNumberInChatProfileVisible(false);
         TapUI.getInstance(INSTANCE_KEY).setReportButtonInUserProfileVisible(true);
         TapUI.getInstance(INSTANCE_KEY).setReportMessageMenuEnabled(true);
         TapUI.getInstance(INSTANCE_KEY).setBlockUserMenuEnabled(true);
