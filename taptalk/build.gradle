@@ -144,7 +144,11 @@ project.afterEvaluate {
                 artifact androidSourcesJar // optional sources
                 groupId = 'com.github.taptalk-io'
                 artifactId = 'taptalk.io-android'
+<<<<<<< HEAD
                 version = "2.9.0"
+=======
+                version = "2.8.7"
+>>>>>>> develop
 //                version = "\"${defaultConfig.versionName}\""
             }
         }

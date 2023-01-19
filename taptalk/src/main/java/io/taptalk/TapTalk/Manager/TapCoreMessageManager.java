@@ -617,50 +617,86 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance(instanceKey).editMessage(newMessage, listener);
     }
 
+    // For uploadImage, uploadVideo, uploadFile
+    private ProgressRequestBody.UploadCallbacks uploadCallBack(TapCoreFileUploadListener listener) {
+        return  new ProgressRequestBody.UploadCallbacks() {
+            @Override
+            public void onProgressUpdate(int percentage, long bytes) {
+                if (null != listener) {
+                    listener.onProgress(percentage, bytes);
+                }
+            }
+
+            @Override
+            public void onError() {
+
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        };
+    }
+
+    // For uploadImage, uploadVideo, uploadFile
+    private TAPDefaultDataView<TAPUploadFileResponse> uploadDataView(TapCoreFileUploadListener listener) {
+        return new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPUploadFileResponse response) {
+                if (null != listener && null != response) {
+                    listener.onSuccess(response.getFileID(), response.getFileURL());
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        };
+    }
+
     public void uploadImage(Context context, Uri uri, TapCoreFileUploadListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
         try {
-            TAPFileUploadManager.getInstance(instanceKey).uploadImage(context, uri, new ProgressRequestBody.UploadCallbacks() {
-                @Override
-                public void onProgressUpdate(int percentage, long bytes) {
-                    if (null != listener) {
-                        listener.onProgress(percentage, bytes);
-                    }
-                }
+            TAPFileUploadManager.getInstance(instanceKey).uploadImage(context, uri, uploadCallBack(listener), uploadDataView(listener));
+        } catch (Exception e) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());
+            }
+        }
+    }
 
-                @Override
-                public void onError() {
+    public void uploadVideo(Context context, Uri uri, TapCoreFileUploadListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        try {
+            TAPFileUploadManager.getInstance(instanceKey).uploadVideo(context, uri, uploadCallBack(listener), uploadDataView(listener));
+        } catch (Exception e) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());
+            }
+        }
+    }
 
-                }
-
-                @Override
-                public void onFinish() {
-
-                }
-            }, new TAPDefaultDataView<TAPUploadFileResponse>() {
-                @Override
-                public void onSuccess(TAPUploadFileResponse response) {
-                    if (null != listener && null != response) {
-                        listener.onSuccess(response.getFileID(), response.getFileURL());
-                    }
-                }
-
-                @Override
-                public void onError(TAPErrorModel error) {
-                    if (null != listener) {
-                        listener.onError(error.getCode(), error.getMessage());
-                    }
-                }
-
-                @Override
-                public void onError(String errorMessage) {
-                    if (null != listener) {
-                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
-                    }
-                }
-            });
+    public void uploadFile(Context context, Uri uri, TapCoreFileUploadListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        try {
+            TAPFileUploadManager.getInstance(instanceKey).uploadFile(context, uri, uploadCallBack(listener), uploadDataView(listener));
         } catch (Exception e) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());
