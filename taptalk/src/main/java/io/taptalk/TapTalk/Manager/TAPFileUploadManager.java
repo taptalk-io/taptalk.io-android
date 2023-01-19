@@ -45,10 +45,12 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_IMAGE_UNAVAILABLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_UPLOAD_CANCELLED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_URI_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_IMAGE_UNAVAILABLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_UPLOAD_CANCELLED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_URI_NOT_FOUND;
@@ -779,13 +781,96 @@ public class TAPFileUploadManager {
     }
 
     public void uploadImage(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
-        TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(context, uri, IMAGE_MAX_DIMENSION, bitmap -> {
+        createAndResizeImageFile(context, uri, IMAGE_MAX_DIMENSION, bitmap -> {
             String mimeType = TAPUtils.getImageMimeType(context, uri);
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
             File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
             TAPDataManager.getInstance(instanceKey).uploadImage(null, imageFile, "", "", mimeType, uploadCallback, view);
         });
+    }
+
+    public void uploadVideo(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
+        try {
+            File videoFile = new File(uri.toString());
+            String mimeType = TAPUtils.getFileMimeType(videoFile);
+
+            if (videoFile.length() == 0 && !uri.toString().isEmpty()) {
+                // Get file from file Uri if map is empty
+                String videoPath = TAPFileUtils.getFilePath(context, uri);
+                if (videoPath == null || videoPath.isEmpty()) {
+                    // File not found
+                    view.onError(new TAPErrorModel(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND, ""));
+                    return;
+                }
+                videoFile = new File(videoPath);
+                mimeType = context.getContentResolver().getType(uri);
+            }
+            if (videoFile.length() == 0) {
+                // File not found
+                view.onError(new TAPErrorModel(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND, ""));
+                return;
+            }
+
+            if (isSizeAllowedForUpload(videoFile.length())) {
+                // Run upload
+                TAPDataManager.getInstance(instanceKey).uploadVideo(null, videoFile, "", "", mimeType, uploadCallback, view);
+            }
+            else {
+                // Size exceeds limit
+                view.onError(new TAPErrorModel(
+                    ERROR_CODE_EXCEEDED_MAX_SIZE,
+                    String.format(ERROR_MESSAGE_EXCEEDED_MAX_SIZE, TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize())),
+                    ""
+                ));
+            }
+        } catch (Exception e) {
+            view.onError(e);
+        }
+    }
+
+    public void uploadFile(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
+        try {
+            File file;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                file = TAPFileUtils.createTemporaryCachedFile(context, uri);
+            }
+            else {
+                file = new File(uri.toString());
+            }
+            String mimeType = TAPUtils.getFileMimeType(file);
+
+            if ((file == null || file.length() == 0) && !uri.toString().isEmpty()) {
+                // Get file from file Uri if map is empty
+                String filePath = TAPFileUtils.getFilePath(context, uri);
+                if (filePath == null || filePath.isEmpty()) {
+                    view.onError(new TAPErrorModel(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND, ""));
+                    return;
+                }
+                file = new File(filePath);
+                mimeType = context.getContentResolver().getType(uri);
+            }
+            if (file == null || file.length() == 0) {
+                // File not found
+                view.onError(new TAPErrorModel(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND, ""));
+                return;
+            }
+
+            if (isSizeAllowedForUpload(file.length())) {
+                // Run upload
+                TAPDataManager.getInstance(instanceKey).uploadFile(null, file, "", mimeType, uploadCallback, view);
+            }
+            else {
+                // Size exceeds limit
+                view.onError(new TAPErrorModel(
+                    ERROR_CODE_EXCEEDED_MAX_SIZE,
+                    String.format(ERROR_MESSAGE_EXCEEDED_MAX_SIZE, TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize())),
+                    ""
+                ));
+            }
+        } catch (Exception e) {
+            view.onError(e);
+        }
     }
 
     private void callVideoUploadAPI(Context context, String roomID, TAPMessageModel messageModel,
