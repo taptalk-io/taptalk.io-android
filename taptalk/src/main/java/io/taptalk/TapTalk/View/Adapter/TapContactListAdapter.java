@@ -29,6 +29,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapContactListListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
@@ -44,16 +45,19 @@ import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SE
 
 public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, TAPBaseViewHolder<TapContactListModel>> {
 
+    private String instanceKey;
     private String myID;
     private TapContactListListener listener;
 
     public TapContactListAdapter(String instanceKey, List<TapContactListModel> contactList) {
         setItems(contactList, false);
+        this.instanceKey = instanceKey;
         this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
     }
 
     public TapContactListAdapter(String instanceKey, List<TapContactListModel> contactList, TapContactListListener listener) {
         setItems(contactList, false);
+        this.instanceKey = instanceKey;
         this.listener = listener;
         this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
     }
@@ -101,9 +105,13 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
 
         @Override
         protected void onBind(TapContactListModel item, int position) {
-            TAPUserModel user = item.getUser();
-            if (null == user) {
+            if (null == item.getUser()) {
                 return;
+            }
+
+            TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(item.getUser().getUserID());
+            if (user == null) {
+                user = item.getUser();
             }
 
             if (null != user.getDeleted() && user.getDeleted() > 0L) {
@@ -113,6 +121,7 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                 tvAvatarLabel.setVisibility(View.GONE);
             } else if (null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 // Load profile picture
+                TAPUserModel finalUser = user;
                 Glide.with(itemView.getContext())
                         .load(user.getImageURL().getThumbnail())
                         .listener(new RequestListener<Drawable>() {
@@ -121,9 +130,9 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                                 // Show initial
                                 if (itemView.getContext() instanceof Activity) {
                                     ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), user.getFullname())));
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), finalUser.getFullname())));
                                         civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                                        tvAvatarLabel.setText(TAPUtils.getInitials(user.getFullname(), 2));
+                                        tvAvatarLabel.setText(TAPUtils.getInitials(finalUser.getFullname(), 2));
                                         tvAvatarLabel.setVisibility(View.VISIBLE);
                                     });
                                 }

@@ -3022,31 +3022,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 // Load avatar and name for other room types
                 TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(item.getUser().getUserID());
-                if (null != civAvatar && null != tvAvatarLabel && ((null != user && null != user.getDeleted() && user.getDeleted() > 0L) || (null != item.getUser().getDeleted() && item.getUser().getDeleted() > 0L))) {
+                if (user == null) {
+                    user = item.getUser();
+                }
+                if (null != civAvatar && null != tvAvatarLabel && ((null != user && null != user.getDeleted() && user.getDeleted() > 0L) || (null != item.getUser() && null != item.getUser().getDeleted() && item.getUser().getDeleted() > 0L))) {
                     glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
                     ImageViewCompat.setImageTintList(civAvatar, null);
                     tvAvatarLabel.setVisibility(View.GONE);
                 } else if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                     glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            if (vh.itemView.getContext() instanceof Activity) {
-                                ((Activity) vh.itemView.getContext()).runOnUiThread(() -> showInitial(vh, item.getUser().getFullname(), civAvatar, space, tvAvatarLabel));
-                            }
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    }).into(civAvatar);
-                    ImageViewCompat.setImageTintList(civAvatar, null);
-                    civAvatar.setVisibility(View.VISIBLE);
-                    if (space != null) space.setVisibility(View.VISIBLE);
-                    tvAvatarLabel.setVisibility(View.GONE);
-                } else if (null != civAvatar && null != tvAvatarLabel && null != item.getUser().getImageURL() && !item.getUser().getImageURL().getThumbnail().isEmpty()) {
-                    glide.load(item.getUser().getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             if (vh.itemView.getContext() instanceof Activity) {
