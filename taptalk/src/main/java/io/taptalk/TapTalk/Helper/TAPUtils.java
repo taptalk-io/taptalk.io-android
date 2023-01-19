@@ -1036,6 +1036,9 @@ public class TAPUtils {
     }
 
     public static String getFileMimeType(File file) {
+        if (file == null) {
+            return "";
+        }
         String fileName = file.getName();
         fileName = fileName.replaceAll("[^a-zA-Z0-9 .]", "");
         try {
