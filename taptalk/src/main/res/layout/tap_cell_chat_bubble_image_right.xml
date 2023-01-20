@@ -37,9 +37,9 @@
         android:id="@+id/v_separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:background="@color/tapTransparentBlack1910"
@@ -50,10 +50,10 @@
         android:id="@+id/iv_select"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:visibility="gone"
+        android:layout_marginLeft="16dp"
         android:src="@drawable/tap_ic_circle_inactive_transparent"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/fl_bubble" />
 
@@ -61,9 +61,9 @@
         android:id="@+id/fl_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="24dp"
         android:layout_marginLeft="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:background="@drawable/tap_bg_chat_bubble_right_default"
@@ -74,8 +74,8 @@
         app:layout_constraintStart_toEndOf="@id/iv_select"
         app:layout_constraintTop_toBottomOf="@id/v_separator"
         app:layout_goneMarginBottom="8dp"
-        app:layout_goneMarginTop="0dp"
-        app:layout_goneMarginStart="48dp">
+        app:layout_goneMarginStart="48dp"
+        app:layout_goneMarginTop="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
@@ -91,7 +91,7 @@
                 <include
                     android:id="@+id/cl_forwarded"
                     layout="@layout/tap_layout_forwarded_bubble_right"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
@@ -101,8 +101,10 @@
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toTopOf="@id/v_quote_background"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible" />
 
                 <View
                     android:id="@+id/v_quote_background"
@@ -117,22 +119,26 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cl_forwarded"
-                    app:layout_goneMarginTop="10dp" />
+                    app:layout_goneMarginTop="10dp"
+                    tools:visibility="visible" />
 
                 <include
                     android:id="@+id/cl_quote"
                     layout="@layout/tap_layout_quote_bubble_right"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
                     android:visibility="gone"
+                    app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/v_quote_background"
-                    app:layout_goneMarginTop="10dp" />
+                    app:layout_goneMarginTop="10dp"
+                    tools:visibility="visible" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -230,34 +236,65 @@
                 android:id="@+id/iv_pin_body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
                 android:src="@drawable/tap_ic_pin_white"
                 android:visibility="gone"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintHorizontal_bias="1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
-                app:layout_constraintEnd_toStartOf="@id/iv_star_message_body" />
+                app:layout_constraintEnd_toStartOf="@id/iv_read_count_body"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp" />
+
+            <ImageView
+                android:id="@+id/iv_read_count_body"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/tap_ic_eye_white"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/tv_read_count_body"
+                app:layout_constraintStart_toEndOf="@id/iv_pin_body"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp" />
+
+            <TextView
+                android:id="@+id/tv_read_count_body"
+                style="@style/tapRightBubbleMessageTimestampStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/iv_star_message_body"
+                app:layout_constraintStart_toEndOf="@id/iv_read_count_body"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                tools:text="1705 •" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/g_read_count_body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="iv_read_count_body, tv_read_count_body" />
 
             <ImageView
                 android:id="@+id/iv_star_message_body"
                 android:layout_width="14dp"
                 android:layout_height="14dp"
-                android:padding="2dp"
-                app:layout_goneMarginStart="10dp"
+                android:layout_gravity="center"
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
-                android:layout_gravity="center"
+                android:padding="2dp"
                 android:src="@drawable/tap_ic_star_filled_white"
                 android:visibility="gone"
-                app:layout_constraintStart_toEndOf="@id/iv_pin_body"
-                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
-                app:layout_constraintEnd_toStartOf="@id/tv_edited_body" />
+                app:layout_constraintEnd_toStartOf="@id/tv_edited_body"
+                app:layout_constraintStart_toEndOf="@id/tv_read_count_body"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp" />
 
             <TextView
                 android:id="@+id/tv_edited_body"
@@ -266,13 +303,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="2dp"
                 android:layout_marginRight="2dp"
-                app:layout_goneMarginLeft="10dp"
                 android:text="@string/tap_edited_dot"
                 android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/tv_message_timestamp"
                 app:layout_constraintStart_toEndOf="@id/iv_star_message_body"
                 app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
-                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
-                app:layout_constraintEnd_toStartOf="@id/tv_message_timestamp" />
+                app:layout_goneMarginLeft="10dp" />
 
             <TextView
                 android:id="@+id/tv_message_timestamp"
@@ -305,9 +342,9 @@
                 android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 tools:src="@drawable/tap_ic_delivered_grey"
                 tools:tint="@color/tapWhite" />
 
@@ -332,20 +369,39 @@
                     android:id="@+id/iv_pin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"
-                    android:layout_gravity="center"
                     android:src="@drawable/tap_ic_pin_white"
                     android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/iv_read_count"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    android:src="@drawable/tap_ic_eye_white"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tv_read_count"
+                    style="@style/tapBubbleMediaInfoStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    android:visibility="gone"
+                    tools:text="1705 •" />
 
                 <ImageView
                     android:id="@+id/iv_star_message"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
-                    android:padding="2dp"
+                    android:layout_gravity="center"
                     android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"
-                    android:layout_gravity="center"
+                    android:padding="2dp"
                     android:src="@drawable/tap_ic_star_filled_white"
                     android:visibility="gone" />
 
@@ -357,7 +413,7 @@
                     android:layout_marginEnd="2dp"
                     android:layout_marginRight="2dp"
                     android:text="@string/tap_edited_dot"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tv_message_timestamp_image"
@@ -417,7 +473,7 @@
         android:layout_height="0dp"
         android:background="@color/tapTransparentWhite"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

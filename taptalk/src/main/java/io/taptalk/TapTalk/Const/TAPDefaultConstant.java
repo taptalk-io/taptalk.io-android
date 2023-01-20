@@ -39,6 +39,8 @@ public class TAPDefaultConstant {
         public static final String kSocketMarkAsReadRoom = "room/markAsRead";
         public static final String kSocketMarkAsUnreadRoom = "room/markAsUnread";
         public static final String kSocketScheduleMessageRoom = "room/scheduleMessage";
+        public static final String kSocketBlockUser = "user/block";
+        public static final String kSocketUnblockUser = "user/unblock";
     }
 
     public static final class RoomType {
@@ -173,6 +175,8 @@ public class TAPDefaultConstant {
         public static final String TIME = "kTAPExtraTime";
         public static final String USER = "kTAPExtraUser";
         public static final String REPORT_TYPE = "kTAPExtraReportType";
+        public static final String IS_STARRED = "kTAPExtraIsStarred";
+        public static final String IS_PINNED = "kTAPExtraIsPinned";
     }
 
     public static final class RequestCode {
@@ -202,6 +206,7 @@ public class TAPDefaultConstant {
         public static final int OPEN_SHARED_MEDIA = 97;
         public static final int OPEN_SCHEDULED_MESSAGES = 98;
         public static final int OPEN_REPORT_USER = 99;
+        public static final int OPEN_MESSAGE_INFO = 100;
     }
 
     public static final class PermissionRequest {
@@ -463,6 +468,7 @@ public class TAPDefaultConstant {
         public static final int MENU_REPORT = 15;
         public static final int MENU_STARRED_MESSAGES = 16;
         public static final int MENU_SHARED_MEDIA = 17;
+        public static final int MENU_GROUP_IN_COMMON = 18;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -491,6 +497,8 @@ public class TAPDefaultConstant {
     public static final String K_MUTED_ROOM_LIST = "kTAPMutedRoomList";
     public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
     public static final String K_STARRED_MESSAGE = "kTAPStarredMessage";
+    public static final String K_BLOCKED_USER = "kTAPBlockedUser";
+    public static final String K_MESSAGE_READ_COUNT = "kTAPMessageReadCount";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 

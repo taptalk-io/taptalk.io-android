@@ -72,6 +72,8 @@ import io.taptalk.TapTalk.Listener.TapCoreFileDownloadListener;
 import io.taptalk.TapTalk.Listener.TapCoreFileUploadListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetAllMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetIntegerArrayListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetIntegerListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetMessageDetailsListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetScheduledMessagesListener;
@@ -85,6 +87,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageDetailResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageTotalReadResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageItem;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetScheduledMessageListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
@@ -2033,6 +2037,57 @@ public class TapCoreMessageManager {
                     } else {
                         listener.onSuccess(new ArrayList<>());
                     }
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void getMessageDetails(String messageID, TapCoreGetMessageDetailsListener listener) {
+        TAPDataManager.getInstance(instanceKey).getMessageDetails(messageID, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetMessageDetailResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    listener.onSuccess(TAPEncryptorManager.getInstance().decryptMessage(response.getMessage()), response.getDeliveredTo(), response.getReadBy());
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void getMessageTotalRead(String messageID, TapCoreGetIntegerListener listener) {
+        TAPDataManager.getInstance(instanceKey).getMessageTotalRead(messageID, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetMessageTotalReadResponse response) {
+                if (null != listener) {
+                    listener.onSuccess(response.getCount());
                 }
             }
 

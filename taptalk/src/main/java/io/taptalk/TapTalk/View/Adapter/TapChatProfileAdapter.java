@@ -50,6 +50,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_GROUP_IN_COMMON;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_SHARED_MEDIA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_STARRED_MESSAGES;
@@ -216,7 +217,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             // Show menu chevron
             if (item.getMenuId() == MENU_VIEW_MEMBERS ||
                 item.getMenuId() == MENU_STARRED_MESSAGES ||
-                item.getMenuId() == MENU_SHARED_MEDIA) {
+                item.getMenuId() == MENU_SHARED_MEDIA ||
+                item.getMenuId() == MENU_GROUP_IN_COMMON) {
                 ivRightArrow.setVisibility(View.VISIBLE);
             } else {
                 ivRightArrow.setVisibility(View.GONE);

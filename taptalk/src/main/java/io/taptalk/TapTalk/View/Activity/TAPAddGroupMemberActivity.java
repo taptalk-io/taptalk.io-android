@@ -11,6 +11,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -206,8 +207,11 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                     @Override
                     public void onSelectFinished(List<TAPUserModel> entities) {
                         for (TAPUserModel user : entities) {
+                            ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
                             if (null != user.getUserID() && !user.getUserID().isEmpty() &&
-                                    null != user.getFullname() && !user.getFullname().isEmpty()) {
+                                null != user.getFullname() && !user.getFullname().isEmpty() &&
+                                !blockedUserIDs.contains(user.getUserID())
+                            ) {
                                 TapContactListModel filteredContact = new TapContactListModel(user, TYPE_SELECTABLE_CONTACT_LIST);
                                 vm.getContactListPointer().put(user.getUserID(), filteredContact);
                             }
@@ -442,13 +446,18 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             // Show filtered contacts
             vm.setNeedToCallGetUserApi(true);
 
+            ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
+
             // Search matching contacts from database
             TAPDataManager.getInstance(instanceKey).searchContactsByNameAndUsername(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
                 @Override
                 public void onSelectFinished(List<TAPUserModel> entities) {
                     if (null != entities && !entities.isEmpty()) {
                         for (TAPUserModel contact : entities) {
-                            if (vm.getContactListPointer().containsKey(contact.getUserID()) && !vm.getExistingMembers().contains(contact)) {
+                            if (vm.getContactListPointer().containsKey(contact.getUserID()) &&
+                                !vm.getExistingMembers().contains(contact) &&
+                                !blockedUserIDs.contains(contact.getUserID())
+                            ) {
                                 vm.getContactSearchResult().add(contact);
                                 vm.getContactListSearchResult().add(vm.getContactListPointer().get(contact.getUserID()));
                                 if (searchKeyword.equalsIgnoreCase(contact.getUsername())) {
@@ -470,7 +479,10 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 public void onSelectFinished(List<TAPUserModel> entities) {
                     if (null != entities && !entities.isEmpty()) {
                         for (TAPUserModel user : entities) {
-                            if (vm.getContactListPointer().containsKey(user.getUserID()) && !vm.getExistingMembers().contains(user)) {
+                            if (vm.getContactListPointer().containsKey(user.getUserID()) &&
+                                !vm.getExistingMembers().contains(user) &&
+                                !blockedUserIDs.contains(user.getUserID())
+                            ) {
                                 vm.getNonContactSearchResult().add(user);
                                 vm.getNonContactListSearchResult().add(vm.getContactListPointer().get(user.getUserID()));
                                 if (searchKeyword.equalsIgnoreCase(user.getUsername())) {
@@ -623,13 +635,17 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             // Save user response to database
             TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
 
+            ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
             if (!vm.getContactListPointer().containsKey(userResponse.getUserID())) {
                 // Add user response to pointer
                 TapContactListModel contactListResponse = new TapContactListModel(userResponse, TYPE_SELECTABLE_CONTACT_LIST);
                 vm.getContactListPointer().put(userResponse.getUserID(), contactListResponse);
             }
 
-            if (!vm.getFilteredContacts().contains(userResponse) && !vm.getExistingMembers().contains(userResponse)) {
+            if (!vm.getFilteredContacts().contains(userResponse) &&
+                !vm.getExistingMembers().contains(userResponse) &&
+                !blockedUserIDs.contains(userResponse.getUserID())
+            ) {
                 // Add user response to view
                 if (vm.getNonContactSearchResult().isEmpty()) {
                     vm.getAdapterItems().add(new TapContactListModel(getString(R.string.tap_global_search)));
@@ -680,6 +696,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 return;
             }
             TAPGroupManager.Companion.getInstance(instanceKey).updateGroupDataFromResponse(response);
+            Log.e(">>>>>>>>>>>>", "addMemberView onSuccess: " + TAPUtils.toJsonString(response));
 
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(response.getParticipants()));

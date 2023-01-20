@@ -15,4 +15,6 @@ public interface TapUIChatProfileInterface {
     void onReportUserButtonTapped(Activity activity, TAPRoomModel room, TAPUserModel reportedUser);
 
     void onReportGroupButtonTapped(Activity activity, TAPRoomModel room);
+
+    void onGroupInCommonItemTapped(Activity activity, TAPRoomModel room);
 }

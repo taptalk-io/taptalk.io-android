@@ -1,5 +1,21 @@
 package io.taptalk.TapTalk.View.Fragment;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_REFRESH;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -53,8 +69,8 @@ import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
-import io.taptalk.TapTalk.Helper.SwipedListItem.TapRoomListItemSwipeCallback;
 import io.taptalk.TapTalk.Helper.SwipedListItem.OnMoveAndSwipeListener;
+import io.taptalk.TapTalk.Helper.SwipedListItem.TapRoomListItemSwipeCallback;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -78,15 +94,15 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
+import io.taptalk.TapTalk.Manager.TapCoreContactManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
 import io.taptalk.TapTalk.Manager.TapUI;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
-import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
@@ -98,22 +114,6 @@ import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TapMuteBottomSheet;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_REFRESH;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_USER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 
 public class TapUIRoomListFragment extends Fragment {
 
@@ -1106,6 +1106,18 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
+    private void getBlockedUserIds() {
+        TAPDataManager.getInstance(instanceKey).getBlockedUserIds(blockedUserIdsView);
+    }
+
+    private final TAPDefaultDataView<TapGetUnreadRoomIdsResponse> blockedUserIdsView = new TAPDefaultDataView<>() {
+        @Override
+        public void onSuccess(TapGetUnreadRoomIdsResponse response) {
+            super.onSuccess(response);
+            TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(new ArrayList<>(response.getUnreadRoomIDs()));
+        }
+    };
+
     private TAPDefaultDataView<TAPGetRoomListResponse> roomListView = new TAPDefaultDataView<TAPGetRoomListResponse>() {
         @Override
         public void startLoading() {
@@ -1202,6 +1214,7 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setFetchingMessageListAndUnread(false);
 
             getRoomIdsWithState(true);
+            getBlockedUserIds();
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
@@ -1293,6 +1306,7 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
             getRoomIdsWithState(false);
+            getBlockedUserIds();
         }
 
         @Override
@@ -1733,23 +1747,12 @@ public class TapUIRoomListFragment extends Fragment {
         TAPConnectionManager.getInstance(instanceKey).removeSocketListener(socketListener);
     }
 
-    // FIXME: GET CONTACT LIST FROM SERVER ONCE AT APPLICATION START TO FIX DATABASE CONTACT 
     private void checkAndUpdateContactList() {
-        if (TAPDataManager.getInstance(instanceKey).isContactListUpdated()) {
-            return;
-        }
+//        if (TAPDataManager.getInstance(instanceKey).isContactListUpdated()) {
+//            return;
+//        }
 
-        new Thread(() -> TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(new TAPDefaultDataView<TAPContactResponse>() {
-            @Override
-            public void onSuccess(TAPContactResponse response) {
-                List<TAPUserModel> userModels = new ArrayList<>();
-                for (TAPContactModel contact : response.getContacts()) {
-                    TAPUserModel contactUser = contact.getUser().setUserAsContact();
-                    userModels.add(contactUser);
-                }
-                TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(userModels);
-                TAPDataManager.getInstance(instanceKey).setContactListUpdated();
-            }
-        })).start();
+        // Sync contacts
+        TapCoreContactManager.getInstance(instanceKey).fetchAllUserContactsFromServer(null);
     }
 }

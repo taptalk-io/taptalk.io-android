@@ -34,7 +34,7 @@ class TapSelectableStringListAdapter(selectableStrings: List<String>, private va
                 else
                     R.drawable.tap_ic_circle_inactive_check
             } else
-                R.drawable.tap_ic_circle_inactive
+                R.drawable.tap_ic_radio_button_inactive
             ivSelect.setImageResource(resource)
             tvOption.text = item
             itemView.setOnClickListener {

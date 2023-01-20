@@ -53,14 +53,16 @@
     </style>
 
     <style name="tapTitleLabelStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+<!--        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>-->
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.0</item>
         <item name="android:lineSpacingExtra">6sp</item>
         <item name="android:textColor">@color/tapTitleLabelColor</item>
         <item name="android:textSize">40sp</item>
     </style>
 
     <style name="tapNavBarTitleLabelStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+<!--        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>-->
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.0</item>
         <item name="android:textColor">@color/tapNavBarTitleLabelColor</item>
         <item name="android:textSize">20sp</item>
     </style>
@@ -222,7 +224,7 @@
     </style>
 
     <style name="tapPopupDialogTitleStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.0</item>
         <item name="android:lineSpacingExtra">8sp</item>
         <item name="android:gravity">center</item>
         <item name="android:ellipsize">end</item>
@@ -232,7 +234,7 @@
 
     <style name="tapPopupDialogBodyStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
-        <item name="android:lineSpacingExtra">8sp</item>
+        <item name="android:lineSpacingExtra">3.5sp</item>
         <item name="android:gravity">center</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/tapPopupDialogBodyColor</item>
@@ -294,7 +296,7 @@
     </style>
 
     <style name="tapRoomListNameStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.0</item>
         <item name="android:textColor">@color/tapRoomListNameColor</item>
         <item name="android:textSize">16sp</item>
     </style>
@@ -304,7 +306,7 @@
     </style>
 
     <style name="tapRoomListMessageStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.0</item>
         <item name="android:lineSpacingExtra">1sp</item>
         <item name="android:textColor">@color/tapRoomListMessageColor</item>
         <item name="android:textSize">14sp</item>
@@ -387,7 +389,8 @@
     </style>
 
     <style name="tapSearchNewContactResultNameStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+<!--        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>-->
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.0</item>
         <item name="android:textColor">@color/tapSearchNewContactResultNameColor</item>
         <item name="android:textSize">20sp</item>
     </style>
@@ -423,7 +426,8 @@
     </style>
 
     <style name="tapChatRoomNameLabelStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+<!--        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>-->
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.0</item>
         <item name="android:textColor">@color/tapChatRoomNameLabelColor</item>
         <item name="android:textSize">18sp</item>
     </style>
@@ -727,7 +731,8 @@
     </style>
 
     <style name="tapSelectedMemberListNameStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+<!--        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>-->
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.0</item>
         <item name="android:textColor">@color/tapSelectedMemberListColor</item>
         <item name="android:textSize">11sp</item>
     </style>
@@ -857,7 +862,7 @@
     </style>
 
     <style name="tapDestructiveButtonStyle" parent="Widget.AppCompat.Button.Borderless">
-        <item name="android:background">@drawable/tap_bg_destructive_button</item>
+        <item name="android:background">@drawable/tap_bg_button_destructive_ripple</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/tapWhite</item>

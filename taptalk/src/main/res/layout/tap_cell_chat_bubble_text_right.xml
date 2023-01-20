@@ -37,9 +37,9 @@
         android:id="@+id/v_separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:background="@color/tapTransparentBlack1910"
@@ -50,10 +50,10 @@
         android:id="@+id/iv_select"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:visibility="gone"
+        android:layout_marginLeft="16dp"
         android:src="@drawable/tap_ic_circle_inactive_transparent"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/fl_bubble" />
 
@@ -61,9 +61,9 @@
         android:id="@+id/fl_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="24dp"
         android:layout_marginLeft="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:background="@drawable/tap_bg_chat_bubble_right_default"
@@ -74,8 +74,8 @@
         app:layout_constraintStart_toEndOf="@id/iv_select"
         app:layout_constraintTop_toBottomOf="@id/v_separator"
         app:layout_goneMarginBottom="8dp"
-        app:layout_goneMarginTop="0dp"
-        app:layout_goneMarginStart="48dp">
+        app:layout_goneMarginStart="48dp"
+        app:layout_goneMarginTop="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
@@ -86,9 +86,10 @@
             <include
                 android:id="@+id/cl_forwarded"
                 layout="@layout/tap_layout_forwarded_bubble_right"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
                 app:layout_constraintEnd_toEndOf="@id/barrier_end"
                 app:layout_constraintHorizontal_bias="0"
@@ -111,6 +112,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@id/tv_message_body"
                 app:layout_constraintEnd_toEndOf="@id/barrier_end"
                 app:layout_constraintHorizontal_bias="0"
@@ -132,14 +134,17 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_link"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:visibility="visible"
-                app:layout_constraintTop_toBottomOf="@id/tv_message_body"
+                android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp">
+                app:layout_constraintTop_toBottomOf="@id/tv_message_body"
+                tools:visibility="visible">
 
                 <View
                     android:id="@+id/v_decoration"
@@ -153,7 +158,7 @@
                 <TextView
                     android:id="@+id/tv_link_title"
                     style="@style/tapRightBubbleQuoteTitleStyle"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginLeft="10dp"
@@ -173,32 +178,40 @@
                 <TextView
                     android:id="@+id/tv_link_content"
                     style="@style/tapRightBubbleQuoteContentStyle"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="4dp"
                     android:ellipsize="end"
                     android:maxLines="7"
-                    app:layout_constraintEnd_toEndOf="@id/tv_link_title"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0"
-                    app:layout_constraintStart_toStartOf="@id/tv_link_title"
+                    app:layout_constraintStart_toEndOf="@id/v_decoration"
                     app:layout_constraintTop_toBottomOf="@id/tv_link_title"
                     tools:text="In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit" />
 
-                <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
-                    android:id="@+id/rciv_link_image"
-                    android:layout_width="0dp"
+                <ImageView
+                    android:id="@+id/iv_link_image"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginTop="8dp"
                     android:maxHeight="200dp"
-                    android:scaleType="centerCrop"
+                    android:minHeight="40dp"
+                    android:scaleType="fitCenter"
                     android:visibility="gone"
-                    app:cornerRadius="8dp"
+                    app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/tv_link_title"
-                    app:layout_constraintEnd_toEndOf="@id/tv_link_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/v_decoration"
                     app:layout_constraintTop_toBottomOf="@id/tv_link_content"
-                    tools:src="@drawable/tap_img_empty_shared_media" />
+                    tools:src="@drawable/tap_img_empty_shared_media"
+                    tools:visibility="visible" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -210,22 +223,52 @@
                 android:layout_marginRight="4dp"
                 android:src="@drawable/tap_ic_pin_white"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
-                app:layout_constraintEnd_toStartOf="@id/iv_star_message" />
+                app:layout_constraintEnd_toStartOf="@id/iv_read_count"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp" />
+
+            <ImageView
+                android:id="@+id/iv_read_count"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/tap_ic_eye_white"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/tv_read_count"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp" />
+
+            <TextView
+                android:id="@+id/tv_read_count"
+                style="@style/tapRightBubbleMessageTimestampStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/iv_star_message"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                tools:text="1705 •" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/g_read_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="iv_read_count, tv_read_count" />
 
             <ImageView
                 android:id="@+id/iv_star_message"
                 android:layout_width="14dp"
                 android:layout_height="14dp"
-                android:padding="2dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
+                android:padding="2dp"
                 android:src="@drawable/tap_ic_star_filled_white"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
-                app:layout_constraintEnd_toStartOf="@id/tv_edited" />
+                app:layout_constraintEnd_toStartOf="@id/tv_edited"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp" />
 
             <TextView
                 android:id="@+id/tv_edited"
@@ -236,9 +279,9 @@
                 android:layout_marginRight="2dp"
                 android:text="@string/tap_edited_dot"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
-                app:layout_constraintEnd_toStartOf="@id/tv_message_timestamp" />
+                app:layout_constraintEnd_toStartOf="@id/tv_message_timestamp"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp" />
 
             <TextView
                 android:id="@+id/tv_message_timestamp"
@@ -261,9 +304,9 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 tools:src="@drawable/tap_ic_delivered_grey"
                 tools:tint="@color/tapWhite" />
 
@@ -272,7 +315,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 app:barrierDirection="end"
-                app:constraint_referenced_ids="cl_forwarded,cl_quote,v_quote_background,tv_message_body" />
+                app:constraint_referenced_ids="cl_forwarded,cl_quote,v_quote_background,tv_message_body,cl_link" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -313,7 +356,7 @@
         android:layout_height="0dp"
         android:background="@color/tapTransparentWhite"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

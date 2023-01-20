@@ -227,6 +227,9 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreContactListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetContactListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetIntegerListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
@@ -245,9 +248,11 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
+import io.taptalk.TapTalk.Manager.TapCoreContactManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -401,6 +406,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private Group gScheduleMessage;
     private ImageView ivSchedule;
 
+    // Blocked Contacts
+    private TextView btnUnblock;
+
     private Handler linkHandler;
     private Runnable linkRunnable;
 
@@ -419,7 +427,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private boolean isLastMessageNeedRefresh = false;
     private boolean isArrowButtonTapped = false;
 
-    private STATE state = STATE.WORKING;
+    private STATE state = STATE.LOADED;
     private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
 
     // Star and Pin Messages
@@ -1054,10 +1062,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvLinkTitle = findViewById(R.id.tv_link_title);
         tvLinkContent = findViewById(R.id.tv_link_content);
         ivCloseLink = findViewById(R.id.iv_close_link);
+        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
         cvSchedule = findViewById(R.id.cv_schedule);
         vScreen = findViewById(R.id.v_screen);
         gScheduleMessage = findViewById(R.id.g_schedule_message);
         ivSchedule = findViewById(R.id.iv_schedule);
+        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
+        btnUnblock = findViewById(R.id.btn_unblock);
         customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
     }
 
@@ -1144,36 +1155,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvRoomName.setText(vm.getRoom().getName());
             }
 
-            if (!TapUI.getInstance(instanceKey).isProfileButtonVisible()) {
-                civRoomImage.setVisibility(View.GONE);
-                vRoomImage.setVisibility(View.GONE);
-                tvRoomImageLabel.setVisibility(View.GONE);
-            } else if (null != vm.getRoom() &&
-                    TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                    (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)) {
-                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civRoomImage);
-                ImageViewCompat.setImageTintList(civRoomImage, null);
-                tvRoomImageLabel.setVisibility(View.GONE);
-                clRoomStatus.setVisibility(View.GONE);
-            } else if (null != vm.getRoom() &&
-                    TYPE_PERSONAL == vm.getRoom().getType() && TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
-                glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civRoomImage);
-                ImageViewCompat.setImageTintList(civRoomImage, null);
-                tvRoomImageLabel.setVisibility(View.GONE);
-                clRoomStatus.setVisibility(View.GONE);
-            } else if (null != vm.getRoom() &&
-                    TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                    null != vm.getOtherUserModel().getImageURL().getThumbnail() &&
-                    !vm.getOtherUserModel().getImageURL().getThumbnail().isEmpty()) {
-                // Load user avatar URL
-                loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
-                vm.getRoom().setImageURL(vm.getOtherUserModel().getImageURL());
-            } else if (null != vm.getRoom() && !vm.getRoom().isDeleted() && null != vm.getRoom().getImageURL() && !vm.getRoom().getImageURL().getThumbnail().isEmpty()) {
-                // Load room image
-                loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
-            } else {
-                loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
-            }
+            setNavigationBarProfilePicture();
 
             // TODO: 1 February 2019 SET ROOM ICON FROM ROOM MODEL
             if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getUserRole() &&
@@ -1239,13 +1221,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (!vm.isOnBottom()) {
-                    loadMoreMessagesFromDatabase();
+                    loadMessagesFromDatabase();
                 }
             }
         };
-        // Disable swipe in deleted user room
-        if ((null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L))) {
+        // Disable swipe in deleted or blocked user room
+        if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
+                ((null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)
+                || (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled() && TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())))) {
             rvMessageList.disableSwipe();
         }
         // Initialize custom keyboard
@@ -1294,8 +1277,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 showChatAsHistory(getString(R.string.tap_group_unavailable));
             }
-        } else if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getDeleted()) {
-            showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+        } else if (null != vm.getOtherUserModel()) {
+            if (null != vm.getOtherUserModel().getDeleted()) {
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+            } else if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                showUnblockButton();
+            }
         }
 //        else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
 //            //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
@@ -1347,10 +1334,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             return true;
         });
         vScreen.setOnClickListener(v -> hideScheduleMessageButton());
-        // scheduled message icon always shown (temporary)
-        if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
-            ivSchedule.setVisibility(View.VISIBLE);
-        }
+
         cvSchedule.setOnClickListener(v -> {
             hideScheduleMessageButton();
             TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TAPGeneralListener<>() {
@@ -1370,7 +1354,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         });
 
-
         if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
                 showTooltip();
@@ -1387,6 +1370,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else {
             vSeparator.setVisibility(View.GONE);
             ivVoiceNote.setVisibility(View.GONE);
+        }
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled()) {
+            btnUnblock.setOnClickListener(v -> {
+                new TapTalkDialog.Builder(TapUIChatActivity.this)
+                        .setTitle(String.format(getString(R.string.tap_unblock_s_format), vm.getOtherUserModel().getFullname()))
+                        .setMessage(getString(R.string.tap_sure_unblock_wording))
+                        .setCancelable(true)
+                        .setPrimaryButtonTitle(getString(R.string.tap_yes))
+                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                        .setPrimaryButtonListener(view -> {
+                            showLoadingPopup();
+                            TapCoreContactManager.getInstance(instanceKey).unblockUser(vm.getOtherUserID(), unblockUserView);
+                        })
+                        .show();
+            });
         }
 
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
@@ -1424,6 +1422,70 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     }
 
+    private void setNavigationBarProfilePicture() {
+        if (!TapUI.getInstance(instanceKey).isProfileButtonVisible()) {
+            civRoomImage.setVisibility(View.GONE);
+            vRoomImage.setVisibility(View.GONE);
+            tvRoomImageLabel.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
+                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)
+        ) {
+            // Deleted user
+            glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civRoomImage);
+            ImageViewCompat.setImageTintList(civRoomImage, null);
+            tvRoomImageLabel.setVisibility(View.GONE);
+            clRoomStatus.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getType() &&
+                TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)
+        ) {
+            // Saved Messages
+            glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civRoomImage);
+            ImageViewCompat.setImageTintList(civRoomImage, null);
+            tvRoomImageLabel.setVisibility(View.GONE);
+            clRoomStatus.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getType() &&
+                null != vm.getOtherUserModel()
+        ) {
+            if (null != vm.getOtherUserModel().getImageURL().getThumbnail() &&
+                    !vm.getOtherUserModel().getImageURL().getThumbnail().isEmpty()
+            ) {
+                // Load user avatar URL
+                loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
+            } else {
+                // No profile picture / blocked
+                loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
+            }
+            vm.getRoom().setImageURL(vm.getOtherUserModel().getImageURL());
+        } else if (null != vm.getRoom() && !vm.getRoom().isDeleted() && null != vm.getRoom().getImageURL() && !vm.getRoom().getImageURL().getThumbnail().isEmpty()) {
+            // Load room image
+            loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
+        } else {
+            loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
+        }
+    }
+
+    private void setRoomState() {
+        if (vm.getRoom().isDeleted()) {
+            //showRoomIsUnavailableState();
+            if (vm.getRoom().getType() == TYPE_PERSONAL) {
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+            } else {
+                showChatAsHistory(getString(R.string.tap_group_unavailable));
+            }
+        } else if (null != vm.getOtherUserModel()) {
+            if (null != vm.getOtherUserModel().getDeleted()) {
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+            } else if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                showUnblockButton();
+            } else {
+                showDefaultChatEditText();
+            }
+        }
+    }
+
     private void showAttachmentButton() {
         // Show / hide attachment button
         if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
@@ -1432,25 +1494,35 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
         ) {
             ivButtonAttach.setVisibility(View.GONE);
-            etChat.setPadding(
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6),
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6)
-            );
         } else {
             ivButtonAttach.setVisibility(View.VISIBLE);
-            etChat.setPadding(
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6),
-                    TAPUtils.dpToPx(44),
-                    TAPUtils.dpToPx(6)
-            );
         }
+
+        // Show / hide scheduled message button
+        if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
+            ivSchedule.setVisibility(View.VISIBLE);
+        } else {
+            ivSchedule.setVisibility(View.GONE);
+        }
+
+        int rightPaddingDp = 12;
+        if (ivButtonAttach.getVisibility() == View.VISIBLE && ivSchedule.getVisibility() == View.VISIBLE) {
+            rightPaddingDp = 80;
+        }
+        else if (ivButtonAttach.getVisibility() == View.VISIBLE) {
+            rightPaddingDp = 44;
+        }
+        etChat.setPadding(
+                TAPUtils.dpToPx(12),
+                TAPUtils.dpToPx(6),
+                TAPUtils.dpToPx(rightPaddingDp),
+                TAPUtils.dpToPx(6)
+        );
     }
 
     private void initListener() {
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
+        TapCoreContactManager.getInstance(instanceKey).addContactListener(coreContactListener);
 
         socketListener = new TAPSocketListener() {
             @Override
@@ -1759,6 +1831,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         @Override
+        public void onBubbleTapped(TAPMessageModel message) {
+            if ((null != message.getIsFailedSend() && message.getIsFailedSend()) ||
+                (null != message.getIsSending() && message.getIsSending()) ||
+                (null != message.getIsDeleted() && message.getIsDeleted())
+            ) {
+                return;
+            }
+            getMessageReadCount(message);
+        }
+
+        @Override
         public void onOutsideClicked(TAPMessageModel message) {
             hideKeyboards();
         }
@@ -1837,6 +1920,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 vm.addSelectedMessage(message);
             }
+            // handle read count
+            if (!TapUI.getInstance(instanceKey).isReadStatusHidden()) {
+                // TODO: 04/11/22 call get read count API MU
+            }
             messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
             String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
             tvForwardCount.setText(forwardCountText);
@@ -1914,6 +2001,23 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     };
 
+    private final TapCoreContactListener coreContactListener = new TapCoreContactListener() {
+        @Override
+        public void onContactBlocked(@NonNull TAPUserModel user) {
+            if (vm.getRoom().getType() == TYPE_PERSONAL &&
+                vm.getRoom().getRoomID().equals(TAPChatManager.getInstance(instanceKey).arrangeRoomId(vm.getMyUserModel().getUserID(), user.getUserID()))
+            ) {
+                showUnblockButton();
+                runOnUiThread(() -> clContactAction.setVisibility(View.GONE));
+            }
+        }
+
+        @Override
+        public void onContactUnblocked(@NonNull TAPUserModel user) {
+            setRoomState();
+        }
+    };
+
     public void closeActivity() {
         rvCustomKeyboard.setVisibility(View.GONE);
         onBackPressed();
@@ -1981,6 +2085,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void showMessageList() {
         flMessageList.setVisibility(View.VISIBLE);
+        cvEmptySavedMessages.setVisibility(View.GONE);
+        clEmptyChat.setVisibility(View.GONE);
+
+        if (rvMessageList.getVisibility() != View.VISIBLE) {
+            rvMessageList.setVisibility(View.VISIBLE);
+        }
+
 //        flMessageList.post(() -> {
 //            TAPMessageModel message = messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition());
 //            if (null != message) {
@@ -2027,7 +2138,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void updateMessageDecoration() {
         // Update decoration for the top item in recycler view
         runOnUiThread(() -> {
-            if (rvMessageList.getItemDecorationCount() > 0) {
+            while (rvMessageList.getItemDecorationCount() > 0) {
                 rvMessageList.removeItemDecorationAt(0);
             }
             rvMessageList.addItemDecoration(new TAPVerticalDecoration(TAPUtils.dpToPx(10), 0, messageAdapter.getItemCount() - 1));
@@ -2548,6 +2659,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void hideChatField() {
         etChat.setVisibility(View.GONE);
         ivButtonAttach.setVisibility(View.GONE);
+        ivSchedule.setVisibility(View.GONE);
         ivChatMenu.setVisibility(View.GONE);
     }
 
@@ -2751,8 +2863,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void run() {
                 runOnUiThread(() -> {
-                    // TODO: 04/07/22 prevent crash zero duration MU
-                    if (vm.getMediaPlayer() != null) {
+                    if (vm.getMediaPlayer() != null && vm.getDuration() > 0) {
                         seekBar.setProgress(vm.getMediaPlayer().getCurrentPosition() * seekBar.getMax() / vm.getDuration());
                     }
                 });
@@ -3059,6 +3170,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             TAPChatManager.getInstance(instanceKey).triggerReportMessageButtonTapped(TapUIChatActivity.this, message);
             TapReportActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, TapReportActivity.ReportType.MESSAGE);
         }
+
+        @Override
+        public void onViewMessageInfo(TAPMessageModel message) {
+            super.onViewMessageInfo(message);
+            TapMessageInfoActivity.Companion.start(TapUIChatActivity.this, instanceKey, message, vm.getRoom(), vm.getStarredMessageIds().contains(message.getMessageID()), vm.getPinnedMessageIds().contains(message.getMessageID()));
+        }
     };
 
     private void setChatRoomStatus(TAPOnlineStatusModel onlineStatus) {
@@ -3216,13 +3333,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.getRoom().setParticipants(response.getParticipants());
                 TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(vm.getRoom());
 
-                if (null != vm.getRoom() && null != vm.getRoom().getImageURL() && !vm.getRoom().getImageURL().getThumbnail().isEmpty()) {
-                    // Load room image
-                    loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
-                } else {
-                    // Room image is empty
-                    loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
-                }
+                setNavigationBarProfilePicture();
+
                 if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)){
                     tvRoomName.setText(R.string.tap_saved_messages);
                 } else {
@@ -3263,12 +3375,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     setOtherUserModel(updatedContact);
                     if (null == vm.getOtherUserModel()) {
                         initRoom();
+                    } else {
+                        setOtherUserModel(updatedContact);
+                        if (TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
+                            showUnblockButton();
+                        }
                     }
 
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
-                            TapUI.getInstance(instanceKey).isAddToContactsButtonInChatRoomVisible() &&
-                            !TAPDataManager.getInstance(instanceKey).isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
-                            (null == updatedContact.getIsContact() || updatedContact.getIsContact() == 0)) {
+                        TapUI.getInstance(instanceKey).isAddToContactsButtonInChatRoomVisible() &&
+                        !TAPDataManager.getInstance(instanceKey).isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
+                        !TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID()) &&
+                        (null == updatedContact.getIsContact() || updatedContact.getIsContact() == 0)
+                    ) {
                         clContactAction.setVisibility(View.VISIBLE);
                     } else {
                         clContactAction.setVisibility(View.GONE);
@@ -3346,6 +3465,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null != tvChatHistoryContent) {
                 tvChatHistoryContent.setText(message);
             }
+            if (null != btnUnblock) {
+                btnUnblock.setVisibility(View.GONE);
+            }
             if (null != clChatComposer) {
                 TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                 rvCustomKeyboard.setVisibility(View.GONE);
@@ -3363,10 +3485,32 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
     }
 
+    private void showUnblockButton() {
+        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled()) {
+            runOnUiThread(() -> {
+                if (null != clChatHistory) {
+                    clChatHistory.setVisibility(View.GONE);
+                }
+                if (null != clChatComposer) {
+                    TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                    rvCustomKeyboard.setVisibility(View.GONE);
+                    clChatComposer.setVisibility(View.INVISIBLE);
+                    etChat.clearFocus();
+                }
+                if (null != btnUnblock) {
+                    btnUnblock.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+    }
+
     private void showDefaultChatEditText() {
         runOnUiThread(() -> {
             if (null != clChatHistory) {
                 clChatHistory.setVisibility(View.GONE);
+            }
+            if (null != btnUnblock) {
+                btnUnblock.setVisibility(View.GONE);
             }
             if (null != clChatComposer) {
                 clChatComposer.setVisibility(View.VISIBLE);
@@ -3568,7 +3712,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     tvRoomName.setText(vm.getRoom().getName());
                 }
                 if (null != vm.getRoom().getImageURL()) {
-                    civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
+                    civRoomImage.post(this::setNavigationBarProfilePicture);
                 }
             });
             TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getRoom().getType() == TYPE_PERSONAL ? vm.getOtherUserModel() : null);
@@ -3586,8 +3730,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     tvRoomName.setText(vm.getOtherUserModel().getFullname());
                 }
                 if (null != vm.getRoom().getImageURL()) {
-                    civRoomImage.post(() -> loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
+                    civRoomImage.post(this::setNavigationBarProfilePicture);
                 }
+                setChatRoomStatus(TAPOnlineStatusModel.Builder(message.getUser()));
             });
             TAPChatManager.getInstance(instanceKey).triggerUpdatedChatRoomDataReceived(vm.getRoom(), vm.getRoom().getType() == TYPE_PERSONAL ? vm.getOtherUserModel() : null);
         }
@@ -3731,12 +3876,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         // Scroll recycler to bottom if recycler is already on bottom
                         vm.setScrollFromKeyboard(true);
                         scrollToBottom();
-                    } else if (ownMessage && !(newMessage.getAction().equals(PIN_MESSAGE) || newMessage.getAction().equals(UNPIN_MESSAGE))) {
+                    } else if (ownMessage && !(PIN_MESSAGE.equals(newMessage.getAction()) || UNPIN_MESSAGE.equals(newMessage.getAction()))) {
                         // Scroll recycler to bottom if own message
                         scrollToBottom();
                     } else {
                         // Message from other people is received when recycler is scrolled up
-                        if (newMessage.getAction() == null || !newMessage.getAction().equals(UNPIN_MESSAGE)) {
+                        if (newMessage.getAction() == null || !UNPIN_MESSAGE.equals(newMessage.getAction())) {
                             vm.addUnreadMessage(newMessage);
                             updateUnreadCount();
                         }
@@ -3963,7 +4108,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Find message in database/API
             vm.setTappedMessageLocalID(localID);
             showUnreadButtonLoading();
-            loadMoreMessagesFromDatabase();
+            loadMessagesFromDatabase();
         } else {
             // Message not found
             runOnUiThread(() -> {
@@ -4866,313 +5011,237 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             }
 //                            }).start();
                         }
-                        vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+                        //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+                        loadMessagesFromDatabase();
                     }
                 });
     }
 
-    private TAPDatabaseListener<TAPMessageEntity> dbListener = new TAPDatabaseListener<TAPMessageEntity>() {
+    private void loadMessagesFromDatabase() {
+        if (state != STATE.LOADED || vm.getRoom() == null || vm.getRoom().getRoomID().isEmpty()) {
+            return;
+        }
 
-        @Override
-        public void onSelectFinished(List<TAPMessageEntity> entities) {
-            final List<TAPMessageModel> models = new ArrayList<>();
-            boolean allMessagesHidden = true;
-            String previousDate = "";
-            TAPMessageModel previousMessage = null;
-            LinkedHashMap<String, TAPMessageModel> dateSeparators = new LinkedHashMap<>();
-            LinkedHashMap<String, Integer> dateSeparatorIndex = new LinkedHashMap<>();
-            for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
-                models.add(model);
-                vm.addMessagePointer(model);
+        state = STATE.WORKING;
+        final boolean isFirstLoad = vm.getLastTimestamp() == 0L;
 
-                if (allMessagesHidden && (null == model.getIsHidden() || !model.getIsHidden())) {
-                    allMessagesHidden = false;
-                }
-
-                updateMessageMentionIndexes(model);
-
-                if ((null == model.getIsRead() || !model.getIsRead()) &&
-                        TAPUtils.isActiveUserMentioned(model, vm.getMyUserModel())) {
-                    // Add unread mention
-                    vm.addUnreadMention(model);
-                }
-
-                if ((null == entity.getHidden() || !entity.getHidden()) &&
-                        entity.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
-                        entity.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
-                        entity.getType() != TYPE_DATE_SEPARATOR
-                ) {
-                    String currentDate = TAPTimeFormatter.formatDate(model.getCreated());
-                    if (null != previousMessage && !currentDate.equals(previousDate)) {
-                        // Generate date separator if date is different
-                        TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, previousMessage);
-                        dateSeparators.put(dateSeparator.getLocalID(), dateSeparator);
-                        dateSeparatorIndex.put(dateSeparator.getLocalID(), models.indexOf(previousMessage) + 1);
+        TAPDatabaseListener<TAPMessageEntity> listener = new TAPDatabaseListener<>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                final List<TAPMessageModel> models = new ArrayList<>();
+                String previousDate = "";
+                TAPMessageModel previousMessage = null;
+                if (null != messageAdapter && !messageAdapter.getItems().isEmpty()) {
+                    // Obtain previous message & date
+                    int offset = 1;
+                    while (null == previousMessage) {
+                        if (messageAdapter.getItems().size() < offset) {
+                            break;
+                        }
+                        previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
+                        if ((null != previousMessage.getIsHidden() && previousMessage.getIsHidden()) ||
+                                previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
+                                previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
+                                previousMessage.getType() == TYPE_DATE_SEPARATOR
+                        ) {
+                            previousMessage = null;
+                            offset++;
+                        }
                     }
-                    previousDate = currentDate;
-                    previousMessage = model;
+                    if (null != previousMessage) {
+                        previousDate = TAPTimeFormatter.formatDate(previousMessage.getCreated());
+                    }
                 }
-            }
+                LinkedHashMap<String, TAPMessageModel> dateSeparators = new LinkedHashMap<>();
+                LinkedHashMap<String, Integer> dateSeparatorIndex = new LinkedHashMap<>();
+                int visibleCount = 0;
 
-            if (0 < models.size()) {
-                vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
-//                vm.setLastTimestamp(models.get(0).getCreated());
-            }
+                if (0 < entities.size()) {
+                    vm.setLastTimestamp(entities.get(entities.size() - 1).getCreated());
+                }
 
-            insertDateSeparators(dateSeparators, dateSeparatorIndex, models);
+                for (TAPMessageEntity entity : entities) {
+                    if (!vm.getMessagePointer().containsKey(entity.getLocalID())) {
+                        TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
+                        models.add(model);
+                        vm.addMessagePointer(model);
 
-            TAPMessageModel lastUnreadMessage = vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID());
-            if (null != lastUnreadMessage && !vm.isAllUnreadMessagesHidden()) {
-                TAPMessageModel unreadIndicator = insertUnreadMessageIdentifier(
-                        lastUnreadMessage.getCreated(),
-                        lastUnreadMessage.getUser());
-                models.add(models.indexOf(lastUnreadMessage) + 1, unreadIndicator);
-            }
+                        if (null == model.getIsHidden() || !model.getIsHidden()) {
+                            visibleCount++;
+                            if (vm.isAllMessagesHidden()) {
+                                vm.setAllMessagesHidden(false);
+                            }
+                        }
 
-            boolean finalAllMessagesHidden = allMessagesHidden;
-            if (null != messageAdapter && 0 == messageAdapter.getItems().size()) {
+                        updateMessageMentionIndexes(model);
+
+                        if ((null == model.getIsRead() || !model.getIsRead()) &&
+                                TAPUtils.isActiveUserMentioned(model, vm.getMyUserModel())) {
+                            // Add unread mention
+                            vm.addUnreadMention(model);
+                        }
+
+                        if ((null == entity.getHidden() || !entity.getHidden()) &&
+                            entity.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
+                            entity.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
+                            entity.getType() != TYPE_DATE_SEPARATOR
+                        ) {
+                            String currentDate = TAPTimeFormatter.formatDate(model.getCreated());
+                            if (null != previousMessage && !currentDate.equals(previousDate)) {
+                                // Generate date separator if date is different
+                                int index = models.contains(previousMessage) ? models.indexOf(previousMessage) + 1 : 0;
+                                TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, previousMessage);
+                                dateSeparators.put(dateSeparator.getLocalID(), dateSeparator);
+                                dateSeparatorIndex.put(dateSeparator.getLocalID(), index);
+                            }
+                            previousDate = currentDate;
+                            previousMessage = model;
+                        }
+                    }
+                }
+
+                if (null == messageAdapter) {
+                    return;
+                }
+
+                insertDateSeparators(dateSeparators, dateSeparatorIndex, models);
+
+                vm.setVisibleMessageBubbleCount(vm.getVisibleMessageBubbleCount() + visibleCount);
+
+                if (state == STATE.WORKING) {
+                    state = STATE.LOADED;
+                }
+
+                int currentVisibleCount = visibleCount;
                 runOnUiThread(() -> {
-                    // First load
-                    messageAdapter.setMessages(models);
-                    if (models.size() == 0 || finalAllMessagesHidden) {
-                        // Chat is empty
-                        // TODO: 24 September 2018 CHECK ROOM TYPE
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
-                            cvEmptySavedMessages.setVisibility(View.VISIBLE);
-                        } else {
-                            clEmptyChat.setVisibility(View.VISIBLE);
-                        }
+                    messageAdapter.addMessage(models);
 
-                        // Load my avatar
-                        if (null != vm.getMyUserModel().getImageURL() && !vm.getMyUserModel().getImageURL().getThumbnail().isEmpty()) {
-                            loadProfilePicture(vm.getMyUserModel().getImageURL().getThumbnail(), civMyAvatarEmpty, tvMyAvatarLabelEmpty);
-                        } else {
-                            loadInitialsToProfilePicture(civMyAvatarEmpty, tvMyAvatarLabelEmpty);
+                    if (models.isEmpty() || vm.isAllMessagesHidden()) {
+                        if (entities.size() >= MAX_ITEMS_PER_PAGE) {
+                            // All loaded messages are hidden, load more from database
+                            loadMessagesFromDatabase();
                         }
+                        else if (messageAdapter.getItemCount() <= 0) {
+                            // Chat is empty
+                            hideLoadingOlderMessagesIndicator();
 
-                        // Load room avatar
-                        if (null != vm.getRoom() &&
+                            if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                                cvEmptySavedMessages.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                clEmptyChat.setVisibility(View.VISIBLE);
+                            }
+
+                            // Load my avatar
+                            if (null != vm.getMyUserModel().getImageURL() &&
+                                !vm.getMyUserModel().getImageURL().getThumbnail().isEmpty()
+                            ) {
+                                loadProfilePicture(vm.getMyUserModel().getImageURL().getThumbnail(), civMyAvatarEmpty, tvMyAvatarLabelEmpty);
+                            }
+                            else {
+                                loadInitialsToProfilePicture(civMyAvatarEmpty, tvMyAvatarLabelEmpty);
+                            }
+
+                            // Load room avatar
+                            if (null != vm.getRoom() &&
                                 TYPE_PERSONAL == vm.getRoom().getType() &&
                                 null != vm.getOtherUserModel() &&
                                 null != vm.getOtherUserModel().getImageURL().getThumbnail() &&
-                                !vm.getOtherUserModel().getImageURL().getThumbnail().isEmpty()) {
-                            loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
-                        } else if (null != vm.getRoom() &&
-                                null != vm.getRoom().getImageURL() &&
-                                !vm.getRoom().getImageURL().getThumbnail().isEmpty()) {
-                            loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
-                        } else {
-                            loadInitialsToProfilePicture(civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
-                        }
-                        if (vm.isCustomKeyboardEnabled() && 0 == etChat.getText().toString().trim().length()) {
-                            showCustomKeyboard();
-                        }
-                    } else {
-                        // Message exists
-
-                        vm.setMessageModels(models);
-                        state = STATE.LOADED;
-                        if (!finalAllMessagesHidden) {
-                            if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
-                                cvEmptySavedMessages.setVisibility(View.GONE);
-                            } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
-                                clEmptyChat.setVisibility(View.GONE);
+                                !vm.getOtherUserModel().getImageURL().getThumbnail().isEmpty()
+                            ) {
+                                loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
+                            }
+                            else if (null != vm.getRoom() &&
+                                    null != vm.getRoom().getImageURL() &&
+                                    !vm.getRoom().getImageURL().getThumbnail().isEmpty()
+                            ) {
+                                loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
+                            }
+                            else {
+                                loadInitialsToProfilePicture(civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                             }
                         }
+                        else if (models.isEmpty() && STATE.DONE != state) {
+                            // Fetch older messages from API
+                            showLoadingOlderMessagesIndicator();
+                            fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
+                        }
+                    }
+                    else {
+                        // Loaded more messages
+                        if (entities.size() < MAX_ITEMS_PER_PAGE && STATE.DONE != state) {
+                            // Fetch older messages from API
+                            if (0 == entities.size()) {
+                                showLoadingOlderMessagesIndicator();
+                            }
+                            else {
+                                vm.setNeedToShowLoading(true);
+                            }
+                            fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
+                        }
+
+                        if (vm.isNeedToShowLoading()) {
+                            // Show loading if Before API is called
+                            vm.setNeedToShowLoading(false);
+                            showLoadingOlderMessagesIndicator();
+                        }
+                        else {
+                            hideLoadingOlderMessagesIndicator();
+                        }
+
+                        // Insert unread indicator
+                        TAPMessageModel lastUnreadMessage = vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID());
+                        if (null != lastUnreadMessage && null == vm.getUnreadIndicator() && !vm.isAllUnreadMessagesHidden()) {
+                            TAPMessageModel unreadIndicator = insertUnreadMessageIdentifier(lastUnreadMessage.getCreated(), lastUnreadMessage.getUser());
+                            messageAdapter.getItems().add(messageAdapter.getItems().indexOf(lastUnreadMessage) + 1, unreadIndicator);
+                        }
+
+                        vm.setMessageModels(messageAdapter.getItems());
                         showMessageList();
                         showUnreadButton(vm.getUnreadIndicator());
                         updateMentionCount();
                         checkChatRoomLocked(models.get(0));
-                    }
-                    rvMessageList.scrollToPosition(0);
-                    updateMessageDecoration();
-
-                    if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size()) {
-                        // Only fetch newer messages from API if message is below 50
-                        callApiAfter();
-                        if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapUIChatActivity.this)) {
-                            insertDateSeparatorToLastIndex(false);
-                        }
-                        if (null != vm.getTappedMessageLocalID()) {
-                            scrollToMessage(vm.getTappedMessageLocalID());
-                        }
-                    } else if (MAX_ITEMS_PER_PAGE <= vm.getMessageModels().size()) {
-                        // Fetch newer messages from API and add pagination listener if message is over 50
-                        rvMessageList.addOnScrollListener(endlessScrollListener);
-                        callApiAfter();
-                        if (null != vm.getTappedMessageLocalID()) {
-                            scrollToMessage(vm.getTappedMessageLocalID());
-                        }
-                    } else {
-                        // Fetch older messages from API if room has no message
-                        fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
-                    }
-                });
-            } else if (null != messageAdapter) {
-                runOnUiThread(() -> {
-                    if (!finalAllMessagesHidden) {
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
-                            cvEmptySavedMessages.setVisibility(View.GONE);
-                        } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
-                            clEmptyChat.setVisibility(View.GONE);
-                        }
-                    }
-                    showMessageList();
-                    messageAdapter.setMessages(models);
-                    new Thread(() -> {
-                        vm.setMessageModels(messageAdapter.getItems());
-                        if (null != vm.getTappedMessageLocalID()) {
-                            scrollToMessage(vm.getTappedMessageLocalID());
-                        }
-                    }).start();
-                    if (rvMessageList.getVisibility() != View.VISIBLE) {
-                        rvMessageList.setVisibility(View.VISIBLE);
-                    }
-                    if (state == STATE.DONE) {
-                        insertDateSeparatorToLastIndex(false);
                         updateMessageDecoration();
+                        if (null != vm.getTappedMessageLocalID()) {
+                            scrollToMessage(vm.getTappedMessageLocalID());
+                        }
+
+                        if (vm.getVisibleMessageBubbleCount() < MAX_ITEMS_PER_PAGE && currentVisibleCount < (MAX_ITEMS_PER_PAGE / 2)) {
+                            // Load more messages if half or more loaded items are hidden
+                            loadMessagesFromDatabase();
+                        }
                     }
-                    if (!models.isEmpty()) {
-                        checkChatRoomLocked(models.get(0));
+
+                    if (isFirstLoad) {
+                        if (vm.isCustomKeyboardEnabled() && 0 == etChat.getText().toString().trim().length()) {
+                            showCustomKeyboard();
+                        }
+                        rvMessageList.scrollToPosition(0);
+
+                        if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size()) {
+                            // Message not empty and below 50, fetch newer messages from API
+                            callApiAfter();
+                            if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapUIChatActivity.this)) {
+                                insertDateSeparatorToLastIndex(false);
+                            }
+                        }
+                        else if (MAX_ITEMS_PER_PAGE <= vm.getMessageModels().size()) {
+                            // Message count over 50, fetch newer messages from API and add pagination listener
+                            rvMessageList.addOnScrollListener(endlessScrollListener);
+                            callApiAfter();
+                        }
                     }
                 });
-                if (MAX_ITEMS_PER_PAGE > entities.size() && 1 < entities.size()) {
-                    state = STATE.DONE;
-                } else {
-                    rvMessageList.addOnScrollListener(endlessScrollListener);
-                    state = STATE.LOADED;
-                }
             }
-        }
-    };
+        };
 
-    private void loadMoreMessagesFromDatabase() {
-        if (state == STATE.LOADED && 0 < messageAdapter.getItems().size()) {
-            new Thread(() -> {
-                vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
-                state = STATE.WORKING;
-            }).start();
+        if (vm.getLastTimestamp() == 0L) {
+            TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(vm.getRoom().getRoomID(), listener);
+        }
+        else {
+            TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(vm.getRoom().getRoomID(), listener, vm.getLastTimestamp());
         }
     }
-
-    private TAPDatabaseListener<TAPMessageEntity> dbListenerPaging = new TAPDatabaseListener<TAPMessageEntity>() {
-        @Override
-        public void onSelectFinished(List<TAPMessageEntity> entities) {
-            final List<TAPMessageModel> models = new ArrayList<>();
-            String previousDate = "";
-            TAPMessageModel previousMessage = null;
-            if (null != messageAdapter && !messageAdapter.getItems().isEmpty()) {
-                int offset = 1;
-                while (null == previousMessage) {
-                    if (messageAdapter.getItems().size() < offset) {
-                        break;
-                    }
-                    previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-                    if ((null != previousMessage.getIsHidden() && previousMessage.getIsHidden()) ||
-                            previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
-                            previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
-                            previousMessage.getType() == TYPE_DATE_SEPARATOR
-                    ) {
-                        previousMessage = null;
-                        offset++;
-                    }
-                }
-                if (null != previousMessage) {
-                    previousDate = TAPTimeFormatter.formatDate(previousMessage.getCreated());
-                }
-            }
-            LinkedHashMap<String, TAPMessageModel> dateSeparators = new LinkedHashMap<>();
-            LinkedHashMap<String, Integer> dateSeparatorIndex = new LinkedHashMap<>();
-
-            for (TAPMessageEntity entity : entities) {
-                if (!vm.getMessagePointer().containsKey(entity.getLocalID())) {
-                    TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
-                    models.add(model);
-                    vm.addMessagePointer(model);
-                    updateMessageMentionIndexes(model);
-                    if ((null == model.getIsRead() || !model.getIsRead()) &&
-                            TAPUtils.isActiveUserMentioned(model, vm.getMyUserModel())) {
-                        // Add unread mention
-                        vm.addUnreadMention(model);
-                    }
-
-                    if ((null == entity.getHidden() || !entity.getHidden()) &&
-                            entity.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
-                            entity.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
-                            entity.getType() != TYPE_DATE_SEPARATOR
-                    ) {
-                        String currentDate = TAPTimeFormatter.formatDate(model.getCreated());
-                        if (null != previousMessage && !currentDate.equals(previousDate)) {
-                            // Generate date separator if date is different
-                            int index = models.contains(previousMessage) ?
-                                    models.indexOf(previousMessage) + 1 : 0;
-                            TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, previousMessage);
-                            dateSeparators.put(dateSeparator.getLocalID(), dateSeparator);
-                            dateSeparatorIndex.put(dateSeparator.getLocalID(), index);
-                        }
-                        previousDate = currentDate;
-                        previousMessage = model;
-                    }
-                }
-            }
-
-            if (0 < models.size()) {
-                vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
-            }
-
-            if (null != messageAdapter) {
-                insertDateSeparators(dateSeparators, dateSeparatorIndex, models);
-
-                if (MAX_ITEMS_PER_PAGE > entities.size() && STATE.DONE != state) {
-                    if (0 == entities.size()) {
-                        showLoadingOlderMessagesIndicator();
-                    } else {
-                        vm.setNeedToShowLoading(true);
-                    }
-                    fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeViewPaging);
-                } else if (STATE.WORKING == state) {
-                    state = STATE.LOADED;
-                }
-
-                runOnUiThread(() -> {
-                    //flMessageList.setVisibility(View.VISIBLE);
-                    messageAdapter.addMessage(models);
-
-                    if (vm.isNeedToShowLoading()) {
-                        // Show loading if Before API is called
-                        vm.setNeedToShowLoading(false);
-                        showLoadingOlderMessagesIndicator();
-                    }
-
-                    // Insert unread indicator
-                    TAPMessageModel lastUnreadMessage = vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID());
-                    if (null != lastUnreadMessage && null == vm.getUnreadIndicator() && !vm.isAllUnreadMessagesHidden()) {
-                        TAPMessageModel unreadIndicator = insertUnreadMessageIdentifier(
-                                lastUnreadMessage.getCreated(),
-                                lastUnreadMessage.getUser());
-                        messageAdapter.getItems().add(messageAdapter.getItems().indexOf(lastUnreadMessage) + 1, unreadIndicator);
-                    }
-
-                    new Thread(() -> {
-                        vm.setMessageModels(messageAdapter.getItems());
-                        showUnreadButton(vm.getUnreadIndicator());
-                        updateMentionCount();
-                        if (null != vm.getTappedMessageLocalID()) {
-                            scrollToMessage(vm.getTappedMessageLocalID());
-                        }
-                    }).start();
-
-                    if (rvMessageList.getVisibility() != View.VISIBLE) {
-                        rvMessageList.setVisibility(View.VISIBLE);
-                    }
-                    if (state == STATE.DONE) {
-                        updateMessageDecoration();
-                    }
-                });
-            }
-        }
-    };
 
     private void callApiAfter() {
         if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this)) {
@@ -5487,39 +5556,47 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void fetchBeforeMessageFromAPIAndUpdateUI(TAPDefaultDataView<TAPGetMessageListByRoomResponse> beforeView) {
+        if (state != STATE.LOADED || vm.getLastTimestamp() >= vm.getLastBeforeTimestamp()) {
+            return;
+        }
+        state = STATE.WORKING;
         new Thread(() -> {
+            long timestamp;
             if (0 < vm.getMessageModels().size()) {
                 // Use oldest message's create time as parameter
-                TAPDataManager.getInstance(instanceKey).getMessageListByRoomBefore(vm.getRoom().getRoomID(),
-                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), MAX_ITEMS_PER_PAGE,
-                        beforeView);
+                timestamp = vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated();
             } else {
                 // Use current timestamp as parameter if message list is empty
-                TAPDataManager.getInstance(instanceKey).getMessageListByRoomBefore(vm.getRoom().getRoomID(),
-                        System.currentTimeMillis(), MAX_ITEMS_PER_PAGE,
-                        beforeView);
+                timestamp = System.currentTimeMillis();
             }
+            TAPDataManager.getInstance(instanceKey).getMessageListByRoomBefore(
+                    vm.getRoom().getRoomID(),
+                    timestamp,
+                    MAX_ITEMS_PER_PAGE,
+                    beforeView
+            );
         }).start();
     }
 
-    private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
+    private final TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             List<TAPMessageEntity> responseMessages = new ArrayList<>();  // Entities to be saved to database
             List<TAPMessageModel> messageBeforeModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
             LinkedHashMap<String, TAPMessageModel> dateSeparators = new LinkedHashMap<>();
             LinkedHashMap<String, Integer> dateSeparatorIndex = new LinkedHashMap<>();
-            boolean allMessagesHidden = true; // Flag to check whether empty chat layout should be removed
+            int visibleCount = 0;
 
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     messageBeforeModels.addAll(addBeforeTextMessage(message));
                     responseMessages.add(TAPMessageEntity.fromMessageModel(message));
-                    if (allMessagesHidden && (null == message.getIsHidden() || !message.getIsHidden())) {
-                        allMessagesHidden = false;
-                    }
                     updateMessageMentionIndexes(message);
+
+                    if (message.getIsHidden() == null || !message.getIsHidden()) {
+                        visibleCount++;
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -5527,6 +5604,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
             // Check if room has more messages
             state = response.getHasMore() ? STATE.LOADED : STATE.DONE;
+
+            vm.setLastBeforeTimestamp(vm.getLastTimestamp());
+            if (0 < messageBeforeModels.size()) {
+                vm.setLastTimestamp(messageBeforeModels.get(messageBeforeModels.size() - 1).getCreated());
+            }
 
             // Sort adapter items according to timestamp
             TAPUtils.mergeSort(messageBeforeModels, ASCENDING);
@@ -5572,52 +5654,44 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     previousMessage = message;
                 }
             }
+
             insertDateSeparators(dateSeparators, dateSeparatorIndex, messageBeforeModels);
 
-            List<TAPMessageModel> finalMessageBeforeModels = messageBeforeModels;
-            boolean finalAllMessagesHidden = allMessagesHidden;
+            vm.setVisibleMessageBubbleCount(vm.getVisibleMessageBubbleCount() + visibleCount);
+
+            int currentVisibleCount = visibleCount;
             runOnUiThread(() -> {
-                if (0 < finalMessageBeforeModels.size() &&
-                        !finalAllMessagesHidden) {
-                    if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
-                        cvEmptySavedMessages.setVisibility(View.GONE);
-                    } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
-                        clEmptyChat.setVisibility(View.GONE);
-                    }
-                }
-                if (!finalAllMessagesHidden) {
-                    if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
-                        cvEmptySavedMessages.setVisibility(View.GONE);
-                    } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
-                        clEmptyChat.setVisibility(View.GONE);
-                    }
+                if (messageBeforeModels.size() > 0) {
+                    showMessageList();
                 }
                 hideLoadingOlderMessagesIndicator();
 
-                if (!(0 < messageAdapter.getItems().size() && (ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
-                        && TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
-                        || (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction()))
-                        || (0 < messageAdapter.getItems().size() && LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
-                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
+                if (!(
+                        0 < messageAdapter.getItems().size() &&
+                        (
+                            ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction()) &&
+                            TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID())
+                        ) ||
+                        (
+                            0 < messageAdapter.getItems().size() &&
+                            DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction())
+                        ) ||
+                        (
+                            0 < messageAdapter.getItems().size() &&
+                            LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
+                            TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())
+                        )
+                    )
+                ) {
                     showMessageList();
                 }
 
                 // Add messages to last index
-                messageAdapter.addOlderMessagesFromApi(finalMessageBeforeModels);
+                messageAdapter.addOlderMessagesFromApi(messageBeforeModels);
 
-                if (0 < finalMessageBeforeModels.size())
-                    vm.setLastTimestamp(finalMessageBeforeModels.get(finalMessageBeforeModels.size() - 1).getCreated());
-
-                updateMessageDecoration();
-                new Thread(() -> {
-                    vm.setMessageModels(messageAdapter.getItems());
-                    if (null != vm.getTappedMessageLocalID()) {
-                        scrollToMessage(vm.getTappedMessageLocalID());
-                    }
-                }).start();
-
-                if (rvMessageList.getVisibility() != View.VISIBLE) {
-                    rvMessageList.setVisibility(View.VISIBLE);
+                vm.setMessageModels(messageAdapter.getItems());
+                if (null != vm.getTappedMessageLocalID()) {
+                    scrollToMessage(vm.getTappedMessageLocalID());
                 }
 
                 setRecyclerViewAnimator();
@@ -5625,33 +5699,30 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (state == STATE.DONE) {
                     insertDateSeparatorToLastIndex(false);
                     updateMessageDecoration();
-                } else if (state == STATE.LOADED) {
-                    rvMessageList.addOnScrollListener(endlessScrollListener);
+                }
+                else {
+                    if (state == STATE.LOADED) {
+                        rvMessageList.addOnScrollListener(endlessScrollListener);
+                    }
+                    if (vm.getVisibleMessageBubbleCount() < MAX_ITEMS_PER_PAGE &&  currentVisibleCount < (MAX_ITEMS_PER_PAGE / 2)) {
+                        // Load more messages if half or more loaded items are hidden
+                        loadMessagesFromDatabase();
+                    }
                 }
             });
 
-            TAPDataManager.getInstance(instanceKey).insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
-            });
-            // Moved to UI thread 2020-05-15
-//            if (MAX_ITEMS_PER_PAGE > response.getMessages().size() && 1 < response.getMessages().size()) {
-//                state = STATE.DONE;
-//            } else {
-//                rvMessageList.addOnScrollListener(endlessScrollListener);
-//                state = STATE.LOADED;
-//            }
+            TAPDataManager.getInstance(instanceKey).insertToDatabase(responseMessages, false, new TAPDatabaseListener<TAPMessageEntity>() {});
         }
 
         @Override
         public void onError(TAPErrorModel error) {
-            setRecyclerViewAnimator();
-            hideLoadingOlderMessagesIndicator();
+            onError(error.getMessage() != null ? error.getMessage() : "");
         }
 
         @Override
-        public void onError(Throwable throwable) {
+        public void onError(String errorMessage) {
             setRecyclerViewAnimator();
             hideLoadingOlderMessagesIndicator();
-            insertDateSeparatorToLastIndex(false);
         }
 
         private void setRecyclerViewAnimator() {
@@ -5661,115 +5732,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         rvMessageList.post(() ->
                                 rvMessageList.setItemAnimator(messageAnimator)), 200L);
             }
-        }
-    };
-
-    private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeViewPaging = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
-        @Override
-        public void onSuccess(TAPGetMessageListByRoomResponse response) {
-            hideLoadingOlderMessagesIndicator();
-            List<TAPMessageEntity> responseMessages = new ArrayList<>(); // Entities to be saved to database
-            List<TAPMessageModel> messageBeforeModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
-            LinkedHashMap<String, TAPMessageModel> dateSeparators = new LinkedHashMap<>();
-            LinkedHashMap<String, Integer> dateSeparatorIndex = new LinkedHashMap<>();
-
-            for (HashMap<String, Object> messageMap : response.getMessages()) {
-                try {
-                    TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    messageBeforeModels.addAll(addBeforeTextMessage(message));
-                    responseMessages.add(TAPMessageEntity.fromMessageModel(message));
-                    updateMessageMentionIndexes(message);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            // Check if room has more messages
-            state = response.getHasMore() ? STATE.LOADED : STATE.DONE;
-
-            // Sort adapter items according to timestamp
-            TAPUtils.mergeSort(messageBeforeModels, ASCENDING);
-
-            String previousDate = "";
-            TAPMessageModel previousMessage = null;
-            if (null != messageAdapter && !messageAdapter.getItems().isEmpty()) {
-                int offset = 1;
-                while (null == previousMessage) {
-                    if (messageAdapter.getItems().size() < offset) {
-                        break;
-                    }
-                    previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-                    if ((null != previousMessage.getIsHidden() && previousMessage.getIsHidden()) ||
-                            previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
-                            previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
-                            previousMessage.getType() == TYPE_DATE_SEPARATOR
-                    ) {
-                        previousMessage = null;
-                        offset++;
-                    }
-                }
-                if (null != previousMessage) {
-                    previousDate = TAPTimeFormatter.formatDate(previousMessage.getCreated());
-                }
-            }
-            for (TAPMessageModel message : messageBeforeModels) {
-                if ((null == message.getIsHidden() || !message.getIsHidden()) &&
-                        message.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
-                        message.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
-                        message.getType() != TYPE_DATE_SEPARATOR
-                ) {
-                    String currentDate = TAPTimeFormatter.formatDate(message.getCreated());
-                    if (null != previousMessage && !currentDate.equals(previousDate)) {
-                        // Generate date separator if date is different
-                        int index = messageBeforeModels.contains(previousMessage) ?
-                                messageBeforeModels.indexOf(previousMessage) + 1 : 0;
-                        TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, previousMessage);
-                        dateSeparators.put(dateSeparator.getLocalID(), dateSeparator);
-                        dateSeparatorIndex.put(dateSeparator.getLocalID(), index);
-                    }
-                    previousDate = currentDate;
-                    previousMessage = message;
-                }
-            }
-            insertDateSeparators(dateSeparators, dateSeparatorIndex, messageBeforeModels);
-
-            runOnUiThread(() -> {
-                // Add messages to last index
-                messageAdapter.addMessage(messageBeforeModels);
-
-                if (0 < messageBeforeModels.size()) {
-                    vm.setLastTimestamp(messageBeforeModels.get(messageBeforeModels.size() - 1).getCreated());
-                }
-
-                new Thread(() -> {
-                    vm.setMessageModels(messageAdapter.getItems());
-                    if (null != vm.getTappedMessageLocalID()) {
-                        scrollToMessage(vm.getTappedMessageLocalID());
-                    }
-                }).start();
-
-                if (rvMessageList.getVisibility() != View.VISIBLE) {
-                    rvMessageList.setVisibility(View.VISIBLE);
-                }
-                if (state == STATE.DONE) {
-                    insertDateSeparatorToLastIndex(false);
-                }
-                updateMessageDecoration();
-            });
-
-            TAPDataManager.getInstance(instanceKey).insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
-            });
-        }
-
-        @Override
-        public void onError(TAPErrorModel error) {
-            onError(error.getMessage());
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            hideLoadingOlderMessagesIndicator();
-            insertDateSeparatorToLastIndex(false);
         }
     };
 
@@ -5934,6 +5896,23 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     };
 
+    private TapCoreGetContactListener unblockUserView = new TapCoreGetContactListener() {
+        @Override
+        public void onSuccess(TAPUserModel user) {
+            hideLoadingPopup();
+            ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
+            blockedUserIDs.remove(vm.getOtherUserID());
+            TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserIDs);
+            setRoomState();
+        }
+
+        @Override
+        public void onError(String errorCode, String errorMessage) {
+            hideLoadingPopup();
+            showErrorDialog(getString(R.string.tap_error), errorMessage);
+        }
+    };
+
     private View.OnClickListener llDeleteGroupClickListener = v ->  {
         String title;
         String message;
@@ -6077,6 +6056,32 @@ public class TapUIChatActivity extends TAPBaseActivity {
             vm.setOtherUserModel(TAPChatManager.getInstance(instanceKey).getActiveUser());
         } else {
             vm.setOtherUserModel(otherUserModel);
+        }
+    }
+
+    private void getMessageReadCount(TAPMessageModel message) {
+        if (vm.getRoom().getType() != TYPE_PERSONAL &&
+            message.getIsRead() != null && message.getIsRead() &&
+            TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled() &&
+            !TapUI.getInstance(instanceKey).isReadStatusHidden()
+        ) {
+            TapCoreMessageManager.getInstance(instanceKey).getMessageTotalRead(message.getMessageID(), new TapCoreGetIntegerListener() {
+                @Override
+                public void onSuccess(int readCount) {
+                    if (readCount > 0) {
+                        vm.getMessageReadCountMap().put(message.getMessageID(), readCount);
+                        int index = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
+                        if (index >= 0) {
+                            messageAdapter.notifyItemChanged(index);
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
+
+                }
+            });
         }
     }
 

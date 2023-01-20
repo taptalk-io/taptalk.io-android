@@ -76,6 +76,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketBlockUser;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketClearChat;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
@@ -88,6 +89,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketScheduleMessageRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnblockUser;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnmuteRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnpinRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
@@ -354,6 +356,32 @@ public class TAPChatManager {
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         chatListener.onGetScheduledMessageList();
                     }
+                    break;
+                case kSocketBlockUser:
+                    TAPEmitModel<TAPOnlineStatusModel> blockUserEmit = TAPUtils
+                            .fromJSON(new TypeReference<>() {
+                            }, emitData);
+                    TAPOnlineStatusModel blockUserEmitData = blockUserEmit.getData();
+                    TAPUserModel blockedUser = blockUserEmitData.getUser();
+                    ArrayList<String> blockedUsers = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
+                    if (!blockedUsers.contains(blockedUser.getUserID())) {
+                        blockedUsers.add(blockedUser.getUserID());
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUsers);
+                    TAPContactManager.getInstance(instanceKey).updateUserData(blockedUser);
+                    TapCoreContactManager.getInstance(instanceKey).triggerContactBlocked(blockedUser);
+                    break;
+                case kSocketUnblockUser:
+                    TAPEmitModel<TAPOnlineStatusModel> unblockUserEmit = TAPUtils
+                            .fromJSON(new TypeReference<>() {
+                            }, emitData);
+                    TAPOnlineStatusModel unblockUserEmitData = unblockUserEmit.getData();
+                    TAPUserModel unblockedUser = unblockUserEmitData.getUser();
+                    ArrayList<String> blockedUserList = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
+                    blockedUserList.remove(unblockedUser.getUserID());
+                    TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserList);
+                    TAPContactManager.getInstance(instanceKey).updateUserData(unblockedUser);
+                    TapCoreContactManager.getInstance(instanceKey).triggerContactUnblocked(unblockedUser);
                     break;
             }
         }
@@ -2731,6 +2759,10 @@ public class TAPChatManager {
 
     public void triggerChatProfileReportGroupButtonTapped(Activity activity, TAPRoomModel room) {
         TapUI.getInstance(instanceKey).triggerChatProfileReportGroupButtonTapped(activity, room);
+    }
+
+    public void triggerChatProfileGroupsInCommonButtonTapped(Activity activity, TAPRoomModel room) {
+        TapUI.getInstance(instanceKey).triggerChatProfileGroupsInCommonButtonTapped(activity, room);
     }
 
     public void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {

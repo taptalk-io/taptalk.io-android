@@ -54,6 +54,8 @@ import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 
+import java.util.ArrayList;
+
 public class TAPNewContactActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPNewContactActivity.class.getSimpleName();
@@ -508,9 +510,16 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPGetUserResponse response) {
             TAPUserModel userResponse = response.getUser();
-            TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
-            vm.setSearchResult(userResponse);
-            showSearchResult();
+            ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
+            if (blockedUserIDs.contains(userResponse.getUserID())) {
+                showResultNotFound();
+                endLoading();
+            }
+            else {
+                TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
+                vm.setSearchResult(userResponse);
+                showSearchResult();
+            }
         }
 
         @Override

@@ -8,8 +8,8 @@
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_chat">Clear Chat</string>
     <string name="tap_conversation_color">Conversation Color</string>
-    <string name="tap_leave_group">Leave group</string>
-    <string name="tap_delete_group">Delete group</string>
+    <string name="tap_leave_group">Leave Group</string>
+    <string name="tap_delete_group">Delete Group</string>
     <string name="tap_forward">Forward</string>
     <string name="tap_group_details">Group Details</string>
     <string name="tap_group_subject">Group Subject</string>
@@ -30,7 +30,7 @@
     <string name="tap_scan_qr_code">Scan QR Code</string>
     <string name="tap_show_qr_code">Show QR Code</string>
     <string name="tap_user_details">User Details</string>
-    <string name="tap_view_members">View members</string>
+    <string name="tap_view_members">View Members</string>
     <string name="tap_welcome">Welcome</string>
 
     <!--Chat Room List-->
@@ -74,12 +74,11 @@
     <!--Group Chat-->
     <string name="tap_add_members">Add Members</string>
     <string name="tap_format_dd_selected_member_count">Group Members (%d/%d)</string>
-    <string name="tap_format_d_group_member_count">%d members</string>
+    <string name="tap_format_d_group_member_count">%d Members</string>
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
     <string name="tap_edit_group">Edit Group</string>
-    <string name="tap_edit_group_small">Edit group</string>
     <string name="tap_change_avatar">Change Avatar</string>
     <string name="tap_group_members">Group Members</string>
     <string name="tap_remove_group_member">Remove Member</string>
@@ -458,6 +457,7 @@
     <string name="tap_deleting_conversation_dots">Deleting conversation...</string>
     <string name="tap_fail_delete_chatroom">Oops! Failed to delete chat room</string>
     <string name="tap_loading_dots">Loading...</string>
+    <string name="tap_message_info">Message Info</string>
     <string name="tap_schedule_message">Schedule Message</string>
     <string name="tap_scheduled_message">Scheduled Message</string>
     <string name="tap_empty_scheduled_message">No scheduled message here yet</string>
@@ -465,10 +465,11 @@
     <string name="tap_send_now">Send Now</string>
     <string name="tap_reschedule">Reschedule</string>
     <string name="tap_report">Report</string>
-    <string name="tap_report_user_description_wording">You may report a user if you find them inappropriate, please choose one of the reason we can know how to handle this properly.</string>
+    <string name="tap_report_user_description_wording">You may report a user if you find them inappropriate, please choose one of the reason so we know how to handle this properly.</string>
     <string name="tap_why_report_user">Why do you want to report this user? (Optional)</string>
     <string name="tap_tell_us_why_dots">Tell us why...</string>
     <string name="tap_please_specify_reason">Please specify your reason</string>
+    <string name="tap_please_select_a_category">Please select a category</string>
     <string name="tap_this_field_is_required">This field is required.</string>
     <string name="tap_submit_report">Submit Report</string>
     <string name="tap_others">Others</string>
@@ -483,13 +484,27 @@
     <string name="tap_report_message_options_4">Violence</string>
     <string name="tap_wording_submit_report">You will submit a report for this user, you can tell us why so we can help you. Are you sure you want to submit now?</string>
     <string name="tap_submit">Submit</string>
-    <string name="tap_you_havent_submit_report">You haven’t submit your report</string>
-    <string name="tap_havent_submit_report_wording">Your report has not been submitted, are you sure you want to go back before submitting?</string>
+    <string name="tap_you_havent_submit_report">You haven’t submitted your report</string>
+    <string name="tap_havent_submit_report_wording">Your report has not been submitted, are you sure you want to cancel and discard the report?</string>
     <string name="tap_report_might_not_submitted">Your report might have not been submitted</string>
     <string name="tap_report_might_not_submitted_wording">Your report might have not been submitted because you clicked back while we are trying to submit your report, are you sure you want to go back?</string>
     <string name="tap_report_has_been_submitted">Report has been submitted</string>
     <string name="tap_thank_you_for_reporting">Thank you for reporting!</string>
     <string name="tap_failed_to_submit_report">Failed to submit report</string>
     <string name="tap_failed_submit_report_wording">There has been an error while submitting, please try again.</string>
+    <string name="tap_block_user_dialog_wording">Blocking someone will not allow them to see your updates, and you will not receive any messages or calls from this contact. Are you sure you want to continue?</string>
+    <string name="tap_block">Block</string>
+    <string name="tap_blocked_contacts">Blocked Contacts</string>
+    <string name="tap_done">Done</string>
+    <string name="tap_unblock">Unblock</string>
+    <string name="tap_sure_unblock_wording">Unblocking lets user send messages and calls from this contact. Are you sure you want to continue?</string>
+    <string name="tap_empty_blocked_contacts_wording">You don’t have any blocked contact</string>
+    <string name="tap_unblock_s_format">Unblock %s?</string>
+    <string name="tap_groups_in_common">Groups in Common</string>
+    <string name="tap_one_group_in_common">1 Group in Common</string>
+    <string name="tap_no_groups_in_common">You have no groups in common</string>
+    <string name="tap_read_by_d_format">Read by (%d)</string>
+    <string name="tap_delivered_to_d_format">Delivered to (%d)</string>
+    <string name="tap_s_format_groups_in_common">%s Groups in common</string>
 
 </resources>

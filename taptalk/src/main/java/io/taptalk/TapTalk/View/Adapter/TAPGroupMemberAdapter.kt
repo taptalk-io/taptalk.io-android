@@ -23,6 +23,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
@@ -106,7 +107,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                 Glide.with(itemView.context).load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar)
                 ImageViewCompat.setImageTintList(civAvatar, null)
                 tvAvatarLabel.visibility = View.GONE
-            } else if (item?.imageURL?.thumbnail.isNullOrEmpty()) {
+            } else if (item?.imageURL?.thumbnail.isNullOrEmpty() ) {
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, item?.fullname)))
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
                 tvAvatarLabel.text = TAPUtils.getInitials(item?.fullname, 2)
@@ -128,13 +129,13 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                             }
 
                             override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                                ImageViewCompat.setImageTintList(civAvatar, null)
+                                tvAvatarLabel.visibility = View.GONE
                                 return false
                             }
 
                         })
                         .into(civAvatar)
-                ImageViewCompat.setImageTintList(civAvatar, null)
-                tvAvatarLabel.visibility = View.GONE
             }
 
             // Set name

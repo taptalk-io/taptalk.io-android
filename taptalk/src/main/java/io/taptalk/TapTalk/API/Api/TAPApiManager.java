@@ -55,6 +55,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapCreateScheduledMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdsWithRoomIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapReportUserRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
@@ -86,6 +87,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageDetailResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageTotalReadResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
@@ -94,6 +97,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapRoomModelsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
@@ -829,5 +833,38 @@ public class TAPApiManager {
         request.setMessageID(messageId);
         request.setRoomID(roomId);
         execute(homingPigeon.submitMessageReport(request), subscriber);
+    }
+
+    public void blockUser(String userId, Subscriber<TAPBaseResponse<TAPAddContactResponse>> subscriber) {
+        TAPUserIdRequest request = new TAPUserIdRequest(userId);
+        execute(homingPigeon.blockUser(request), subscriber);
+    }
+
+    public void unblockUser(String userId, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPUserIdRequest request = new TAPUserIdRequest(userId);
+        execute(homingPigeon.unblockUser(request), subscriber);
+    }
+
+    public void getBlockedUserList(Subscriber<TAPBaseResponse<TAPGetMultipleUserResponse>> subscriber) {
+        execute(homingPigeon.getBlockedUserList(), subscriber);
+    }
+
+    public void getBlockedUserIds(Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        execute(homingPigeon.getBlockedUserIds(), subscriber);
+    }
+
+    public void getMessageDetails(String messageId, Subscriber<TAPBaseResponse<TapGetMessageDetailResponse>> subscriber) {
+        TapMessageIdRequest request = new TapMessageIdRequest(messageId);
+        execute(homingPigeon.getMessageDetails(request), subscriber);
+    }
+
+    public void getMessageTotalRead(String messageId, Subscriber<TAPBaseResponse<TapGetMessageTotalReadResponse>> subscriber) {
+        TapMessageIdRequest request = new TapMessageIdRequest(messageId);
+        execute(homingPigeon.getMessageTotalRead(request), subscriber);
+    }
+
+    public void getGroupsInCommon(String userId, Subscriber<TAPBaseResponse<TapRoomModelsResponse>> subscriber) {
+        TAPUserIdRequest request = new TAPUserIdRequest(userId);
+        execute(homingPigeon.getGroupsInCommon(request), subscriber);
     }
 }

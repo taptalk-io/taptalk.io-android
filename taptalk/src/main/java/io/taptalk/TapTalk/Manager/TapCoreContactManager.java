@@ -1,5 +1,12 @@
 package io.taptalk.TapTalk.Manager;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
+
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.Keep;
 
 import java.util.ArrayList;
@@ -10,29 +17,29 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreContactListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetContactListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMultipleContactListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetRoomArrayListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapRoomModelsResponse;
+import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.R;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
-import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.ROOM_ITEM;
-import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
 
 @Keep
 public class TapCoreContactManager {
 
     private static HashMap<String, TapCoreContactManager> instances;
+
+    private List<TapCoreContactListener> coreContactListeners;
 
     private String instanceKey = "";
 
@@ -56,6 +63,18 @@ public class TapCoreContactManager {
         return null == instances ? instances = new HashMap<>() : instances;
     }
 
+    private List<TapCoreContactListener> getCoreContactListeners() {
+        return null == coreContactListeners ? coreContactListeners = new ArrayList<>() : coreContactListeners;
+    }
+
+    public void addContactListener(TapCoreContactListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getCoreContactListeners().remove(listener);
+        getCoreContactListeners().add(listener);
+    }
+
     public void getAllUserContacts(TapCoreGetMultipleContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
@@ -73,6 +92,73 @@ public class TapCoreContactManager {
 
             @Override
             public void onSelectFailed(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void fetchAllUserContactsFromServer(TapCoreGetMultipleContactListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(new TAPDefaultDataView<TAPContactResponse>() {
+            @Override
+            public void onSuccess(TAPContactResponse response) {
+                List<TAPUserModel> responseContacts = new ArrayList<>();
+                List<String> contactIDs = new ArrayList<>();
+                for (TAPContactModel contact : response.getContacts()) {
+                    TAPUserModel contactUser = contact.getUser().setUserAsContact();
+                    responseContacts.add(contactUser);
+                    contactIDs.add(contactUser.getUserID());
+                }
+
+                // Sync contacts to database
+                new Thread(() -> getAllUserContacts(new TapCoreGetMultipleContactListener() {
+                    @Override
+                    public void onSuccess(List<TAPUserModel> users) {
+                        List<TAPUserModel> updatedContacts = new ArrayList<>(responseContacts);
+                        for (TAPUserModel user : users) {
+                            if (!contactIDs.contains(user.getUserID())) {
+                                user.setIsContact(0);
+                                updatedContacts.add(user);
+                            }
+                        }
+                        TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(updatedContacts);
+                        TAPDataManager.getInstance(instanceKey).setContactListUpdated();
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            if (null != listener) {
+                                listener.onSuccess(responseContacts);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(responseContacts);
+                        TAPDataManager.getInstance(instanceKey).setContactListUpdated();
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            if (null != listener) {
+                                listener.onSuccess(responseContacts);
+                            }
+                        });
+                    }
+                })).start();
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
                 if (null != listener) {
                     listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }
@@ -378,6 +464,192 @@ public class TapCoreContactManager {
                 super.onSuccess(response);
                 if (null != listener) {
                     listener.onSuccess(response.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void triggerContactBlocked(TAPUserModel userModel) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        for (TapCoreContactListener listener : getCoreContactListeners()) {
+            listener.onContactBlocked(userModel);
+        }
+    }
+
+    public void triggerContactUnblocked(TAPUserModel userModel) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        for (TapCoreContactListener listener : getCoreContactListeners()) {
+            listener.onContactUnblocked(userModel);
+        }
+    }
+
+    public void blockUser(String userID, TapCoreGetContactListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPDataManager.getInstance(instanceKey).blockUser(userID, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPAddContactResponse response) {
+                TAPContactManager.getInstance(instanceKey).removeFromContacts(userID);
+                triggerContactBlocked(response.getUser());
+                if (null != listener) {
+                    listener.onSuccess(response.getUser());
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void unblockUser(String userID, TapCoreGetContactListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPDataManager.getInstance(instanceKey).unblockUser(userID, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPCommonResponse response) {
+                fetchAllUserContactsFromServer(new TapCoreGetMultipleContactListener() {
+                    @Override
+                    public void onSuccess(List<TAPUserModel> users) {
+                        onFinish();
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        onFinish();
+                    }
+
+                    private void onFinish() {
+                        TAPUserModel user  = TAPContactManager.getInstance(instanceKey).getUserData(userID);
+                        triggerContactUnblocked(user);
+                        if (null != listener) {
+                            listener.onSuccess(user);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void getBlockedUserList(TapCoreGetMultipleContactListener listener) {
+        TAPDataManager.getInstance(instanceKey).getBlockedUserList(new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPGetMultipleUserResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    listener.onSuccess(response.getUsers());
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void getBlockedUserIDs(TapCoreGetStringArrayListener listener) {
+        TAPDataManager.getInstance(instanceKey).getBlockedUserIds(new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetUnreadRoomIdsResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    listener.onSuccess(new ArrayList<>(response.getUnreadRoomIDs()));
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void getGroupsInCommon(String userID, TapCoreGetRoomArrayListener listener) {
+        TAPDataManager.getInstance(instanceKey).getGroupsInCommon(userID, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapRoomModelsResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    if (response.getRooms() != null)
+                        listener.onSuccess(new ArrayList<>(response.getRooms()));
+                    else {
+                        listener.onSuccess(new ArrayList<>());
+                    }
                 }
             }
 

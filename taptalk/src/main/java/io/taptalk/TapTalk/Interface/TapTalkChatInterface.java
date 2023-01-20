@@ -45,6 +45,8 @@ public interface TapTalkChatInterface {
 
     void onGroupMemberAvatarClicked(TAPMessageModel message);
 
+    void onBubbleTapped(TAPMessageModel message);
+
     void onOutsideClicked(TAPMessageModel message);
 
     void onBubbleExpanded();

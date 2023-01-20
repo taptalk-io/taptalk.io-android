@@ -636,6 +636,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 TAPUtils.dpToPx(6)
             )
         }
+        iv_schedule.visibility = View.GONE
     }
 
     private fun registerBroadcastManager() {

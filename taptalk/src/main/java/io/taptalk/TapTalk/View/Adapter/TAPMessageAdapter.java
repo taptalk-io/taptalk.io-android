@@ -1,92 +1,5 @@
 package io.taptalk.TapTalk.View.Adapter;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.text.SpannableString;
-import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.Space;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.Barrier;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import io.taptalk.TapTalk.Helper.CircleImageView;
-import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
-import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
-import io.taptalk.TapTalk.Helper.TAPFileUtils;
-import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
-import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
-import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Helper.TapTalkDialog;
-import io.taptalk.TapTalk.Listener.TAPChatListener;
-import io.taptalk.TapTalk.Manager.TAPCacheManager;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPContactManager;
-import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
-import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
-import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
-import io.taptalk.TapTalk.Manager.TapUI;
-import io.taptalk.TapTalk.Model.TAPForwardFromModel;
-import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPProductModel;
-import io.taptalk.TapTalk.Model.TAPQuoteModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.R;
-import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
-import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
-import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
-
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_RIGHT;
@@ -159,6 +72,95 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.text.SpannableString;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.Space;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.Barrier;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Group;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import io.taptalk.TapTalk.Helper.CircleImageView;
+import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
+import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
+import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
+import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
+import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
+import io.taptalk.TapTalk.Manager.TAPCacheManager;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
+import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
+import io.taptalk.TapTalk.Manager.TapUI;
+import io.taptalk.TapTalk.Model.TAPForwardFromModel;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
+import io.taptalk.TapTalk.Model.TAPQuoteModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
+import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
+import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
+
 public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseChatViewHolder> {
 
     private static final String TAG = TAPMessageAdapter.class.getSimpleName();
@@ -186,7 +188,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPChatViewModel vm;
 
     public enum RoomType {
-        DEFAULT, STARRED, PINNED
+        DEFAULT, STARRED, PINNED, DETAIL
     }
 
     public TAPMessageAdapter(
@@ -221,6 +223,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         this.vm = vm;
         this.messageMentionIndexes = vm.getMessageMentionIndexes();
         this.roomType = roomType;
+        pendingAnimationMessages = new ArrayList<>();
+        animatingMessages = new ArrayList<>();
+    }
+
+    public TAPMessageAdapter(
+            String instanceKey,
+            RequestManager glide,
+            TAPChatViewModel vm
+    ) {
+        myUserModel = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        this.instanceKey = instanceKey;
+        this.chatListener = new TAPChatListener() {};
+        this.glide = glide;
+        this.vm = vm;
+        this.messageMentionIndexes = vm.getMessageMentionIndexes();
+        this.roomType = RoomType.DETAIL;
         pendingAnimationMessages = new ArrayList<>();
         animatingMessages = new ArrayList<>();
     }
@@ -409,7 +427,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clLink;
         private TextView tvLinkTitle;
         private TextView tvLinkContent;
-        private TAPRoundedCornerImageView rcivLinkImage;
+        private ImageView ivLinkImage;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -438,7 +459,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clLink = itemView.findViewById(R.id.cl_link);
             tvLinkTitle = itemView.findViewById(R.id.tv_link_title);
             tvLinkContent = itemView.findViewById(R.id.tv_link_content);
-            rcivLinkImage = itemView.findViewById(R.id.rciv_link_image);
+            ivLinkImage = itemView.findViewById(R.id.iv_link_image);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            gReadCount = itemView.findViewById(R.id.g_read_count);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -483,15 +507,21 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
             setPinnedIcon(item.getMessageID(), ivPinMessage);
-
+            setReadCountIcon(gReadCount, tvReadCount, item.getMessageID());
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             if (!isBubbleTapOnly()) {
-                flBubble.setOnClickListener(v -> onStatusImageClicked(item));
+                flBubble.setOnClickListener(v -> {
+                    chatListener.onBubbleTapped(item);
+                    onStatusImageClicked(item);
+                });
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
-                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+                flBubble.setOnClickListener(v -> {
+                    chatListener.onBubbleTapped(item);
+                    chatListener.onOutsideClicked(item);
+                });
                 if (roomType == RoomType.STARRED) {
                     if (position != 0) {
                         vSeparator.setVisibility(View.VISIBLE);
@@ -537,7 +567,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     String url = (String) item.getData().get(URL);
                     String image = (String) item.getData().get(IMAGE);
                     clLink.setVisibility(View.VISIBLE);
-                    tvLinkTitle.setText(title);
+                    if (!title.isEmpty()) {
+                        tvLinkTitle.setText(title);
+                        tvLinkTitle.setVisibility(View.VISIBLE);
+                    } else {
+                        tvLinkTitle.setVisibility(View.GONE);
+                    }
                     if (description == null || description.isEmpty()) {
                         tvLinkContent.setVisibility(View.GONE);
                     } else {
@@ -545,10 +580,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         tvLinkContent.setText(description);
                     }
                     if (image == null || image.isEmpty()) {
-                        rcivLinkImage.setVisibility(View.GONE);
+                        ivLinkImage.setVisibility(View.GONE);
                     } else {
-                        rcivLinkImage.setVisibility(View.VISIBLE);
-                        glide.load(image).fitCenter().into(rcivLinkImage);
+                        ivLinkImage.setVisibility(View.VISIBLE);
+                        glide.load(image).fitCenter().into(ivLinkImage);
                     }
                     clLink.setOnClickListener(view -> TAPUtils.openCustomTabLayout((Activity) itemView.getContext(), url));
                 } else {
@@ -599,6 +634,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private ImageView ivReadCountBody;
+        private TextView tvReadCountBody;
+        private Group gReadCountBody;
 
         private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
@@ -637,6 +677,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivSelect = itemView.findViewById(R.id.iv_select);
             tvEdited = itemView.findViewById(R.id.tv_edited);
             tvEditedBody = itemView.findViewById(R.id.tv_edited_body);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            ivReadCountBody = itemView.findViewById(R.id.iv_read_count_body);
+            tvReadCountBody = itemView.findViewById(R.id.tv_read_count_body);
+            gReadCountBody = itemView.findViewById(R.id.g_read_count_body);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -683,8 +728,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         vSeparator.setVisibility(View.GONE);
                     }
                 }
-                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
+            flBubble.setOnClickListener(v -> {
+                chatListener.onBubbleTapped(item);
+                chatListener.onOutsideClicked(item);
+            });
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivImageBody, item);
 
@@ -699,6 +747,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, message, rcivImageBody);
             }
+            chatListener.onBubbleTapped(message);
         }
 
         private void setProgress(TAPMessageModel item) {
@@ -769,6 +818,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
                 setPinnedIcon(item.getMessageID(), ivPinMessageBody);
+                setReadCountIcon(gReadCountBody, tvReadCountBody, item.getMessageID());
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
             } else {
                 // Hide caption
@@ -782,6 +832,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
                 setPinnedIcon(item.getMessageID(), ivPinMessage);
+                setReadCountIcon(ivReadCount, tvReadCount, item.getMessageID());
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
             }
 
@@ -806,7 +857,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .centerCrop())
                         .listener(imageBodyListener)
                         .into(rcivImageBody);
-                rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
+                rcivImageBody.setOnClickListener(v -> {
+                    openImageDetailPreview(item);
+                });
             } else if (null != fileID && !fileID.isEmpty()) {
                 new Thread(() -> {
                     BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
@@ -1006,6 +1059,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private ImageView ivReadCountBody;
+        private TextView tvReadCountBody;
+        private Group gReadCountBody;
 
         private TAPMessageModel obtainedItem;
         private Uri videoUri;
@@ -1046,6 +1104,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivSelect = itemView.findViewById(R.id.iv_select);
             tvEdited = itemView.findViewById(R.id.tv_edited);
             tvEditedBody = itemView.findViewById(R.id.tv_edited_body);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            ivReadCountBody = itemView.findViewById(R.id.iv_read_count_body);
+            tvReadCountBody = itemView.findViewById(R.id.tv_read_count_body);
+            gReadCountBody = itemView.findViewById(R.id.g_read_count_body);
 
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -1093,8 +1156,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         vSeparator.setVisibility(View.GONE);
                     }
                 }
-                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
+            flBubble.setOnClickListener(v -> {
+                chatListener.onBubbleTapped(item);
+                chatListener.onOutsideClicked(item);
+            });
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
 
@@ -1148,6 +1214,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
                 setPinnedIcon(item.getMessageID(), ivPinMessageBody);
+                setReadCountIcon(gReadCountBody, tvReadCountBody, item.getMessageID());
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
             } else {
                 // Hide caption
@@ -1161,6 +1228,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
                 setPinnedIcon(item.getMessageID(), ivPinMessage);
+                setReadCountIcon(ivReadCount, tvReadCount, item.getMessageID());
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
             }
 
@@ -1372,12 +1440,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openVideoPlayer(TAPMessageModel message) {
-            if (null == message.getData()) {
-                return;
-            }
             if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(message);
-            } else {
+            } else if (null != message.getData()) {
                 Uri videoUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message);
                 if (null == videoUri || !TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)) {
                     // Prompt download
@@ -1398,6 +1463,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     TAPVideoPlayerActivity.start(itemView.getContext(), instanceKey, videoUri, message);
                 }
             }
+            chatListener.onBubbleTapped(message);
         }
 
         @Override
@@ -1459,6 +1525,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TextView tvFileName;
         private TextView tvFileInfo;
         private TextView tvFileInfoDummy;
+        private TextView tvMessageBody;
         private TextView tvMessageTimestamp;
         private TextView tvMessageStatus;
         private TextView tvForwardedFrom;
@@ -1475,6 +1542,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
 
         private Uri fileUri;
 
@@ -1493,6 +1563,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvFileName = itemView.findViewById(R.id.tv_file_name);
             tvFileInfo = itemView.findViewById(R.id.tv_file_info);
             tvFileInfoDummy = itemView.findViewById(R.id.tv_file_info_dummy);
+            tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageTimestamp = itemView.findViewById(R.id.tv_message_timestamp);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
@@ -1506,6 +1577,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            gReadCount = itemView.findViewById(R.id.g_read_count);
 
             if (bubbleType == TYPE_BUBBLE_FILE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -1544,20 +1618,28 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setFileProgress(item);
+            setFileCaption(item);
 
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
             setPinnedIcon(item.getMessageID(), ivPinMessage);
+            setReadCountIcon(gReadCount, tvReadCount, item.getMessageID());
             setOriginalMessageButton(item, ibOriginalMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             if (!isBubbleTapOnly()) {
-                flBubble.setOnClickListener(v -> flFileIcon.performClick());
+                flBubble.setOnClickListener(v -> {
+                    chatListener.onBubbleTapped(item);
+                    flFileIcon.performClick();
+                });
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
-                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+                flBubble.setOnClickListener(v -> {
+                    chatListener.onBubbleTapped(item);
+                    chatListener.onOutsideClicked(item);
+                });
                 if (roomType == RoomType.STARRED) {
                     if (position != 0) {
                         vSeparator.setVisibility(View.VISIBLE);
@@ -1691,6 +1773,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
         }
 
+        private void setFileCaption(TAPMessageModel item) {
+            if (item.getData() != null) {
+                String caption = (String) item.getData().get(CAPTION);
+                if (caption != null && !caption.isEmpty()) {
+                    setMessageBodyText(tvMessageBody, item, caption);
+                    tvMessageBody.setVisibility(View.VISIBLE);
+                } else {
+                    tvMessageBody.setVisibility(View.GONE);
+                }
+            } else {
+                tvMessageBody.setVisibility(View.GONE);
+            }
+        }
+
         private void downloadFile(TAPMessageModel item) {
             if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
@@ -1767,6 +1863,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
 
         private Uri fileUri;
 
@@ -1797,6 +1896,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             seekBar = itemView.findViewById(R.id.seek_bar);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            gReadCount = itemView.findViewById(R.id.g_read_count);
 
             if (bubbleType == TYPE_BUBBLE_VOICE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -1830,15 +1932,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
             setPinnedIcon(item.getMessageID(), ivPinMessage);
+            setReadCountIcon(gReadCount, tvReadCount, item.getMessageID());
             setOriginalMessageButton(item, ibOriginalMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             if (!isBubbleTapOnly()) {
-                flBubble.setOnClickListener(v -> flVoiceIcon.performClick());
+                flBubble.setOnClickListener(v -> {
+                    chatListener.onBubbleTapped(item);
+                    flVoiceIcon.performClick();
+                });
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
-                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+                flBubble.setOnClickListener(v -> {
+                    chatListener.onBubbleTapped(item);
+                    chatListener.onOutsideClicked(item);
+                });
                 if (roomType == RoomType.STARRED) {
                     if (position != 0) {
                         vSeparator.setVisibility(View.VISIBLE);
@@ -2011,10 +2120,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                 playBubbleVoiceNote(seekBar, activity, tvDuration, image, fileUri, currentLocalId, audioDuration);
             }
+            chatListener.onBubbleTapped(item);
         }
-
     }
-
 
     public class LocationVH extends TAPBaseChatViewHolder {
 
@@ -2051,6 +2159,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageButton ibOriginalMessage;
         private Barrier barrier;
         private Space space;
+        private ImageView ivReadCount;
+        private TextView tvReadCount;
+        private Group gReadCount;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -2081,6 +2192,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
+            ivReadCount = itemView.findViewById(R.id.iv_read_count);
+            tvReadCount = itemView.findViewById(R.id.tv_read_count);
+            gReadCount = itemView.findViewById(R.id.g_read_count);
 
             if (bubbleType == TYPE_BUBBLE_LOCATION_LEFT) {
                 clBubbleTop = itemView.findViewById(R.id.cl_bubble_top);
@@ -2148,6 +2262,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), vMapBorder, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
             setPinnedIcon(item.getMessageID(), ivPinMessage);
+            setReadCountIcon(gReadCount, tvReadCount, item.getMessageID());
 
             vMapBorder.setOnClickListener(v -> {
                 if (isBubbleTapOnly()) {
@@ -2164,8 +2279,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         vSeparator.setVisibility(View.GONE);
                     }
                 }
-                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
+            flBubble.setOnClickListener(v -> {
+                chatListener.onBubbleTapped(item);
+                chatListener.onOutsideClicked(item);
+            });
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -2726,7 +2844,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void setMessageBodyText(TextView tvMessageBody, TAPMessageModel item, String body) {
         String originalText;
         String spaceAppend = "";
-        if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO) && null != item.getData()) {
+        if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO || item.getType() == TYPE_FILE) && null != item.getData()) {
             originalText = (String) item.getData().get(CAPTION);
         } else if (item.getType() == TYPE_LOCATION && null != item.getData()) {
             originalText = (String) item.getData().get(ADDRESS);
@@ -2904,31 +3022,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 // Load avatar and name for other room types
                 TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(item.getUser().getUserID());
-                if (null != civAvatar && null != tvAvatarLabel && ((null != user && null != user.getDeleted() && user.getDeleted() > 0L) || (null != item.getUser().getDeleted() && item.getUser().getDeleted() > 0L))) {
+                if (user == null) {
+                    user = item.getUser();
+                }
+                if (null != civAvatar && null != tvAvatarLabel && ((null != user && null != user.getDeleted() && user.getDeleted() > 0L) || (null != item.getUser() && null != item.getUser().getDeleted() && item.getUser().getDeleted() > 0L))) {
                     glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
                     ImageViewCompat.setImageTintList(civAvatar, null);
                     tvAvatarLabel.setVisibility(View.GONE);
                 } else if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                     glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            if (vh.itemView.getContext() instanceof Activity) {
-                                ((Activity) vh.itemView.getContext()).runOnUiThread(() -> showInitial(vh, item.getUser().getFullname(), civAvatar, space, tvAvatarLabel));
-                            }
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    }).into(civAvatar);
-                    ImageViewCompat.setImageTintList(civAvatar, null);
-                    civAvatar.setVisibility(View.VISIBLE);
-                    if (space != null) space.setVisibility(View.VISIBLE);
-                    tvAvatarLabel.setVisibility(View.GONE);
-                } else if (null != civAvatar && null != tvAvatarLabel && null != item.getUser().getImageURL() && !item.getUser().getImageURL().getThumbnail().isEmpty()) {
-                    glide.load(item.getUser().getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             if (vh.itemView.getContext() instanceof Activity) {
@@ -3565,6 +3667,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     }
 
+    private void setReadCountIcon(View view, TextView tvReadCount, String messageId) {
+        if (!TapUI.getInstance(instanceKey).isReadStatusHidden()) {
+            Integer readCount = vm.getMessageReadCountMap().get(messageId);
+            if (/*view.getVisibility() != View.VISIBLE && */readCount != null && readCount > 0) {
+                view.setVisibility(View.VISIBLE);
+                tvReadCount.setVisibility(View.VISIBLE);
+                tvReadCount.setText(String.format(Locale.getDefault(), "%d •", readCount));
+            } else {
+                view.setVisibility(View.GONE);
+                tvReadCount.setVisibility(View.GONE);
+            }
+        }
+    }
+
     // update list when context use star message feature
     public void setStarredMessageIds(List<String> starredMessageIds) {
         this.starredMessageIds.clear();
@@ -3789,6 +3905,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private boolean isBubbleTapOnly() {
-        return roomType == RoomType.STARRED || roomType == RoomType.PINNED;
+        return roomType == RoomType.STARRED || roomType == RoomType.PINNED || roomType == RoomType.DETAIL;
     }
 }

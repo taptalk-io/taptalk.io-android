@@ -136,6 +136,14 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TapMessageInfoActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TapGroupsInCommonActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

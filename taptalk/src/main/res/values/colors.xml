@@ -145,6 +145,7 @@
     <color name="tapIconChatProfileMenuClearChat">@color/tapColorDestructiveIcon</color>
     <color name="tapIconChatProfileMenuStarredMessages">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuSharedMedia">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChatProfileMenuGroupInCommon">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuMute">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuEditGroup">@color/tapColorPrimaryIcon</color>
@@ -176,6 +177,7 @@
     <color name="tapIconLongPressActionEditMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressActionPinMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressSharedMedia">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconLongPressMessageInfo">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressSendNow">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressReschedule">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressReport">@color/tapColorDestructiveIcon</color>
@@ -491,6 +493,7 @@
     <color name="tapTransparentCharcoal">#0004040f</color>
     <color name="tapTransparentCharcoal50">#8004040f</color>
     <color name="tapTransparentCharcoal40">#6604040f</color>
+    <color name="tapTransparentBlack1905">#0d191919</color>
     <color name="tapTransparentBlack1910">#1a191919</color>
     <color name="tapTransparentBlack1920">#33191919</color>
     <color name="tapTransparentBlack1940">#66191919</color>

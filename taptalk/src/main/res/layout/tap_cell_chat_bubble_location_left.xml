@@ -148,9 +148,11 @@
                     <include
                         android:id="@+id/cl_forwarded"
                         layout="@layout/tap_layout_forwarded_bubble_left"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp"
+                        app:layout_constrainedWidth="true"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintBottom_toTopOf="@id/cl_quote"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -170,9 +172,11 @@
                     <include
                         android:id="@+id/cl_quote"
                         layout="@layout/tap_layout_quote_bubble_left"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp"
+                        app:layout_constrainedWidth="true"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -238,6 +242,37 @@
                 app:layout_constraintStart_toStartOf="@id/fl_map_view_container"
                 app:layout_constraintTop_toBottomOf="@id/fl_map_view_container"
                 tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Baru, RT.12/RW.2, Gunung, Kby. Baru, Kota Jakarta Selatan, DKI Jakarta 12120" />
+
+            <ImageView
+                android:id="@+id/iv_read_count"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/tap_ic_eye_white"
+                app:tint="@color/tapTransparentBlack1940"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/tv_read_count" />
+
+            <TextView
+                android:id="@+id/tv_read_count"
+                style="@style/tapLeftBubbleMessageTimestampStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/iv_star_message"
+                tools:text="1705 •" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/g_read_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="iv_read_count, tv_read_count"
+                android:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/iv_star_message"

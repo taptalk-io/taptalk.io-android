@@ -187,19 +187,23 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
                     boolean isSavedMessagesExist = false;
                     String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+                    ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
                     for (TAPMessageEntity entity : entities) {
                         if (entity.getRoomDeleted() == null || !entity.getRoomDeleted()) {
                             TAPSearchChatModel recentItem = new TAPSearchChatModel(ROOM_ITEM);
                             TAPRoomModel roomModel = TAPRoomModel.Builder(entity);
                             recentItem.setRoom(roomModel);
-                            if (TAPUtils.isSavedMessagesRoom(recentItem.getRoom().getRoomID(), instanceKey)) {
-                                if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
-                                    vm.addRecentSearches(0, recentItem);
-                                } else {
-                                    vm.addRecentSearches(recentItem);
-                                }
+                            if (TAPUtils.isSavedMessagesRoom(recentItem.getRoom().getRoomID(), instanceKey) && TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
+                                vm.addRecentSearches(0, recentItem);
                                 isSavedMessagesExist = true;
-                            } else {
+                            }
+                            else if (TAPUtils.isSavedMessagesRoom(recentItem.getRoom().getRoomID(), instanceKey)) {
+                                vm.addRecentSearches(recentItem);
+                                isSavedMessagesExist = true;
+                            }
+                            else if (roomModel.getType() != TYPE_PERSONAL ||
+                                    !blockedUserIDs.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomModel.getRoomID()))
+                            ) {
                                 vm.addRecentSearches(recentItem);
                             }
                         }
@@ -271,21 +275,24 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                 vm.addSearchResult(sectionTitleChatsAndContacts);
                 boolean isSavedMessagesExist = false;
                 String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+                ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
                 for (TAPMessageEntity entity : entities) {
                     if (entity.getRoomDeleted() == null || !entity.getRoomDeleted()) {
                         TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                         // Convert message to room model
                         TAPRoomModel room = TAPRoomModel.Builder(entity);
                         result.setRoom(room);
-                        if (TAPUtils.isSavedMessagesRoom(result.getRoom().getRoomID(), instanceKey)) {
-                            if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
-                                vm.addSearchResult(0, result);
-                            } else {
-                                vm.addSearchResult(result);
-                            }
+                        if (TAPUtils.isSavedMessagesRoom(result.getRoom().getRoomID(), instanceKey) && TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
+                            vm.addSearchResult(0, result);
                             isSavedMessagesExist = true;
-                        } else {
-                            room.setUnreadCount(unreadMap.get(room.getRoomID()));
+                        }
+                        else if (TAPUtils.isSavedMessagesRoom(result.getRoom().getRoomID(), instanceKey)) {
+                            vm.addSearchResult(result);
+                            isSavedMessagesExist = true;
+                        }
+                        else if (result.getRoom().getType() != TYPE_PERSONAL ||
+                                !blockedUserIDs.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(result.getRoom().getRoomID()))
+                        ) {
                             vm.addSearchResult(result);
                         }
                     }
@@ -317,8 +324,9 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                     sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                     vm.addSearchResult(sectionTitleChatsAndContacts);
                 }
+                ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
                 for (TAPUserModel contact : entities) {
-                    if (contact.getDeleted() == null || contact.getDeleted() <= 0) {
+                    if ((contact.getDeleted() == null || contact.getDeleted() <= 0) && !blockedUserIDs.contains(contact.getUserID())) {
                         TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                         // Convert contact to room model
                         // TODO: 18 October 2018 LENGKAPIN DATA

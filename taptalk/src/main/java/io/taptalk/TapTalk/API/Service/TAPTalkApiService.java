@@ -24,6 +24,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapCreateScheduledMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdsWithRoomIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapReportUserRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
@@ -54,6 +55,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCreateScheduledMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageDetailResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMessageTotalReadResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetRoomIdsWithStateResponse;
@@ -62,6 +65,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapRoomModelsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
@@ -283,4 +287,25 @@ public interface TAPTalkApiService {
 
     @POST("client/chat_report/submit_message")
     Observable<TAPBaseResponse<TAPCommonResponse>> submitMessageReport(@Body TapReportUserRequest request);
+
+    @POST("client/contact/block")
+    Observable<TAPBaseResponse<TAPAddContactResponse>> blockUser(@Body TAPUserIdRequest request);
+
+    @POST("client/contact/unblock")
+    Observable<TAPBaseResponse<TAPCommonResponse>> unblockUser(@Body TAPUserIdRequest request);
+
+    @POST("client/contact/get_blocked_list")
+    Observable<TAPBaseResponse<TAPGetMultipleUserResponse>> getBlockedUserList();
+
+    @POST("client/contact/get_blocked_user_ids")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> getBlockedUserIds();
+
+    @POST("chat/message/get_details")
+    Observable<TAPBaseResponse<TapGetMessageDetailResponse>> getMessageDetails(@Body TapMessageIdRequest request);
+
+    @POST("chat/message/get_total_read")
+    Observable<TAPBaseResponse<TapGetMessageTotalReadResponse>> getMessageTotalRead(@Body TapMessageIdRequest request);
+
+    @POST("client/room/groups_in_common")
+    Observable<TAPBaseResponse<TapRoomModelsResponse>> getGroupsInCommon(@Body TAPUserIdRequest request);
 }
