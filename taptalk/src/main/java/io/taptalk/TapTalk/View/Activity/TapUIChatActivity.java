@@ -4947,9 +4947,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     //disable long press in deleted user room
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
                         if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
-                            if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled() && TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(vm.getOtherUserID())) {
-                                return;
-                            }
                             TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
                             chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                             TAPUtils.dismissKeyboard(TapUIChatActivity.this);

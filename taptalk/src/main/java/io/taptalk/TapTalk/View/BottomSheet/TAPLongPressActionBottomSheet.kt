@@ -11,20 +11,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
-import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
-import io.taptalk.TapTalk.Manager.TAPCacheManager
-import io.taptalk.TapTalk.Manager.TAPChatManager
-import io.taptalk.TapTalk.Manager.TAPFileDownloadManager
-import io.taptalk.TapTalk.Manager.TapUI
+import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TapUI.LongPressMenuType.*
 import io.taptalk.TapTalk.Model.TAPAttachmentModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
-import kotlin.collections.ArrayList
 
 class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
@@ -302,7 +297,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
 
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled) {
+        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+        ) {
             // Reply
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)
@@ -409,7 +406,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         val ids: MutableList<Int> = ArrayList()
         val messageData = messageModel.data
 
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled) {
+        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+        ) {
             // Reply
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)
@@ -532,7 +531,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         val ids: MutableList<Int> = ArrayList()
         val messageData = messageModel.data
 
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled) {
+        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+        ) {
             // Reply
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)
@@ -652,7 +653,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         val ids: MutableList<Int> = ArrayList()
         val messageData = messageModel.data
 
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled) {
+        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+        ) {
             // Reply
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)
@@ -749,7 +752,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
 
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled) {
+        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+        ) {
             // Reply
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)
@@ -836,7 +841,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
 
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled) {
+        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+        ) {
             // Reply
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)

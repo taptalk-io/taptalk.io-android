@@ -74,7 +74,9 @@ class TAPSwipeReplyCallback(
                     viewHolder.item.type != TYPE_IMAGE &&
                     viewHolder.item.type != TYPE_VIDEO &&
                     viewHolder.item.type != TYPE_FILE &&
-                    viewHolder.item.type != TYPE_LOCATION) {
+                    viewHolder.item.type != TYPE_LOCATION &&
+                    viewHolder.item.type != TYPE_VOICE
+            ) {
                 // Disable swipe for custom message types
                 return 0
             }
