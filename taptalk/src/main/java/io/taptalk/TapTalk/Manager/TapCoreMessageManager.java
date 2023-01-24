@@ -438,6 +438,36 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, uri, listener);
     }
 
+    public void sendFileMessage(File file, TAPRoomModel room, String caption, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, file, caption, listener);
+    }
+
+    public void sendFileMessage(File file, TAPRoomModel room, TAPMessageModel quotedMessage, String caption, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
+        TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, file, caption, listener);
+    }
+
+    public void sendFileMessage(Uri uri, TAPRoomModel room, String caption, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, uri, caption, listener);
+    }
+
+    public void sendFileMessage(Uri uri, TAPRoomModel room, TAPMessageModel quotedMessage, String caption, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
+        TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, uri, caption, listener);
+    }
+
     public void sendVoiceMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
