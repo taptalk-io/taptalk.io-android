@@ -1119,7 +1119,7 @@ public class TAPChatManager {
      * Construct File Message Model
      */
 
-    private TAPMessageModel createFileMessageModel(Context context, Uri uri, TAPRoomModel roomModel, TapSendMessageInterface listener) {
+    private TAPMessageModel createFileMessageModel(Context context, Uri uri, TAPRoomModel roomModel, String caption, TapSendMessageInterface listener) {
 
         String filePath = TAPFileUtils.getFilePath(context, uri);
 
@@ -1131,10 +1131,10 @@ public class TAPChatManager {
         }
 
         File file = new File(filePath);
-        return createFileMessageModel(context, file, roomModel, listener);
+        return createFileMessageModel(context, file, roomModel, caption, listener);
     }
 
-    private TAPMessageModel createFileMessageModel(Context context, File file, TAPRoomModel roomModel, TapSendMessageInterface listener) {
+    private TAPMessageModel createFileMessageModel(Context context, File file, TAPRoomModel roomModel, String caption, TapSendMessageInterface listener) {
         try {
             String fileName = file.getName();
             Number fileSize = file.length();
@@ -1146,6 +1146,9 @@ public class TAPChatManager {
             Uri fileUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
             HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap();
             data.put(FILE_URI, fileUri.toString());
+            if (caption != null && !caption.isEmpty()) {
+                data.put(CAPTION, caption);
+            }
             if (null == getQuotedMessage(roomModel.getRoomID())) {
                 messageModel = TAPMessageModel.Builder(
                         generateFileMessageBody(fileName),
@@ -1236,9 +1239,13 @@ public class TAPChatManager {
     }
 
     private void createFileMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener, Long scheduledTime) {
+        createFileMessageModelAndAddToUploadQueue(context, roomModel, file, "", listener, scheduledTime);
+    }
+
+    private void createFileMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file, String caption, TapSendMessageInterface listener, Long scheduledTime) {
         checkAndSendForwardedMessage(roomModel);
 
-        TAPMessageModel messageModel = createFileMessageModel(context, file, roomModel, listener);
+        TAPMessageModel messageModel = createFileMessageModel(context, file, roomModel, caption, listener);
 
         if (null == messageModel) {
             return;
@@ -1250,10 +1257,10 @@ public class TAPChatManager {
         addFileMessageToUploadQueue(context, messageModel, roomModel, listener, scheduledTime);
     }
 
-    private void createFileMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri uri, TapSendMessageInterface listener) {
+    private void createFileMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri uri, String caption, TapSendMessageInterface listener) {
         checkAndSendForwardedMessage(roomModel);
 
-        TAPMessageModel messageModel = createFileMessageModel(context, uri, roomModel, listener);
+        TAPMessageModel messageModel = createFileMessageModel(context, uri, roomModel, caption, listener);
 
         if (null == messageModel) {
             return;
@@ -1263,11 +1270,19 @@ public class TAPChatManager {
     }
 
     public void sendFileMessage(Context context, TAPRoomModel roomModel, Uri uri, TapSendMessageInterface listener) {
-        /*new Thread(() -> */createFileMessageModelAndAddToUploadQueue(context, roomModel, uri, listener)/*).start()*/;
+        /*new Thread(() -> */createFileMessageModelAndAddToUploadQueue(context, roomModel, uri, "", listener)/*).start()*/;
+    }
+
+    public void sendFileMessage(Context context, TAPRoomModel roomModel, Uri uri, String caption, TapSendMessageInterface listener) {
+        /*new Thread(() -> */createFileMessageModelAndAddToUploadQueue(context, roomModel, uri, caption, listener)/*).start()*/;
     }
 
     public void sendFileMessage(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
         /*new Thread(() -> */createFileMessageModelAndAddToUploadQueue(context, roomModel, file, listener, 0L)/*).start()*/;
+    }
+
+    public void sendFileMessage(Context context, TAPRoomModel roomModel, File file, String caption, TapSendMessageInterface listener) {
+        /*new Thread(() -> */createFileMessageModelAndAddToUploadQueue(context, roomModel, file, caption, listener, 0L)/*).start()*/;
     }
 
     public void sendFileMessage(Context context, TAPRoomModel roomModel, File file) {
