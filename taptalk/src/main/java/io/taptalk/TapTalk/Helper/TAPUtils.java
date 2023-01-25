@@ -642,7 +642,7 @@ public class TAPUtils {
         if (!displaySize.isEmpty() && !displayExtension.isEmpty()) {
             return String.format("%s %s", displaySize, displayExtension).toUpperCase();
         } else if (!displayExtension.isEmpty()) {
-            return displayExtension;
+            return displayExtension.toUpperCase();
         } else if (!displaySize.isEmpty()) {
             return displaySize;
         }

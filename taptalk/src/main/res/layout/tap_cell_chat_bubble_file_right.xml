@@ -117,7 +117,9 @@
                 android:layout_height="wrap_content"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@id/cl_file"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_forwarded" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -232,7 +234,8 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_file"
-                tools:text="Hey there, love your work!" />
+                tools:text="Hey there, love your work!"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/iv_pin"
