@@ -781,16 +781,28 @@ public class TAPFileUploadManager {
     }
 
     public void uploadImage(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
-        createAndResizeImageFile(context, uri, IMAGE_MAX_DIMENSION, bitmap -> {
-            String mimeType = TAPUtils.getImageMimeType(context, uri);
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-            File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
-            TAPDataManager.getInstance(instanceKey).uploadImage(null, imageFile, "", "", mimeType, uploadCallback, view);
-        });
+        if (!TAPFileUtils.getMimeTypeFromUri(context, uri).contains("image")) {
+            view.onError(new TAPErrorModel(ERROR_CODE_OTHERS, "Invalid file format.", ""));
+            return;
+        }
+        try {
+            createAndResizeImageFile(context, uri, IMAGE_MAX_DIMENSION, bitmap -> {
+                String mimeType = TAPUtils.getImageMimeType(context, uri);
+                MimeTypeMap mime = MimeTypeMap.getSingleton();
+                String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+                File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
+                TAPDataManager.getInstance(instanceKey).uploadImage(null, imageFile, "", "", mimeType, uploadCallback, view);
+            });
+        } catch (Exception e) {
+            view.onError(e);
+        }
     }
 
     public void uploadVideo(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
+        if (!TAPFileUtils.getMimeTypeFromUri(context, uri).contains("video")) {
+            view.onError(new TAPErrorModel(ERROR_CODE_OTHERS, "Invalid file format.", ""));
+            return;
+        }
         try {
             File videoFile = new File(uri.toString());
             String mimeType = TAPUtils.getFileMimeType(videoFile);

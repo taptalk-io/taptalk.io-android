@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Base64;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -103,6 +105,14 @@ public class TAPFileUtils {
             return 0;
         }
         return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+    }
+
+    public static String getMimeTypeFromUri(Context context, Uri uri) {
+        try {
+            return context.getContentResolver().getType(uri);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     public static String getFilePath(final Context context, final Uri uri) {
