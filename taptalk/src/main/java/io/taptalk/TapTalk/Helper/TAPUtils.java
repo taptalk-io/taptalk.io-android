@@ -496,6 +496,32 @@ public class TAPUtils {
             } else {
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType(INTENT_TYPE_ALL);
+            if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+                activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
+            }
+        }
+    }
+
+    /**
+     * Reminder: Handle onRequestPermissionsResult in activity
+     */
+    public static void requestPermissionAndOpenMediaPicker(Activity activity, int requestCode, String[] mimeTypes, boolean allowMultiple) {
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Check read & write storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+        } else {
+            // Permission granted
+            Intent intent;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter mime types
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
+            } else {
+                intent = new Intent(Intent.ACTION_GET_CONTENT);
+            }
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType(INTENT_TYPE_ALL);
             if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
                 activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
@@ -642,7 +668,7 @@ public class TAPUtils {
         if (!displaySize.isEmpty() && !displayExtension.isEmpty()) {
             return String.format("%s %s", displaySize, displayExtension).toUpperCase();
         } else if (!displayExtension.isEmpty()) {
-            return displayExtension;
+            return displayExtension.toUpperCase();
         } else if (!displaySize.isEmpty()) {
             return displaySize;
         }

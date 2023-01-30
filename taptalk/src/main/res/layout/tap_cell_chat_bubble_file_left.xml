@@ -272,7 +272,8 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="@id/cl_file"
                 app:layout_constraintTop_toBottomOf="@id/cl_file"
-                tools:text="Hey there, love your work!" />
+                tools:text="Hey there, love your work!"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/iv_read_count"
@@ -314,10 +315,10 @@
                 android:layout_marginRight="4dp"
                 android:padding="2dp"
                 android:src="@drawable/tap_ic_star_filled_grey"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toStartOf="@id/tv_message_timestamp"
                 app:layout_constraintTop_toTopOf="@id/tv_message_timestamp" />
-            android:visibility="gone"
 
             <TextView
                 android:id="@+id/tv_message_timestamp"
@@ -340,10 +341,10 @@
                 android:layout_marginEnd="6dp"
                 android:layout_marginRight="6dp"
                 android:src="@drawable/tap_ic_pin_orange"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="@id/barrier_end"
                 app:layout_constraintTop_toTopOf="@id/tv_message_timestamp" />
-            android:visibility="gone"
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier_end"
