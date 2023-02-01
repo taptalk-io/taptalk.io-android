@@ -19,7 +19,7 @@ android {
         applicationId "io.taptalk.TapTalkSample"
         minSdk 16
         targetSdk 31
-        versionCode 128
+        versionCode 129
         versionName '2.9.2'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
