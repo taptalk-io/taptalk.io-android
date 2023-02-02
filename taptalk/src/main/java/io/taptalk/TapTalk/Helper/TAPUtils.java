@@ -227,7 +227,7 @@ public class TAPUtils {
      */
     public static int dpToPx(int dp) {
         DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return Math.round(dp * ((float) displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
     public static int dpToPx(Resources res, float dp) {
