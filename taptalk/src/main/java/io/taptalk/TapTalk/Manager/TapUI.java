@@ -36,6 +36,8 @@ import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
@@ -53,6 +55,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.COPY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.EDIT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.FORWARD;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.STAR;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.UNSTAR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -1378,6 +1386,143 @@ public class TapUI {
             return;
         }
         getLongPressMenuMap().put(messageType, longPressMenuType);
+    }
+
+
+    private List<TapLongPressMenuItem> getDefaultLongPressMenuItems(Context context, TAPMessageModel messageModel) {
+        ArrayList<TapLongPressMenuItem> longPressMenuItems = new ArrayList<>();
+
+        if (!isReplyMessageMenuDisabled() &&
+            !TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.getRoom().getRoomID()))
+        ) {
+            // Reply
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                REPLY,
+                context.getString(R.string.tap_reply),
+                R.drawable.tap_ic_reply_orange)
+            );
+        }
+
+        if (!isForwardMessageMenuDisabled()) {
+            // Forward
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                FORWARD,
+                context.getString(R.string.tap_forward),
+                R.drawable.tap_ic_forward_orange)
+            );
+        }
+
+        if (!isCopyMessageMenuDisabled()) {
+            // Copy
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                COPY,
+                context.getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange)
+            );
+        }
+
+        if (isStarMessageMenuEnabled()) {
+            ArrayList<String> starredMessageIds = TAPDataManager.getInstance(instanceKey).getStarredMessageIds(messageModel.getRoom().getRoomID());
+            if (starredMessageIds.contains(messageModel.getMessageID())) {
+                // Unstar
+                longPressMenuItems.add(new TapLongPressMenuItem(
+                    UNSTAR,
+                    context.getString(R.string.tap_unstar),
+                    R.drawable.tap_ic_star_filled_primary)
+                );
+            }
+            else {
+                // Star
+                longPressMenuItems.add(new TapLongPressMenuItem(
+                    STAR,
+                    context.getString(R.string.tap_star),
+                    R.drawable.tap_ic_star_outline)
+                );
+            }
+        }
+
+        if (isEditMessageMenuEnabled() &&
+            null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
+            messageModel.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) &&
+            (null == messageModel.getIsSending() || !messageModel.getIsSending()) &&
+            (messageModel.getForwardFrom() == null || messageModel.getForwardFrom().getLocalID().isEmpty()) &&
+            System.currentTimeMillis() - messageModel.getCreated() < 172800000 // Two days
+        ) {
+            // Edit
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                EDIT,
+                context.getString(R.string.tap_edit),
+                R.drawable.tap_ic_edit_orange)
+            );
+        }
+
+        if (isPinMessageMenuEnabled()) {
+            ArrayList<String> pinnedMessageIds = TAPDataManager.getInstance(instanceKey).getpin(messageModel.getRoom().getRoomID());
+            if (pinnedMessageIds.contains(messageModel.getMessageID())) {
+                // Unstar
+                longPressMenuItems.add(new TapLongPressMenuItem(
+                        UNSTAR,
+                        context.getString(R.string.tap_unstar),
+                        R.drawable.tap_ic_star_filled_primary)
+                );
+            }
+            else {
+                // Star
+                longPressMenuItems.add(new TapLongPressMenuItem(
+                        STAR,
+                        context.getString(R.string.tap_star),
+                        R.drawable.tap_ic_star_outline)
+                );
+            }
+            // Pin
+            if (pinnedMessageIds.contains(messageModel.messageID)) {
+                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+                titleResIds.add(R.string.tap_unpin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+                titleResIds.add(R.string.tap_pin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            }
+        }
+
+        if (isMessageInfoMenuEnabled &&
+                messageModel.room.type != TYPE_PERSONAL &&
+                null != TAPChatManager.getInstance(instanceKey).activeUser &&
+                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+                null != messageModel.isSending && !messageModel.isSending!!
+        ) {
+            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+            titleResIds.add(R.string.tap_message_info)
+            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+        }
+
+        if (!isDeleteMessageMenuDisabled &&
+                null != TAPChatManager.getInstance(instanceKey).activeUser &&
+                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+                null != messageModel.isSending && !messageModel.isSending!!
+        ) {
+            // Delete
+            imageResIds.add(R.drawable.tap_ic_delete_red)
+            titleResIds.add(R.string.tap_delete_message)
+            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+        }
+
+        if (isReportMessageMenuEnabled &&
+                TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+        ) {
+            // Report
+            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+            titleResIds.add(R.string.tap_report)
+            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
+        }
+
+        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+        val size = imageResIds.size
+        for (index in 0 until size) {
+            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
+        }
+        return attachMenus
     }
 
     /**

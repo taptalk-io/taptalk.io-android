@@ -179,6 +179,20 @@ public class TAPDefaultConstant {
         public static final String IS_PINNED = "kTAPExtraIsPinned";
     }
 
+    public static final class LongPressMenuID {
+        public static final String REPLY = "reply";
+        public static final String FORWARD = "forward";
+        public static final String COPY = "copy";
+        public static final String STAR = "star";
+        public static final String UNSTAR = "unstar";
+        public static final String EDIT = "edit";
+        public static final String PIN = "pin";
+        public static final String UNPIN = "unpin";
+        public static final String INFO = "info";
+        public static final String DELETE = "delete";
+        public static final String REPORT = "report";
+    }
+
     public static final class RequestCode {
         public static final int COUNTRY_PICK = 11;
         public static final int EDIT_PROFILE = 21;
@@ -497,6 +511,7 @@ public class TAPDefaultConstant {
     public static final String K_MUTED_ROOM_LIST = "kTAPMutedRoomList";
     public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
     public static final String K_STARRED_MESSAGE = "kTAPStarredMessage";
+    public static final String K_PINNED_MESSAGE_IDS = "kTAPPinnedMessageIDs";
     public static final String K_BLOCKED_USER = "kTAPBlockedUser";
     public static final String K_MESSAGE_READ_COUNT = "kTAPMessageReadCount";
 

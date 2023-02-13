@@ -5,11 +5,13 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
 
 public interface TapUIChatRoomInterface {
     void onTapTalkChatRoomOpened(Activity activity, TAPRoomModel room, @Nullable TAPUserModel otherUser);
@@ -25,6 +27,12 @@ public interface TapUIChatRoomInterface {
     void onTapTalkGroupMemberAvatarTapped(Activity activity, TAPRoomModel room, TAPUserModel user);
 
     void onTapTalkUserMentionTapped(Activity activity, TAPMessageModel messageModel, TAPUserModel user, boolean isRoomParticipant);
+
+    void onMessageBubbleLongPressed(Activity activity, TAPMessageModel messageModel);
+
+    List<TapLongPressMenuItem> setLongPressMenuItems(TAPMessageModel messageModel);
+
+    void onMessageLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, TAPMessageModel messageModel);
 
     void onTapTalkMessageQuoteTapped(Activity activity, TAPMessageModel messageModel, @Nullable HashMap<String, Object> userInfo);
 

@@ -583,6 +583,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 super.onSuccess(arrayList);
                 isPinnedIdsLoaded = true;
                 vm.setPinnedMessageIds(arrayList);
+                TAPDataManager.getInstance(instanceKey).savePinnedMessageIds(vm.getRoom().getRoomID(), arrayList);
                 messageAdapter.setPinnedMessageIds(arrayList);
                 clPinnedIndicator.setSize(vm.getPinnedMessageIds().size());
                 if (isStarredIdsLoaded) {

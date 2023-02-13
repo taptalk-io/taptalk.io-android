@@ -278,6 +278,7 @@ public class TAPChatManager {
                     TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                     TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
                     TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomId);
+                    TAPDataManager.getInstance(instanceKey).removePinnedMessageIds(roomId);
                     TAPDataManager.getInstance(instanceKey).removeUnreadRoomID(roomId);
                     TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
                         @Override
