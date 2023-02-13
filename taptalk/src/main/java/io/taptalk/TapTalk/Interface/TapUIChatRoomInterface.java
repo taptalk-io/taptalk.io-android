@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.Nullable;
 
@@ -30,7 +31,7 @@ public interface TapUIChatRoomInterface {
 
     void onMessageBubbleLongPressed(Activity activity, TAPMessageModel messageModel);
 
-    List<TapLongPressMenuItem> setLongPressMenuItems(TAPMessageModel messageModel);
+    List<TapLongPressMenuItem> setLongPressMenuItems(Context context, TAPMessageModel messageModel);
 
     void onMessageLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, TAPMessageModel messageModel);
 

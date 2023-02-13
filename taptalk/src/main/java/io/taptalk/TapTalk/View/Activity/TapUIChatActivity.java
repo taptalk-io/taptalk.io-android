@@ -557,7 +557,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 super.onSuccess(arrayList);
                 isStarredIdsLoaded = true;
                 vm.setStarredMessageIds(arrayList);
-                TAPDataManager.getInstance(instanceKey).saveStarredMessageIds(vm.getRoom().getRoomID(), arrayList);
                 messageAdapter.setStarredMessageIds(arrayList);
                 if (isPinnedIdsLoaded) {
                     messageAdapter.notifyDataSetChanged();

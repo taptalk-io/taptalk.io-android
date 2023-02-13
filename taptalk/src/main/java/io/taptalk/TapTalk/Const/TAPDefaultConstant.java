@@ -183,6 +183,7 @@ public class TAPDefaultConstant {
         public static final String REPLY = "reply";
         public static final String FORWARD = "forward";
         public static final String COPY = "copy";
+        public static final String SAVE = "save";
         public static final String STAR = "star";
         public static final String UNSTAR = "unstar";
         public static final String EDIT = "edit";

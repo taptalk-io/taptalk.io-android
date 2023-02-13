@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Listener;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Interface.TapUIChatRoomInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -86,13 +88,12 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
 
     @Override
     public void onMessageBubbleLongPressed(Activity activity, TAPMessageModel messageModel) {
-        setLongPressMenuItems(messageModel);
+        setLongPressMenuItems(activity, messageModel);
     }
 
     @Override
-    public List<TapLongPressMenuItem> setLongPressMenuItems(TAPMessageModel messageModel) {
-        // TODO:
-        return null;
+    public List<TapLongPressMenuItem> setLongPressMenuItems(Context context, TAPMessageModel messageModel) {
+        return TapUI.getInstance(instanceKey).getDefaultLongPressMenuItems(context, messageModel);
     }
 
     @Override

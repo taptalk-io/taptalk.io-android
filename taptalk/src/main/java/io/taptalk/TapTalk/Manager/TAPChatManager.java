@@ -61,6 +61,7 @@ import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
@@ -2866,6 +2867,10 @@ public class TAPChatManager {
             // Show personal room with last message
             return roomList.getLastMessage().getBody();
         }
+    }
+
+    public List<TapLongPressMenuItem> getMessageLongPressMenuItems(Context context, TAPMessageModel message) {
+        return TapUI.getInstance(instanceKey).getMessageLongPressMenuItems(context, message);
     }
 
     /**

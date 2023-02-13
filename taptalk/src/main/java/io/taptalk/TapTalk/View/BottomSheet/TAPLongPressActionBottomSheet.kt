@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Model.TAPAttachmentModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
+import io.taptalk.TapTalk.View.Adapter.TapLongPressAdapter
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
 
 class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
@@ -155,59 +156,62 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 } else if (message!!.isDeleted == true) {
                     dismiss()
                 } else if (!message!!.isSending!!) {
-                    when (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message!!.type)) {
-                        TYPE_TEXT_MESSAGE -> {
-                            val menus = createTextBubbleLongPressMenu(message!!)
-                            if (menus.isEmpty()) {
-                                dismiss()
-                            } else {
-                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
-                            }
-                        }
-                        TYPE_IMAGE_MESSAGE -> {
-                            val menus = createImageBubbleLongPressMenu(message!!)
-                            if (menus.isEmpty()) {
-                                dismiss()
-                            } else {
-                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
-                            }
-                        }
-                        TYPE_VIDEO_MESSAGE -> {
-                            val menus = createVideoBubbleLongPressMenu(message!!)
-                            if (menus.isEmpty()) {
-                                dismiss()
-                            } else {
-                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
-                            }
-                        }
-                        TYPE_FILE_MESSAGE -> {
-                            val menus = createFileBubbleLongPressMenu(message!!)
-                            if (menus.isEmpty()) {
-                                dismiss()
-                            } else {
-                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
-                            }
-                        }
-                        TYPE_VOICE_MESSAGE -> {
-                            val menus = createVoiceBubbleLongPressMenu(message!!)
-                            if (menus.isEmpty()) {
-                                dismiss()
-                            } else {
-                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
-                            }
-                        }
-                        TYPE_LOCATION_MESSAGE -> {
-                            val menus = createLocationBubbleLongPressMenu(message!!)
-                            if (menus.isEmpty()) {
-                                dismiss()
-                            } else {
-                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
-                            }
-                        }
-                        else -> {
-                            dismiss()
-                        }
-                    }
+//                    val adapter = TapLongPressAdapter(TAPChatManager.getInstance(instanceKey).getMessageLongPressMenuItems(context, message), message, )
+                    
+
+//                    when (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message!!.type)) {
+//                        TYPE_TEXT_MESSAGE -> {
+//                            val menus = createTextBubbleLongPressMenu(message!!)
+//                            if (menus.isEmpty()) {
+//                                dismiss()
+//                            } else {
+//                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+//                            }
+//                        }
+//                        TYPE_IMAGE_MESSAGE -> {
+//                            val menus = createImageBubbleLongPressMenu(message!!)
+//                            if (menus.isEmpty()) {
+//                                dismiss()
+//                            } else {
+//                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+//                            }
+//                        }
+//                        TYPE_VIDEO_MESSAGE -> {
+//                            val menus = createVideoBubbleLongPressMenu(message!!)
+//                            if (menus.isEmpty()) {
+//                                dismiss()
+//                            } else {
+//                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+//                            }
+//                        }
+//                        TYPE_FILE_MESSAGE -> {
+//                            val menus = createFileBubbleLongPressMenu(message!!)
+//                            if (menus.isEmpty()) {
+//                                dismiss()
+//                            } else {
+//                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+//                            }
+//                        }
+//                        TYPE_VOICE_MESSAGE -> {
+//                            val menus = createVoiceBubbleLongPressMenu(message!!)
+//                            if (menus.isEmpty()) {
+//                                dismiss()
+//                            } else {
+//                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+//                            }
+//                        }
+//                        TYPE_LOCATION_MESSAGE -> {
+//                            val menus = createLocationBubbleLongPressMenu(message!!)
+//                            if (menus.isEmpty()) {
+//                                dismiss()
+//                            } else {
+//                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+//                            }
+//                        }
+//                        else -> {
+//                            dismiss()
+//                        }
+//                    }
                 } else {
                     dismiss()
                 }
