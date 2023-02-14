@@ -177,6 +177,8 @@ public class TAPDefaultConstant {
         public static final String REPORT_TYPE = "kTAPExtraReportType";
         public static final String IS_STARRED = "kTAPExtraIsStarred";
         public static final String IS_PINNED = "kTAPExtraIsPinned";
+        public static final String LONG_PRESS_MENU_ITEM = "kTAPLongPressMenuItem";
+        public static final String DATA = "data";
     }
 
     public static final class LongPressMenuID {
@@ -192,6 +194,15 @@ public class TAPDefaultConstant {
         public static final String INFO = "info";
         public static final String DELETE = "delete";
         public static final String REPORT = "report";
+        public static final String OPEN_LINK = "open_link";
+        public static final String COMPOSE = "compose";
+        public static final String CALL = "call";
+        public static final String SMS = "sms";
+        public static final String VIEW_PROFILE = "view_profile";
+        public static final String VIEW_IN_CHAT = "view_in_chat";
+        public static final String SEND_MESSAGE = "send_message";
+        public static final String SEND_NOW = "send_now";
+        public static final String RESCHEDULE = "reschedule";
     }
 
     public static final class RequestCode {
@@ -375,6 +386,7 @@ public class TAPDefaultConstant {
 
     public static final class LongPressBroadcastEvent {
         public static final String LongPressChatBubble = "kTAPLongPressChatBubble";
+        public static final String LongPressMenuSelected = "kTAPLongPressMenuSelected";
         public static final String LongPressLink = "kTAPLongPressLink";
         public static final String LongPressEmail = "kTAPLongPressEmail";
         public static final String LongPressPhone = "kTAPLongPressPhone";

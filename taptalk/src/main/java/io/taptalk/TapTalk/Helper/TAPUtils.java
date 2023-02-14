@@ -968,6 +968,9 @@ public class TAPUtils {
 
     public static void openDialNumber(Activity activity, String phoneNumber) {
         Intent intent = new Intent(Intent.ACTION_DIAL);
+        if (!phoneNumber.startsWith("tel:")) {
+            phoneNumber = "tel:" + phoneNumber;
+        }
         intent.setData(Uri.parse(phoneNumber));
         activity.startActivity(intent);
     }

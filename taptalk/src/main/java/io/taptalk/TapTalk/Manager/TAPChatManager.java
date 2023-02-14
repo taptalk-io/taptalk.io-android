@@ -2873,6 +2873,10 @@ public class TAPChatManager {
         return TapUI.getInstance(instanceKey).getMessageLongPressMenuItems(context, message);
     }
 
+    public void triggerLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, @Nullable TAPMessageModel message) {
+        TapUI.getInstance(instanceKey).triggerLongPressMenuItemSelected(activity, longPressMenuItem, message);
+    }
+
     /**
      * =============================================================================================
      * TAP CORE

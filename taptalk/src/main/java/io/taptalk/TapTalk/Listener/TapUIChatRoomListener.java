@@ -2,15 +2,19 @@ package io.taptalk.TapTalk.Listener;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.Interface.TapUIChatRoomInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
@@ -20,7 +24,13 @@ import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.LONG_PRESS_MENU_ITEM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMenuSelected;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 @Keep
 public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
@@ -97,8 +107,12 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
     }
 
     @Override
-    public void onMessageLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, TAPMessageModel messageModel) {
-
+    public void onLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, TAPMessageModel messageModel) {
+        Log.e(">>>>>>>", "onMessageLongPressMenuItemSelected: " + longPressMenuItem.getId());
+        Intent intent = new Intent(LongPressMenuSelected);
+        intent.putExtra(LONG_PRESS_MENU_ITEM, longPressMenuItem);
+        intent.putExtra(MESSAGE, messageModel);
+        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
     }
 
     @Override

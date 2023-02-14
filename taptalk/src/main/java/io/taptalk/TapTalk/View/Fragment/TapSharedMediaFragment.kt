@@ -6,8 +6,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,8 +24,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.VIEW_IN_CHAT
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
@@ -40,12 +43,14 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
+import io.taptalk.TapTalk.Model.TapLongPressMenuItem
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity
 import io.taptalk.TapTalk.View.Activity.TapSharedMediaActivity
 import io.taptalk.TapTalk.View.Adapter.TapSharedMediaAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.SHARED_MEDIA_TYPE
 import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
 import kotlinx.android.synthetic.main.tap_fragment_shared_media.*
 import java.util.*
@@ -85,6 +90,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             DownloadBroadcastEvent.DownloadFile,
             DownloadBroadcastEvent.OpenFile,
             DownloadBroadcastEvent.CancelDownload,
+            LongPressBroadcastEvent.LongPressMenuSelected
         )
         sharedMediaAdapter = TapSharedMediaAdapter(instanceKey, vm.sharedMediaAdapterItems, glide, sharedMediaAdapterListener)
         sharedMediaGlm = object : GridLayoutManager(context, 3) {
@@ -225,16 +231,22 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         }
 
         override fun onItemLongClicked(item: TAPMessageModel) {
-            TAPLongPressActionBottomSheet.newInstance(instanceKey,
-                TAPLongPressActionBottomSheet.LongPressType.SHARED_MEDIA_TYPE, item, object : TAPAttachmentListener(instanceKey) {
-                    override fun onViewInChat(message: TAPMessageModel?) {
-                        super.onViewInChat(message)
-                        val intent = Intent()
-                        intent.putExtra(MESSAGE, message)
-                        activity?.setResult(RESULT_OK, intent)
-                        activity?.finish()
-                    }
-            }).show(childFragmentManager, "")
+            TAPLongPressActionBottomSheet.newInstance(
+                instanceKey,
+                SHARED_MEDIA_TYPE,
+                item,
+                longPressListener
+            ).show(childFragmentManager, "")
+        }
+    }
+
+    private val longPressListener = object : TAPAttachmentListener(instanceKey) {
+        override fun onViewInChat(message: TAPMessageModel?) {
+            super.onViewInChat(message)
+            val intent = Intent()
+            intent.putExtra(MESSAGE, message)
+            activity?.setResult(RESULT_OK, intent)
+            activity?.finish()
         }
     }
 
@@ -470,6 +482,20 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         }
                     } else {
                         showDownloadFileDialog()
+                    }
+                }
+
+                LongPressBroadcastEvent.LongPressMenuSelected -> {
+                    if (null != intent.getParcelableExtra(LONG_PRESS_MENU_ITEM) &&
+                        intent.getParcelableExtra<Parcelable>(LONG_PRESS_MENU_ITEM) is TapLongPressMenuItem &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
+                    ) {
+                        val longPressMenuItem = intent.getParcelableExtra<TapLongPressMenuItem>(LONG_PRESS_MENU_ITEM)
+                        if (longPressMenuItem?.id == VIEW_IN_CHAT) {
+                            val message = intent.getParcelableExtra<TAPMessageModel>(MESSAGE)
+                            longPressListener.onViewInChat(message!!)
+                        }
                     }
                 }
             }

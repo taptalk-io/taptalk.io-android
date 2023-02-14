@@ -19,7 +19,7 @@ import io.taptalk.TapTalk.R
 
 class TapLongPressAdapter(
     longPressMenuItems: List<TapLongPressMenuItem>,
-    private var message: TAPMessageModel,
+    private var message: TAPMessageModel?,
     private var listener: TapLongPressInterface
 ) : TAPBaseAdapter<TapLongPressMenuItem?, TAPBaseViewHolder<TapLongPressMenuItem?>?>() {
 
@@ -144,46 +144,60 @@ class TapLongPressAdapter(
             ivAttachIcon.setImageDrawable(ContextCompat.getDrawable(itemView.context, item.iconRes))
             tvAttachTitle.text = item.text
             when (item.id) {
-                REPLY -> setComponentColors(
-                    R.color.tapIconLongPressActionReply,
-                    R.style.tapActionSheetDefaultLabelStyle
-                )
-                FORWARD -> setComponentColors(
-                    R.color.tapIconLongPressActionForward,
-                    R.style.tapActionSheetDefaultLabelStyle
-                )
-                COPY -> setComponentColors(
-                    R.color.tapIconLongPressActionCopy,
-                    R.style.tapActionSheetDefaultLabelStyle
-                )
-                SAVE -> setComponentColors(
-                    R.color.tapIconLongPressActionSaveToGallery,
-                    R.style.tapActionSheetDefaultLabelStyle
-                )
-                STAR, UNSTAR -> setComponentColors(
-                    R.color.tapIconLongPressActionStarMessage,
-                    R.style.tapActionSheetDefaultLabelStyle
-                )
-                EDIT -> setComponentColors(
-                    R.color.tapIconLongPressActionEditMessage,
-                    R.style.tapActionSheetDefaultLabelStyle
-                )
-                PIN, UNPIN -> setComponentColors(
-                    R.color.tapIconLongPressActionPinMessage,
-                    R.style.tapActionSheetDefaultLabelStyle
-                )
-                INFO -> setComponentColors(
-                    R.color.tapIconLongPressMessageInfo,
-                    R.style.tapActionSheetDefaultLabelStyle
-                )
-                DELETE -> setComponentColors(
-                    R.color.tapIconLongPressActionDelete,
-                    R.style.tapActionSheetDestructiveLabelStyle
-                )
-                REPORT -> setComponentColors(
-                    R.color.tapIconLongPressReport,
-                    R.style.tapActionSheetDestructiveLabelStyle
-                )
+                REPLY -> {
+                    setComponentColors(R.color.tapIconLongPressActionReply, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                FORWARD -> {
+                    setComponentColors(R.color.tapIconLongPressActionForward, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                COPY -> {
+                    setComponentColors(R.color.tapIconLongPressActionCopy, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                SAVE -> {
+                    setComponentColors(R.color.tapIconLongPressActionSaveToGallery, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                STAR, UNSTAR -> {
+                    setComponentColors(R.color.tapIconLongPressActionStarMessage, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                EDIT -> {
+                    setComponentColors(R.color.tapIconLongPressActionEditMessage, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                PIN, UNPIN -> {
+                    setComponentColors(R.color.tapIconLongPressActionPinMessage, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                INFO -> {
+                    setComponentColors(R.color.tapIconLongPressMessageInfo, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                DELETE -> {
+                    setComponentColors(R.color.tapIconLongPressActionDelete, R.style.tapActionSheetDestructiveLabelStyle)
+                }
+                REPORT -> {
+                    setComponentColors(R.color.tapIconLongPressReport, R.style.tapActionSheetDestructiveLabelStyle)
+                }
+                OPEN_LINK -> {
+                    setComponentColors(R.color.tapIconLongPressActionOpenLink, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                COMPOSE -> {
+                    setComponentColors(R.color.tapIconLongPressActionComposeEmail, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                CALL -> {
+                    setComponentColors(R.color.tapIconLongPressActionCallNumber, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                SMS -> {
+                    setComponentColors(R.color.tapIconLongPressActionSmsNumber, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                VIEW_PROFILE -> {
+                    setComponentColors(R.color.tapIconLongPressActionViewProfile, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                SEND_MESSAGE -> {
+                    setComponentColors(R.color.tapIconLongPressActionSendMessage, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                RESCHEDULE -> {
+                    setComponentColors(R.color.tapIconLongPressReschedule, R.style.tapActionSheetDefaultLabelStyle)
+                }
+                else -> {
+                    setComponentColors(R.color.tapColorPrimaryIcon, R.style.tapActionSheetDefaultLabelStyle)
+                }
             }
             if (itemCount - 1 == position) {
                 vAttachMenuSeparator.visibility = View.GONE
@@ -191,7 +205,7 @@ class TapLongPressAdapter(
             else {
                 vAttachMenuSeparator.visibility = View.VISIBLE
             }
-            itemView.setOnClickListener { v: View? -> listener.onMessageLongPressMenuItemSelected(item, message) }
+            itemView.setOnClickListener { v: View? -> listener.onLongPressMenuItemSelected(item, message) }
         }
 
         @SuppressLint("PrivateResource")

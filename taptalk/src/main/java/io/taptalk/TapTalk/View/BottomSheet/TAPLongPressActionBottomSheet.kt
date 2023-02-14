@@ -2,23 +2,23 @@ package io.taptalk.TapTalk.View.BottomSheet
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
-import io.taptalk.TapTalk.Helper.TapTalk
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.*
+import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
-import io.taptalk.TapTalk.Manager.*
-import io.taptalk.TapTalk.Manager.TapUI.LongPressMenuType.*
-import io.taptalk.TapTalk.Model.TAPAttachmentModel
+import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.TAPMessageModel
+import io.taptalk.TapTalk.Model.TapLongPressMenuItem
 import io.taptalk.TapTalk.R
-import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
 import io.taptalk.TapTalk.View.Adapter.TapLongPressAdapter
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
 
@@ -141,23 +141,35 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState)
 
         // ENABLE LINK LONG PRESS
-        if (null == message && longPressType != LongPressType.IMAGE_TYPE && longPressType != LongPressType.LINK_TYPE) {
-            dismiss()
-            return
-        }
+//        if (null == message && longPressType != LongPressType.IMAGE_TYPE && longPressType != LongPressType.LINK_TYPE) {
+//            dismiss()
+//            return
+//        }
 
-        var longPressAdapter = TAPAttachmentAdapter(instanceKey, listOf(), message, bottomSheetListener, onClickListener)
+//        var longPressAdapter = TAPAttachmentAdapter(instanceKey, listOf(), message, bottomSheetListener, onClickListener)
+//        var longPressAdapter = TapLongPressAdapter(listOf(), message!!, longPressListener)
+        var longPressAdapter: TapLongPressAdapter? = null
 
         when (longPressType) {
             LongPressType.CHAT_BUBBLE_TYPE -> {
+                if (message == null) {
+                    dismiss()
+                    return
+                }
                 if (message!!.isFailedSend == true) {
 //                    longPressAdapter = TAPAttachmentAdapter(createFailedMessageBubbleLongPressMenu(), message!!, bottomSheetListener, onClickListener)
                     dismiss()
+                    return
                 } else if (message!!.isDeleted == true) {
                     dismiss()
+                    return
                 } else if (!message!!.isSending!!) {
-//                    val adapter = TapLongPressAdapter(TAPChatManager.getInstance(instanceKey).getMessageLongPressMenuItems(context, message), message, )
-                    
+                    val menus = TAPChatManager.getInstance(instanceKey).getMessageLongPressMenuItems(context, message)
+                    if (menus.isNullOrEmpty()) {
+                        dismiss()
+                        return
+                    }
+                    longPressAdapter = TapLongPressAdapter(menus, message!!, longPressListener)
 
 //                    when (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message!!.type)) {
 //                        TYPE_TEXT_MESSAGE -> {
@@ -214,30 +226,39 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 //                    }
                 } else {
                     dismiss()
+                    return
                 }
             }
             LongPressType.EMAIL_TYPE -> {
                 val menus = createEmailLongPressMenu()
+                Log.e(">>>>>>>>>>>>>>>>", "onViewCreated EMAIL_TYPE: ${TAPUtils.toJsonString(menus)}")
                 if (menus.isEmpty()) {
                     dismiss()
+                    return
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                    longPressAdapter = TapLongPressAdapter(menus, message, longPressListener)
                 }
             }
             LongPressType.LINK_TYPE -> {
                 val menus = createLinkLongPressMenu()
                 if (menus.isEmpty()) {
                     dismiss()
+                    return
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+//                    Log.e(">>>>>>", "onViewCreated LINK_TYPE menus: ${TAPUtils.toJsonString(menus)})")
+//                    Log.e(">>>>>>", "onViewCreated LINK_TYPE message: ${TAPUtils.toJsonString(message)}")
+//                    Log.e(">>>>>>", "onViewCreated LINK_TYPE longPressListener: $longPressListener")
+                    longPressAdapter = TapLongPressAdapter(menus, message, longPressListener)
                 }
             }
             LongPressType.PHONE_TYPE -> {
                 val menus = createPhoneLongPressMenu()
+                Log.e(">>>>>>>>>>>>>>>>", "onViewCreated PHONE_TYPE: ${TAPUtils.toJsonString(menus)}")
                 if (menus.isEmpty()) {
                     dismiss()
+                    return
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                    longPressAdapter = TapLongPressAdapter(menus, message, longPressListener)
                 }
             }
             LongPressType.MENTION_TYPE -> {
@@ -248,36 +269,44 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 }
                 if (menus.isNullOrEmpty()) {
                     dismiss()
+                    return
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                    longPressAdapter = TapLongPressAdapter(menus, message, longPressListener)
                 }
             }
             LongPressType.IMAGE_TYPE -> {
                 val menus = createSaveImageLongPressMenu()
                 if (menus.isEmpty()) {
                     dismiss()
+                    return
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, bitmap, bottomSheetListener, onClickListener)
+                    longPressAdapter = TapLongPressAdapter(menus, message, longPressListener)
                 }
             }
             LongPressType.SHARED_MEDIA_TYPE -> {
                 val menus = createSharedMediaLongPressMenu()
                 if (menus.isEmpty()) {
                     dismiss()
+                    return
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+                    longPressAdapter = TapLongPressAdapter(menus, message, longPressListener)
                 }
             }
             LongPressType.SCHEDULED_TYPE -> {
                 val menus = createScheduledMessageLongPressMenu()
                 if (menus.isEmpty()) {
                     dismiss()
+                    return
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+                    longPressAdapter = TapLongPressAdapter(menus, message, longPressListener)
                 }
             }
         }
 
+        if (longPressAdapter == null) {
+            dismiss()
+            return
+        }
         rv_long_press.adapter = longPressAdapter
         rv_long_press.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rv_long_press.setHasFixedSize(true)
@@ -291,831 +320,870 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
     }
 
-    private fun createFailedMessageBubbleLongPressMenu(): List<TAPAttachmentModel?> {
-        // TODO: 10 April 2019 ADD LONG PRESS MENU FOR FAILED MESSAGES
-        return ArrayList()
+    private val longPressListener = object : TapLongPressInterface {
+        override fun onLongPressMenuItemSelected(longPressMenuItem: TapLongPressMenuItem?, messageModel: TAPMessageModel?) {
+            dismiss()
+            if (longPressMenuItem == null || activity == null) {
+                return
+            }
+            TAPChatManager.getInstance(instanceKey).triggerLongPressMenuItemSelected(activity, longPressMenuItem, message)
+        }
     }
 
-    private fun createTextBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
-
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
-            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
-        ) {
-            // Reply
-            imageResIds.add(R.drawable.tap_ic_reply_orange)
-            titleResIds.add(R.string.tap_reply)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
-                messageModel.room.type != RoomType.TYPE_TRANSACTION
-        ) {
-            // Forward
-            imageResIds.add(R.drawable.tap_ic_forward_orange)
-            titleResIds.add(R.string.tap_forward)
-            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
-            // Copy
-            imageResIds.add(R.drawable.tap_ic_copy_orange)
-            titleResIds.add(R.string.tap_copy)
-            ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
-        }
-
-        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
-            // Star
-            if (starredMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
-                titleResIds.add(R.string.tap_unstar)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_star_outline)
-                titleResIds.add(R.string.tap_star)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!! &&
-            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
-            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
-        ) {
-            // Edit
-            imageResIds.add(R.drawable.tap_ic_edit_orange)
-            titleResIds.add(R.string.tap_edit)
-            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
-        }
-
-        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
-            // Pin
-            if (pinnedMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
-                titleResIds.add(R.string.tap_unpin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
-                titleResIds.add(R.string.tap_pin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
-            messageModel.room.type != TYPE_PERSONAL &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
-            titleResIds.add(R.string.tap_message_info)
-            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
-                null != TAPChatManager.getInstance(instanceKey).activeUser &&
-                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            // Delete
-            imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete_message)
-            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
-        }
-
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
-            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
-        ) {
-            // Report
-            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
-            titleResIds.add(R.string.tap_report)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
-        }
-
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
-    }
-
-    private fun createImageBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
-        val messageData = messageModel.data
-
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
-            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
-        ) {
-            // Reply
-            imageResIds.add(R.drawable.tap_ic_reply_orange)
-            titleResIds.add(R.string.tap_reply)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
-            messageModel.room.type != RoomType.TYPE_TRANSACTION
-        ) {
-            // Forward
-            imageResIds.add(R.drawable.tap_ic_forward_orange)
-            titleResIds.add(R.string.tap_forward)
-            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
-        }
-
-        if (null != messageData) {
-            val caption = messageData[MessageData.CAPTION] as String?
-            if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled &&
-                    !caption.isNullOrEmpty()
-            ) {
-                // Copy
-                imageResIds.add(R.drawable.tap_ic_copy_orange)
-                titleResIds.add(R.string.tap_copy)
-                ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
-            }
-
-            val fileID = messageData[MessageData.FILE_ID] as String?
-            if (!TapUI.getInstance(instanceKey).isSaveMediaToGalleryMenuDisabled &&
-                    ((!fileID.isNullOrEmpty() && TAPCacheManager.getInstance(TapTalk.appContext).containsCache(fileID)) ||
-                    null != messageData[MessageData.FILE_URL])
-            ) {
-                // Save image to gallery
-                imageResIds.add(R.drawable.tap_ic_download_orange)
-                titleResIds.add(R.string.tap_save_to_gallery)
-                ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_IMAGE_GALLERY)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
-            // Star
-            if (starredMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
-                titleResIds.add(R.string.tap_unstar)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_star_outline)
-                titleResIds.add(R.string.tap_star)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!! &&
-            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
-            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
-        ) {
-            // Edit
-            imageResIds.add(R.drawable.tap_ic_edit_orange)
-            titleResIds.add(R.string.tap_edit)
-            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
-        }
-
-        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
-            // Pin
-            if (pinnedMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
-                titleResIds.add(R.string.tap_unpin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
-                titleResIds.add(R.string.tap_pin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
-            messageModel.room.type != TYPE_PERSONAL &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
-            titleResIds.add(R.string.tap_message_info)
-            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
-                null != TAPChatManager.getInstance(instanceKey).activeUser &&
-                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            // Delete
-            imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete_message)
-            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
-        }
-
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
-            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
-        ) {
-            // Report
-            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
-            titleResIds.add(R.string.tap_report)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
-        }
-
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
-    }
-
-    private fun createVideoBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
-        val messageData = messageModel.data
-
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
-            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
-        ) {
-            // Reply
-            imageResIds.add(R.drawable.tap_ic_reply_orange)
-            titleResIds.add(R.string.tap_reply)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
-            messageModel.room.type != RoomType.TYPE_TRANSACTION
-        ) {
-            // Forward
-            imageResIds.add(R.drawable.tap_ic_forward_orange)
-            titleResIds.add(R.string.tap_forward)
-            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
-        }
-
-        if (null != messageData) {
-            val caption = messageData[MessageData.CAPTION] as String?
-            if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled &&
-                    !caption.isNullOrEmpty()
-            ) {
-                // Copy
-                imageResIds.add(R.drawable.tap_ic_copy_orange)
-                titleResIds.add(R.string.tap_copy)
-                ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
-            }
-
-            if (!TapUI.getInstance(instanceKey).isSaveMediaToGalleryMenuDisabled &&
-                    TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(messageModel)) {
-                // Save video to gallery
-                imageResIds.add(R.drawable.tap_ic_download_orange)
-                titleResIds.add(R.string.tap_save_to_gallery)
-                ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_VIDEO_GALLERY)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
-            // Star
-            if (starredMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
-                titleResIds.add(R.string.tap_unstar)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_star_outline)
-                titleResIds.add(R.string.tap_star)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!! &&
-            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
-            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
-        ) {
-            // Edit
-            imageResIds.add(R.drawable.tap_ic_edit_orange)
-            titleResIds.add(R.string.tap_edit)
-            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
-        }
-
-        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
-            // Pin
-            if (pinnedMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
-                titleResIds.add(R.string.tap_unpin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
-                titleResIds.add(R.string.tap_pin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
-            messageModel.room.type != TYPE_PERSONAL &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
-            titleResIds.add(R.string.tap_message_info)
-            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
-                null != TAPChatManager.getInstance(instanceKey).activeUser &&
-                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            // Delete
-            imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete_message)
-            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
-        }
-
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
-            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
-        ) {
-            // Report
-            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
-            titleResIds.add(R.string.tap_report)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
-        }
-
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
-    }
-
-    private fun createFileBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
-        val messageData = messageModel.data
-
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
-            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
-        ) {
-            // Reply
-            imageResIds.add(R.drawable.tap_ic_reply_orange)
-            titleResIds.add(R.string.tap_reply)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
-            messageModel.room.type != RoomType.TYPE_TRANSACTION
-        ) {
-            // Forward
-            imageResIds.add(R.drawable.tap_ic_forward_orange)
-            titleResIds.add(R.string.tap_forward)
-            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
-        }
-
-        if (null != messageData) {
-            if (!TapUI.getInstance(instanceKey).isSaveDocumentMenuDisabled &&
-                    TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(messageModel)
-            ) {
-                // Save to downloads
-                imageResIds.add(R.drawable.tap_ic_download_orange)
-                titleResIds.add(R.string.tap_save_to_downloads)
-                ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_DOWNLOADS)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
-            // Star
-            if (starredMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
-                titleResIds.add(R.string.tap_unstar)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_star_outline)
-                titleResIds.add(R.string.tap_star)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
-            // Pin
-            if (pinnedMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
-                titleResIds.add(R.string.tap_unpin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
-                titleResIds.add(R.string.tap_pin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
-            messageModel.room.type != TYPE_PERSONAL &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
-            titleResIds.add(R.string.tap_message_info)
-            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
-                null != TAPChatManager.getInstance(instanceKey).activeUser &&
-                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            // Delete
-            imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete_message)
-            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
-        }
-
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
-            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
-        ) {
-            // Report
-            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
-            titleResIds.add(R.string.tap_report)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
-        }
-
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
-    }
-
-    private fun createVoiceBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
-
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
-            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
-        ) {
-            // Reply
-            imageResIds.add(R.drawable.tap_ic_reply_orange)
-            titleResIds.add(R.string.tap_reply)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
-            messageModel.room.type != RoomType.TYPE_TRANSACTION
-        ) {
-            // Forward
-            imageResIds.add(R.drawable.tap_ic_forward_orange)
-            titleResIds.add(R.string.tap_forward)
-            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
-        }
-
-        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
-            // Star
-            if (starredMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
-                titleResIds.add(R.string.tap_unstar)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_star_outline)
-                titleResIds.add(R.string.tap_star)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
-            // Pin
-            if (pinnedMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
-                titleResIds.add(R.string.tap_unpin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
-                titleResIds.add(R.string.tap_pin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
-            messageModel.room.type != TYPE_PERSONAL &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
-            titleResIds.add(R.string.tap_message_info)
-            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            // Delete
-            imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete_message)
-            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
-        }
-
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
-            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
-        ) {
-            // Report
-            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
-            titleResIds.add(R.string.tap_report)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
-        }
-
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
-    }
-
-
-    private fun createLocationBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
-
-        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
-            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
-        ) {
-            // Reply
-            imageResIds.add(R.drawable.tap_ic_reply_orange)
-            titleResIds.add(R.string.tap_reply)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
-                messageModel.room.type != RoomType.TYPE_TRANSACTION
-        ) {
-            // Forward
-            imageResIds.add(R.drawable.tap_ic_forward_orange)
-            titleResIds.add(R.string.tap_forward)
-            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
-            // Copy
-            imageResIds.add(R.drawable.tap_ic_copy_orange)
-            titleResIds.add(R.string.tap_copy)
-            ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
-        }
-
-        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
-            // Star
-            if (starredMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
-                titleResIds.add(R.string.tap_unstar)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_star_outline)
-                titleResIds.add(R.string.tap_star)
-                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
-            // Pin
-            if (pinnedMessageIds.contains(messageModel.messageID)) {
-                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
-                titleResIds.add(R.string.tap_unpin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            } else {
-                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
-                titleResIds.add(R.string.tap_pin)
-                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
-            }
-        }
-
-        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
-            messageModel.room.type != TYPE_PERSONAL &&
-            null != TAPChatManager.getInstance(instanceKey).activeUser &&
-            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
-            titleResIds.add(R.string.tap_message_info)
-            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
-        }
-
-        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
-                null != TAPChatManager.getInstance(instanceKey).activeUser &&
-                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.isSending && !messageModel.isSending!!
-        ) {
-            // Delete
-            imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete_message)
-            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
-        }
-
-        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
-            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
-        ) {
-            // Report
-            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
-            titleResIds.add(R.string.tap_report)
-            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
-        }
-
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
-    }
-
-    private fun createLinkLongPressMenu(): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
+//    private fun createFailedMessageBubbleLongPressMenu(): List<TAPAttachmentModel?> {
+//        // TODO: 10 April 2019 ADD LONG PRESS MENU FOR FAILED MESSAGES
+//        return ArrayList()
+//    }
+//
+//    private fun createTextBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+//        val imageResIds: MutableList<Int> = ArrayList()
+//        val titleResIds: MutableList<Int> = ArrayList()
+//        val ids: MutableList<Int> = ArrayList()
+//
+//        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+//            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+//        ) {
+//            // Reply
+//            imageResIds.add(R.drawable.tap_ic_reply_orange)
+//            titleResIds.add(R.string.tap_reply)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+//                messageModel.room.type != RoomType.TYPE_TRANSACTION
+//        ) {
+//            // Forward
+//            imageResIds.add(R.drawable.tap_ic_forward_orange)
+//            titleResIds.add(R.string.tap_forward)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
+//            // Copy
+//            imageResIds.add(R.drawable.tap_ic_copy_orange)
+//            titleResIds.add(R.string.tap_copy)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+//            // Star
+//            if (starredMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+//                titleResIds.add(R.string.tap_unstar)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_star_outline)
+//                titleResIds.add(R.string.tap_star)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!! &&
+//            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
+//            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
+//        ) {
+//            // Edit
+//            imageResIds.add(R.drawable.tap_ic_edit_orange)
+//            titleResIds.add(R.string.tap_edit)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+//            // Pin
+//            if (pinnedMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+//                titleResIds.add(R.string.tap_unpin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+//                titleResIds.add(R.string.tap_pin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+//            messageModel.room.type != TYPE_PERSONAL &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+//            titleResIds.add(R.string.tap_message_info)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
+//                null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//                null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            // Delete
+//            imageResIds.add(R.drawable.tap_ic_delete_red)
+//            titleResIds.add(R.string.tap_delete_message)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+//            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+//        ) {
+//            // Report
+//            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+//            titleResIds.add(R.string.tap_report)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
+//        }
+//
+//        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+//        val size = imageResIds.size
+//        for (index in 0 until size) {
+//            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
+//        }
+//        return attachMenus
+//    }
+//
+//    private fun createImageBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+//        val imageResIds: MutableList<Int> = ArrayList()
+//        val titleResIds: MutableList<Int> = ArrayList()
+//        val ids: MutableList<Int> = ArrayList()
+//        val messageData = messageModel.data
+//
+//        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+//            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+//        ) {
+//            // Reply
+//            imageResIds.add(R.drawable.tap_ic_reply_orange)
+//            titleResIds.add(R.string.tap_reply)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+//            messageModel.room.type != RoomType.TYPE_TRANSACTION
+//        ) {
+//            // Forward
+//            imageResIds.add(R.drawable.tap_ic_forward_orange)
+//            titleResIds.add(R.string.tap_forward)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
+//        }
+//
+//        if (null != messageData) {
+//            val caption = messageData[MessageData.CAPTION] as String?
+//            if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled &&
+//                    !caption.isNullOrEmpty()
+//            ) {
+//                // Copy
+//                imageResIds.add(R.drawable.tap_ic_copy_orange)
+//                titleResIds.add(R.string.tap_copy)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
+//            }
+//
+//            val fileID = messageData[MessageData.FILE_ID] as String?
+//            if (!TapUI.getInstance(instanceKey).isSaveMediaToGalleryMenuDisabled &&
+//                    ((!fileID.isNullOrEmpty() && TAPCacheManager.getInstance(TapTalk.appContext).containsCache(fileID)) ||
+//                    null != messageData[MessageData.FILE_URL])
+//            ) {
+//                // Save image to gallery
+//                imageResIds.add(R.drawable.tap_ic_download_orange)
+//                titleResIds.add(R.string.tap_save_to_gallery)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_IMAGE_GALLERY)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+//            // Star
+//            if (starredMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+//                titleResIds.add(R.string.tap_unstar)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_star_outline)
+//                titleResIds.add(R.string.tap_star)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!! &&
+//            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
+//            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
+//        ) {
+//            // Edit
+//            imageResIds.add(R.drawable.tap_ic_edit_orange)
+//            titleResIds.add(R.string.tap_edit)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+//            // Pin
+//            if (pinnedMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+//                titleResIds.add(R.string.tap_unpin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+//                titleResIds.add(R.string.tap_pin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+//            messageModel.room.type != TYPE_PERSONAL &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+//            titleResIds.add(R.string.tap_message_info)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
+//                null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//                null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            // Delete
+//            imageResIds.add(R.drawable.tap_ic_delete_red)
+//            titleResIds.add(R.string.tap_delete_message)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+//            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+//        ) {
+//            // Report
+//            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+//            titleResIds.add(R.string.tap_report)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
+//        }
+//
+//        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+//        val size = imageResIds.size
+//        for (index in 0 until size) {
+//            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
+//        }
+//        return attachMenus
+//    }
+//
+//    private fun createVideoBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+//        val imageResIds: MutableList<Int> = ArrayList()
+//        val titleResIds: MutableList<Int> = ArrayList()
+//        val ids: MutableList<Int> = ArrayList()
+//        val messageData = messageModel.data
+//
+//        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+//            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+//        ) {
+//            // Reply
+//            imageResIds.add(R.drawable.tap_ic_reply_orange)
+//            titleResIds.add(R.string.tap_reply)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+//            messageModel.room.type != RoomType.TYPE_TRANSACTION
+//        ) {
+//            // Forward
+//            imageResIds.add(R.drawable.tap_ic_forward_orange)
+//            titleResIds.add(R.string.tap_forward)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
+//        }
+//
+//        if (null != messageData) {
+//            val caption = messageData[MessageData.CAPTION] as String?
+//            if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled &&
+//                    !caption.isNullOrEmpty()
+//            ) {
+//                // Copy
+//                imageResIds.add(R.drawable.tap_ic_copy_orange)
+//                titleResIds.add(R.string.tap_copy)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
+//            }
+//
+//            if (!TapUI.getInstance(instanceKey).isSaveMediaToGalleryMenuDisabled &&
+//                    TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(messageModel)) {
+//                // Save video to gallery
+//                imageResIds.add(R.drawable.tap_ic_download_orange)
+//                titleResIds.add(R.string.tap_save_to_gallery)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_VIDEO_GALLERY)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+//            // Star
+//            if (starredMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+//                titleResIds.add(R.string.tap_unstar)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_star_outline)
+//                titleResIds.add(R.string.tap_star)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!! &&
+//            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
+//            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
+//        ) {
+//            // Edit
+//            imageResIds.add(R.drawable.tap_ic_edit_orange)
+//            titleResIds.add(R.string.tap_edit)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+//            // Pin
+//            if (pinnedMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+//                titleResIds.add(R.string.tap_unpin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+//                titleResIds.add(R.string.tap_pin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+//            messageModel.room.type != TYPE_PERSONAL &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+//            titleResIds.add(R.string.tap_message_info)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
+//                null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//                null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            // Delete
+//            imageResIds.add(R.drawable.tap_ic_delete_red)
+//            titleResIds.add(R.string.tap_delete_message)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+//            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+//        ) {
+//            // Report
+//            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+//            titleResIds.add(R.string.tap_report)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
+//        }
+//
+//        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+//        val size = imageResIds.size
+//        for (index in 0 until size) {
+//            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
+//        }
+//        return attachMenus
+//    }
+//
+//    private fun createFileBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+//        val imageResIds: MutableList<Int> = ArrayList()
+//        val titleResIds: MutableList<Int> = ArrayList()
+//        val ids: MutableList<Int> = ArrayList()
+//        val messageData = messageModel.data
+//
+//        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+//            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+//        ) {
+//            // Reply
+//            imageResIds.add(R.drawable.tap_ic_reply_orange)
+//            titleResIds.add(R.string.tap_reply)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+//            messageModel.room.type != RoomType.TYPE_TRANSACTION
+//        ) {
+//            // Forward
+//            imageResIds.add(R.drawable.tap_ic_forward_orange)
+//            titleResIds.add(R.string.tap_forward)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
+//        }
+//
+//        if (null != messageData) {
+//            if (!TapUI.getInstance(instanceKey).isSaveDocumentMenuDisabled &&
+//                    TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(messageModel)
+//            ) {
+//                // Save to downloads
+//                imageResIds.add(R.drawable.tap_ic_download_orange)
+//                titleResIds.add(R.string.tap_save_to_downloads)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_DOWNLOADS)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+//            // Star
+//            if (starredMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+//                titleResIds.add(R.string.tap_unstar)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_star_outline)
+//                titleResIds.add(R.string.tap_star)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+//            // Pin
+//            if (pinnedMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+//                titleResIds.add(R.string.tap_unpin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+//                titleResIds.add(R.string.tap_pin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+//            messageModel.room.type != TYPE_PERSONAL &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+//            titleResIds.add(R.string.tap_message_info)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
+//                null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//                null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            // Delete
+//            imageResIds.add(R.drawable.tap_ic_delete_red)
+//            titleResIds.add(R.string.tap_delete_message)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+//            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+//        ) {
+//            // Report
+//            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+//            titleResIds.add(R.string.tap_report)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
+//        }
+//
+//        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+//        val size = imageResIds.size
+//        for (index in 0 until size) {
+//            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
+//        }
+//        return attachMenus
+//    }
+//
+//    private fun createVoiceBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+//        val imageResIds: MutableList<Int> = ArrayList()
+//        val titleResIds: MutableList<Int> = ArrayList()
+//        val ids: MutableList<Int> = ArrayList()
+//
+//        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+//            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+//        ) {
+//            // Reply
+//            imageResIds.add(R.drawable.tap_ic_reply_orange)
+//            titleResIds.add(R.string.tap_reply)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+//            messageModel.room.type != RoomType.TYPE_TRANSACTION
+//        ) {
+//            // Forward
+//            imageResIds.add(R.drawable.tap_ic_forward_orange)
+//            titleResIds.add(R.string.tap_forward)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+//            // Star
+//            if (starredMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+//                titleResIds.add(R.string.tap_unstar)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_star_outline)
+//                titleResIds.add(R.string.tap_star)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+//            // Pin
+//            if (pinnedMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+//                titleResIds.add(R.string.tap_unpin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+//                titleResIds.add(R.string.tap_pin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+//            messageModel.room.type != TYPE_PERSONAL &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+//            titleResIds.add(R.string.tap_message_info)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            // Delete
+//            imageResIds.add(R.drawable.tap_ic_delete_red)
+//            titleResIds.add(R.string.tap_delete_message)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+//            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+//        ) {
+//            // Report
+//            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+//            titleResIds.add(R.string.tap_report)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
+//        }
+//
+//        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+//        val size = imageResIds.size
+//        for (index in 0 until size) {
+//            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
+//        }
+//        return attachMenus
+//    }
+//
+//
+//    private fun createLocationBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+//        val imageResIds: MutableList<Int> = ArrayList()
+//        val titleResIds: MutableList<Int> = ArrayList()
+//        val ids: MutableList<Int> = ArrayList()
+//
+//        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled &&
+//            !TAPDataManager.getInstance(instanceKey).blockedUserIds.contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.room?.roomID))
+//        ) {
+//            // Reply
+//            imageResIds.add(R.drawable.tap_ic_reply_orange)
+//            titleResIds.add(R.string.tap_reply)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+//                messageModel.room.type != RoomType.TYPE_TRANSACTION
+//        ) {
+//            // Forward
+//            imageResIds.add(R.drawable.tap_ic_forward_orange)
+//            titleResIds.add(R.string.tap_forward)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
+//            // Copy
+//            imageResIds.add(R.drawable.tap_ic_copy_orange)
+//            titleResIds.add(R.string.tap_copy)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+//            // Star
+//            if (starredMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+//                titleResIds.add(R.string.tap_unstar)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_star_outline)
+//                titleResIds.add(R.string.tap_star)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+//            // Pin
+//            if (pinnedMessageIds.contains(messageModel.messageID)) {
+//                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+//                titleResIds.add(R.string.tap_unpin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            } else {
+//                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+//                titleResIds.add(R.string.tap_pin)
+//                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+//            }
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isMessageInfoMenuEnabled &&
+//            messageModel.room.type != TYPE_PERSONAL &&
+//            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//            null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            imageResIds.add(R.drawable.tap_ic_info_outline_primary)
+//            titleResIds.add(R.string.tap_message_info)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_MESSAGE_INFO)
+//        }
+//
+//        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
+//                null != TAPChatManager.getInstance(instanceKey).activeUser &&
+//                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+//                null != messageModel.isSending && !messageModel.isSending!!
+//        ) {
+//            // Delete
+//            imageResIds.add(R.drawable.tap_ic_delete_red)
+//            titleResIds.add(R.string.tap_delete_message)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+//        }
+//
+//        if (TapUI.getInstance(instanceKey).isReportMessageMenuEnabled &&
+//            TAPChatManager.getInstance(instanceKey).activeUser.userID != messageModel.user.userID
+//        ) {
+//            // Report
+//            imageResIds.add(R.drawable.tap_ic_warning_triangle_red)
+//            titleResIds.add(R.string.tap_report)
+//            ids.add(TAPAttachmentModel.LONG_PRESS_REPORT)
+//        }
+//
+//        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+//        val size = imageResIds.size
+//        for (index in 0 until size) {
+//            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
+//        }
+//        return attachMenus
+//    }
+
+    private fun createLinkLongPressMenu(): List<TapLongPressMenuItem> {
+        val longPressMenus: MutableList<TapLongPressMenuItem> = ArrayList()
+        val info = HashMap<String, Any>()
+        info[DATA] = linkifyResult
 
         if (!TapUI.getInstance(instanceKey).isOpenLinkMenuDisabled) {
             // Open link
-            imageResIds.add(R.drawable.tap_ic_open_link_orange)
-            titleResIds.add(R.string.tap_open)
-            ids.add(TAPAttachmentModel.LONG_PRESS_OPEN_LINK)
+            longPressMenus.add(TapLongPressMenuItem(
+                OPEN_LINK,
+                getString(R.string.tap_open),
+                R.drawable.tap_ic_open_link_orange,
+                info
+            ))
         }
 
         if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
             // Copy
-            imageResIds.add(R.drawable.tap_ic_copy_orange)
-            titleResIds.add(R.string.tap_copy)
-            ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
+            longPressMenus.add(TapLongPressMenuItem(
+                COPY,
+                getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange,
+                info
+            ))
         }
 
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
+        return longPressMenus
     }
 
-    private fun createEmailLongPressMenu(): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
+    private fun createEmailLongPressMenu(): List<TapLongPressMenuItem> {
+        val longPressMenus: MutableList<TapLongPressMenuItem> = ArrayList()
 
         if (!TapUI.getInstance(instanceKey).isComposeEmailMenuDisabled) {
             // Compose email
-            imageResIds.add(R.drawable.tap_ic_mail_orange)
-            titleResIds.add(R.string.tap_compose)
-            ids.add(TAPAttachmentModel.LONG_PRESS_COMPOSE_EMAIL)
+            val info = HashMap<String, Any>()
+            info[DATA] = linkifyResult
+            longPressMenus.add(TapLongPressMenuItem(
+                COMPOSE,
+                getString(R.string.tap_compose),
+                R.drawable.tap_ic_mail_orange,
+                info
+            ))
         }
 
         if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
             // Copy
-            imageResIds.add(R.drawable.tap_ic_copy_orange)
-            titleResIds.add(R.string.tap_copy)
-            ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
+            val address = linkifyResult.replace("mailto:", "")
+            val info = HashMap<String, Any>()
+            info[DATA] = address
+            longPressMenus.add(TapLongPressMenuItem(
+                COPY,
+                getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange,
+                info
+            ))
         }
 
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
+        return longPressMenus
     }
 
-    private fun createPhoneLongPressMenu(): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
+    private fun createPhoneLongPressMenu(): List<TapLongPressMenuItem> {
+        val longPressMenus: MutableList<TapLongPressMenuItem> = ArrayList()
+        val info = HashMap<String, Any>()
+        info[DATA] = urlMessage
 
         if (!TapUI.getInstance(instanceKey).isDialNumberMenuDisabled) {
             // Dial number
-            imageResIds.add(R.drawable.tap_ic_call_orange)
-            titleResIds.add(R.string.tap_call)
-            ids.add(TAPAttachmentModel.LONG_PRESS_CALL)
+            longPressMenus.add(TapLongPressMenuItem(
+                CALL,
+                getString(R.string.tap_call),
+                R.drawable.tap_ic_call_orange,
+                info
+            ))
         }
 
         if (!TapUI.getInstance(instanceKey).isSendSMSMenuDisabled) {
             // Send SMS
-            imageResIds.add(R.drawable.tap_ic_sms_orange)
-            titleResIds.add(R.string.tap_send_sms)
-            ids.add(TAPAttachmentModel.LONG_PRESS_SEND_SMS)
+            longPressMenus.add(TapLongPressMenuItem(
+                SMS,
+                getString(R.string.tap_send_sms),
+                R.drawable.tap_ic_sms_orange,
+                info
+            ))
         }
 
         if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
             // Copy
-            imageResIds.add(R.drawable.tap_ic_copy_orange)
-            titleResIds.add(R.string.tap_copy)
-            ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
+            longPressMenus.add(TapLongPressMenuItem(
+                COPY,
+                getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange,
+                info
+            ))
         }
 
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
+        return longPressMenus
     }
 
-    private fun createMentionLongPressMenu(): List<TAPAttachmentModel> {
-        val imageResIds: MutableList<Int> = ArrayList()
-        val titleResIds: MutableList<Int> = ArrayList()
-        val ids: MutableList<Int> = ArrayList()
+    private fun createMentionLongPressMenu(): List<TapLongPressMenuItem> {
+        val longPressMenus: MutableList<TapLongPressMenuItem> = ArrayList()
+        val info = HashMap<String, Any>()
+        info[DATA] = linkifyResult.substring(1)
 
         if (!TapUI.getInstance(instanceKey).isViewProfileMenuDisabled) {
             // View profile
-            imageResIds.add(R.drawable.tap_ic_contact_orange)
-            titleResIds.add(R.string.tap_view_profile)
-            ids.add(TAPAttachmentModel.LONG_PRESS_VIEW_PROFILE)
+            longPressMenus.add(TapLongPressMenuItem(
+                VIEW_PROFILE,
+                getString(R.string.tap_view_profile),
+                R.drawable.tap_ic_contact_orange,
+                info
+            ))
         }
 
         if (!TapUI.getInstance(instanceKey).isSendMessageMenuDisabled) {
             // Send message
-            imageResIds.add(R.drawable.tap_ic_sms_orange)
-            titleResIds.add(R.string.tap_send_message)
-            ids.add(TAPAttachmentModel.LONG_PRESS_SEND_MESSAGE)
+            longPressMenus.add(TapLongPressMenuItem(
+                SEND_MESSAGE,
+                getString(R.string.tap_send_message),
+                R.drawable.tap_ic_sms_orange,
+                info
+            ))
         }
 
         if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
             // Copy
-            imageResIds.add(R.drawable.tap_ic_copy_orange)
-            titleResIds.add(R.string.tap_copy)
-            ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
+            longPressMenus.add(TapLongPressMenuItem(
+                COPY,
+                getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange,
+                info
+            ))
         }
 
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        val size = imageResIds.size
-        for (index in 0 until size) {
-            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
-        }
-        return attachMenus
+        return longPressMenus
     }
 
-    private fun createCopyLongPressMenu(): List<TAPAttachmentModel> {
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+    private fun createCopyLongPressMenu(): List<TapLongPressMenuItem> {
+        val longPressMenus: MutableList<TapLongPressMenuItem> = ArrayList()
+        val info = HashMap<String, Any>()
+        info[DATA] = linkifyResult.substring(1)
         if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
             // Copy
-            attachMenus.add(TAPAttachmentModel(
-                    R.drawable.tap_ic_copy_orange,
-                    R.string.tap_copy,
-                    TAPAttachmentModel.LONG_PRESS_COPY))
+            longPressMenus.add(TapLongPressMenuItem(
+                COPY,
+                getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange,
+                info
+            ))
         }
-        return attachMenus
+        return longPressMenus
     }
 
-    private fun createSaveImageLongPressMenu(): List<TAPAttachmentModel> {
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+    private fun createSaveImageLongPressMenu(): List<TapLongPressMenuItem> {
+        val longPressMenus: MutableList<TapLongPressMenuItem> = ArrayList()
+
         // Save Profile Picture
-        attachMenus.add(TAPAttachmentModel(
-            R.drawable.tap_ic_download_orange,
-            R.string.tap_save_image,
-            TAPAttachmentModel.LONG_PRESS_SAVE_PROFILE_PICTURE))
-        return attachMenus
+        if (bitmap != null) {
+            val info = HashMap<String, Any>()
+            info[DATA] = bitmap!!
+            longPressMenus.add(TapLongPressMenuItem(
+                SAVE,
+                getString(R.string.tap_save_image),
+                R.drawable.tap_ic_download_orange
+            ))
+        }
+        return longPressMenus
     }
 
-    private fun createSharedMediaLongPressMenu(): List<TAPAttachmentModel> {
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
-        // Save Profile Picture
-        attachMenus.add(TAPAttachmentModel(
-            R.drawable.tap_ic_view_in_chat,
-            R.string.tap_view_in_chat,
-            TAPAttachmentModel.LONG_PRESS_SHARED_MEDIA))
-        return attachMenus
+    private fun createSharedMediaLongPressMenu(): List<TapLongPressMenuItem> {
+        val longPressMenus: MutableList<TapLongPressMenuItem> = ArrayList()
+        // View in Chat
+        longPressMenus.add(TapLongPressMenuItem(
+            VIEW_IN_CHAT,
+            getString(R.string.tap_view_in_chat),
+            R.drawable.tap_ic_view_in_chat
+        ))
+        return longPressMenus
     }
 
-    private fun createScheduledMessageLongPressMenu() : List<TAPAttachmentModel> {
-        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+    private fun createScheduledMessageLongPressMenu() : List<TapLongPressMenuItem> {
+        val longPressMenus: MutableList<TapLongPressMenuItem> = ArrayList()
         // Send Now
-        attachMenus.add(TAPAttachmentModel(
-            R.drawable.tap_ic_circle_arrow_up_primary,
-            R.string.tap_send_now,
-            TAPAttachmentModel.LONG_PRESS_SEND_NOW))
+        longPressMenus.add(TapLongPressMenuItem(
+            SEND_NOW,
+            getString(R.string.tap_send_now),
+            R.drawable.tap_ic_circle_arrow_up_primary
+        ))
         // Reschedule
-        attachMenus.add(TAPAttachmentModel(
-            R.drawable.tap_ic_clock_grey,
-            R.string.tap_reschedule,
-            TAPAttachmentModel.LONG_PRESS_RESCHEDULE))
+        longPressMenus.add(TapLongPressMenuItem(
+            RESCHEDULE,
+            getString(R.string.tap_reschedule),
+            R.drawable.tap_ic_clock_grey
+        ))
         // Copy
-        attachMenus.add(TAPAttachmentModel(
-            R.drawable.tap_ic_copy_orange,
-            R.string.tap_copy,
-            TAPAttachmentModel.LONG_PRESS_COPY))
+        longPressMenus.add(TapLongPressMenuItem(
+            COPY,
+            getString(R.string.tap_copy),
+            R.drawable.tap_ic_copy_orange
+        ))
         // Edit
-        attachMenus.add(TAPAttachmentModel(
-            R.drawable.tap_ic_edit_orange,
-            R.string.tap_edit,
-            TAPAttachmentModel.LONG_PRESS_EDIT))
+        longPressMenus.add(TapLongPressMenuItem(
+            EDIT,
+            getString(R.string.tap_edit),
+            R.drawable.tap_ic_edit_orange
+        ))
         // Delete
-        attachMenus.add(TAPAttachmentModel(
-            R.drawable.tap_ic_delete_red,
-            R.string.tap_delete,
-            TAPAttachmentModel.LONG_PRESS_DELETE))
-        return attachMenus
+        longPressMenus.add(TapLongPressMenuItem(
+            DELETE,
+            getString(R.string.tap_delete),
+            R.drawable.tap_ic_delete_red
+        ))
+        return longPressMenus
     }
 }

@@ -13,6 +13,7 @@ public class TapLongPressMenuItem implements Parcelable {
     private String id;
     private String text;
     private int iconRes;
+    private HashMap<String, Object> userInfo;
 
     public TapLongPressMenuItem() {
     }
@@ -21,6 +22,13 @@ public class TapLongPressMenuItem implements Parcelable {
         this.id = id;
         this.text = text;
         this.iconRes = iconRes;
+    }
+
+    public TapLongPressMenuItem(String id, String text, int iconRes, HashMap<String, Object> userInfo) {
+        this.id = id;
+        this.text = text;
+        this.iconRes = iconRes;
+        this.userInfo = userInfo;
     }
 
     public static TapLongPressMenuItem fromHashMap(HashMap<String, Object> hashMap) {
@@ -60,6 +68,14 @@ public class TapLongPressMenuItem implements Parcelable {
         this.iconRes = iconRes;
     }
 
+    public HashMap<String, Object> getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(HashMap<String, Object> userInfo) {
+        this.userInfo = userInfo;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -70,21 +86,24 @@ public class TapLongPressMenuItem implements Parcelable {
         dest.writeString(this.id);
         dest.writeString(this.text);
         dest.writeInt(this.iconRes);
+        dest.writeSerializable(this.userInfo);
     }
 
     public void readFromParcel(Parcel source) {
         this.id = source.readString();
         this.text = source.readString();
         this.iconRes = source.readInt();
+        this.userInfo = (HashMap<String, Object>) source.readSerializable();
     }
 
     protected TapLongPressMenuItem(Parcel in) {
         this.id = in.readString();
         this.text = in.readString();
         this.iconRes = in.readInt();
+        this.userInfo = (HashMap<String, Object>) in.readSerializable();
     }
 
-    public static final Parcelable.Creator<TapLongPressMenuItem> CREATOR = new Parcelable.Creator<TapLongPressMenuItem>() {
+    public static final Creator<TapLongPressMenuItem> CREATOR = new Creator<TapLongPressMenuItem>() {
         @Override
         public TapLongPressMenuItem createFromParcel(Parcel source) {
             return new TapLongPressMenuItem(source);

@@ -33,7 +33,7 @@ public interface TapUIChatRoomInterface {
 
     List<TapLongPressMenuItem> setLongPressMenuItems(Context context, TAPMessageModel messageModel);
 
-    void onMessageLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, TAPMessageModel messageModel);
+    void onLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, @Nullable TAPMessageModel messageModel);
 
     void onTapTalkMessageQuoteTapped(Activity activity, TAPMessageModel messageModel, @Nullable HashMap<String, Object> userInfo);
 

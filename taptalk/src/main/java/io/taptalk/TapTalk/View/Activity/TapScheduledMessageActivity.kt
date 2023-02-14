@@ -47,6 +47,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE
 import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity
@@ -54,6 +55,7 @@ import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
+import io.taptalk.TapTalk.Manager.TapUI.LongPressMenuType
 import io.taptalk.TapTalk.Model.*
 import io.taptalk.TapTalk.Model.ResponseModel.*
 import io.taptalk.TapTalk.R
@@ -124,7 +126,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             val intent = Intent(context, TapScheduledMessageActivity::class.java)
             intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
             intent.putExtra(Extras.ROOM, room)
-            intent.putExtra(Extras.MESSAGE, message)
+            intent.putExtra(MESSAGE, message)
             intent.putExtra(Extras.TIME, scheduledTime)
             context.startActivityForResult(intent, RequestCode.OPEN_SCHEDULED_MESSAGES)
         }
@@ -144,7 +146,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         registerBroadcastManager()
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener)
         TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener)
-        textMessage = intent.getStringExtra(Extras.MESSAGE)
+        textMessage = intent.getStringExtra(MESSAGE)
         textTime = intent.getLongExtra(Extras.TIME, -1)
     }
 
@@ -303,7 +305,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     }
                 }
                 RequestCode.OPEN_GROUP_PROFILE -> if (data != null) {
-                    val messageModel = data.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                    val messageModel = data.getParcelableExtra<TAPMessageModel>(MESSAGE)
                     if (messageModel != null) {
                         goToMessage(messageModel)
                     } else {
@@ -312,7 +314,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     }
                 }
                 RequestCode.OPEN_MEMBER_PROFILE -> if (data != null) {
-                    val message = data.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                    val message = data.getParcelableExtra<TAPMessageModel>(MESSAGE)
                     if (message != null) {
                         goToMessage(message)
                     } else if (data.getBooleanExtra(Extras.CLOSE_ACTIVITY, false)) {
@@ -320,7 +322,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     }
                 }
                 RequestCode.OPEN_PERSONAL_PROFILE -> if (data != null) {
-                    val message = data.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                    val message = data.getParcelableExtra<TAPMessageModel>(MESSAGE)
                     if (message != null) {
                         scrollToMessage(message.localID)
                     }
@@ -657,7 +659,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             LongPressBroadcastEvent.LongPressEmail,
             LongPressBroadcastEvent.LongPressLink,
             LongPressBroadcastEvent.LongPressPhone,
-            LongPressBroadcastEvent.LongPressMention
+            LongPressBroadcastEvent.LongPressMention,
+            LongPressBroadcastEvent.LongPressMenuSelected
         )
     }
 
@@ -1293,6 +1296,95 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         attachBottomSheet.show(supportFragmentManager, "")
     }
 
+    private fun handleLongPressMenuSelected(
+        message: TAPMessageModel?,
+        longPressMenuItem: TapLongPressMenuItem
+    ) {
+        var data: String? = ""
+        if (longPressMenuItem.userInfo != null && longPressMenuItem.userInfo[DATA] != null) {
+            data = longPressMenuItem.userInfo[DATA] as String?
+        }
+        when (longPressMenuItem.id) {
+            LongPressMenuID.REPLY -> if (message != null) {
+                attachmentListener.onReplySelected(message)
+            }
+            LongPressMenuID.FORWARD -> if (message != null) {
+                attachmentListener.onForwardSelected(message)
+            }
+            LongPressMenuID.COPY -> if (data!!.isNotEmpty()) {
+                attachmentListener.onCopySelected(data)
+            } else if (message != null) {
+                when (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message.type)) {
+                    LongPressMenuType.TYPE_IMAGE_MESSAGE, LongPressMenuType.TYPE_VIDEO_MESSAGE -> {
+                        // TODO: 4 March 2019 TEMPORARY CLIPBOARD FOR IMAGE & VIDEO
+                        if (null != message.data && message.data!![MessageData.CAPTION] is String) {
+                            attachmentListener.onCopySelected(message.data!![MessageData.CAPTION] as String?)
+                        }
+                    }
+                    LongPressMenuType.TYPE_LOCATION_MESSAGE -> {
+                        if (null != message.data && message.data!![MessageData.ADDRESS] is String) {
+                            attachmentListener.onCopySelected(message.data!![MessageData.ADDRESS] as String?)
+                        }
+                    }
+                    else -> attachmentListener.onCopySelected(message.body)
+                }
+            }
+            LongPressMenuID.SAVE -> if (message != null) {
+                when (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message.type)) {
+                    LongPressMenuType.TYPE_IMAGE_MESSAGE -> attachmentListener.onSaveImageToGallery(
+                        message
+                    )
+                    LongPressMenuType.TYPE_VIDEO_MESSAGE -> attachmentListener.onSaveVideoToGallery(
+                        message
+                    )
+                    else -> attachmentListener.onSaveToDownloads(message)
+                }
+            }
+            LongPressMenuID.STAR, LongPressMenuID.UNSTAR -> if (message != null) {
+                attachmentListener.onMessageStarred(message)
+            }
+            LongPressMenuID.EDIT -> if (message != null) {
+                attachmentListener.onEditMessage(message)
+            }
+            LongPressMenuID.PIN, LongPressMenuID.UNPIN -> if (message != null) {
+                attachmentListener.onMessagePinned(message)
+            }
+            LongPressMenuID.INFO -> if (message != null) {
+                attachmentListener.onViewMessageInfo(message)
+            }
+            LongPressMenuID.DELETE -> if (message != null) {
+                attachmentListener.onDeleteMessage(vm.room.roomID, message)
+            }
+            LongPressMenuID.REPORT -> if (message != null) {
+                attachmentListener.onReportMessage(message)
+            }
+            LongPressMenuID.OPEN_LINK -> if (data!!.isNotEmpty()) {
+                attachmentListener.onOpenLinkSelected(data)
+            }
+            LongPressMenuID.COMPOSE -> if (data!!.isNotEmpty()) {
+                attachmentListener.onComposeSelected(data)
+            }
+            LongPressMenuID.CALL -> if (data!!.isNotEmpty()) {
+                attachmentListener.onPhoneCallSelected(data)
+            }
+            LongPressMenuID.SMS -> if (data!!.isNotEmpty()) {
+                attachmentListener.onPhoneSmsSelected(data)
+            }
+            LongPressMenuID.VIEW_PROFILE -> if (data!!.isNotEmpty() && message != null) {
+                attachmentListener.onViewProfileSelected(data, message)
+            }
+            LongPressMenuID.SEND_MESSAGE -> if (data!!.isNotEmpty()) {
+                attachmentListener.onSendMessageSelected(data)
+            }
+            LongPressMenuID.SEND_NOW -> if (message != null) {
+                attachmentListener.onSendNow(message)
+            }
+            LongPressMenuID.RESCHEDULE -> if (message != null) {
+                attachmentListener.onRescheduleMessage(message)
+            }
+        }
+    }
+
     private val attachmentListener: TAPAttachmentListener =
         object : TAPAttachmentListener(instanceKey) {
             override fun onCameraSelected() {
@@ -1857,7 +1949,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             scrollToMessage(message.localID)
         } else {
             val roomIntent = Intent(OPEN_CHAT)
-            roomIntent.putExtra(Extras.MESSAGE, message)
+            roomIntent.putExtra(MESSAGE, message)
             LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(roomIntent)
             closeActivity()
         }
@@ -2532,7 +2624,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 }
                 DownloadBroadcastEvent.DownloadFile -> startFileDownload(
                     intent.getParcelableExtra<TAPMessageModel>(
-                        Extras.MESSAGE
+                        MESSAGE
                     )
                 )
                 DownloadBroadcastEvent.CancelDownload -> {
@@ -2545,7 +2637,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     }
                 }
                 DownloadBroadcastEvent.OpenFile -> {
-                    val message = intent.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                    val message = intent.getParcelableExtra<TAPMessageModel>(MESSAGE)
                     fileUri = intent.getParcelableExtra(MessageData.FILE_URI)
                     vm.setOpenedFileMessage(message)
                     if (null != fileUri && null != message!!.data && null != message.data!![MessageData.MEDIA_TYPE]) {
@@ -2563,66 +2655,77 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     }
                 }
                 LongPressBroadcastEvent.LongPressChatBubble ->
-                    if (null != intent.getParcelableExtra(Extras.MESSAGE) && intent.getParcelableExtra<Parcelable>(Extras.MESSAGE) is TAPMessageModel) {
+                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra<Parcelable>(
+                            MESSAGE
+                        ) is TAPMessageModel) {
                         val chatBubbleBottomSheet = newInstance(
                             instanceKey,
                             LongPressType.SCHEDULED_TYPE,
-                            (intent.getParcelableExtra<Parcelable>(Extras.MESSAGE) as TAPMessageModel?)!!,
+                            (intent.getParcelableExtra<Parcelable>(MESSAGE) as TAPMessageModel?)!!,
                             attachmentListener
                         )
                         chatBubbleBottomSheet.show(supportFragmentManager, "")
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
-                LongPressBroadcastEvent.LongPressLink -> if (null != intent.getStringExtra(Extras.URL_MESSAGE) && null != intent.getStringExtra(
-                        Extras.COPY_MESSAGE
+                LongPressBroadcastEvent.LongPressLink -> if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(
+                        COPY_MESSAGE
                     )
                 ) {
                     val linkBottomSheet = newInstance(
                         instanceKey, LongPressType.LINK_TYPE,
-                        intent.getStringExtra(Extras.COPY_MESSAGE)!!,
-                        intent.getStringExtra(Extras.URL_MESSAGE)!!, attachmentListener
+                        intent.getStringExtra(COPY_MESSAGE)!!,
+                        intent.getStringExtra(URL_MESSAGE)!!, attachmentListener
                     )
                     linkBottomSheet.show(supportFragmentManager, "")
                     TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                 }
-                LongPressBroadcastEvent.LongPressEmail -> if (null != intent.getStringExtra(Extras.URL_MESSAGE) && null != intent.getStringExtra(
-                        Extras.COPY_MESSAGE
+                LongPressBroadcastEvent.LongPressEmail -> if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(
+                        COPY_MESSAGE
                     )
                 ) {
                     val emailBottomSheet = newInstance(
                         instanceKey, LongPressType.EMAIL_TYPE,
-                        intent.getStringExtra(Extras.COPY_MESSAGE)!!,
-                        intent.getStringExtra(Extras.URL_MESSAGE)!!, attachmentListener
+                        intent.getStringExtra(COPY_MESSAGE)!!,
+                        intent.getStringExtra(URL_MESSAGE)!!, attachmentListener
                     )
                     emailBottomSheet.show(supportFragmentManager, "")
                     TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                 }
-                LongPressBroadcastEvent.LongPressPhone -> if (null != intent.getStringExtra(Extras.URL_MESSAGE) && null != intent.getStringExtra(
-                        Extras.COPY_MESSAGE
+                LongPressBroadcastEvent.LongPressPhone -> if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(
+                        COPY_MESSAGE
                     )
                 ) {
                     val phoneBottomSheet = newInstance(
                         instanceKey, LongPressType.PHONE_TYPE,
-                        intent.getStringExtra(Extras.COPY_MESSAGE)!!,
-                        intent.getStringExtra(Extras.URL_MESSAGE)!!, attachmentListener
+                        intent.getStringExtra(COPY_MESSAGE)!!,
+                        intent.getStringExtra(URL_MESSAGE)!!, attachmentListener
                     )
                     phoneBottomSheet.show(supportFragmentManager, "")
                     TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                 }
-                LongPressBroadcastEvent.LongPressMention -> if (null != intent.getStringExtra(Extras.URL_MESSAGE) && null != intent.getStringExtra(
-                        Extras.COPY_MESSAGE
-                    ) && null != intent.getParcelableExtra(Extras.MESSAGE) && intent.getParcelableExtra<Parcelable>(
-                        Extras.MESSAGE
+                LongPressBroadcastEvent.LongPressMention -> if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(
+                        COPY_MESSAGE
+                    ) && null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra<Parcelable>(
+                        MESSAGE
                     ) is TAPMessageModel
                 ) {
                     val mentionBottomSheet = newInstance(
                         instanceKey, LongPressType.MENTION_TYPE,
-                        intent.getParcelableExtra(Extras.MESSAGE)!!,
-                        intent.getStringExtra(Extras.COPY_MESSAGE)!!,
-                        intent.getStringExtra(Extras.URL_MESSAGE)!!, attachmentListener
+                        intent.getParcelableExtra(MESSAGE)!!,
+                        intent.getStringExtra(COPY_MESSAGE)!!,
+                        intent.getStringExtra(URL_MESSAGE)!!, attachmentListener
                     )
                     mentionBottomSheet.show(supportFragmentManager, "")
                     TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
+                }
+                LongPressBroadcastEvent.LongPressMenuSelected -> {
+                    if (null != intent.getParcelableExtra(LONG_PRESS_MENU_ITEM) &&
+                        intent.getParcelableExtra<Parcelable>(LONG_PRESS_MENU_ITEM) is TapLongPressMenuItem
+                    ) {
+                        val longPressMenuItem = intent.getParcelableExtra<TapLongPressMenuItem>(LONG_PRESS_MENU_ITEM)
+                        val longPressedMessage = intent.getParcelableExtra<TAPMessageModel>(MESSAGE)
+                        handleLongPressMenuSelected(longPressedMessage, longPressMenuItem!!)
+                    }
                 }
             }
         }

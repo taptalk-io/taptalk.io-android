@@ -2,9 +2,12 @@ package io.taptalk.TapTalk.Manager;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,10 +17,8 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapCoreChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
 import io.taptalk.TapTalk.Listener.TapUIChatProfileListener;
 import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
@@ -26,16 +27,13 @@ import io.taptalk.TapTalk.Listener.TapUIChatRoomCustomNavigationBarListener;
 import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
 import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.TAPAttachmentModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
 import io.taptalk.TapTalk.R;
@@ -56,6 +54,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.LONG_PRESS_MENU_ITEM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMenuSelected;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.COPY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.DELETE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.EDIT;
@@ -82,6 +83,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
+import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TapUI {
 
@@ -1935,5 +1937,20 @@ public class TapUI {
             }
         }
         return getDefaultLongPressMenuItems(context, message);
+    }
+
+    void triggerLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, @Nullable TAPMessageModel message) {
+        if (!getChatRoomListeners().isEmpty()) {
+            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+                listener.onLongPressMenuItemSelected(activity, longPressMenuItem, message);
+            }
+        }
+        else {
+            Log.e(">>>>>>>", "triggerLongPressMenuItemSelected: " + longPressMenuItem.getId());
+            Intent intent = new Intent(LongPressMenuSelected);
+            intent.putExtra(LONG_PRESS_MENU_ITEM, longPressMenuItem);
+            intent.putExtra(MESSAGE, message);
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+        }
     }
 }
