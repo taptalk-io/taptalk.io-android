@@ -9,6 +9,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Telephony;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -975,11 +977,37 @@ public class TAPUtils {
         activity.startActivity(intent);
     }
 
-    public static void composeSMS(Activity activity, String phoneNumber) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setType("vnd.android-dir/mms-sms");
-        intent.putExtra("address", phoneNumber);
-        activity.startActivity(intent);
+    public static boolean composeSMS(Activity activity, String phoneNumber) {
+        if (getDefaultSmsAppPackageName(activity) != null) {
+            try {
+//            Uri smsUri = Uri.parse("smsto:" + phoneNumber);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+//            intent.setDataAndType(smsUri, "vnd.android-dir/mms-sms");
+                intent.setType("vnd.android-dir/mms-sms");
+                intent.putExtra("address", phoneNumber);
+                activity.startActivity(intent);
+                return true;
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static String getDefaultSmsAppPackageName(Context context) {
+        String defaultSmsPackageName;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(context);
+            return defaultSmsPackageName;
+        } else {
+            Intent intent = new Intent(Intent.ACTION_VIEW).addCategory(Intent.CATEGORY_DEFAULT).setType("vnd.android-dir/mms-sms");
+            final List<ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(intent, 0);
+            if (resolveInfos != null && !resolveInfos.isEmpty()) {
+                return resolveInfos.get(0).activityInfo.packageName;
+            }
+        }
+        return null;
     }
 
     public static void openMaps(Activity activity, Double latitude, Double longitude) {

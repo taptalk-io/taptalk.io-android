@@ -51,6 +51,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE
 import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity
+import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
@@ -659,8 +660,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             LongPressBroadcastEvent.LongPressEmail,
             LongPressBroadcastEvent.LongPressLink,
             LongPressBroadcastEvent.LongPressPhone,
-            LongPressBroadcastEvent.LongPressMention,
-            LongPressBroadcastEvent.LongPressMenuSelected
+            LongPressBroadcastEvent.LongPressMention
         )
     }
 
@@ -1385,6 +1385,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
     }
 
+    private val longPressListener = TapLongPressInterface { longPressMenuItem: TapLongPressMenuItem?, messageModel: TAPMessageModel? ->
+        handleLongPressMenuSelected(messageModel, longPressMenuItem!!)
+    }
+
     private val attachmentListener: TAPAttachmentListener =
         object : TAPAttachmentListener(instanceKey) {
             override fun onCameraSelected() {
@@ -1435,7 +1439,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
 
             override fun onPhoneSmsSelected(phoneNumber: String) {
-                TAPUtils.composeSMS(this@TapScheduledMessageActivity, phoneNumber)
+                if (!TAPUtils.composeSMS(this@TapScheduledMessageActivity, phoneNumber)) {
+                    Toast.makeText(this@TapScheduledMessageActivity, R.string.error_unable_to_send_sms, Toast.LENGTH_SHORT).show()
+                }
             }
 
             override fun onSaveImageToGallery(message: TAPMessageModel) {
@@ -2662,7 +2668,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                             instanceKey,
                             LongPressType.SCHEDULED_TYPE,
                             (intent.getParcelableExtra<Parcelable>(MESSAGE) as TAPMessageModel?)!!,
-                            attachmentListener
+                            longPressListener
                         )
                         chatBubbleBottomSheet.show(supportFragmentManager, "")
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
@@ -2674,7 +2680,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     val linkBottomSheet = newInstance(
                         instanceKey, LongPressType.LINK_TYPE,
                         intent.getStringExtra(COPY_MESSAGE)!!,
-                        intent.getStringExtra(URL_MESSAGE)!!, attachmentListener
+                        intent.getStringExtra(URL_MESSAGE)!!,
+                        longPressListener
                     )
                     linkBottomSheet.show(supportFragmentManager, "")
                     TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
@@ -2686,7 +2693,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     val emailBottomSheet = newInstance(
                         instanceKey, LongPressType.EMAIL_TYPE,
                         intent.getStringExtra(COPY_MESSAGE)!!,
-                        intent.getStringExtra(URL_MESSAGE)!!, attachmentListener
+                        intent.getStringExtra(URL_MESSAGE)!!,
+                        longPressListener
                     )
                     emailBottomSheet.show(supportFragmentManager, "")
                     TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
@@ -2698,7 +2706,8 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     val phoneBottomSheet = newInstance(
                         instanceKey, LongPressType.PHONE_TYPE,
                         intent.getStringExtra(COPY_MESSAGE)!!,
-                        intent.getStringExtra(URL_MESSAGE)!!, attachmentListener
+                        intent.getStringExtra(URL_MESSAGE)!!,
+                        longPressListener
                     )
                     phoneBottomSheet.show(supportFragmentManager, "")
                     TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
@@ -2713,19 +2722,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         instanceKey, LongPressType.MENTION_TYPE,
                         intent.getParcelableExtra(MESSAGE)!!,
                         intent.getStringExtra(COPY_MESSAGE)!!,
-                        intent.getStringExtra(URL_MESSAGE)!!, attachmentListener
+                        intent.getStringExtra(URL_MESSAGE)!!,
+                        longPressListener
                     )
                     mentionBottomSheet.show(supportFragmentManager, "")
                     TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
-                }
-                LongPressBroadcastEvent.LongPressMenuSelected -> {
-                    if (null != intent.getParcelableExtra(LONG_PRESS_MENU_ITEM) &&
-                        intent.getParcelableExtra<Parcelable>(LONG_PRESS_MENU_ITEM) is TapLongPressMenuItem
-                    ) {
-                        val longPressMenuItem = intent.getParcelableExtra<TapLongPressMenuItem>(LONG_PRESS_MENU_ITEM)
-                        val longPressedMessage = intent.getParcelableExtra<TAPMessageModel>(MESSAGE)
-                        handleLongPressMenuSelected(longPressedMessage, longPressMenuItem!!)
-                    }
                 }
             }
         }

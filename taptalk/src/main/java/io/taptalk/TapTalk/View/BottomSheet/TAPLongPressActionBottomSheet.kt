@@ -13,7 +13,6 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.*
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Interface.TapLongPressInterface
-import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.TAPMessageModel
@@ -42,13 +41,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     private var linkifyResult = ""
     private var bitmap: Bitmap? = null
     private val onClickListener = View.OnClickListener { dismiss() }
-    private var bottomSheetListener: TAPAttachmentListener? = null
+    private var bottomSheetListener: TapLongPressInterface? = null
     private var starredMessageIds: ArrayList<String> = arrayListOf()
     private var pinnedMessageIds: ArrayList<String> = arrayListOf()
 
     constructor() : super()
 
-    constructor(instanceKey: String, longPressType: LongPressType, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
+    constructor(instanceKey: String, longPressType: LongPressType, urlMessage: String, linkifyResult: String, bottomSheetListener: TapLongPressInterface) {
         this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.urlMessage = urlMessage
@@ -56,7 +55,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.linkifyResult = linkifyResult
     }
 
-    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
+    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, urlMessage: String, linkifyResult: String, bottomSheetListener: TapLongPressInterface) {
         this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.message = message
@@ -65,7 +64,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.linkifyResult = linkifyResult
     }
 
-    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener, starredMessageIds: ArrayList<String>, pinnedMessageIds: ArrayList<String>) {
+    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TapLongPressInterface, starredMessageIds: ArrayList<String>, pinnedMessageIds: ArrayList<String>) {
         this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.message = message
@@ -74,14 +73,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.pinnedMessageIds = pinnedMessageIds
     }
 
-    constructor(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TAPAttachmentListener) {
+    constructor(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TapLongPressInterface) {
         this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.bottomSheetListener = bottomSheetListener
         this.bitmap = bitmap
     }
 
-    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener) {
+    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TapLongPressInterface) {
         this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.message = message
@@ -89,8 +88,11 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     }
 
     companion object {
+
+        var listeners: ArrayList<TapLongPressInterface> = ArrayList()
+
         // Chat Bubble
-        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener, starredMessageIds: ArrayList<String>, pinnedMessageIds: ArrayList<String>): TAPLongPressActionBottomSheet {
+        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TapLongPressInterface, starredMessageIds: ArrayList<String>, pinnedMessageIds: ArrayList<String>): TAPLongPressActionBottomSheet {
             val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, message, bottomSheetListener, starredMessageIds, pinnedMessageIds)
             val args = Bundle()
             fragment.arguments = args
@@ -98,7 +100,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // Span (email, phone, url)
-        fun newInstance(instanceKey: String, longPressType: LongPressType, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+        fun newInstance(instanceKey: String, longPressType: LongPressType, url: String, linkifyResult: String, bottomSheetListener: TapLongPressInterface): TAPLongPressActionBottomSheet {
             val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, url, linkifyResult, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
@@ -106,7 +108,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // Mention
-        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, url: String, linkifyResult: String, bottomSheetListener: TapLongPressInterface): TAPLongPressActionBottomSheet {
             val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, message, url, linkifyResult, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
@@ -114,7 +116,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // Save Profile Picture
-        fun newInstance(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+        fun newInstance(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TapLongPressInterface): TAPLongPressActionBottomSheet {
             val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, bitmap, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
@@ -122,14 +124,12 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // Shared Media
-        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TapLongPressInterface): TAPLongPressActionBottomSheet {
             val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, message, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
             return fragment
         }
-
-        private const val TWO_DAYS_IN_MILLIS : Long = 172800000
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -139,6 +139,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        bottomSheetListener?.let { listeners.add(it) }
 
         // ENABLE LINK LONG PRESS
 //        if (null == message && longPressType != LongPressType.IMAGE_TYPE && longPressType != LongPressType.LINK_TYPE) {
@@ -310,6 +312,12 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         rv_long_press.adapter = longPressAdapter
         rv_long_press.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rv_long_press.setHasFixedSize(true)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        bottomSheetListener?.let { listeners.remove(it) }
     }
 
     override fun show(manager: FragmentManager, tag: String?) {

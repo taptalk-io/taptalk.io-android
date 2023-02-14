@@ -32,6 +32,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.*
+import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapSharedMediaInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
@@ -89,8 +90,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             DownloadBroadcastEvent.DownloadFailed,
             DownloadBroadcastEvent.DownloadFile,
             DownloadBroadcastEvent.OpenFile,
-            DownloadBroadcastEvent.CancelDownload,
-            LongPressBroadcastEvent.LongPressMenuSelected
+            DownloadBroadcastEvent.CancelDownload
         )
         sharedMediaAdapter = TapSharedMediaAdapter(instanceKey, vm.sharedMediaAdapterItems, glide, sharedMediaAdapterListener)
         sharedMediaGlm = object : GridLayoutManager(context, 3) {
@@ -240,15 +240,15 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         }
     }
 
-    private val longPressListener = object : TAPAttachmentListener(instanceKey) {
-        override fun onViewInChat(message: TAPMessageModel?) {
-            super.onViewInChat(message)
-            val intent = Intent()
-            intent.putExtra(MESSAGE, message)
-            activity?.setResult(RESULT_OK, intent)
-            activity?.finish()
+    private val longPressListener =
+        TapLongPressInterface { longPressMenuItem, messageModel ->
+            if (longPressMenuItem?.id == VIEW_IN_CHAT) {
+                val intent = Intent()
+                intent.putExtra(MESSAGE, messageModel)
+                activity?.setResult(RESULT_OK, intent)
+                activity?.finish()
+            }
         }
-    }
 
     private val sharedMediaListener: TAPDatabaseListener<TAPMessageEntity> =
         object : TAPDatabaseListener<TAPMessageEntity>() {
@@ -482,20 +482,6 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         }
                     } else {
                         showDownloadFileDialog()
-                    }
-                }
-
-                LongPressBroadcastEvent.LongPressMenuSelected -> {
-                    if (null != intent.getParcelableExtra(LONG_PRESS_MENU_ITEM) &&
-                        intent.getParcelableExtra<Parcelable>(LONG_PRESS_MENU_ITEM) is TapLongPressMenuItem &&
-                        null != intent.getParcelableExtra(MESSAGE) &&
-                        intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
-                    ) {
-                        val longPressMenuItem = intent.getParcelableExtra<TapLongPressMenuItem>(LONG_PRESS_MENU_ITEM)
-                        if (longPressMenuItem?.id == VIEW_IN_CHAT) {
-                            val message = intent.getParcelableExtra<TAPMessageModel>(MESSAGE)
-                            longPressListener.onViewInChat(message!!)
-                        }
                     }
                 }
             }

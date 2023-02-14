@@ -386,7 +386,6 @@ public class TAPDefaultConstant {
 
     public static final class LongPressBroadcastEvent {
         public static final String LongPressChatBubble = "kTAPLongPressChatBubble";
-        public static final String LongPressMenuSelected = "kTAPLongPressMenuSelected";
         public static final String LongPressLink = "kTAPLongPressLink";
         public static final String LongPressEmail = "kTAPLongPressEmail";
         public static final String LongPressPhone = "kTAPLongPressPhone";
@@ -549,6 +548,8 @@ public class TAPDefaultConstant {
 
     public static final long TYPING_EMIT_DELAY = 7000L;
     public static final long TYPING_INDICATOR_TIMEOUT = 10000L;
+
+    public static final long TWO_DAYS_IN_MILLIS = 172800000L;
 
     public static final String SCAN_RESULT = "kTAPScanResult";
     public static final String ADDED_CONTACT = "kTAPAddedContact";

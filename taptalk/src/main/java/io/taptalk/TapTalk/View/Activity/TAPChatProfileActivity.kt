@@ -37,6 +37,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.LONG_PRESS_MENU_ITEM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SAVE
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.*
+import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
@@ -78,8 +79,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             downloadProgressReceiver,
             DownloadBroadcastEvent.DownloadProgressLoading,
             DownloadBroadcastEvent.DownloadFinish,
-            DownloadBroadcastEvent.DownloadFailed,
-            LongPressBroadcastEvent.LongPressMenuSelected
+            DownloadBroadcastEvent.DownloadFailed
         )
     }
 
@@ -1382,12 +1382,24 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     }
 
-    private val profilePictureBottomSheetListener = object: TAPAttachmentListener(instanceKey) {
-        override fun onSaveProfilePicture(bitmap: Bitmap) {
-            super.onSaveProfilePicture(bitmap)
-            saveImage(vm!!.groupDataFromManager.imageURL?.fullsize, bitmap)
+    private val profilePictureBottomSheetListener = TapLongPressInterface { longPressMenuItem, _ ->
+        if (longPressMenuItem?.id == SAVE) {
+            if (longPressMenuItem.userInfo != null &&
+                longPressMenuItem.userInfo[DATA] != null &&
+                longPressMenuItem.userInfo[DATA] is Bitmap
+            ) {
+                val bitmap = longPressMenuItem.userInfo[DATA] as Bitmap
+                saveImage(vm!!.groupDataFromManager.imageURL?.fullsize, bitmap)
+            }
         }
     }
+
+//    private val profilePictureBottomSheetListener = object: TAPAttachmentListener(instanceKey) {
+//        override fun onSaveProfilePicture(bitmap: Bitmap) {
+//            super.onSaveProfilePicture(bitmap)
+//            saveImage(vm!!.groupDataFromManager.imageURL?.fullsize, bitmap)
+//        }
+//    }
 
     private val saveImageListener: TapTalkActionInterface = object : TapTalkActionInterface {
         override fun onSuccess(message: String) {
@@ -1773,22 +1785,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             notifyItemChanged(
                                 vm!!.getSharedMedia(localID)
                             )
-                        }
-                    }
-                }
-                LongPressBroadcastEvent.LongPressMenuSelected -> {
-                    if (null != intent.getParcelableExtra(LONG_PRESS_MENU_ITEM) &&
-                        intent.getParcelableExtra<Parcelable>(LONG_PRESS_MENU_ITEM) is TapLongPressMenuItem
-                    ) {
-                        val longPressMenuItem = intent.getParcelableExtra<TapLongPressMenuItem>(LONG_PRESS_MENU_ITEM)
-                        if (longPressMenuItem?.id == SAVE) {
-                            if (longPressMenuItem.userInfo != null &&
-                                longPressMenuItem.userInfo[DATA] != null &&
-                                longPressMenuItem.userInfo[DATA] is Bitmap
-                            ) {
-                                val bitmap = longPressMenuItem.userInfo[DATA] as Bitmap
-                                profilePictureBottomSheetListener.onSaveProfilePicture(bitmap)
-                            }
                         }
                     }
                 }

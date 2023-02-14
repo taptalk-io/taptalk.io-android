@@ -17,6 +17,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Interface.TapLongPressInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
@@ -46,6 +47,7 @@ import io.taptalk.TapTalk.View.Activity.TapPinnedMessagesActivity;
 import io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
@@ -56,7 +58,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.LONG_PRESS_MENU_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMenuSelected;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.COPY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.DELETE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.EDIT;
@@ -83,6 +84,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TWO_DAYS_IN_MILLIS;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TapUI {
@@ -1513,7 +1515,7 @@ public class TapUI {
             messageModel.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) &&
             (null == messageModel.getIsSending() || !messageModel.getIsSending()) &&
             (messageModel.getForwardFrom() == null || messageModel.getForwardFrom().getLocalID().isEmpty()) &&
-            System.currentTimeMillis() - messageModel.getCreated() < 172800000 // Two days
+            System.currentTimeMillis() - messageModel.getCreated() < TWO_DAYS_IN_MILLIS
         ) {
             // Edit
             longPressMenuItems.add(new TapLongPressMenuItem(
@@ -1946,11 +1948,13 @@ public class TapUI {
             }
         }
         else {
-            Log.e(">>>>>>>", "triggerLongPressMenuItemSelected: " + longPressMenuItem.getId());
-            Intent intent = new Intent(LongPressMenuSelected);
-            intent.putExtra(LONG_PRESS_MENU_ITEM, longPressMenuItem);
-            intent.putExtra(MESSAGE, message);
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            Log.e(">>>>>>>", "triggerLongPressMenuItemSelected: " + TAPUtils.toJsonString(longPressMenuItem));
+            ArrayList<TapLongPressInterface> defaultListeners = TAPLongPressActionBottomSheet.Companion.getListeners();
+            if (!defaultListeners.isEmpty()) {
+                for (TapLongPressInterface listener : defaultListeners) {
+                    listener.onLongPressMenuItemSelected(longPressMenuItem, message);
+                }
+            }
         }
     }
 }
