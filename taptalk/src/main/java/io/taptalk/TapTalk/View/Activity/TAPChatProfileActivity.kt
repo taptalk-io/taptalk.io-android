@@ -12,7 +12,6 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
-import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnScrollChangedListener
@@ -33,7 +32,6 @@ import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.LONG_PRESS_MENU_ITEM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SAVE
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.*
@@ -1393,13 +1391,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
     }
-
-//    private val profilePictureBottomSheetListener = object: TAPAttachmentListener(instanceKey) {
-//        override fun onSaveProfilePicture(bitmap: Bitmap) {
-//            super.onSaveProfilePicture(bitmap)
-//            saveImage(vm!!.groupDataFromManager.imageURL?.fullsize, bitmap)
-//        }
-//    }
 
     private val saveImageListener: TapTalkActionInterface = object : TapTalkActionInterface {
         override fun onSuccess(message: String) {

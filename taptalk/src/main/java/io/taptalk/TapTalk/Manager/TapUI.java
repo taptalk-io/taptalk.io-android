@@ -1,55 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.app.Activity;
-import android.content.Context;
-import android.util.Log;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
-import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Interface.TapLongPressInterface;
-import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
-import io.taptalk.TapTalk.Listener.TapUIChatProfileListener;
-import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
-import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
-import io.taptalk.TapTalk.Listener.TapUIChatRoomCustomNavigationBarListener;
-import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
-import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
-import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPImageURL;
-import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPProductModel;
-import io.taptalk.TapTalk.Model.TAPRoomListModel;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
-import io.taptalk.TapTalk.R;
-import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
-import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
-import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
-import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
-import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
-import io.taptalk.TapTalk.View.Activity.TapPinnedMessagesActivity;
-import io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity;
-import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
-import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
-import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
-import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
-import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
-import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
-
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
@@ -90,6 +40,55 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TWO_DAYS_IN_MILLIS;
+
+import android.app.Activity;
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
+import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Interface.TapLongPressInterface;
+import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
+import io.taptalk.TapTalk.Listener.TapUIChatProfileListener;
+import io.taptalk.TapTalk.Listener.TapUIChatRoomCustomNavigationBarListener;
+import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
+import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
+import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
+import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
+import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
+import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
+import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
+import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
+import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapPinnedMessagesActivity;
+import io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
+import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
+import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
+import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
 
 public class TapUI {
 
@@ -2189,7 +2188,6 @@ public class TapUI {
             }
         }
         else {
-            Log.e(">>>>>>>", "triggerLongPressMenuItemSelected: " + TAPUtils.toJsonString(longPressMenuItem));
             ArrayList<TapLongPressInterface> defaultListeners = TAPLongPressActionBottomSheet.Companion.getListeners();
             if (!defaultListeners.isEmpty()) {
                 for (TapLongPressInterface listener : defaultListeners) {

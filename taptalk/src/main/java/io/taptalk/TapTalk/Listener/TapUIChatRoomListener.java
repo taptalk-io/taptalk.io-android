@@ -4,7 +4,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;

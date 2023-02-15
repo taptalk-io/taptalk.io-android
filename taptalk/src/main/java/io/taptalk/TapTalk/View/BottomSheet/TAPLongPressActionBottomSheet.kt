@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.BottomSheet
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +9,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.*
-import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SAVE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.VIEW_IN_CHAT
 import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Manager.TAPChatManager
-import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TapLongPressMenuItem
 import io.taptalk.TapTalk.R
@@ -206,7 +204,6 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
             LongPressType.PHONE_TYPE -> {
                 val menus = TAPChatManager.getInstance(instanceKey).getPhoneLongPressMenuItems(context, message, urlMessage)
-                Log.e(">>>>>>>>>>>>>>>>", "onViewCreated PHONE_TYPE: ${TAPUtils.toJsonString(menus)}")
                 if (menus.isNullOrEmpty()) {
                     dismiss()
                     return
@@ -295,7 +292,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             longPressMenus.add(TapLongPressMenuItem(
                 SAVE,
                 getString(R.string.tap_save_image),
-                R.drawable.tap_ic_download_orange
+                R.drawable.tap_ic_download_orange,
+                info
             ))
         }
         return longPressMenus

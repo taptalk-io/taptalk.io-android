@@ -696,7 +696,6 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 return;
             }
             TAPGroupManager.Companion.getInstance(instanceKey).updateGroupDataFromResponse(response);
-            Log.e(">>>>>>>>>>>>", "addMemberView onSuccess: " + TAPUtils.toJsonString(response));
 
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(response.getParticipants()));
