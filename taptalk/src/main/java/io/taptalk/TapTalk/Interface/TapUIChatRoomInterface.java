@@ -29,8 +29,6 @@ public interface TapUIChatRoomInterface {
 
     void onTapTalkUserMentionTapped(Activity activity, TAPMessageModel messageModel, TAPUserModel user, boolean isRoomParticipant);
 
-    void onMessageBubbleLongPressed(Activity activity, TAPMessageModel messageModel);
-
     List<TapLongPressMenuItem> setMessageLongPressMenuItems(Context context, TAPMessageModel messageModel);
 
     List<TapLongPressMenuItem> setScheduledMessageLongPressMenuItems(Context context, TAPMessageModel messageModel);

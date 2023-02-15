@@ -91,11 +91,6 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
     }
 
     @Override
-    public void onMessageBubbleLongPressed(Activity activity, TAPMessageModel messageModel) {
-        setMessageLongPressMenuItems(activity, messageModel);
-    }
-
-    @Override
     public List<TapLongPressMenuItem> setMessageLongPressMenuItems(Context context, TAPMessageModel messageModel) {
         return TapUI.getInstance(instanceKey).getDefaultMessageLongPressMenuItems(context, messageModel);
     }

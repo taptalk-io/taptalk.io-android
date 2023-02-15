@@ -2129,61 +2129,55 @@ public class TapUI {
     }
 
     List<TapLongPressMenuItem> getMessageLongPressMenuItems(Context context, TAPMessageModel message) {
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-            List<TapLongPressMenuItem> items = listener.setMessageLongPressMenuItems(context, message);
-            if (null != items && !items.isEmpty()) {
-                return items;
+        if (!getChatRoomListeners().isEmpty()) {
+            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+                return listener.setMessageLongPressMenuItems(context, message);
             }
         }
         return getDefaultMessageLongPressMenuItems(context, message);
     }
 
     List<TapLongPressMenuItem> getScheduledMessageLongPressMenuItems(Context context, TAPMessageModel message) {
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-            List<TapLongPressMenuItem> items = listener.setScheduledMessageLongPressMenuItems(context, message);
-            if (null != items && !items.isEmpty()) {
-                return items;
+        if (!getChatRoomListeners().isEmpty()) {
+            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+                return listener.setScheduledMessageLongPressMenuItems(context, message);
             }
         }
         return getDefaultScheduledMessageLongPressMenuItems(context);
     }
 
     List<TapLongPressMenuItem> getLinkLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String url) {
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-            List<TapLongPressMenuItem> items = listener.setLinkLongPressMenuItems(context, message, url);
-            if (null != items && !items.isEmpty()) {
-                return items;
+        if (!getChatRoomListeners().isEmpty()) {
+            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+                return listener.setLinkLongPressMenuItems(context, message, url);
             }
         }
         return getDefaultLinkLongPressMenuItems(context, url);
     }
 
     List<TapLongPressMenuItem> getEmailLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String emailAddress) {
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-            List<TapLongPressMenuItem> items = listener.setEmailLongPressMenuItems(context, message, emailAddress);
-            if (null != items && !items.isEmpty()) {
-                return items;
+        if (!getChatRoomListeners().isEmpty()) {
+            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+                return listener.setEmailLongPressMenuItems(context, message, emailAddress);
             }
         }
         return getDefaultEmailLongPressMenuItems(context, emailAddress);
     }
 
     List<TapLongPressMenuItem> getPhoneLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String phoneNumber) {
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-            List<TapLongPressMenuItem> items = listener.setPhoneLongPressMenuItems(context, message, phoneNumber);
-            if (null != items && !items.isEmpty()) {
-                return items;
+        if (!getChatRoomListeners().isEmpty()) {
+            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+                return listener.setPhoneLongPressMenuItems(context, message, phoneNumber);
             }
         }
         return getDefaultPhoneLongPressMenuItems(context, phoneNumber);
     }
 
     List<TapLongPressMenuItem> getMentionLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String username) {
+        if (!getChatRoomListeners().isEmpty()) {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-            List<TapLongPressMenuItem> items = listener.setMentionLongPressMenuItems(context, message, username);
-            if (null != items && !items.isEmpty()) {
-                return items;
-            }
+            return listener.setMentionLongPressMenuItems(context, message, username);
+        }
         }
         return getDefaultMentionLongPressMenuItems(context, username);
     }

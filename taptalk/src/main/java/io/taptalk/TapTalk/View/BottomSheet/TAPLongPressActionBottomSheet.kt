@@ -188,7 +188,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
             LongPressType.EMAIL_TYPE -> {
                 val menus = TAPChatManager.getInstance(instanceKey).getEmailLongPressMenuItems(context, message, linkifyResult.replace("mailto:", ""))
-                if (menus.isEmpty()) {
+                if (menus.isNullOrEmpty()) {
                     dismiss()
                     return
                 } else {
@@ -197,7 +197,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
             LongPressType.LINK_TYPE -> {
                 val menus = TAPChatManager.getInstance(instanceKey).getLinkLongPressMenuItems(context, message, linkifyResult)
-                if (menus.isEmpty()) {
+                if (menus.isNullOrEmpty()) {
                     dismiss()
                     return
                 } else {
@@ -207,7 +207,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             LongPressType.PHONE_TYPE -> {
                 val menus = TAPChatManager.getInstance(instanceKey).getPhoneLongPressMenuItems(context, message, urlMessage)
                 Log.e(">>>>>>>>>>>>>>>>", "onViewCreated PHONE_TYPE: ${TAPUtils.toJsonString(menus)}")
-                if (menus.isEmpty()) {
+                if (menus.isNullOrEmpty()) {
                     dismiss()
                     return
                 } else {
@@ -225,7 +225,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
             LongPressType.IMAGE_TYPE -> {
                 val menus = createSaveImageLongPressMenu()
-                if (menus.isEmpty()) {
+                if (menus.isNullOrEmpty()) {
                     dismiss()
                     return
                 } else {
@@ -234,7 +234,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
             LongPressType.SHARED_MEDIA_TYPE -> {
                 val menus = createSharedMediaLongPressMenu()
-                if (menus.isEmpty()) {
+                if (menus.isNullOrEmpty()) {
                     dismiss()
                     return
                 } else {
@@ -243,7 +243,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
             LongPressType.SCHEDULED_TYPE -> {
                 val menus = TAPChatManager.getInstance(instanceKey).getScheduledMessageLongPressMenuItems(context, message)
-                if (menus.isEmpty()) {
+                if (menus.isNullOrEmpty()) {
                     dismiss()
                     return
                 } else {
