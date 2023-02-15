@@ -2,12 +2,10 @@ package io.taptalk.TapTalk.Manager;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,20 +54,27 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.LONG_PRESS_MENU_ITEM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.CALL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.COMPOSE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.COPY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.DELETE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.EDIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.OPEN_LINK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.PIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.REPORT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.RESCHEDULE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SAVE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SEND_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SEND_NOW;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.STAR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.UNPIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.UNSTAR;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.VIEW_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
@@ -85,7 +90,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TWO_DAYS_IN_MILLIS;
-import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TapUI {
 
@@ -1403,8 +1407,22 @@ public class TapUI {
     }
 
 
-    public List<TapLongPressMenuItem> getDefaultLongPressMenuItems(Context context, TAPMessageModel messageModel) {
+    public List<TapLongPressMenuItem> getDefaultMessageLongPressMenuItems(Context context, TAPMessageModel messageModel) {
         if (messageModel == null) {
+            // Message is null
+            return new ArrayList<>();
+        }
+        if (messageModel.getIsFailedSend() != null && messageModel.getIsFailedSend()) {
+            // Message failed to send
+            // TODO: ADD ITEMS FOR FAILED MESSAGE
+            return new ArrayList<>();
+        }
+        if (messageModel.getIsDeleted() != null && messageModel.getIsDeleted()) {
+            // Deleted message
+            return new ArrayList<>();
+        }
+        if (messageModel.getIsSending() != null && messageModel.getIsSending()) {
+            // Message is sending
             return new ArrayList<>();
         }
         LongPressMenuType longPressMenuType = getLongPressMenuForMessageType(messageModel.getType());
@@ -1421,8 +1439,8 @@ public class TapUI {
             longPressMenuItems.add(new TapLongPressMenuItem(
                 REPLY,
                 context.getString(R.string.tap_reply),
-                R.drawable.tap_ic_reply_orange)
-            );
+                R.drawable.tap_ic_reply_orange
+            ));
         }
 
         if (!isForwardMessageMenuDisabled()) {
@@ -1430,8 +1448,8 @@ public class TapUI {
             longPressMenuItems.add(new TapLongPressMenuItem(
                 FORWARD,
                 context.getString(R.string.tap_forward),
-                R.drawable.tap_ic_forward_orange)
-            );
+                R.drawable.tap_ic_forward_orange
+            ));
         }
 
         String caption = "";
@@ -1449,8 +1467,8 @@ public class TapUI {
             longPressMenuItems.add(new TapLongPressMenuItem(
                 COPY,
                 context.getString(R.string.tap_copy),
-                R.drawable.tap_ic_copy_orange)
-            );
+                R.drawable.tap_ic_copy_orange
+            ));
         }
 
         String fileID = "";
@@ -1471,8 +1489,8 @@ public class TapUI {
             longPressMenuItems.add(new TapLongPressMenuItem(
                 SAVE,
                 context.getString(R.string.tap_save_to_gallery),
-                R.drawable.tap_ic_download_orange)
-            );
+                R.drawable.tap_ic_download_orange
+            ));
         }
         if (!isSaveDocumentMenuDisabled() &&
             longPressMenuType == LongPressMenuType.TYPE_FILE_MESSAGE &&
@@ -1483,8 +1501,8 @@ public class TapUI {
             longPressMenuItems.add(new TapLongPressMenuItem(
                 SAVE,
                 context.getString(R.string.tap_save_to_downloads),
-                R.drawable.tap_ic_download_orange)
-            );
+                R.drawable.tap_ic_download_orange
+            ));
         }
 
         if (isStarMessageMenuEnabled()) {
@@ -1494,16 +1512,16 @@ public class TapUI {
                 longPressMenuItems.add(new TapLongPressMenuItem(
                     UNSTAR,
                     context.getString(R.string.tap_unstar),
-                    R.drawable.tap_ic_star_filled_primary)
-                );
+                    R.drawable.tap_ic_star_filled_primary
+                ));
             }
             else {
                 // Star
                 longPressMenuItems.add(new TapLongPressMenuItem(
                     STAR,
                     context.getString(R.string.tap_star),
-                    R.drawable.tap_ic_star_outline)
-                );
+                    R.drawable.tap_ic_star_outline
+                ));
             }
         }
 
@@ -1521,8 +1539,8 @@ public class TapUI {
             longPressMenuItems.add(new TapLongPressMenuItem(
                 EDIT,
                 context.getString(R.string.tap_edit),
-                R.drawable.tap_ic_edit_orange)
-            );
+                R.drawable.tap_ic_edit_orange
+            ));
         }
 
         if (isPinMessageMenuEnabled()) {
@@ -1532,16 +1550,16 @@ public class TapUI {
                 longPressMenuItems.add(new TapLongPressMenuItem(
                     UNPIN,
                     context.getString(R.string.tap_unpin),
-                    R.drawable.tap_ic_unpin_message_orange)
-                );
+                    R.drawable.tap_ic_unpin_message_orange
+                ));
             }
             else {
                 // Pin
                 longPressMenuItems.add(new TapLongPressMenuItem(
                     PIN,
                     context.getString(R.string.tap_pin),
-                    R.drawable.tap_ic_pin_message_orange)
-                );
+                    R.drawable.tap_ic_pin_message_orange
+                ));
             }
         }
 
@@ -1555,8 +1573,8 @@ public class TapUI {
             longPressMenuItems.add(new TapLongPressMenuItem(
                 INFO,
                 context.getString(R.string.tap_message_info),
-                R.drawable.tap_ic_info_outline_primary)
-            );
+                R.drawable.tap_ic_info_outline_primary
+            ));
         }
 
         if (!isDeleteMessageMenuDisabled &&
@@ -1568,8 +1586,8 @@ public class TapUI {
             longPressMenuItems.add(new TapLongPressMenuItem(
                 DELETE,
                 context.getString(R.string.tap_delete_message),
-                R.drawable.tap_ic_delete_red)
-            );
+                R.drawable.tap_ic_delete_red
+            ));
         }
 
         if (isReportMessageMenuEnabled &&
@@ -1580,9 +1598,188 @@ public class TapUI {
             longPressMenuItems.add(new TapLongPressMenuItem(
                 REPORT,
                 context.getString(R.string.tap_report),
-                R.drawable.tap_ic_warning_triangle_red)
-            );
+                R.drawable.tap_ic_warning_triangle_red
+            ));
         }
+
+        return longPressMenuItems;
+    }
+
+    public List<TapLongPressMenuItem> getDefaultLinkLongPressMenuItems(Context context, String url) {
+        ArrayList<TapLongPressMenuItem> longPressMenuItems = new ArrayList<>();
+        HashMap<String, Object> info = new HashMap<>();
+        info.put(DATA, url);
+
+        if (!TapUI.getInstance(instanceKey).isOpenLinkMenuDisabled) {
+            // Open link
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                OPEN_LINK,
+                context.getString(R.string.tap_open),
+                R.drawable.tap_ic_open_link_orange,
+                info
+            ));
+        }
+
+        if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
+            // Copy
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                COPY,
+                context.getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange,
+                info
+            ));
+        }
+
+        return longPressMenuItems;
+    }
+
+    public List<TapLongPressMenuItem> getDefaultEmailLongPressMenuItems(Context context, String emailAddress) {
+        ArrayList<TapLongPressMenuItem> longPressMenuItems = new ArrayList<>();
+
+        if (!isComposeEmailMenuDisabled) {
+            // Compose email
+            HashMap<String, Object> info = new HashMap<>();
+            info.put(DATA, "mailto:" + emailAddress);
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                COMPOSE,
+                context.getString(R.string.tap_compose),
+                R.drawable.tap_ic_mail_orange,
+                info
+            ));
+        }
+
+        if (!isCopyMessageMenuDisabled) {
+            // Copy
+            HashMap<String, Object> info = new HashMap<>();
+            info.put(DATA, emailAddress);
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                COPY,
+                context.getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange,
+                info
+            ));
+        }
+
+        return longPressMenuItems;
+    }
+
+    public List<TapLongPressMenuItem> getDefaultPhoneLongPressMenuItems(Context context, String phoneNumber) {
+        ArrayList<TapLongPressMenuItem> longPressMenuItems = new ArrayList<>();
+        HashMap<String, Object> info = new HashMap<>();
+        info.put(DATA, phoneNumber);
+
+        if (!isDialNumberMenuDisabled) {
+            // Dial number
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                CALL,
+                context.getString(R.string.tap_call),
+                R.drawable.tap_ic_call_orange,
+                info
+            ));
+        }
+
+        if (!isSendSMSMenuDisabled) {
+            // Send SMS
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                SMS,
+                context.getString(R.string.tap_send_sms),
+                R.drawable.tap_ic_sms_orange,
+                info
+            ));
+        }
+
+        if (!isCopyMessageMenuDisabled) {
+            // Copy
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                COPY,
+                context.getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange,
+                info
+            ));
+        }
+
+        return longPressMenuItems;
+    }
+
+    public List<TapLongPressMenuItem> getDefaultMentionLongPressMenuItems(Context context, String username) {
+        ArrayList<TapLongPressMenuItem> longPressMenuItems = new ArrayList<>();
+        HashMap<String, Object> info = new HashMap<>();
+        info.put(DATA, username);
+
+        if (!TapUI.getInstance(instanceKey).isViewProfileMenuDisabled &&
+            TAPChatManager.getInstance(instanceKey).getActiveUser() != null &&
+            TAPChatManager.getInstance(instanceKey).getActiveUser().getUsername() != null &&
+            !TAPChatManager.getInstance(instanceKey).getActiveUser().getUsername().equals(username)
+        ) {
+            // View profile
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                VIEW_PROFILE,
+                context.getString(R.string.tap_view_profile),
+                R.drawable.tap_ic_contact_orange,
+                info
+            ));
+        }
+
+        if (!TapUI.getInstance(instanceKey).isSendMessageMenuDisabled &&
+            TAPChatManager.getInstance(instanceKey).getActiveUser() != null &&
+            TAPChatManager.getInstance(instanceKey).getActiveUser().getUsername() != null &&
+            !TAPChatManager.getInstance(instanceKey).getActiveUser().getUsername().equals(username)
+        ) {
+            // Send message
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                SEND_MESSAGE,
+                context.getString(R.string.tap_send_message),
+                R.drawable.tap_ic_sms_orange,
+                info
+            ));
+        }
+
+        if (!isCopyMessageMenuDisabled) {
+            // Copy
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                COPY,
+                context.getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange,
+                info
+            ));
+        }
+
+        return longPressMenuItems;
+    }
+
+    public List<TapLongPressMenuItem> getDefaultScheduledMessageLongPressMenuItems(Context context) {
+        ArrayList<TapLongPressMenuItem> longPressMenuItems = new ArrayList<>();
+
+        // Send Now
+        longPressMenuItems.add(new TapLongPressMenuItem(
+            SEND_NOW,
+            context.getString(R.string.tap_send_now),
+            R.drawable.tap_ic_circle_arrow_up_primary
+        ));
+        // Reschedule
+        longPressMenuItems.add(new TapLongPressMenuItem(
+            RESCHEDULE,
+            context.getString(R.string.tap_reschedule),
+            R.drawable.tap_ic_clock_grey
+        ));
+        // Copy
+        longPressMenuItems.add(new TapLongPressMenuItem(
+            COPY,
+            context.getString(R.string.tap_copy),
+            R.drawable.tap_ic_copy_orange
+        ));
+        // Edit
+        longPressMenuItems.add(new TapLongPressMenuItem(
+            EDIT,
+            context.getString(R.string.tap_edit),
+            R.drawable.tap_ic_edit_orange
+        ));
+        // Delete
+        longPressMenuItems.add(new TapLongPressMenuItem(
+            DELETE,
+            context.getString(R.string.tap_delete),
+            R.drawable.tap_ic_delete_red
+        ));
 
         return longPressMenuItems;
     }
@@ -1933,12 +2130,62 @@ public class TapUI {
 
     List<TapLongPressMenuItem> getMessageLongPressMenuItems(Context context, TAPMessageModel message) {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-            List<TapLongPressMenuItem> items = listener.setLongPressMenuItems(context, message);
+            List<TapLongPressMenuItem> items = listener.setMessageLongPressMenuItems(context, message);
             if (null != items && !items.isEmpty()) {
                 return items;
             }
         }
-        return getDefaultLongPressMenuItems(context, message);
+        return getDefaultMessageLongPressMenuItems(context, message);
+    }
+
+    List<TapLongPressMenuItem> getScheduledMessageLongPressMenuItems(Context context, TAPMessageModel message) {
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            List<TapLongPressMenuItem> items = listener.setScheduledMessageLongPressMenuItems(context, message);
+            if (null != items && !items.isEmpty()) {
+                return items;
+            }
+        }
+        return getDefaultScheduledMessageLongPressMenuItems(context);
+    }
+
+    List<TapLongPressMenuItem> getLinkLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String url) {
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            List<TapLongPressMenuItem> items = listener.setLinkLongPressMenuItems(context, message, url);
+            if (null != items && !items.isEmpty()) {
+                return items;
+            }
+        }
+        return getDefaultLinkLongPressMenuItems(context, url);
+    }
+
+    List<TapLongPressMenuItem> getEmailLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String emailAddress) {
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            List<TapLongPressMenuItem> items = listener.setEmailLongPressMenuItems(context, message, emailAddress);
+            if (null != items && !items.isEmpty()) {
+                return items;
+            }
+        }
+        return getDefaultEmailLongPressMenuItems(context, emailAddress);
+    }
+
+    List<TapLongPressMenuItem> getPhoneLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String phoneNumber) {
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            List<TapLongPressMenuItem> items = listener.setPhoneLongPressMenuItems(context, message, phoneNumber);
+            if (null != items && !items.isEmpty()) {
+                return items;
+            }
+        }
+        return getDefaultPhoneLongPressMenuItems(context, phoneNumber);
+    }
+
+    List<TapLongPressMenuItem> getMentionLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String username) {
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            List<TapLongPressMenuItem> items = listener.setMentionLongPressMenuItems(context, message, username);
+            if (null != items && !items.isEmpty()) {
+                return items;
+            }
+        }
+        return getDefaultMentionLongPressMenuItems(context, username);
     }
 
     void triggerLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, @Nullable TAPMessageModel message) {

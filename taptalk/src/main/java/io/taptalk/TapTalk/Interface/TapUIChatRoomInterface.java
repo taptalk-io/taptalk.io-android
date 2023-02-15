@@ -31,7 +31,17 @@ public interface TapUIChatRoomInterface {
 
     void onMessageBubbleLongPressed(Activity activity, TAPMessageModel messageModel);
 
-    List<TapLongPressMenuItem> setLongPressMenuItems(Context context, TAPMessageModel messageModel);
+    List<TapLongPressMenuItem> setMessageLongPressMenuItems(Context context, TAPMessageModel messageModel);
+
+    List<TapLongPressMenuItem> setScheduledMessageLongPressMenuItems(Context context, TAPMessageModel messageModel);
+
+    List<TapLongPressMenuItem> setLinkLongPressMenuItems(Context context, TAPMessageModel messageModel, String url);
+
+    List<TapLongPressMenuItem> setEmailLongPressMenuItems(Context context, TAPMessageModel messageModel, String emailAddress);
+
+    List<TapLongPressMenuItem> setPhoneLongPressMenuItems(Context context, TAPMessageModel messageModel, String phoneNumber);
+
+    List<TapLongPressMenuItem> setMentionLongPressMenuItems(Context context, TAPMessageModel messageModel, String mentionSpan);
 
     void onLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, @Nullable TAPMessageModel messageModel);
 

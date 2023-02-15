@@ -5079,41 +5079,82 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LongPressChatBubble:
-                    //disable long press in deleted user room
-                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
-                            TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), longPressListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
-                            chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
-                            TAPUtils.dismissKeyboard(TapUIChatActivity.this);
-                        }
+                    if (null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel &&
+                        (TYPE_PERSONAL != vm.getRoom().getType() ||
+                        (null != vm.getOtherUserModel() &&
+                        (null == vm.getOtherUserModel().getDeleted() ||
+                        vm.getOtherUserModel().getDeleted() <= 0L)))
+                    ) {
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), longPressListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
+                        chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
                 case LongPressLink:
                     if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
-                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, LINK_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), longPressListener);
+                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
+                            instanceKey,
+                            LINK_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE),
+                            intent.getStringExtra(URL_MESSAGE),
+                            longPressListener
+                        );
                         linkBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
                 case LongPressEmail:
-                    Log.e(">>>>>>>>>>>>", "onReceive LongPressEmail: " + intent.getStringExtra(URL_MESSAGE));
-                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
-                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, EMAIL_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), longPressListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE) &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel
+                    ) {
+                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
+                            instanceKey,
+                            EMAIL_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE),
+                            intent.getStringExtra(URL_MESSAGE),
+                            longPressListener
+                        );
                         emailBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
                 case LongPressPhone:
-                    Log.e(">>>>>>>>>>>>", "onReceive LongPressPhone: " + intent.getStringExtra(URL_MESSAGE));
-                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
-                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), longPressListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE) &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel
+                    ) {
+                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
+                            instanceKey,
+                            PHONE_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE),
+                            intent.getStringExtra(URL_MESSAGE),
+                            longPressListener
+                        );
                         phoneBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
                 case LongPressMention:
-                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE) && null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, MENTION_TYPE, intent.getParcelableExtra(MESSAGE), intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), longPressListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE) &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel
+                    ) {
+                        TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
+                            instanceKey,
+                            MENTION_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE),
+                            intent.getStringExtra(URL_MESSAGE),
+                            longPressListener
+                        );
                         mentionBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }

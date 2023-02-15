@@ -2660,10 +2660,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         showDownloadFileDialog()
                     }
                 }
-                LongPressBroadcastEvent.LongPressChatBubble ->
-                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra<Parcelable>(
-                            MESSAGE
-                        ) is TAPMessageModel) {
+                LongPressBroadcastEvent.LongPressChatBubble -> {
+                    if (null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
+                    ) {
                         val chatBubbleBottomSheet = newInstance(
                             instanceKey,
                             LongPressType.SCHEDULED_TYPE,
@@ -2673,60 +2673,72 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         chatBubbleBottomSheet.show(supportFragmentManager, "")
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
-                LongPressBroadcastEvent.LongPressLink -> if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(
-                        COPY_MESSAGE
-                    )
-                ) {
-                    val linkBottomSheet = newInstance(
-                        instanceKey, LongPressType.LINK_TYPE,
-                        intent.getStringExtra(COPY_MESSAGE)!!,
-                        intent.getStringExtra(URL_MESSAGE)!!,
-                        longPressListener
-                    )
-                    linkBottomSheet.show(supportFragmentManager, "")
-                    TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                 }
-                LongPressBroadcastEvent.LongPressEmail -> if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(
-                        COPY_MESSAGE
-                    )
-                ) {
-                    val emailBottomSheet = newInstance(
-                        instanceKey, LongPressType.EMAIL_TYPE,
-                        intent.getStringExtra(COPY_MESSAGE)!!,
-                        intent.getStringExtra(URL_MESSAGE)!!,
-                        longPressListener
-                    )
-                    emailBottomSheet.show(supportFragmentManager, "")
-                    TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
+                LongPressBroadcastEvent.LongPressLink -> {
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE)
+                    ) {
+                        val linkBottomSheet = newInstance(
+                            instanceKey, LongPressType.LINK_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE)!!,
+                            intent.getStringExtra(URL_MESSAGE)!!,
+                            longPressListener
+                        )
+                        linkBottomSheet.show(supportFragmentManager, "")
+                        TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
+                    }
                 }
-                LongPressBroadcastEvent.LongPressPhone -> if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(
-                        COPY_MESSAGE
-                    )
-                ) {
-                    val phoneBottomSheet = newInstance(
-                        instanceKey, LongPressType.PHONE_TYPE,
-                        intent.getStringExtra(COPY_MESSAGE)!!,
-                        intent.getStringExtra(URL_MESSAGE)!!,
-                        longPressListener
-                    )
-                    phoneBottomSheet.show(supportFragmentManager, "")
-                    TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
+                LongPressBroadcastEvent.LongPressEmail -> {
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE) &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
+                    ) {
+                        val emailBottomSheet = newInstance(
+                            instanceKey, LongPressType.EMAIL_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE)!!,
+                            intent.getStringExtra(URL_MESSAGE)!!,
+                            longPressListener
+                        )
+                        emailBottomSheet.show(supportFragmentManager, "")
+                        TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
+                    }
                 }
-                LongPressBroadcastEvent.LongPressMention -> if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(
-                        COPY_MESSAGE
-                    ) && null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra<Parcelable>(
-                        MESSAGE
-                    ) is TAPMessageModel
-                ) {
-                    val mentionBottomSheet = newInstance(
-                        instanceKey, LongPressType.MENTION_TYPE,
-                        intent.getParcelableExtra(MESSAGE)!!,
-                        intent.getStringExtra(COPY_MESSAGE)!!,
-                        intent.getStringExtra(URL_MESSAGE)!!,
-                        longPressListener
-                    )
-                    mentionBottomSheet.show(supportFragmentManager, "")
-                    TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
+                LongPressBroadcastEvent.LongPressPhone -> {
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE) &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
+                    ) {
+                        val phoneBottomSheet = newInstance(
+                            instanceKey, LongPressType.PHONE_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE)!!,
+                            intent.getStringExtra(URL_MESSAGE)!!,
+                            longPressListener
+                        )
+                        phoneBottomSheet.show(supportFragmentManager, "")
+                        TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
+                    }
+                }
+                LongPressBroadcastEvent.LongPressMention -> {
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE) &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
+                    ) {
+                        val mentionBottomSheet = newInstance(
+                            instanceKey, LongPressType.MENTION_TYPE,
+                            intent.getParcelableExtra(MESSAGE)!!,
+                            intent.getStringExtra(COPY_MESSAGE)!!,
+                            intent.getStringExtra(URL_MESSAGE)!!,
+                            longPressListener
+                        )
+                        mentionBottomSheet.show(supportFragmentManager, "")
+                        TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
+                    }
                 }
             }
         }

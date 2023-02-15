@@ -92,17 +92,41 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
 
     @Override
     public void onMessageBubbleLongPressed(Activity activity, TAPMessageModel messageModel) {
-        setLongPressMenuItems(activity, messageModel);
+        setMessageLongPressMenuItems(activity, messageModel);
     }
 
     @Override
-    public List<TapLongPressMenuItem> setLongPressMenuItems(Context context, TAPMessageModel messageModel) {
-        return TapUI.getInstance(instanceKey).getDefaultLongPressMenuItems(context, messageModel);
+    public List<TapLongPressMenuItem> setMessageLongPressMenuItems(Context context, TAPMessageModel messageModel) {
+        return TapUI.getInstance(instanceKey).getDefaultMessageLongPressMenuItems(context, messageModel);
+    }
+
+    @Override
+    public List<TapLongPressMenuItem> setScheduledMessageLongPressMenuItems(Context context, TAPMessageModel messageModel) {
+        return TapUI.getInstance(instanceKey).getDefaultScheduledMessageLongPressMenuItems(context);
+    }
+
+    @Override
+    public List<TapLongPressMenuItem> setLinkLongPressMenuItems(Context context, @Nullable TAPMessageModel messageModel, String url) {
+        return TapUI.getInstance(instanceKey).getDefaultLinkLongPressMenuItems(context, url);
+    }
+
+    @Override
+    public List<TapLongPressMenuItem> setEmailLongPressMenuItems(Context context, @Nullable TAPMessageModel messageModel, String emailAddress) {
+        return TapUI.getInstance(instanceKey).getDefaultEmailLongPressMenuItems(context, emailAddress);
+    }
+
+    @Override
+    public List<TapLongPressMenuItem> setPhoneLongPressMenuItems(Context context, @Nullable TAPMessageModel messageModel, String phoneNumber) {
+        return TapUI.getInstance(instanceKey).getDefaultPhoneLongPressMenuItems(context, phoneNumber);
+    }
+
+    @Override
+    public List<TapLongPressMenuItem> setMentionLongPressMenuItems(Context context, @Nullable TAPMessageModel messageModel, String mentionSpan) {
+        return TapUI.getInstance(instanceKey).getDefaultMentionLongPressMenuItems(context, mentionSpan);
     }
 
     @Override
     public void onLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, TAPMessageModel messageModel) {
-        Log.e(">>>>>>>", "onMessageLongPressMenuItemSelected: " + longPressMenuItem.getId());
         ArrayList<TapLongPressInterface> defaultListeners = TAPLongPressActionBottomSheet.Companion.getListeners();
         if (!defaultListeners.isEmpty()) {
             for (TapLongPressInterface listener : defaultListeners) {
