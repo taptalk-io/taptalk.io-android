@@ -16,10 +16,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_REFRESH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.LONG_PRESS_MENU_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -220,6 +222,7 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Helper.TapVerticalIndicator;
 import io.taptalk.TapTalk.Helper.audiorecorder.TapAudioManager;
 import io.taptalk.TapTalk.Interface.TapAudioListener;
+import io.taptalk.TapTalk.Interface.TapLongPressInterface;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
@@ -252,7 +255,6 @@ import io.taptalk.TapTalk.Manager.TapCoreContactManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -264,6 +266,7 @@ import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
@@ -557,7 +560,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 super.onSuccess(arrayList);
                 isStarredIdsLoaded = true;
                 vm.setStarredMessageIds(arrayList);
-                TAPDataManager.getInstance(instanceKey).saveStarredMessageIds(vm.getRoom().getRoomID(), arrayList);
                 messageAdapter.setStarredMessageIds(arrayList);
                 if (isPinnedIdsLoaded) {
                     messageAdapter.notifyDataSetChanged();
@@ -1563,7 +1565,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 LongPressEmail,
                 LongPressLink,
                 LongPressPhone,
-                LongPressMention);
+                LongPressMention
+        );
     }
 
     private void cancelNotificationWhenEnterRoom() {
@@ -2920,7 +2923,136 @@ public class TapUIChatActivity extends TAPBaseActivity {
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 
-    private TAPAttachmentListener attachmentListener = new TAPAttachmentListener(instanceKey) {
+    private void handleLongPressMenuSelected(@Nullable TAPMessageModel message, TapLongPressMenuItem longPressMenuItem) {
+        String data = "";
+        if (longPressMenuItem.getUserInfo() != null && longPressMenuItem.getUserInfo().get(DATA) != null) {
+            data = (String) longPressMenuItem.getUserInfo().get(DATA);
+        }
+        switch (longPressMenuItem.getId()) {
+            case TAPDefaultConstant.LongPressMenuID.REPLY:
+                if (message != null) {
+                    attachmentListener.onReplySelected(message);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.FORWARD:
+                if (message != null) {
+                    attachmentListener.onForwardSelected(message);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.COPY:
+                if (!data.isEmpty()) {
+                    attachmentListener.onCopySelected(data);
+                }
+                else if (message != null) {
+                    switch (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message.getType())) {
+                        case TYPE_IMAGE_MESSAGE:
+                        case TYPE_VIDEO_MESSAGE:
+                            // TODO: 4 March 2019 TEMPORARY CLIPBOARD FOR IMAGE & VIDEO
+                            if (null != message.getData() && message.getData().get(CAPTION) instanceof String) {
+                                attachmentListener.onCopySelected((String) message.getData().get(CAPTION));
+                            }
+                            break;
+                        case TYPE_LOCATION_MESSAGE:
+                            if (null != message.getData() && message.getData().get(ADDRESS) instanceof String) {
+                                attachmentListener.onCopySelected((String) message.getData().get(ADDRESS));
+                            }
+                            break;
+                        default:
+                            attachmentListener.onCopySelected(message.getBody());
+                            break;
+                    }
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.SAVE:
+                if (message != null) {
+                    switch (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message.getType())) {
+                        case TYPE_IMAGE_MESSAGE:
+                            attachmentListener.onSaveImageToGallery(message);
+                            break;
+                        case TYPE_VIDEO_MESSAGE:
+                            attachmentListener.onSaveVideoToGallery(message);
+                            break;
+                        default:
+                            attachmentListener.onSaveToDownloads(message);
+                            break;
+                    }
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.STAR:
+            case TAPDefaultConstant.LongPressMenuID.UNSTAR:
+                if (message != null) {
+                    attachmentListener.onMessageStarred(message);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.EDIT:
+                if (message != null) {
+                    attachmentListener.onEditMessage(message);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.PIN:
+            case TAPDefaultConstant.LongPressMenuID.UNPIN:
+                if (message != null) {
+                    attachmentListener.onMessagePinned(message);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.INFO:
+                if (message != null) {
+                    attachmentListener.onViewMessageInfo(message);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.DELETE:
+                if (message != null) {
+                    attachmentListener.onDeleteMessage(vm.getRoom().getRoomID(), message);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.REPORT:
+                if (message != null) {
+                    attachmentListener.onReportMessage(message);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.OPEN_LINK:
+                if (!data.isEmpty()) {
+                    attachmentListener.onOpenLinkSelected(data);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.COMPOSE:
+                if (!data.isEmpty()) {
+                    attachmentListener.onComposeSelected(data);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.CALL:
+                if (!data.isEmpty()) {
+                    attachmentListener.onPhoneCallSelected(data);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.SMS:
+                if (!data.isEmpty()) {
+                    attachmentListener.onPhoneSmsSelected(data);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.VIEW_PROFILE:
+                if (!data.isEmpty() && message != null) {
+                    attachmentListener.onViewProfileSelected(data, message);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.SEND_MESSAGE:
+                if (!data.isEmpty()) {
+                    attachmentListener.onSendMessageSelected(data);
+                }
+                break;
+            case TAPDefaultConstant.LongPressMenuID.RESCHEDULE:
+                if (message != null) {
+                    attachmentListener.onRescheduleMessage(message);
+                }
+                break;
+        }
+    }
+
+    private final TapLongPressInterface longPressListener = (longPressMenuItem, messageModel) -> {
+        handleLongPressMenuSelected(messageModel, longPressMenuItem);
+    };
+
+    private final TAPAttachmentListener attachmentListener = new TAPAttachmentListener(instanceKey) {
         @Override
         public void onCameraSelected() {
             if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == CONNECTED)
@@ -2988,7 +3120,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onPhoneSmsSelected(String phoneNumber) {
-            TAPUtils.composeSMS(TapUIChatActivity.this, phoneNumber);
+            if (!TAPUtils.composeSMS(TapUIChatActivity.this, phoneNumber)) {
+                Toast.makeText(TapUIChatActivity.this, R.string.error_unable_to_send_sms, Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
@@ -4944,39 +5078,82 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LongPressChatBubble:
-                    //disable long press in deleted user room
-                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
-                            TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
-                            chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
-                            TAPUtils.dismissKeyboard(TapUIChatActivity.this);
-                        }
+                    if (null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel &&
+                        (TYPE_PERSONAL != vm.getRoom().getType() ||
+                        (null != vm.getOtherUserModel() &&
+                        (null == vm.getOtherUserModel().getDeleted() ||
+                        vm.getOtherUserModel().getDeleted() <= 0L)))
+                    ) {
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), longPressListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
+                        chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
                 case LongPressLink:
                     if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
-                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, LINK_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
+                            instanceKey,
+                            LINK_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE),
+                            intent.getStringExtra(URL_MESSAGE),
+                            longPressListener
+                        );
                         linkBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
                 case LongPressEmail:
-                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
-                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, EMAIL_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE) &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel
+                    ) {
+                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
+                            instanceKey,
+                            EMAIL_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE),
+                            intent.getStringExtra(URL_MESSAGE),
+                            longPressListener
+                        );
                         emailBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
                 case LongPressPhone:
-                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
-                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE) &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel
+                    ) {
+                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
+                            instanceKey,
+                            PHONE_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE),
+                            intent.getStringExtra(URL_MESSAGE),
+                            longPressListener
+                        );
                         phoneBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
                 case LongPressMention:
-                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE) && null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, MENTION_TYPE, intent.getParcelableExtra(MESSAGE), intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE) &&
+                        null != intent.getParcelableExtra(MESSAGE) &&
+                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel
+                    ) {
+                        TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
+                            instanceKey,
+                            MENTION_TYPE,
+                            intent.getParcelableExtra(MESSAGE),
+                            intent.getStringExtra(COPY_MESSAGE),
+                            intent.getStringExtra(URL_MESSAGE),
+                            longPressListener
+                        );
                         mentionBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }

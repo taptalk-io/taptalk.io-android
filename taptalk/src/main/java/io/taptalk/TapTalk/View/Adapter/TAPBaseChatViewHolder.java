@@ -128,6 +128,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                     if (null != url && url.contains("mailto:")) {
                         // Email
                         Intent intent = new Intent(LongPressEmail);
+                        intent.putExtra(MESSAGE, message);
                         intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
@@ -135,6 +136,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                     } else if (null != url && url.contains("tel:")) {
                         // Phone Number
                         Intent intent = new Intent(LongPressPhone);
+                        intent.putExtra(MESSAGE, message);
                         intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
@@ -150,6 +152,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                     } else if (null != url) {
                         // Url
                         Intent intent = new Intent(LongPressLink);
+                        intent.putExtra(MESSAGE, message);
                         intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);

@@ -473,7 +473,10 @@ public class TAPFileUtils {
         return file;
     }
 
-    public static String getFileName(Context context, Uri uri) {
+    public static @Nullable String getFileName(Context context, Uri uri) {
+        if (context == null || uri == null) {
+            return null;
+        }
         String result = null;
         if ("content".equals(uri.getScheme())) {
             Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);

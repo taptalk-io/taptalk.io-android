@@ -31,8 +31,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SAVE
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.*
+import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
@@ -1377,10 +1380,15 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     }
 
-    private val profilePictureBottomSheetListener = object: TAPAttachmentListener(instanceKey) {
-        override fun onSaveProfilePicture(bitmap: Bitmap) {
-            super.onSaveProfilePicture(bitmap)
-            saveImage(vm!!.groupDataFromManager.imageURL?.fullsize, bitmap)
+    private val profilePictureBottomSheetListener = TapLongPressInterface { longPressMenuItem, _ ->
+        if (longPressMenuItem?.id == SAVE) {
+            if (longPressMenuItem.userInfo != null &&
+                longPressMenuItem.userInfo[DATA] != null &&
+                longPressMenuItem.userInfo[DATA] is Bitmap
+            ) {
+                val bitmap = longPressMenuItem.userInfo[DATA] as Bitmap
+                saveImage(vm!!.groupDataFromManager.imageURL?.fullsize, bitmap)
+            }
         }
     }
 
@@ -1762,11 +1770,13 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 return
             }
             when (action) {
-                DownloadBroadcastEvent.DownloadProgressLoading, DownloadBroadcastEvent.DownloadFinish, DownloadBroadcastEvent.DownloadFailed -> runOnUiThread {
-                    if (vm!!.getSharedMedia(localID) != null) {
-                        notifyItemChanged(
-                            vm!!.getSharedMedia(localID)
-                        )
+                DownloadBroadcastEvent.DownloadProgressLoading, DownloadBroadcastEvent.DownloadFinish, DownloadBroadcastEvent.DownloadFailed -> {
+                    runOnUiThread {
+                        if (vm!!.getSharedMedia(localID) != null) {
+                            notifyItemChanged(
+                                vm!!.getSharedMedia(localID)
+                            )
+                        }
                     }
                 }
             }

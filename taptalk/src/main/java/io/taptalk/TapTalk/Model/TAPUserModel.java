@@ -497,6 +497,7 @@ public class TAPUserModel implements Parcelable {
         this.isRequestAccepted = userModel.getRequestAccepted();
         this.isEmailVerified = userModel.getEmailVerified();
         this.isPhoneVerified = userModel.getPhoneVerified();
+        this.isOnline = userModel.getOnline();
         this.countryID = userModel.getCountryID();
         this.countryCallingCode = userModel.getCountryCallingCode();
         if (null == this.isContact || this.isContact != 1) {

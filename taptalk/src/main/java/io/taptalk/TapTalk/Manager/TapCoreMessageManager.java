@@ -1548,24 +1548,52 @@ public class TapCoreMessageManager {
         }
     }
 
+    public void getStarredMessageIds(String roomId, TapCoreGetStringArrayListener listener) {
+        TAPDataManager.getInstance(instanceKey).getStarredMessageIds(roomId, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapStarMessageResponse response) {
+                ArrayList<String> starredMessageIDs = new ArrayList<>(response.getStarredMessageIDs());
+                TAPDataManager.getInstance(instanceKey).saveStarredMessageIds(roomId, starredMessageIDs);
+                listener.onSuccess(starredMessageIDs);
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
     public void getStarredMessages(String roomId, int pageNumber, int numberOfItems, TapCoreGetOlderMessageListener listener) {
         TAPDataManager.getInstance(instanceKey).getStarredMessages(roomId, pageNumber, numberOfItems, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TAPGetMessageListByRoomResponse response) {
-                super.onSuccess(response);
+                ArrayList<String> starredMessageIDs = TAPDataManager.getInstance(instanceKey).getStarredMessageIds(roomId);
                 if (listener != null) {
                     List<TAPMessageModel> starredMessageList = new ArrayList<>();
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                             starredMessageList.add(message);
-
+                            if (!starredMessageIDs.contains(message.getMessageID())) {
+                                starredMessageIDs.add(message.getMessageID());
+                            }
                         } catch (Exception e) {
                             listener.onError(ERROR_CODE_OTHERS, e.getMessage());
                         }
                     }
                     listener.onSuccess(starredMessageList, response.getHasMore());
                 }
+                TAPDataManager.getInstance(instanceKey).saveStarredMessageIds(roomId, starredMessageIDs);
             }
 
             @Override
@@ -1661,12 +1689,13 @@ public class TapCoreMessageManager {
         });
     }
 
-    public void getStarredMessageIds(String roomId, TapCoreGetStringArrayListener listener) {
-        TAPDataManager.getInstance(instanceKey).getStarredMessageIds(roomId, new TAPDefaultDataView<>() {
+    public void getPinnedMessageIDs(String roomId, TapCoreGetStringArrayListener listener) {
+        TAPDataManager.getInstance(instanceKey).getPinnedMessageIds(roomId, new TAPDefaultDataView<>() {
             @Override
-            public void onSuccess(TapStarMessageResponse response) {
-                super.onSuccess(response);
-                listener.onSuccess(new ArrayList<>(response.getStarredMessageIDs()));
+            public void onSuccess(TapPinMessageResponse response) {
+                ArrayList<String> pinnedMessageIDs = new ArrayList<>(response.getMessageIDs());
+                TAPDataManager.getInstance(instanceKey).savePinnedMessageIds(roomId, pinnedMessageIDs);
+                listener.onSuccess(new ArrayList<>(pinnedMessageIDs));
             }
 
             @Override
@@ -1685,25 +1714,27 @@ public class TapCoreMessageManager {
         });
     }
 
-
     public void getPinnedMessages(String roomId, int pageNumber, int numberOfItems, TapCoreGetOlderMessageListener listener) {
         TAPDataManager.getInstance(instanceKey).getPinnedMessages(roomId, pageNumber, numberOfItems, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TAPGetMessageListByRoomResponse response) {
-                super.onSuccess(response);
+                ArrayList<String> pinnedMessageIDs = TAPDataManager.getInstance(instanceKey).getPinnedMessageIds(roomId);
                 if (listener != null) {
                     List<TAPMessageModel> pinnedMessageList = new ArrayList<>();
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                             pinnedMessageList.add(message);
-
+                            if (!pinnedMessageIDs.contains(message.getMessageID())) {
+                                pinnedMessageIDs.add(message.getMessageID());
+                            }
                         } catch (Exception e) {
                             listener.onError(ERROR_CODE_OTHERS, e.getMessage());
                         }
                     }
                     listener.onSuccess(pinnedMessageList, response.getHasMore());
                 }
+                TAPDataManager.getInstance(instanceKey).savePinnedMessageIds(roomId, pinnedMessageIDs);
             }
 
             @Override
@@ -1785,30 +1816,6 @@ public class TapCoreMessageManager {
                 if (null != listener) {
                     listener.onSuccess(new ArrayList<>(response.getMessageIDs()));
                 }
-            }
-
-            @Override
-            public void onError(TAPErrorModel error) {
-                if (null != listener) {
-                    listener.onError(error.getCode(), error.getMessage());
-                }
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                if (null != listener) {
-                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
-                }
-            }
-        });
-    }
-
-    public void getPinnedMessageIDs(String roomId, TapCoreGetStringArrayListener listener) {
-        TAPDataManager.getInstance(instanceKey).getPinnedMessageIds(roomId, new TAPDefaultDataView<>() {
-            @Override
-            public void onSuccess(TapPinMessageResponse response) {
-                super.onSuccess(response);
-                listener.onSuccess(new ArrayList<>(response.getMessageIDs()));
             }
 
             @Override
