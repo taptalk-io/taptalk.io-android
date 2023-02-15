@@ -177,6 +177,32 @@ public class TAPDefaultConstant {
         public static final String REPORT_TYPE = "kTAPExtraReportType";
         public static final String IS_STARRED = "kTAPExtraIsStarred";
         public static final String IS_PINNED = "kTAPExtraIsPinned";
+        public static final String LONG_PRESS_MENU_ITEM = "kTAPLongPressMenuItem";
+        public static final String DATA = "data";
+    }
+
+    public static final class LongPressMenuID {
+        public static final String REPLY = "reply";
+        public static final String FORWARD = "forward";
+        public static final String COPY = "copy";
+        public static final String SAVE = "save";
+        public static final String STAR = "star";
+        public static final String UNSTAR = "unstar";
+        public static final String EDIT = "edit";
+        public static final String PIN = "pin";
+        public static final String UNPIN = "unpin";
+        public static final String INFO = "info";
+        public static final String DELETE = "delete";
+        public static final String REPORT = "report";
+        public static final String OPEN_LINK = "open_link";
+        public static final String COMPOSE = "compose";
+        public static final String CALL = "call";
+        public static final String SMS = "sms";
+        public static final String VIEW_PROFILE = "view_profile";
+        public static final String VIEW_IN_CHAT = "view_in_chat";
+        public static final String SEND_MESSAGE = "send_message";
+        public static final String SEND_NOW = "send_now";
+        public static final String RESCHEDULE = "reschedule";
     }
 
     public static final class RequestCode {
@@ -497,6 +523,7 @@ public class TAPDefaultConstant {
     public static final String K_MUTED_ROOM_LIST = "kTAPMutedRoomList";
     public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
     public static final String K_STARRED_MESSAGE = "kTAPStarredMessage";
+    public static final String K_PINNED_MESSAGE_IDS = "kTAPPinnedMessageIDs";
     public static final String K_BLOCKED_USER = "kTAPBlockedUser";
     public static final String K_MESSAGE_READ_COUNT = "kTAPMessageReadCount";
 
@@ -521,6 +548,8 @@ public class TAPDefaultConstant {
 
     public static final long TYPING_EMIT_DELAY = 7000L;
     public static final long TYPING_INDICATOR_TIMEOUT = 10000L;
+
+    public static final long TWO_DAYS_IN_MILLIS = 172800000L;
 
     public static final String SCAN_RESULT = "kTAPScanResult";
     public static final String ADDED_CONTACT = "kTAPAddedContact";

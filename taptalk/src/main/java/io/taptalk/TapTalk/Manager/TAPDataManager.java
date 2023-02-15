@@ -22,6 +22,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MESSAGE_READ_COUNT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MUTED_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_MESSAGE_IDS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
@@ -257,6 +258,7 @@ public class TAPDataManager {
         removeMutedRoomIds();
         removePinnedRoomIDs();
         removeStarredMessageIds();
+        removePinnedMessageIds();
         removeBlockedUserIds();
     }
 
@@ -685,6 +687,38 @@ public class TAPDataManager {
 
     public void removeStarredMessageIds() {
         removePreference(K_STARRED_MESSAGE);
+    }
+
+    /**
+     * PINNED MESSAGE
+     */
+
+    public void savePinnedMessageIds(String roomID, ArrayList<String> messageIds) {
+        HashMap<String, ArrayList<String>> pinnedMessageIdMap = Hawk.get(instanceKey + K_PINNED_MESSAGE_IDS, null);
+        if (pinnedMessageIdMap == null) {
+            pinnedMessageIdMap = new LinkedHashMap<>();
+        }
+        pinnedMessageIdMap.put(roomID, messageIds);
+        Hawk.put(instanceKey + K_PINNED_MESSAGE_IDS, pinnedMessageIdMap);
+    }
+
+    public ArrayList<String> getPinnedMessageIds(String roomID) {
+        HashMap<String, ArrayList<String>> pinnedMessageIdMap = Hawk.get(instanceKey + K_PINNED_MESSAGE_IDS, null);
+        if (pinnedMessageIdMap != null) {
+            return pinnedMessageIdMap.get(roomID);
+        } else return null;
+    }
+
+    public void removePinnedMessageIds(String roomID) {
+        HashMap<String, ArrayList<String>> pinnedMessageIdMap = Hawk.get(instanceKey + K_PINNED_MESSAGE_IDS, null);
+        if (pinnedMessageIdMap != null) {
+            pinnedMessageIdMap.remove(roomID);
+            Hawk.put(instanceKey + K_PINNED_MESSAGE_IDS, pinnedMessageIdMap);
+        }
+    }
+
+    public void removePinnedMessageIds() {
+        removePreference(K_PINNED_MESSAGE_IDS);
     }
 
     /**

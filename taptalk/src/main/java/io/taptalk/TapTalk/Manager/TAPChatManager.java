@@ -61,6 +61,7 @@ import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
@@ -278,6 +279,7 @@ public class TAPChatManager {
                     TAPDataManager.getInstance(instanceKey).saveLastRoomMessageDeleteTime();
                     TAPDataManager.getInstance(instanceKey).removePinnedRoomID(roomId);
                     TAPDataManager.getInstance(instanceKey).removeStarredMessageIds(roomId);
+                    TAPDataManager.getInstance(instanceKey).removePinnedMessageIds(roomId);
                     TAPDataManager.getInstance(instanceKey).removeUnreadRoomID(roomId);
                     TapCoreChatRoomManager.getInstance(instanceKey).deleteLocalGroupChatRoom(roomId, new TapCommonListener() {
                         @Override
@@ -2865,6 +2867,34 @@ public class TAPChatManager {
             // Show personal room with last message
             return roomList.getLastMessage().getBody();
         }
+    }
+
+    public List<TapLongPressMenuItem> getMessageLongPressMenuItems(Context context, TAPMessageModel message) {
+        return TapUI.getInstance(instanceKey).getMessageLongPressMenuItems(context, message);
+    }
+
+    public List<TapLongPressMenuItem> getScheduledMessageLongPressMenuItems(Context context, TAPMessageModel message) {
+        return TapUI.getInstance(instanceKey).getScheduledMessageLongPressMenuItems(context, message);
+    }
+
+    public List<TapLongPressMenuItem> getLinkLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String url) {
+        return TapUI.getInstance(instanceKey).getLinkLongPressMenuItems(context, message, url);
+    }
+
+    public List<TapLongPressMenuItem> getEmailLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String emailAddress) {
+        return TapUI.getInstance(instanceKey).getEmailLongPressMenuItems(context, message, emailAddress);
+    }
+
+    public List<TapLongPressMenuItem> getPhoneLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String phoneNumber) {
+        return TapUI.getInstance(instanceKey).getPhoneLongPressMenuItems(context, message, phoneNumber);
+    }
+
+    public List<TapLongPressMenuItem> getMentionLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String username) {
+        return TapUI.getInstance(instanceKey).getMentionLongPressMenuItems(context, message, username);
+    }
+
+    public void triggerLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, @Nullable TAPMessageModel message) {
+        TapUI.getInstance(instanceKey).triggerLongPressMenuItemSelected(activity, longPressMenuItem, message);
     }
 
     /**
