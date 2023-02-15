@@ -977,22 +977,21 @@ public class TAPUtils {
         activity.startActivity(intent);
     }
 
+    @SuppressLint("IntentReset")
     public static boolean composeSMS(Activity activity, String phoneNumber) {
-        if (getDefaultSmsAppPackageName(activity) != null) {
-            try {
-//            Uri smsUri = Uri.parse("smsto:" + phoneNumber);
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-//            intent.setDataAndType(smsUri, "vnd.android-dir/mms-sms");
-                intent.setType("vnd.android-dir/mms-sms");
-                intent.putExtra("address", phoneNumber);
-                activity.startActivity(intent);
-                return true;
-            } catch (ActivityNotFoundException e) {
-                e.printStackTrace();
-                return false;
-            }
+        try {
+            Uri smsUri = Uri.parse("tel:" + phoneNumber);
+            Intent intent = new Intent(Intent.ACTION_VIEW, smsUri);
+            intent.setType("vnd.android-dir/mms-sms");
+            intent.putExtra("address", phoneNumber);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+            return true;
         }
-        return false;
+        catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static String getDefaultSmsAppPackageName(Context context) {
