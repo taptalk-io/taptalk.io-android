@@ -182,27 +182,27 @@ public class TAPDefaultConstant {
     }
 
     public static final class LongPressMenuID {
-        public static final String REPLY = "reply";
-        public static final String FORWARD = "forward";
-        public static final String COPY = "copy";
-        public static final String SAVE = "save";
-        public static final String STAR = "star";
-        public static final String UNSTAR = "unstar";
-        public static final String EDIT = "edit";
-        public static final String PIN = "pin";
-        public static final String UNPIN = "unpin";
-        public static final String INFO = "info";
-        public static final String DELETE = "delete";
-        public static final String REPORT = "report";
-        public static final String OPEN_LINK = "open_link";
-        public static final String COMPOSE = "compose";
-        public static final String CALL = "call";
-        public static final String SMS = "sms";
-        public static final String VIEW_PROFILE = "view_profile";
-        public static final String VIEW_IN_CHAT = "view_in_chat";
-        public static final String SEND_MESSAGE = "send_message";
-        public static final String SEND_NOW = "send_now";
-        public static final String RESCHEDULE = "reschedule";
+        public static final String REPLY = "TapLongPressMenuIdReply";
+        public static final String FORWARD = "TapLongPressMenuIdForward";
+        public static final String COPY = "TapLongPressMenuIdCopy";
+        public static final String SAVE = "TapLongPressMenuIdSave";
+        public static final String STAR = "TapLongPressMenuIdStar";
+        public static final String UNSTAR = "TapLongPressMenuIdUnstar";
+        public static final String EDIT = "TapLongPressMenuIdEdit";
+        public static final String PIN = "TapLongPressMenuIdPin";
+        public static final String UNPIN = "TapLongPressMenuIdUnpin";
+        public static final String INFO = "TapLongPressMenuIdInfo";
+        public static final String DELETE = "TapLongPressMenuIdDelete";
+        public static final String REPORT = "TapLongPressMenuIdReport";
+        public static final String OPEN_LINK = "TapLongPressMenuIdOpenLink";
+        public static final String COMPOSE = "TapLongPressMenuIdCompose";
+        public static final String CALL = "TapLongPressMenuIdCall";
+        public static final String SMS = "TapLongPressMenuIdSms";
+        public static final String VIEW_PROFILE = "TapLongPressMenuIdViewProfile";
+        public static final String VIEW_IN_CHAT = "TapLongPressMenuIdViewInChat";
+        public static final String SEND_MESSAGE = "TapLongPressMenuIdSendMessage";
+        public static final String SEND_NOW = "TapLongPressMenuIdSendNow";
+        public static final String RESCHEDULE = "TapLongPressMenuIdReschedule";
     }
 
     public static final class RequestCode {

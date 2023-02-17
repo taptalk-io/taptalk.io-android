@@ -3025,6 +3025,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     switch (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message.getType())) {
                         case TYPE_IMAGE_MESSAGE:
                         case TYPE_VIDEO_MESSAGE:
+                        case TYPE_FILE_MESSAGE:
+                        case TYPE_VOICE_MESSAGE:
                             // TODO: 4 March 2019 TEMPORARY CLIPBOARD FOR IMAGE & VIDEO
                             if (null != message.getData() && message.getData().get(CAPTION) instanceof String) {
                                 attachmentListener.onCopySelected((String) message.getData().get(CAPTION));

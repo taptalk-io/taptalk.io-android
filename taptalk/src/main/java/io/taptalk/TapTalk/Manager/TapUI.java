@@ -1459,7 +1459,9 @@ public class TapUI {
             (longPressMenuType == LongPressMenuType.TYPE_TEXT_MESSAGE ||
             longPressMenuType == LongPressMenuType.TYPE_LOCATION_MESSAGE ||
             ((longPressMenuType == LongPressMenuType.TYPE_IMAGE_MESSAGE ||
-            longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE) &&
+            longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_FILE_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_VOICE_MESSAGE) &&
             caption != null && !caption.isEmpty()))
         ) {
             // Copy

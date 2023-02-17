@@ -1344,7 +1344,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 attachmentListener.onCopySelected(data)
             } else if (message != null) {
                 when (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message.type)) {
-                    LongPressMenuType.TYPE_IMAGE_MESSAGE, LongPressMenuType.TYPE_VIDEO_MESSAGE -> {
+                    LongPressMenuType.TYPE_IMAGE_MESSAGE,
+                    LongPressMenuType.TYPE_VIDEO_MESSAGE,
+                    LongPressMenuType.TYPE_FILE_MESSAGE,
+                    LongPressMenuType.TYPE_VOICE_MESSAGE -> {
                         // TODO: 4 March 2019 TEMPORARY CLIPBOARD FOR IMAGE & VIDEO
                         if (null != message.data && message.data!![MessageData.CAPTION] is String) {
                             attachmentListener.onCopySelected(message.data!![MessageData.CAPTION] as String?)
