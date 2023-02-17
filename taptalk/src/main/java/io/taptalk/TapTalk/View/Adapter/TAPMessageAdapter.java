@@ -848,48 +848,88 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 fixImageOrVideoViewSize(item, rcivImageBody, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
             }
 
-            if (null != imageUrl && !imageUrl.isEmpty()) {
-                // Load image from URL
-                glide.load(imageUrl)
-                        .transition(DrawableTransitionOptions.withCrossFade(100))
-                        .apply(new RequestOptions()
-                                .placeholder(thumbnail)
-                                .centerCrop())
-                        .listener(imageBodyListener)
-                        .into(rcivImageBody);
-                rcivImageBody.setOnClickListener(v -> {
-                    openImageDetailPreview(item);
-                });
-            } else if (null != fileID && !fileID.isEmpty()) {
-                new Thread(() -> {
-                    BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
-                    if (null != cachedImage) {
-                        // Load image from cache
-                        activity.runOnUiThread(() -> {
-                            glide.load(cachedImage)
-                                    .transition(DrawableTransitionOptions.withCrossFade(100))
-                                    .apply(new RequestOptions()
-                                            .placeholder(thumbnail)
-                                            .centerCrop())
-                                    .listener(imageBodyListener)
-                                    .into(rcivImageBody);
-                            rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
-                        });
-                    } else {
-                        activity.runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
-                        }));
-                        if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
-                            // Download image
-                            if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
-                                TAPFileDownloadManager.getInstance(instanceKey).downloadImage(TapTalk.appContext, item);
-                            } else {
-                                activity.runOnUiThread(() -> flProgress.setVisibility(View.GONE));
-                                TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(item.getLocalID());
-                            }
+//            if (null != imageUrl && !imageUrl.isEmpty()) {
+//                // Load image from URL
+//                glide.load(imageUrl)
+//                        .transition(DrawableTransitionOptions.withCrossFade(100))
+//                        .apply(new RequestOptions()
+//                                .placeholder(thumbnail)
+//                                .centerCrop())
+//                        .listener(imageBodyListener)
+//                        .into(rcivImageBody);
+//                rcivImageBody.setOnClickListener(v -> {
+//                    openImageDetailPreview(item);
+//                });
+//            } else if (null != fileID && !fileID.isEmpty()) {
+//                new Thread(() -> {
+//                    BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
+//                    if (null != cachedImage) {
+//                        // Load image from cache
+//                        activity.runOnUiThread(() -> {
+//                            glide.load(cachedImage)
+//                                    .transition(DrawableTransitionOptions.withCrossFade(100))
+//                                    .apply(new RequestOptions()
+//                                            .placeholder(thumbnail)
+//                                            .centerCrop())
+//                                    .listener(imageBodyListener)
+//                                    .into(rcivImageBody);
+//                            rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
+//                        });
+//                    } else {
+//                        activity.runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
+//                        }));
+//                        if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
+//                            // Download image
+//                            if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
+//                                TAPFileDownloadManager.getInstance(instanceKey).downloadImage(TapTalk.appContext, item);
+//                            } else {
+//                                activity.runOnUiThread(() -> flProgress.setVisibility(View.GONE));
+//                                TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(item.getLocalID());
+//                            }
+//                        }
+//                    }
+//                }).start();
+            if ((null != imageUrl && !imageUrl.isEmpty()) || (null != fileID && !fileID.isEmpty())) {
+                BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(imageUrl, fileID);
+                if (null != cachedImage) {
+                    // Load image from cache
+                    activity.runOnUiThread(() -> {
+                        glide.load(cachedImage)
+                                .transition(DrawableTransitionOptions.withCrossFade(100))
+                                .apply(new RequestOptions()
+                                        .placeholder(thumbnail)
+                                        .centerCrop())
+                                .listener(imageBodyListener)
+                                .into(rcivImageBody);
+                        rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
+                    });
+                } else if (null != imageUrl && !imageUrl.isEmpty()) {
+                    // Load image from URL
+                    glide.load(imageUrl)
+                            .transition(DrawableTransitionOptions.withCrossFade(100))
+                            .apply(new RequestOptions()
+                                    .placeholder(thumbnail)
+                                    .centerCrop())
+                            .listener(imageBodyListener)
+                            .into(rcivImageBody);
+                    rcivImageBody.setOnClickListener(v -> {
+                        openImageDetailPreview(item);
+                    });
+                } else {
+                    activity.runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
+                    }));
+                    if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
+                        // Download image
+                        if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
+                            TAPFileDownloadManager.getInstance(instanceKey).downloadImage(TapTalk.appContext, item);
+                        } else {
+                            activity.runOnUiThread(() -> flProgress.setVisibility(View.GONE));
+                            TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(item.getLocalID());
                         }
                     }
-                }).start();
-            } else if (null != imageUri && !imageUri.isEmpty()) {
+                }
+            }
+            else if (null != imageUri && !imageUri.isEmpty()) {
                 // Message is not sent to server, load image from Uri
                 rcivImageBody.setOnClickListener(v -> {
                 });
@@ -1306,7 +1346,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     if (null == videoThumbnail) {
                         String fileUrl = (String) item.getData().get(FILE_URL);
                         if (null != fileUrl && !fileUrl.isEmpty()) {
-                            key = TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase();
+                            key = TAPUtils.getUriKeyFromUrl(fileUrl);
                             videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(key);
                         }
                     }
@@ -3256,18 +3296,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     quote.getFileType().equals(IMAGE) ||
                     quote.getFileType().equals(VIDEO)) {
                 glide.clear(rcivQuoteImage);
-                String key = "";
-                if (null != quoteFileID && !quoteFileID.isEmpty()) {
-                    key = quoteFileID;
-                } else if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
-                    key = TAPUtils.removeNonAlphaNumeric(quoteImageURL).toLowerCase();
-                }
+//                String key = "";
+//                if (null != quoteFileID && !quoteFileID.isEmpty()) {
+//                    key = quoteFileID;
+//                } else if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
+//                    key = TAPUtils.removeNonAlphaNumeric(quoteImageURL).toLowerCase();
+//                }
                 // Get quote image from cache
                 // TODO: 8 March 2019 IMAGE MIGHT NOT EXIST IN CACHE
-                if (!key.isEmpty()) {
-                    String finalKey = key;
+//                if (!key.isEmpty()) {
+                if (null != quoteFileID && !quoteFileID.isEmpty()) {
+//                    String finalKey = key;
                     new Thread(() -> {
-                        BitmapDrawable image = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(finalKey);
+//                        BitmapDrawable image = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(finalKey);
+                        BitmapDrawable image = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(quoteImageURL, quoteFileID);
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
                             if (null != image) {
                                 ImageViewCompat.setImageTintList(rcivQuoteImage, null);

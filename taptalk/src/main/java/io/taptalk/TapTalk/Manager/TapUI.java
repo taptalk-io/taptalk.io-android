@@ -1459,7 +1459,9 @@ public class TapUI {
             (longPressMenuType == LongPressMenuType.TYPE_TEXT_MESSAGE ||
             longPressMenuType == LongPressMenuType.TYPE_LOCATION_MESSAGE ||
             ((longPressMenuType == LongPressMenuType.TYPE_IMAGE_MESSAGE ||
-            longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE) &&
+            longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_FILE_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_VOICE_MESSAGE) &&
             caption != null && !caption.isEmpty()))
         ) {
             // Copy
@@ -1481,8 +1483,7 @@ public class TapUI {
         if (!isSaveMediaToGalleryMenuDisabled() &&
             (longPressMenuType == LongPressMenuType.TYPE_IMAGE_MESSAGE ||
             longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE) &&
-            ((fileID != null && !fileID.isEmpty() && TAPCacheManager.getInstance(TapTalk.appContext).containsCache(fileID)) ||
-            (fileUrl != null && !fileUrl.isEmpty() && TAPCacheManager.getInstance(TapTalk.appContext).containsCache(fileUrl)))
+            TAPCacheManager.getInstance(TapTalk.appContext).containsCache(messageModel)
         ) {
             // Save to gallery
             longPressMenuItems.add(new TapLongPressMenuItem(
@@ -1493,8 +1494,7 @@ public class TapUI {
         }
         if (!isSaveDocumentMenuDisabled() &&
             longPressMenuType == LongPressMenuType.TYPE_FILE_MESSAGE &&
-            ((fileID != null && !fileID.isEmpty() && TAPCacheManager.getInstance(TapTalk.appContext).containsCache(fileID)) ||
-            (fileUrl != null && !fileUrl.isEmpty() && TAPCacheManager.getInstance(TapTalk.appContext).containsCache(fileUrl)))
+            TAPCacheManager.getInstance(TapTalk.appContext).containsCache(messageModel)
         ) {
             // Save to downloads
             longPressMenuItems.add(new TapLongPressMenuItem(

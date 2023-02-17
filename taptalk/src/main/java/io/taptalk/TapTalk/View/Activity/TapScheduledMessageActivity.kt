@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
@@ -48,6 +49,7 @@ import com.google.gson.reflect.TypeToken
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE
 import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity
@@ -55,6 +57,7 @@ import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager.BitmapInterface
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Manager.TapUI.LongPressMenuType
 import io.taptalk.TapTalk.Model.*
@@ -222,9 +225,34 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     if (null != medias && 0 < medias.size) {
                         val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
                             override fun onClick(position: Int, item: Long?) {
-                                super.onClick(position, item)
-                                TAPChatManager.getInstance(instanceKey)
-                                    .sendImageOrVideoMessage(TapTalk.appContext, vm.room, medias, item)
+                                for (media in medias) {
+                                    if (media.type == MessageType.TYPE_IMAGE) {
+                                        try {
+                                            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, media.uri)
+                                            if (bitmap != null) {
+                                                TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, object : BitmapInterface {
+                                                    override fun onBitmapReady(bitmap: Bitmap) {
+                                                        val imagePath = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "", "")
+                                                        if (imagePath != null && !imagePath.isEmpty()) {
+                                                            val uri = Uri.parse(imagePath)
+                                                            media.uri = uri
+                                                        }
+                                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
+                                                    }
+
+                                                    override fun onBitmapError() {
+                                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
+                                                    }
+                                                })
+                                            }
+                                        } catch (e: IOException) {
+                                            TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
+                                            e.printStackTrace()
+                                        }
+                                    } else if (media.type == MessageType.TYPE_VIDEO) {
+                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
+                                    }
+                                }
                             }
                         })
                         timePicker.show(supportFragmentManager, "")
@@ -827,9 +855,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
             vm.delete(message.localID)
             if (message.type == MessageType.TYPE_IMAGE || message.type == MessageType.TYPE_VIDEO || message.type == MessageType.TYPE_FILE || message.type == MessageType.TYPE_VOICE) {
-                if (null != message.data && null != message.data!![MessageData.FILE_ID] && null != message.data!![MessageData.FILE_URL] &&
+                if (null != message.data && null != message.data!![MessageData.FILE_ID] && null != message.data!![FILE_URL] &&
                     (message.data!![MessageData.FILE_ID] as String?)!!.isNotEmpty() &&
-                    (message.data!![MessageData.FILE_URL] as String?)!!.isNotEmpty()
+                    (message.data!![FILE_URL] as String?)!!.isNotEmpty()
                 ) {
                     // Resend message
                     TAPChatManager.getInstance(instanceKey).resendMessage(message)
@@ -1061,22 +1089,23 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 // Show image quote
                 v_quote_layout_decoration.setVisibility(View.GONE)
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
-                var drawable: Drawable? = null
-                val fileID =
-                    message.data!![MessageData.FILE_ID] as String?
-                if (null != fileID && fileID.isNotEmpty()) {
-                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID)
-                }
-                if (null == drawable) {
-                    val fileUrl =
-                        message.data!![MessageData.FILE_URL] as String?
-                    if (null != fileUrl && fileUrl.isNotEmpty()) {
-                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(
-                            TAPUtils.removeNonAlphaNumeric(fileUrl)
-                                .lowercase(Locale.getDefault())
-                        )
-                    }
-                }
+                val drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(message)
+//                var drawable: Drawable? = null
+//                val fileID =
+//                    message.data!![MessageData.FILE_ID] as String?
+//                if (null != fileID && fileID.isNotEmpty()) {
+//                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID)
+//                }
+//                if (null == drawable) {
+//                    val fileUrl =
+//                        message.data!![MessageData.FILE_URL] as String?
+//                    if (null != fileUrl && fileUrl.isNotEmpty()) {
+//                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(
+//                            TAPUtils.removeNonAlphaNumeric(fileUrl)
+//                                .lowercase(Locale.getDefault())
+//                        )
+//                    }
+//                }
                 if (null != drawable) {
                     rciv_quote_layout_image.setImageDrawable(drawable)
                 } else {
@@ -1105,10 +1134,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     )
                 )
                 et_chat.setText(message.data!![MessageData.CAPTION].toString())
-            } else if (null != message.data && null != message.data!![MessageData.FILE_URL] && (message.type == MessageType.TYPE_IMAGE || message.type == MessageType.TYPE_VIDEO)
+            } else if (null != message.data && null != message.data!![FILE_URL] && (message.type == MessageType.TYPE_IMAGE || message.type == MessageType.TYPE_VIDEO)
             ) {
                 // Show image quote from file URL
-                glide.load(message.data!![MessageData.FILE_URL] as String?)
+                glide.load(message.data!![FILE_URL] as String?)
                     .into(rciv_quote_layout_image)
                 rciv_quote_layout_image.colorFilter = null
                 rciv_quote_layout_image.background = null
@@ -1315,7 +1344,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 attachmentListener.onCopySelected(data)
             } else if (message != null) {
                 when (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message.type)) {
-                    LongPressMenuType.TYPE_IMAGE_MESSAGE, LongPressMenuType.TYPE_VIDEO_MESSAGE -> {
+                    LongPressMenuType.TYPE_IMAGE_MESSAGE,
+                    LongPressMenuType.TYPE_VIDEO_MESSAGE,
+                    LongPressMenuType.TYPE_FILE_MESSAGE,
+                    LongPressMenuType.TYPE_VOICE_MESSAGE -> {
                         // TODO: 4 March 2019 TEMPORARY CLIPBOARD FOR IMAGE & VIDEO
                         if (null != message.data && message.data!![MessageData.CAPTION] is String) {
                             attachmentListener.onCopySelected(message.data!![MessageData.CAPTION] as String?)
@@ -1460,33 +1492,46 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 } else if (null != message.data && null != message.data!![MessageData.MEDIA_TYPE]) {
                     Thread {
                         vm.pendingDownloadMessage = null
-                        var bitmap: Bitmap? = null
-                        val fileID =
-                            message.data!![MessageData.FILE_ID] as String?
-                        val fileUrl =
-                            message.data!![MessageData.FILE_URL] as String?
-                        if (null != fileID && fileID.isNotEmpty()) {
-                            // Get bitmap from cache
-                            bitmap =
-                                TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(
-                                    message.data!![MessageData.FILE_ID] as String?
-                                ).bitmap
-                        } else if (null != fileUrl && fileUrl.isNotEmpty()) {
+                        var bitmap: Bitmap? = TAPCacheManager.getInstance(this@TapScheduledMessageActivity).getBitmapDrawable(message)?.bitmap
+                        if (bitmap == null) {
+                            val fileUrl = message.data!![FILE_URL] as String?
                             // Get bitmap from url
                             try {
-                                val imageUrl = URL(
-                                    message.data!![MessageData.FILE_URL] as String?
-                                )
-                                bitmap =
-                                    BitmapFactory.decodeStream(
-                                        imageUrl.openConnection().getInputStream()
-                                    )
+                                val imageUrl = URL(fileUrl)
+                                bitmap = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                             } catch (e: MalformedURLException) {
                                 e.printStackTrace()
                             } catch (e: IOException) {
                                 e.printStackTrace()
                             }
                         }
+//                        var bitmap: Bitmap? = null
+//                        val fileID =
+//                            message.data!![MessageData.FILE_ID] as String?
+//                        val fileUrl =
+//                            message.data!![MessageData.FILE_URL] as String?
+//                        if (null != fileID && fileID.isNotEmpty()) {
+//                            // Get bitmap from cache
+//                            bitmap =
+//                                TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(
+//                                    message.data!![MessageData.FILE_ID] as String?
+//                                ).bitmap
+//                        } else if (null != fileUrl && fileUrl.isNotEmpty()) {
+//                            // Get bitmap from url
+//                            try {
+//                                val imageUrl = URL(
+//                                    message.data!![MessageData.FILE_URL] as String?
+//                                )
+//                                bitmap =
+//                                    BitmapFactory.decodeStream(
+//                                        imageUrl.openConnection().getInputStream()
+//                                    )
+//                            } catch (e: MalformedURLException) {
+//                                e.printStackTrace()
+//                            } catch (e: IOException) {
+//                                e.printStackTrace()
+//                            }
+//                        }
                         if (null != bitmap) {
                             TAPFileDownloadManager.getInstance(instanceKey)
                                 .writeImageFileToDisk(this@TapScheduledMessageActivity,
@@ -1534,7 +1579,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     )
                 } else if (null != message.data) {
                     val fileID = message.data!![MessageData.FILE_ID] as String?
-                    val fileUrl = message.data!![MessageData.FILE_URL] as String?
+                    val fileUrl = message.data!![FILE_URL] as String?
                     if ((null != fileID && fileID.isNotEmpty() ||
                                 null != fileUrl && fileUrl.isNotEmpty()) &&
                         null != message.data!![MessageData.MEDIA_TYPE]
@@ -1548,7 +1593,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             override fun onSaveToDownloads(message: TAPMessageModel) {
                 if (null != message.data) {
                     val fileID = message.data!![MessageData.FILE_ID] as String?
-                    val fileUrl = message.data!![MessageData.FILE_URL] as String?
+                    val fileUrl = message.data!![FILE_URL] as String?
                     if ((null != fileID && fileID.isNotEmpty() ||
                                 null != fileUrl && fileUrl.isNotEmpty()) &&
                         null != message.data!![MessageData.MEDIA_TYPE]
@@ -2770,9 +2815,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
         if (null != vm.getOpenedFileMessage().getData()) {
             val fileId = vm.getOpenedFileMessage().getData()!!.get(MessageData.FILE_ID) as String?
-            var fileUrl = vm.getOpenedFileMessage().getData()!!.get(MessageData.FILE_URL) as String?
+            var fileUrl = vm.getOpenedFileMessage().getData()!!.get(FILE_URL) as String?
             if (null != fileUrl) {
-                fileUrl = TAPUtils.removeNonAlphaNumeric(fileUrl).lowercase(Locale.getDefault())
+                fileUrl = TAPUtils.getUriKeyFromUrl(fileUrl)
             }
             TAPFileDownloadManager.getInstance(instanceKey)
                 .removeFileMessageUri(vm.getRoom().getRoomID(), fileId)

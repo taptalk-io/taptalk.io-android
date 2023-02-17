@@ -324,7 +324,7 @@ public class TAPFileDownloadManager {
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                 TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(
                         message.getRoom().getRoomID(),
-                        TAPUtils.removeNonAlphaNumeric(urlString).toLowerCase(),
+                        TAPUtils.getUriKeyFromUrl(urlString),
                         fileProviderUri);
             }
         }
@@ -464,15 +464,20 @@ public class TAPFileDownloadManager {
             // Send download success broadcast
             Uri fileProviderUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
             String fileID = (String) message.getData().get(FILE_ID);
+            String fileUrl = (String) message.getData().get(FILE_URL);
             addFileProviderPath(fileProviderUri, file.getAbsolutePath());
             scanFile(context, file, TAPUtils.getFileMimeType(file));
             Intent intent = new Intent(DownloadFinish);
             intent.putExtra(DownloadLocalID, localID);
             intent.putExtra(DownloadedFile, file);
             intent.putExtra(FILE_ID, fileID);
+            intent.putExtra(FILE_URL, fileUrl);
             intent.putExtra(FILE_URI, fileProviderUri);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-            if (null != fileID && null != fileProviderUri) {
+            if (null != fileUrl && null != fileProviderUri) {
+                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(message.getRoom().getRoomID(), fileUrl, fileProviderUri);
+            }
+            else if (null != fileID && null != fileProviderUri) {
                 TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(message.getRoom().getRoomID(), fileID, fileProviderUri);
             }
         } catch (Exception e) {
@@ -613,6 +618,8 @@ public class TAPFileDownloadManager {
     }
 
     public void addFileProviderPath(Uri fileProviderUri, String path) {
+        Log.e(">>>>>", "addFileProviderPath: " + fileProviderUri.toString());
+        Log.e(">>>>>", "addFileProviderPath: " + path);
         getFileProviderPathMap().put(fileProviderUri.toString(), path);
     }
 
@@ -639,13 +646,13 @@ public class TAPFileDownloadManager {
         if (null == roomUriMap) {
             return null;
         }
-        String fileID = (String) message.getData().get(FILE_ID);
-        if (null != fileID && !fileID.isEmpty() && null != roomUriMap.get(fileID)) {
-            return Uri.parse(roomUriMap.get(fileID));
+        String fileUrl = (String) message.getData().get(FILE_URL);
+        if (null != fileUrl && !fileUrl.isEmpty() && null != roomUriMap.get(TAPUtils.getUriKeyFromUrl(fileUrl))) {
+            return Uri.parse(roomUriMap.get(TAPUtils.getUriKeyFromUrl(fileUrl)));
         } else {
-            String fileUrl = (String) message.getData().get(FILE_URL);
-            if (null != fileUrl && !fileUrl.isEmpty() && null != roomUriMap.get(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase())) {
-                return Uri.parse(roomUriMap.get(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase()));
+            String fileID = (String) message.getData().get(FILE_ID);
+            if (null != fileID && !fileID.isEmpty() && null != roomUriMap.get(fileID)) {
+                return Uri.parse(roomUriMap.get(fileID));
             }
         }
         return null;
@@ -665,9 +672,13 @@ public class TAPFileDownloadManager {
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
             roomUriMap.put(fileID, filePath);
+            Log.e(">>>>>", "saveFileMessageUri: " + fileID);
+            Log.e(">>>>>", "saveFileMessageUri: " + filePath);
         } else {
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put(fileID, filePath);
+            Log.e(">>>>>", "saveFileMessageUri: " + fileID);
+            Log.e(">>>>>", "saveFileMessageUri: " + filePath);
             getFileMessageUriMap().put(roomID, hashMap);
         }
     }

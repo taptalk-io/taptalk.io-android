@@ -59,6 +59,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
@@ -420,9 +421,9 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                 ivVideoIcon.setVisibility(View.GONE);
             }
 
-            String fileID = (String) message.getData().get(FILE_ID);
-
-            if (TAPCacheManager.getInstance(itemView.getContext()).containsCache(fileID) || TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)) {
+            if (TAPCacheManager.getInstance(itemView.getContext()).containsCache(message) ||
+                TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)
+            ) {
                 // Image exists in cache / file exists in storage
                 if (message.getType() == TYPE_VIDEO && null != message.getData()) {
                     Number duration = (Number) message.getData().get(DURATION);
@@ -441,8 +442,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                 pbProgress.setProgress(0);
                 flProgress.setVisibility(View.GONE);
                 new Thread(() -> {
-                    BitmapDrawable mediaThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
-                    if (position == getAdapterPosition()) {
+                    BitmapDrawable mediaThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(message);
+                    if (position == getBindingAdapterPosition()) {
                         // Load image only if view has not been recycled
                         if (message.getType() == TYPE_VIDEO && null == mediaThumbnail) {
                             // Get full-size thumbnail from Uri
@@ -454,7 +455,16 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 //                                retriever.setDataSource(itemView.getContext(), parsedUri);
                                 retriever.setDataSource(itemView.getContext(), videoUri);
                                 mediaThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
-                                TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, mediaThumbnail);
+                                String fileUrl = (String) message.getData().get(FILE_URL);
+                                String fileID = (String) message.getData().get(FILE_ID);
+                                String key = "";
+                                if (fileUrl != null && !fileUrl.isEmpty()) {
+                                    key = TAPUtils.getUriKeyFromUrl(fileUrl);
+                                }
+                                else if (fileID != null && !fileID.isEmpty()) {
+                                    key = fileID;
+                                }
+                                TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(key, mediaThumbnail);
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 mediaThumbnail = (BitmapDrawable) thumbnail;
