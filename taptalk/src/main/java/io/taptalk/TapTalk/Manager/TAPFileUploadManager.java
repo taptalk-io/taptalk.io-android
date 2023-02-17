@@ -270,70 +270,86 @@ public class TAPFileUploadManager {
 
     public void uploadRoomPicture(Context context, Uri imageUri, String roomID,
                                   TAPDefaultDataView<TAPUpdateRoomResponse> uploadProfilePictureView) {
-        createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap -> {
-            String mimeType = TAPUtils.getImageMimeType(context, imageUri);
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-            File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
+        createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, new BitmapInterface() {
+            @Override
+            public void onBitmapReady(Bitmap bitmap) {
+                String mimeType = TAPUtils.getImageMimeType(context, imageUri);
+                MimeTypeMap mime = MimeTypeMap.getSingleton();
+                String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+                File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
 
-            TAPDataManager.getInstance(instanceKey).uploadRoomPicture(imageFile, mimeType, roomID, uploadProfilePictureView);
+                TAPDataManager.getInstance(instanceKey).uploadRoomPicture(imageFile, mimeType, roomID, uploadProfilePictureView);
+            }
+
+            @Override
+            public void onBitmapError() {
+
+            }
         });
     }
 
     public void uploadProfilePicture(Context context, Uri imageUri, String userID) {
-        createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap -> {
-            ProgressRequestBody.UploadCallbacks uploadCallbacks = new ProgressRequestBody.UploadCallbacks() {
-                @Override
-                public void onProgressUpdate(int percentage, long bytes) {
-                    addUploadProgressMap(userID, percentage, bytes);
-                    Intent intent = new Intent(UploadProgressLoading);
-                    intent.putExtra(UploadProgress, percentage);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                }
+        createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, new BitmapInterface() {
+            @Override
+            public void onBitmapReady(Bitmap bitmap) {
+                ProgressRequestBody.UploadCallbacks uploadCallbacks = new ProgressRequestBody.UploadCallbacks() {
+                    @Override
+                    public void onProgressUpdate(int percentage, long bytes) {
+                        addUploadProgressMap(userID, percentage, bytes);
+                        Intent intent = new Intent(UploadProgressLoading);
+                        intent.putExtra(UploadProgress, percentage);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    }
 
-                @Override
-                public void onError() {
-                    removeUploadProgressMap(userID);
-                }
+                    @Override
+                    public void onError() {
+                        removeUploadProgressMap(userID);
+                    }
 
-                @Override
-                public void onFinish() {
-                    removeUploadProgressMap(userID);
-                }
-            };
+                    @Override
+                    public void onFinish() {
+                        removeUploadProgressMap(userID);
+                    }
+                };
 
-            TAPDefaultDataView<TAPGetUserResponse> uploadProfilePictureView = new TAPDefaultDataView<TAPGetUserResponse>() {
-                @Override
-                public void onSuccess(TAPGetUserResponse response) {
-                    TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
+                TAPDefaultDataView<TAPGetUserResponse> uploadProfilePictureView = new TAPDefaultDataView<TAPGetUserResponse>() {
+                    @Override
+                    public void onSuccess(TAPGetUserResponse response) {
+                        TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
 
-                    Intent intent = new Intent(UploadProgressFinish);
-                    intent.putExtra(K_USER, response.getUser());
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                }
+                        Intent intent = new Intent(UploadProgressFinish);
+                        intent.putExtra(K_USER, response.getUser());
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    }
 
-                @Override
-                public void onError(TAPErrorModel error) {
-                    Intent intent = new Intent(UploadFailed);
-                    intent.putExtra(K_USER_ID, userID);
-                    intent.putExtra(UploadFailedErrorMessage, error.getMessage());
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                }
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        Intent intent = new Intent(UploadFailed);
+                        intent.putExtra(K_USER_ID, userID);
+                        intent.putExtra(UploadFailedErrorMessage, error.getMessage());
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    }
 
-                @Override
-                public void onError(String errorMessage) {
-                    Intent intent = new Intent(UploadFailed);
-                    intent.putExtra(K_USER_ID, userID);
-                    intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_upload_profile_picture));
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                }
-            };
+                    @Override
+                    public void onError(String errorMessage) {
+                        Intent intent = new Intent(UploadFailed);
+                        intent.putExtra(K_USER_ID, userID);
+                        intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_upload_profile_picture));
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    }
+                };
 
-            String mimeType = TAPUtils.getImageMimeType(context, imageUri);
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-            File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
-            TAPDataManager.getInstance(instanceKey).uploadProfilePicture(imageFile, mimeType, uploadCallbacks, uploadProfilePictureView);
+                String mimeType = TAPUtils.getImageMimeType(context, imageUri);
+                MimeTypeMap mime = MimeTypeMap.getSingleton();
+                String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+                File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
+                TAPDataManager.getInstance(instanceKey).uploadProfilePicture(imageFile, mimeType, uploadCallbacks, uploadProfilePictureView);
+            }
+
+            @Override
+            public void onBitmapError() {
+
+            }
         });
     }
 
@@ -381,11 +397,23 @@ public class TAPFileUploadManager {
 
         if (messageModel.getType() == TYPE_IMAGE) {
             // Generate small thumbnail for image
-            createAndResizeImageFile(context, Uri.parse(fileUri), THUMB_MAX_DIMENSION, thumbBitmap -> {
-                String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
-                messageData.put(THUMBNAIL, thumbBase64);
-                messageModel.setData(messageData);
-                TAPChatManager.getInstance(instanceKey).triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
+            createAndResizeImageFile(context, Uri.parse(fileUri), THUMB_MAX_DIMENSION, new BitmapInterface() {
+                @Override
+                public void onBitmapReady(Bitmap thumbBitmap) {
+                    String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
+                    messageData.put(THUMBNAIL, thumbBase64);
+                    messageModel.setData(messageData);
+                    TAPChatManager.getInstance(instanceKey).triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
+                }
+
+                @Override
+                public void onBitmapError() {
+                    Intent intent = new Intent(UploadFailed);
+                    intent.putExtra(UploadLocalID, messageModel.getLocalID());
+                    intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_could_not_find_file));
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+                }
             });
         } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_VOICE) {
             TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
@@ -454,20 +482,70 @@ public class TAPFileUploadManager {
         if (null != imageData.getFileUri() && !imageData.getFileUri().isEmpty()) {
             // Create image from file Uri
             Uri imageUri = Uri.parse(imageData.getFileUri());
-            createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap ->
-                    // Create thumbnail
-                    createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION, thumbBitmap -> {
-                        String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
-                        checkAndUploadCompressedImage(context, roomID, messageModel, imageUri, imageData, bitmap, thumbBase64);
-                    }));
+            try {
+                createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, new BitmapInterface() {
+                    @Override
+                    public void onBitmapReady(Bitmap bitmap) {
+                        // Create thumbnail
+                        createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION, new BitmapInterface() {
+                            @Override
+                            public void onBitmapReady(Bitmap thumbBitmap) {
+                                String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
+                                checkAndUploadCompressedImage(context, roomID, messageModel, imageUri, imageData, bitmap, thumbBase64);
+                            }
+
+                            @Override
+                            public void onBitmapError() {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onBitmapError() {
+
+                    }
+                });
+            } catch (Exception e) {
+                Intent intent = new Intent(UploadFailed);
+                intent.putExtra(UploadLocalID, messageModel.getLocalID());
+                intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_could_not_locate_file));
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            }
         } else if (null != getBitmapQueue().get(messageModel.getLocalID())) {
             // Create image from bitmap queue
-            Bitmap bitmap = getBitmapQueue().get(messageModel.getLocalID());
-            createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, bitmap1 ->
-                    createAndResizeImageFile(bitmap1, THUMB_MAX_DIMENSION, thumbBitmap -> {
-                        String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
-                        checkAndUploadCompressedImage(context, roomID, messageModel, null, imageData, bitmap1, thumbBase64);
-                    }));
+            try {
+                Bitmap bitmap = getBitmapQueue().get(messageModel.getLocalID());
+                createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, new BitmapInterface() {
+                    @Override
+                    public void onBitmapReady(Bitmap bitmap) {
+                        createAndResizeImageFile(bitmap, THUMB_MAX_DIMENSION, new BitmapInterface() {
+                            @Override
+                            public void onBitmapReady(Bitmap thumbBitmap) {
+                                String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
+                                checkAndUploadCompressedImage(context, roomID, messageModel, null, imageData, bitmap, thumbBase64);
+                            }
+
+                            @Override
+                            public void onBitmapError() {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onBitmapError() {
+
+                    }
+                });
+            } catch (Exception e) {
+                Intent intent = new Intent(UploadFailed);
+                intent.putExtra(UploadLocalID, messageModel.getLocalID());
+                intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_could_not_locate_file));
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            }
         } else {
             // Image data does not contain Uri
             Log.e(TAG, context.getString(R.string.tap_error_message_uri_empty));
@@ -786,12 +864,20 @@ public class TAPFileUploadManager {
             return;
         }
         try {
-            createAndResizeImageFile(context, uri, IMAGE_MAX_DIMENSION, bitmap -> {
-                String mimeType = TAPUtils.getImageMimeType(context, uri);
-                MimeTypeMap mime = MimeTypeMap.getSingleton();
-                String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-                File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
-                TAPDataManager.getInstance(instanceKey).uploadImage(null, imageFile, "", "", mimeType, uploadCallback, view);
+            createAndResizeImageFile(context, uri, IMAGE_MAX_DIMENSION, new BitmapInterface() {
+                @Override
+                public void onBitmapReady(Bitmap bitmap) {
+                    String mimeType = TAPUtils.getImageMimeType(context, uri);
+                    MimeTypeMap mime = MimeTypeMap.getSingleton();
+                    String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+                    File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
+                    TAPDataManager.getInstance(instanceKey).uploadImage(null, imageFile, "", "", mimeType, uploadCallback, view);
+                }
+
+                @Override
+                public void onBitmapError() {
+                    view.onError(new TAPErrorModel(ERROR_CODE_OTHERS, "Could not find file.", ""));
+                }
             });
         } catch (Exception e) {
             view.onError(e);
@@ -1117,6 +1203,10 @@ public class TAPFileUploadManager {
 //            bitmap = BitmapFactory.decodeFile(imageUri.toString(), options);
                 bitmap = BitmapFactory.decodeFile(imageUri.toString());
             }
+            if (bitmap == null) {
+                bitmapInterface.onBitmapError();
+                return;
+            }
             bitmap = resizeBitmap(bitmap, imageMaxSize);
             bitmap = fixImageOrientation(bitmap, imageUri);
             bitmap = compressBitmap(bitmap, mimeType, TapTalk.getImageCompressionQuality(instanceKey));
@@ -1124,7 +1214,11 @@ public class TAPFileUploadManager {
         }).start();
     }
 
-    private void createAndResizeImageFile(Bitmap bitmap, int imageMaxSize, BitmapInterface bitmapInterface) {
+    public void createAndResizeImageFile(Bitmap bitmap, int imageMaxSize, BitmapInterface bitmapInterface) {
+        if (bitmap == null) {
+            bitmapInterface.onBitmapError();
+            return;
+        }
         new Thread(() -> {
             Bitmap bitmapEdit = bitmap;
             bitmapEdit = resizeBitmap(bitmapEdit, imageMaxSize);
@@ -1213,6 +1307,7 @@ public class TAPFileUploadManager {
 
     public interface BitmapInterface {
         void onBitmapReady(Bitmap bitmap);
+        void onBitmapError();
     }
 
     /**

@@ -1635,11 +1635,11 @@ public class TAPChatManager {
     /**
      * Create image message model and call upload api
      */
-    private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel room, Uri fileUri, String caption) {
+    public void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel room, Uri fileUri, String caption) {
         createImageMessageModelAndAddToUploadQueue(context, room, fileUri, caption, 0L);
     }
 
-    private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel room, Uri fileUri, String caption, Long scheduledTime) {
+    public void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel room, Uri fileUri, String caption, Long scheduledTime) {
         TAPMessageModel messageModel = createImageMessageModel(context, fileUri, caption, room);
 
         // Set Start Point for Progress
@@ -1811,7 +1811,11 @@ public class TAPChatManager {
         return imageMessage;
     }
 
-    private void createVideoMessageModelAndAddToUploadQueue(Context context, TAPRoomModel room, Uri fileUri, String caption, Long scheduledTime) {
+    public void createVideoMessageModelAndAddToUploadQueue(Context context, TAPRoomModel room, Uri fileUri, String caption) {
+        createVideoMessageModelAndAddToUploadQueue(context, room, fileUri, caption, 0L);
+    }
+
+    public void createVideoMessageModelAndAddToUploadQueue(Context context, TAPRoomModel room, Uri fileUri, String caption, Long scheduledTime) {
         TAPMessageModel messageModel = createVideoMessageModel(context, fileUri, caption, room, new TapCoreSendMessageListener() {
         });
 
@@ -1830,10 +1834,13 @@ public class TAPChatManager {
         }
         TAPFileUploadManager.getInstance(instanceKey).addUploadQueue(context, room.getRoomID(), messageModel);
     }
+
+    @Deprecated
     public void sendImageOrVideoMessage(Context context, TAPRoomModel room, ArrayList<TAPMediaPreviewModel> medias) {
         sendImageOrVideoMessage(context, room, medias, 0L);
     }
 
+    @Deprecated
     public void sendImageOrVideoMessage(Context context, TAPRoomModel room, ArrayList<TAPMediaPreviewModel> medias, Long scheduledTime) {
         new Thread(() -> {
             if (scheduledTime < System.currentTimeMillis()) {

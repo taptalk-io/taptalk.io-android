@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
@@ -55,6 +56,7 @@ import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager.BitmapInterface
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Manager.TapUI.LongPressMenuType
 import io.taptalk.TapTalk.Model.*
@@ -222,9 +224,34 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     if (null != medias && 0 < medias.size) {
                         val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
                             override fun onClick(position: Int, item: Long?) {
-                                super.onClick(position, item)
-                                TAPChatManager.getInstance(instanceKey)
-                                    .sendImageOrVideoMessage(TapTalk.appContext, vm.room, medias, item)
+                                for (media in medias) {
+                                    if (media.type == MessageType.TYPE_IMAGE) {
+                                        try {
+                                            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, media.uri)
+                                            if (bitmap != null) {
+                                                TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, object : BitmapInterface {
+                                                    override fun onBitmapReady(bitmap: Bitmap) {
+                                                        val imagePath = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "", "")
+                                                        if (imagePath != null && !imagePath.isEmpty()) {
+                                                            val uri = Uri.parse(imagePath)
+                                                            media.uri = uri
+                                                        }
+                                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
+                                                    }
+
+                                                    override fun onBitmapError() {
+                                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
+                                                    }
+                                                })
+                                            }
+                                        } catch (e: IOException) {
+                                            TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
+                                            e.printStackTrace()
+                                        }
+                                    } else if (media.type == MessageType.TYPE_VIDEO) {
+                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
+                                    }
+                                }
                             }
                         })
                         timePicker.show(supportFragmentManager, "")
