@@ -1369,8 +1369,14 @@ public class TAPFileUploadManager {
         try {
             new Thread(() -> {
                 try {
-                    String fileID = response.getId();
-                    TAPCacheManager.getInstance(context).addBitmapDrawableToCache(fileID, new BitmapDrawable(context.getResources(), bitmap));
+                    String key = "";
+                    if (response.getFileURL() != null && !response.getFileURL().isEmpty()) {
+                        key = TAPUtils.getUriKeyFromUrl(response.getFileURL());
+                    }
+                    else if (response.getId() != null && !response.getId().isEmpty()) {
+                        key = response.getId();
+                    }
+                    TAPCacheManager.getInstance(context).addBitmapDrawableToCache(key, new BitmapDrawable(context.getResources(), bitmap));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1429,6 +1435,13 @@ public class TAPFileUploadManager {
         try {
             String localID = messageModel.getLocalID();
             addUploadProgressMap(localID, 100, response.getSize());
+            String key = "";
+            if (response.getFileURL() != null && !response.getFileURL().isEmpty()) {
+                key = TAPUtils.getUriKeyFromUrl(response.getFileURL());
+            }
+            else if (response.getId() != null && !response.getId().isEmpty()) {
+                key = response.getId();
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // Copy file to storage for Android 10+
@@ -1438,14 +1451,16 @@ public class TAPFileUploadManager {
                 TAPFileDownloadManager.getInstance(instanceKey).copyFile(file, storageFile);
 
                 Uri fileProviderUri = FileProvider.getUriForFile(appContext, FILEPROVIDER_AUTHORITY, storageFile);
-                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileProviderUri);
+                if (!key.isEmpty()) {
+                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, key, fileProviderUri);
+                }
                 TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, storageFile.getAbsolutePath());
                 TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, storageFile, TAPUtils.getFileMimeType(storageFile));
             }
             else if (null != messageModel.getData()) {
                 String fileUriString = (String) messageModel.getData().get(FILE_URI);
-                if (fileUriString != null && !fileUriString.isEmpty()) {
-                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), fileUriString);
+                if (fileUriString != null && !fileUriString.isEmpty() && !key.isEmpty()) {
+                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, key, fileUriString);
                 }
             }
 
@@ -1537,9 +1552,7 @@ public class TAPFileUploadManager {
         } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_FILE || messageModel.getType() == TYPE_VOICE) {
             //Log.e(TAG, "onFileUploadFromExternalServerFinished: send video/file\n" + fileUrl + "\n" + fileUri);
             // Save Uri map with file URL as key
-            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(
-                    messageModel.getRoom().getRoomID(),
-                    TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase(), fileUri);
+            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(messageModel.getRoom().getRoomID(), TAPUtils.getUriKeyFromUrl(fileUrl), fileUri);
 
             // Send video/file message to server
             if (TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.containsKey(messageModel.getLocalID())) {
