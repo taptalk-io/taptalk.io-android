@@ -547,11 +547,9 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         if (null != vm.openedFileMessage?.data) {
             val fileId = vm.openedFileMessage?.data?.get(FILE_ID) as String
             var fileUrl = vm.openedFileMessage?.data?.get(FILE_URL) as String
-            fileUrl = TAPUtils.removeNonAlphaNumeric(fileUrl).lowercase(Locale.getDefault())
-            TAPFileDownloadManager.getInstance(instanceKey)
-                .removeFileMessageUri(vm.room?.roomID, fileId)
-            TAPFileDownloadManager.getInstance(instanceKey)
-                .removeFileMessageUri(vm.room?.roomID, fileUrl)
+            fileUrl = TAPUtils.getUriKeyFromUrl(fileUrl)
+            TAPFileDownloadManager.getInstance(instanceKey).removeFileMessageUri(vm.room?.roomID, fileId)
+            TAPFileDownloadManager.getInstance(instanceKey).removeFileMessageUri(vm.room?.roomID, fileUrl)
         }
         notifyItemChanged(vm.openedFileMessage)
         TapTalkDialog.Builder(context)

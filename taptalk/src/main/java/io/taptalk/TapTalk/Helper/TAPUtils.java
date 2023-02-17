@@ -1286,6 +1286,17 @@ public class TAPUtils {
         return s.replaceAll("[^A-Za-z0-9]", "");
     }
 
+    public static String getLastCharacters(String s, int length) {
+        if (s.length() <= length) {
+            return s;
+        }
+        return s.substring(s.length() - length);
+    }
+
+    public static String getUriKeyFromUrl(String url) {
+        return removeNonAlphaNumeric(url).toLowerCase();
+    }
+
     /**
      * @return key String to get file message Uri from TapDownloadManager
      */
@@ -1293,13 +1304,13 @@ public class TAPUtils {
         if (null == message.getData()) {
             return "";
         }
+        String fileUrl = (String) message.getData().get(FILE_URL);
+        if (null != fileUrl && !fileUrl.isEmpty()) {
+            return getUriKeyFromUrl(fileUrl);
+        }
         String fileID = (String) message.getData().get(FILE_ID);
         if (null != fileID && !fileID.isEmpty()) {
             return fileID;
-        }
-        String fileUrl = (String) message.getData().get(FILE_URL);
-        if (null != fileUrl && !fileUrl.isEmpty()) {
-            return removeNonAlphaNumeric(fileUrl).toLowerCase();
         }
         return "";
     }

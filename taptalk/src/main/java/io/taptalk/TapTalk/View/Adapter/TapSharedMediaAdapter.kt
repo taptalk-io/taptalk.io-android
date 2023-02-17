@@ -31,14 +31,16 @@ import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Interface.TapSharedMediaInterface
 import io.taptalk.TapTalk.Manager.TAPCacheManager
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager
-import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_DATE_SECTION
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_DOCUMENT
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_LINK
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_LOADING
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
+import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.R
-import java.lang.Exception
+import retrofit2.adapter.rxjava.Result.response
+import java.util.*
+
 
 class TapSharedMediaAdapter(private val instanceKey: String, private val mediaItems: List<TAPMessageModel>, private val glide: RequestManager, private val listener: TapSharedMediaInterface) : TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>>() {
 
@@ -139,10 +141,8 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
             } else {
                 ivVideoIcon.visibility = View.GONE
             }
-            val fileID = message.data!![MessageData.FILE_ID] as String?
-            if (TAPCacheManager.getInstance(itemView.context)
-                    .containsCache(fileID) || TAPFileDownloadManager.getInstance(instanceKey)
-                    .checkPhysicalFileExists(message)
+            if (TAPCacheManager.getInstance(itemView.context).containsCache(message) ||
+                TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)
             ) {
                 // Image exists in cache / file exists in storage
                 if (message.type == TYPE_VIDEO && null != message.data) {
@@ -163,8 +163,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 pbProgress.progress = 0
                 flProgress.visibility = View.GONE
                 Thread {
-                    var mediaThumbnail =
-                        TAPCacheManager.getInstance(itemView.context).getBitmapDrawable(fileID)
+                    var mediaThumbnail = TAPCacheManager.getInstance(itemView.context).getBitmapDrawable(message)
                     if (position == bindingAdapterPosition) {
                         // Load image only if view has not been recycled
                         if (message.type == TYPE_VIDEO && null == mediaThumbnail) {
@@ -184,8 +183,16 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                                     itemView.context.resources,
                                     retriever.frameAtTime
                                 )
-                                TAPCacheManager.getInstance(itemView.context)
-                                    .addBitmapDrawableToCache(fileID, mediaThumbnail)
+                                val fileUrl = message.data!![MessageData.FILE_URL] as String?
+                                val fileID = message.data!![MessageData.FILE_ID] as String?
+                                var key = ""
+                                if (!fileUrl.isNullOrEmpty()) {
+                                    key = TAPUtils.getUriKeyFromUrl(fileUrl)
+                                }
+                                else if (!fileID.isNullOrEmpty()) {
+                                    key = fileID
+                                }
+                                TAPCacheManager.getInstance(itemView.context).addBitmapDrawableToCache(key, mediaThumbnail)
                             } catch (e: Exception) {
                                 e.printStackTrace()
                                 mediaThumbnail = thumbnail as BitmapDrawable?

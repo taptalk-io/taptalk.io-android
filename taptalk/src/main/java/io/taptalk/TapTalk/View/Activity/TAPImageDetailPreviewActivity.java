@@ -96,39 +96,70 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
         initView();
 
         supportPostponeEnterTransition();
-        if (null != fileUrl && !fileUrl.isEmpty()) {
-            // Load image from URL
-            tivImageDetail.post(() -> Glide.with(TAPImageDetailPreviewActivity.this)
-                    .load(fileUrl)
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            finish();
-                            return false;
-                        }
+        if ((null != fileUrl && !fileUrl.isEmpty()) || (null != fileID && !fileID.isEmpty())) {
+            // Load image from cache
+            image = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(fileUrl, fileID);
+            if (null != image) {
+                runOnUiThread(() -> {
+                    tivImageDetail.setImageDrawable(image);
+                    supportStartPostponedEnterTransition();
+                });
+            } else {
+                // Load image from URL
+                runOnUiThread(() -> {
+                    tivImageDetail.post(() -> Glide.with(TAPImageDetailPreviewActivity.this)
+                            .load(fileUrl)
+                            .listener(new RequestListener<Drawable>() {
+                                @Override
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                    finish();
+                                    return false;
+                                }
 
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            image = (BitmapDrawable) resource;
-                            supportStartPostponedEnterTransition();
-                            return false;
-                        }
-                    })
-                    .into(tivImageDetail));
-        } else if (null != fileID && !fileID.isEmpty()) {
-            new Thread(() -> {
-                // Load image from cache
-                image = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(fileID);
-                if (null != image) {
-                    runOnUiThread(() -> {
-                        tivImageDetail.setImageDrawable(image);
-                        supportStartPostponedEnterTransition();
-                    });
-                } else {
-                    finish();
-                }
-            }).start();
+                                @Override
+                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                    image = (BitmapDrawable) resource;
+                                    supportStartPostponedEnterTransition();
+                                    return false;
+                                }
+                            })
+                            .into(tivImageDetail));
+                });
+            }
         }
+//        if (null != fileUrl && !fileUrl.isEmpty()) {
+//            // Load image from URL
+//            tivImageDetail.post(() -> Glide.with(TAPImageDetailPreviewActivity.this)
+//                    .load(fileUrl)
+//                    .listener(new RequestListener<Drawable>() {
+//                        @Override
+//                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                            finish();
+//                            return false;
+//                        }
+//
+//                        @Override
+//                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                            image = (BitmapDrawable) resource;
+//                            supportStartPostponedEnterTransition();
+//                            return false;
+//                        }
+//                    })
+//                    .into(tivImageDetail));
+//        } else if (null != fileID && !fileID.isEmpty()) {
+//            new Thread(() -> {
+//                // Load image from cache
+//                image = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(fileID);
+//                if (null != image) {
+//                    runOnUiThread(() -> {
+//                        tivImageDetail.setImageDrawable(image);
+//                        supportStartPostponedEnterTransition();
+//                    });
+//                } else {
+//                    finish();
+//                }
+//            }).start();
+//        }
     }
 
     @Override

@@ -1781,22 +1781,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
             vm.delete(message.getLocalID());
             if ((message.getType() == TYPE_IMAGE ||
-                    message.getType() == TYPE_VIDEO ||
-                    message.getType() == TYPE_FILE ||
-                    message.getType() == TYPE_VOICE)
+                message.getType() == TYPE_VIDEO ||
+                message.getType() == TYPE_FILE ||
+                message.getType() == TYPE_VOICE ||
+                message.getType() == TYPE_AUDIO)
             ) {
                 if (null != message.getData() &&
-                        null != message.getData().get(FILE_ID) &&
-                        null != message.getData().get(FILE_URL) &&
-                        !(((String) message.getData().get(FILE_ID)).isEmpty()) &&
-                        !(((String) message.getData().get(FILE_URL)).isEmpty())
+                    null != message.getData().get(FILE_ID) &&
+                    null != message.getData().get(FILE_URL) &&
+                    !(((String) message.getData().get(FILE_ID)).isEmpty()) &&
+                    !(((String) message.getData().get(FILE_URL)).isEmpty())
                 ) {
                     // Resend message
                     TAPChatManager.getInstance(instanceKey).resendMessage(message);
                 }
-                else if (null != message.getData() &&
-                        (null != message.getData().get(FILE_URI) &&
-                                !(((String) message.getData().get(FILE_URI)).isEmpty()))
+                else if (
+                    null != message.getData() &&
+                    (null != message.getData().get(FILE_URI) &&
+                    !(((String) message.getData().get(FILE_URI)).isEmpty()))
                 ) {
                     // Re-upload image/video
                     TAPChatManager.getInstance(instanceKey).retryUpload(TapUIChatActivity.this, message);
@@ -2280,17 +2282,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
-                Drawable drawable = null;
-                String fileID = (String) message.getData().get(FILE_ID);
-                if (null != fileID && !fileID.isEmpty()) {
-                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
-                }
-                if (null == drawable) {
-                    String fileUrl = (String) message.getData().get(FILE_URL);
-                    if (null != fileUrl && !fileUrl.isEmpty()) {
-                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
-                    }
-                }
+                Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(message);
+//                Drawable drawable = null;
+//                String fileID = (String) message.getData().get(FILE_ID);
+//                if (null != fileID && !fileID.isEmpty()) {
+//                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
+//                }
+//                if (null == drawable) {
+//                    String fileUrl = (String) message.getData().get(FILE_URL);
+//                    if (null != fileUrl && !fileUrl.isEmpty()) {
+//                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
+//                    }
+//                }
                 if (null != drawable) {
                     rcivQuoteImage.setImageDrawable(drawable);
                 } else {
@@ -2376,20 +2379,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
-                Drawable drawable = null;
-                String fileID = (String) message.getData().get(FILE_ID);
-                if (null != fileID && !fileID.isEmpty()) {
-                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
-                }
-                if (null == drawable) {
-                    String fileUrl = (String) message.getData().get(FILE_URL);
-                    if (null != fileUrl && !fileUrl.isEmpty()) {
-                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
-                        if (null == drawable) {
-                            glide.load(fileUrl).into(rcivQuoteImage);
-                        }
-                    }
-                }
+                Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(message);
+//                Drawable drawable = null;
+//                String fileID = (String) message.getData().get(FILE_ID);
+//                if (null != fileID && !fileID.isEmpty()) {
+//                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
+//                }
+//                if (null == drawable) {
+//                    String fileUrl = (String) message.getData().get(FILE_URL);
+//                    if (null != fileUrl && !fileUrl.isEmpty()) {
+//                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
+//                        if (null == drawable) {
+//                            glide.load(fileUrl).into(rcivQuoteImage);
+//                        }
+//                    }
+//                }
                 if (null != drawable) {
                     rcivQuoteImage.setImageDrawable(drawable);
                 }
@@ -2580,17 +2584,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
                 tvPinnedMessage.setText(message.getBody());
                 if (message.getData() != null) {
-                    Drawable drawable = null;
-                    String fileID = (String) message.getData().get(FILE_ID);
-                    if (null != fileID && !fileID.isEmpty()) {
-                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
-                    }
-                    if (null == drawable) {
-                        String fileUrl = (String) message.getData().get(FILE_URL);
-                        if (null != fileUrl && !fileUrl.isEmpty()) {
-                            drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
-                        }
-                    }
+                    Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(message);
+//                    Drawable drawable = null;
+//                    String fileID = (String) message.getData().get(FILE_ID);
+//                    if (null != fileID && !fileID.isEmpty()) {
+//                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
+//                    }
+//                    if (null == drawable) {
+//                        String fileUrl = (String) message.getData().get(FILE_URL);
+//                        if (null != fileUrl && !fileUrl.isEmpty()) {
+//                            drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
+//                        }
+//                    }
                     if (null != drawable) {
                         rcivPinnedImage.setImageDrawable(drawable);
                         rcivPinnedImage.setVisibility(View.VISIBLE);
@@ -3207,23 +3212,40 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else if (null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
                 new Thread(() -> {
                     vm.setPendingDownloadMessage(null);
+                    BitmapDrawable bitmapDrawable = TAPCacheManager.getInstance(TapUIChatActivity.this).getBitmapDrawable(message);
                     Bitmap bitmap = null;
-                    String fileID = (String) message.getData().get(FILE_ID);
-                    String fileUrl = (String) message.getData().get(FILE_URL);
-                    if (null != fileID && !fileID.isEmpty()) {
-                        // Get bitmap from cache
-                        bitmap = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable((String) message.getData().get(FILE_ID)).getBitmap();
-                    } else if (null != fileUrl && !fileUrl.isEmpty()) {
-                        // Get bitmap from url
-                        try {
-                            URL imageUrl = new URL((String) message.getData().get(FILE_URL));
-                            bitmap = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream());
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    if (bitmapDrawable != null) {
+                        bitmap = bitmapDrawable.getBitmap();
+                    }
+                    else {
+                        String fileUrl = (String) message.getData().get(FILE_URL);
+                        if (null != fileUrl && !fileUrl.isEmpty()) {
+                            // Get bitmap from url
+                            try {
+                                URL imageUrl = new URL((String) message.getData().get(FILE_URL));
+                                bitmap = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream());
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
+//                    String fileID = (String) message.getData().get(FILE_ID);
+//                    if (null != fileID && !fileID.isEmpty()) {
+//                        // Get bitmap from cache
+//                        bitmap = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable((String) message.getData().get(FILE_ID)).getBitmap();
+//                    } else if (null != fileUrl && !fileUrl.isEmpty()) {
+//                        // Get bitmap from url
+//                        try {
+//                            URL imageUrl = new URL((String) message.getData().get(FILE_URL));
+//                            bitmap = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream());
+//                        } catch (MalformedURLException e) {
+//                            e.printStackTrace();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
 
                     if (null != bitmap) {
                         TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(TapUIChatActivity.this,
@@ -6080,7 +6102,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             String fileId = (String) vm.getOpenedFileMessage().getData().get(FILE_ID);
             String fileUrl = (String) vm.getOpenedFileMessage().getData().get(FILE_URL);
             if (null != fileUrl) {
-                fileUrl = TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase();
+                fileUrl = TAPUtils.getUriKeyFromUrl(fileUrl);
             }
             TAPFileDownloadManager.getInstance(instanceKey).removeFileMessageUri(vm.getRoom().getRoomID(), fileId);
             TAPFileDownloadManager.getInstance(instanceKey).removeFileMessageUri(vm.getRoom().getRoomID(), fileUrl);
