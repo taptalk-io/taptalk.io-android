@@ -1779,6 +1779,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
                 return;
             }
+            messageAdapter.removeMessage(message);
             vm.delete(message.getLocalID());
             if ((message.getType() == TYPE_IMAGE ||
                 message.getType() == TYPE_VIDEO ||
