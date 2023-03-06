@@ -526,7 +526,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         linkHandler = new Handler();
         bindViews();
         initRoom();
-        registerBroadcastManager();
         TAPChatManager.getInstance(instanceKey).triggerChatRoomOpened(this, vm.getRoom(), vm.getOtherUserModel());
     }
 
@@ -535,6 +534,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         super.onResume();
         isArrowButtonTapped = false;
         TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
+        registerBroadcastManager();
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(this);
         etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft(vm.getRoom().getRoomID()));
         checkForwardLayout(vm.getQuotedMessage(), vm.getForwardedMessages(), vm.getQuoteAction());
@@ -681,6 +681,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance(instanceKey).deleteActiveRoom();
+        TAPBroadcastManager.unregister(this, broadcastReceiver);
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(null);
     }
 
@@ -703,7 +704,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
         LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent);
 
-        TAPBroadcastManager.unregister(this, broadcastReceiver);
         TAPChatManager.getInstance(instanceKey).updateUnreadCountInRoomList(TAPChatManager.getInstance(instanceKey).getOpenRoom());
         TAPChatManager.getInstance(instanceKey).setOpenRoom(null); // Reset open room
         TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
