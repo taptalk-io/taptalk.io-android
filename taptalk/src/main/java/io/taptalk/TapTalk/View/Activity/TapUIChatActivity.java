@@ -1277,7 +1277,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 hideUnreadButton();
             });
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);
-            rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
+                @Override
+                public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+                    try {
+                        super.onLayoutChildren(recycler, state);
+                    } catch (IndexOutOfBoundsException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         } else {
             // Disable custom keyboard
@@ -1779,6 +1788,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
                 return;
             }
+            messageAdapter.removeMessage(message);
             vm.delete(message.getLocalID());
             if ((message.getType() == TYPE_IMAGE ||
                 message.getType() == TYPE_VIDEO ||
@@ -5083,6 +5093,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
             String localID;
             Uri fileUri;
+            TAPMessageModel message = null;
+            if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
+                message = intent.getParcelableExtra(MESSAGE);
+            }
             switch (action) {
                 case UploadProgressLoading:
                     localID = intent.getStringExtra(UploadLocalID);
@@ -5153,30 +5167,32 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case OpenFile:
-                    TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
-                    fileUri = intent.getParcelableExtra(FILE_URI);
-                    vm.setOpenedFileMessage(message);
-                    if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
-                        if (!TAPUtils.openFile(instanceKey, TapUIChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
+                    if (message != null && message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
+                        fileUri = intent.getParcelableExtra(FILE_URI);
+                        vm.setOpenedFileMessage(message);
+                        if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
+                            if (!TAPUtils.openFile(instanceKey, TapUIChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
+                                showDownloadFileDialog();
+                            }
+                        } else {
                             showDownloadFileDialog();
                         }
-                    } else {
-                        showDownloadFileDialog();
                     }
                     break;
                 case PlayPauseVoiceNote:
-                    showFinishedRecording();
-                    TAPMessageModel voiceMessage = intent.getParcelableExtra(MESSAGE);
-                    boolean isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
-                    if (isPlaying) {
-                        if (vm.getMediaPlayer() != null && vm.getMediaPlayer().isPlaying()) {
-                            pauseVoiceNote();
+                    if (message != null && message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
+                        showFinishedRecording();
+                        boolean isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
+                        if (isPlaying) {
+                            if (vm.getMediaPlayer() != null && vm.getMediaPlayer().isPlaying()) {
+                                pauseVoiceNote();
+                            }
                         }
                     }
                     break;
                 case LongPressChatBubble:
-                    if (null != intent.getParcelableExtra(MESSAGE) &&
-                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel &&
+                    if (message != null &&
+                        message.getRoom().getRoomID().equals(vm.getRoom().getRoomID()) &&
                         (TYPE_PERSONAL != vm.getRoom().getType() ||
                         (null != vm.getOtherUserModel() &&
                         (null == vm.getOtherUserModel().getDeleted() ||
@@ -5188,7 +5204,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LongPressLink:
-                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                    if (message != null &&
+                        message.getRoom().getRoomID().equals(vm.getRoom().getRoomID()) &&
+                        null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE)
+                    ) {
                         TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
                             instanceKey,
                             LINK_TYPE,
@@ -5202,10 +5222,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LongPressEmail:
-                    if (null != intent.getStringExtra(URL_MESSAGE) &&
-                        null != intent.getStringExtra(COPY_MESSAGE) &&
-                        null != intent.getParcelableExtra(MESSAGE) &&
-                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel
+                    if (message != null &&
+                        message.getRoom().getRoomID().equals(vm.getRoom().getRoomID()) &&
+                        null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE)
                     ) {
                         TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
                             instanceKey,
@@ -5220,10 +5240,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LongPressPhone:
-                    if (null != intent.getStringExtra(URL_MESSAGE) &&
-                        null != intent.getStringExtra(COPY_MESSAGE) &&
-                        null != intent.getParcelableExtra(MESSAGE) &&
-                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel
+                    if (message != null &&
+                        message.getRoom().getRoomID().equals(vm.getRoom().getRoomID()) &&
+                        null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE)
                     ) {
                         TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
                             instanceKey,
@@ -5238,10 +5258,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LongPressMention:
-                    if (null != intent.getStringExtra(URL_MESSAGE) &&
-                        null != intent.getStringExtra(COPY_MESSAGE) &&
-                        null != intent.getParcelableExtra(MESSAGE) &&
-                        intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel
+                    if (message != null &&
+                        message.getRoom().getRoomID().equals(vm.getRoom().getRoomID()) &&
+                        null != intent.getStringExtra(URL_MESSAGE) &&
+                        null != intent.getStringExtra(COPY_MESSAGE)
                     ) {
                         TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(
                             instanceKey,
@@ -5487,9 +5507,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
 
                     if (isFirstLoad) {
-                        if (vm.isCustomKeyboardEnabled() && 0 == etChat.getText().toString().trim().length()) {
-                            showCustomKeyboard();
-                        }
+//                        if (vm.isCustomKeyboardEnabled() && 0 == etChat.getText().toString().trim().length()) {
+//                            showCustomKeyboard();
+//                        }
                         rvMessageList.scrollToPosition(0);
 
                         if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size()) {

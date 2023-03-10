@@ -8,17 +8,28 @@ import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
 import android.app.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.moselo.SampleApps.Activity.TAPLoginActivity;
 import io.moselo.SampleApps.Activity.TapDeleteAccountActivity;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
 import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
+import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalkSample.BuildConfig;
 import io.taptalk.TapTalkSample.R;
@@ -67,6 +78,7 @@ public class SampleApplication extends MultiDexApplication {
 
         if (BuildConfig.DEBUG) {
             TapUI.getInstance(INSTANCE_KEY).setCloseButtonInRoomListVisible(true);
+            TapUI.getInstance(INSTANCE_KEY).addCustomKeyboardListener(testCustomKeyboardListener);
         }
     }
 
@@ -94,6 +106,27 @@ public class SampleApplication extends MultiDexApplication {
         @Override
         public void onTaskRootChatRoomClosed(Activity activity) {
             TapUIRoomListActivity.start(activity, INSTANCE_KEY, null, true);
+        }
+    };
+
+    private final TapUICustomKeyboardListener testCustomKeyboardListener = new TapUICustomKeyboardListener() {
+        @Override
+        public List<TAPCustomKeyboardItemModel> setCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, @Nullable TAPUserModel recipientUser) {
+            List<TAPCustomKeyboardItemModel> keyboardItemModelList = new ArrayList<>();
+            TAPCustomKeyboardItemModel testCustomKeyboard = new TAPCustomKeyboardItemModel(
+                    "hello",
+                    ContextCompat.getDrawable(SampleApplication.this, R.drawable.tap_ic_send_message_orange),
+                    "Hello World!"
+            );
+            keyboardItemModelList.add(testCustomKeyboard);
+            return keyboardItemModelList;
+        }
+
+        @Override
+        public void onCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItem, TAPRoomModel room, TAPUserModel activeUser, @Nullable TAPUserModel recipientUser) {
+            if (customKeyboardItem.getItemID().equals("hello")) {
+                TapCoreMessageManager.getInstance(INSTANCE_KEY).sendTextMessage(customKeyboardItem.getItemName(), room, null);
+            }
         }
     };
 }
