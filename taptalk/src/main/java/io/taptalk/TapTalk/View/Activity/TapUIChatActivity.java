@@ -1277,7 +1277,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 hideUnreadButton();
             });
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);
-            rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
+                @Override
+                public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+                    try {
+                        super.onLayoutChildren(recycler, state);
+                    } catch (IndexOutOfBoundsException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         } else {
             // Disable custom keyboard
@@ -5498,9 +5507,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
 
                     if (isFirstLoad) {
-                        if (vm.isCustomKeyboardEnabled() && 0 == etChat.getText().toString().trim().length()) {
-                            showCustomKeyboard();
-                        }
+//                        if (vm.isCustomKeyboardEnabled() && 0 == etChat.getText().toString().trim().length()) {
+//                            showCustomKeyboard();
+//                        }
                         rvMessageList.scrollToPosition(0);
 
                         if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size()) {
