@@ -670,37 +670,37 @@ public class TapCoreMessageManager {
     }
 
     // For uploadImage, uploadVideo, uploadFile
-    private TAPDefaultDataView<TAPUploadFileResponse> uploadDataView(TapCoreFileUploadListener listener) {
-        return new TAPDefaultDataView<>() {
-            @Override
-            public void onSuccess(TAPUploadFileResponse response) {
-                if (null != listener && null != response) {
-                    listener.onSuccess(response.getFileID(), response.getFileURL());
-                }
-            }
-
-            @Override
-            public void onError(TAPErrorModel error) {
-                if (null != listener) {
-                    listener.onError(error.getCode(), error.getMessage());
-                }
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                if (null != listener) {
-                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
-                }
-            }
-        };
-    }
+//    private TAPDefaultDataView<TAPUploadFileResponse> uploadDataView(TapCoreFileUploadListener listener) {
+//        return new TAPDefaultDataView<>() {
+//            @Override
+//            public void onSuccess(TAPUploadFileResponse response) {
+//                if (null != listener && null != response) {
+//                    listener.onSuccess(response.getFileID(), response.getFileURL());
+//                }
+//            }
+//
+//            @Override
+//            public void onError(TAPErrorModel error) {
+//                if (null != listener) {
+//                    listener.onError(error.getCode(), error.getMessage());
+//                }
+//            }
+//
+//            @Override
+//            public void onError(String errorMessage) {
+//                if (null != listener) {
+//                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+//                }
+//            }
+//        };
+//    }
 
     public void uploadImage(Context context, Uri uri, TapCoreFileUploadListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
         try {
-            TAPFileUploadManager.getInstance(instanceKey).uploadImage(context, uri, uploadCallBack(listener), uploadDataView(listener));
+            TAPFileUploadManager.getInstance(instanceKey).uploadImage(context, uri, uploadCallBack(listener), listener);
         } catch (Exception e) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());
@@ -713,7 +713,7 @@ public class TapCoreMessageManager {
             return;
         }
         try {
-            TAPFileUploadManager.getInstance(instanceKey).uploadVideo(context, uri, uploadCallBack(listener), uploadDataView(listener));
+            TAPFileUploadManager.getInstance(instanceKey).uploadVideo(context, uri, uploadCallBack(listener), listener);
         } catch (Exception e) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());
@@ -726,7 +726,7 @@ public class TapCoreMessageManager {
             return;
         }
         try {
-            TAPFileUploadManager.getInstance(instanceKey).uploadFile(context, uri, uploadCallBack(listener), uploadDataView(listener));
+            TAPFileUploadManager.getInstance(instanceKey).uploadFile(context, uri, uploadCallBack(listener), listener);
         } catch (Exception e) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());

@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
+import io.taptalk.TapTalk.Listener.TapCoreFileUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -858,9 +859,11 @@ public class TAPFileUploadManager {
                         mimeType, uploadCallbacks, uploadView);
     }
 
-    public void uploadImage(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
+    public void uploadImage(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TapCoreFileUploadListener listener) {
         if (!TAPFileUtils.getMimeTypeFromUri(context, uri).contains("image")) {
-            view.onError(new TAPErrorModel(ERROR_CODE_OTHERS, "Invalid file format.", ""));
+            if (listener != null) {
+                listener.onError(ERROR_CODE_OTHERS, "Invalid file format.");
+            }
             return;
         }
         try {
@@ -871,22 +874,31 @@ public class TAPFileUploadManager {
                     MimeTypeMap mime = MimeTypeMap.getSingleton();
                     String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
                     File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
-                    TAPDataManager.getInstance(instanceKey).uploadImage(null, imageFile, "", "", mimeType, uploadCallback, view);
+                    if (listener != null) {
+                        listener.onStart(imageFile, uri);
+                    }
+                    TAPDataManager.getInstance(instanceKey).uploadImage(null, imageFile, "", "", mimeType, uploadCallback, coreUploadDataView(context, imageFile, listener));
                 }
 
                 @Override
                 public void onBitmapError() {
-                    view.onError(new TAPErrorModel(ERROR_CODE_OTHERS, "Could not find file.", ""));
+                    if (listener != null) {
+                        listener.onError(ERROR_CODE_OTHERS, "Could not find file.");
+                    }
                 }
             });
         } catch (Exception e) {
-            view.onError(e);
+            if (listener != null) {
+                listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());
+            }
         }
     }
 
-    public void uploadVideo(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
+    public void uploadVideo(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TapCoreFileUploadListener listener) {
         if (!TAPFileUtils.getMimeTypeFromUri(context, uri).contains("video")) {
-            view.onError(new TAPErrorModel(ERROR_CODE_OTHERS, "Invalid file format.", ""));
+            if (listener != null) {
+                listener.onError(ERROR_CODE_OTHERS, "Invalid file format.");
+            }
             return;
         }
         try {
@@ -898,7 +910,9 @@ public class TAPFileUploadManager {
                 String videoPath = TAPFileUtils.getFilePath(context, uri);
                 if (videoPath == null || videoPath.isEmpty()) {
                     // File not found
-                    view.onError(new TAPErrorModel(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND, ""));
+                    if (listener != null) {
+                        listener.onError(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+                    }
                     return;
                 }
                 videoFile = new File(videoPath);
@@ -906,28 +920,36 @@ public class TAPFileUploadManager {
             }
             if (videoFile.length() == 0) {
                 // File not found
-                view.onError(new TAPErrorModel(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND, ""));
+                if (listener != null) {
+                    listener.onError(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+                }
                 return;
             }
 
             if (isSizeAllowedForUpload(videoFile.length())) {
                 // Run upload
-                TAPDataManager.getInstance(instanceKey).uploadVideo(null, videoFile, "", "", mimeType, uploadCallback, view);
+                if (listener != null) {
+                    listener.onStart(videoFile, uri);
+                }
+                TAPDataManager.getInstance(instanceKey).uploadVideo(null, videoFile, "", "", mimeType, uploadCallback, coreUploadDataView(context, videoFile, listener));
             }
             else {
                 // Size exceeds limit
-                view.onError(new TAPErrorModel(
-                    ERROR_CODE_EXCEEDED_MAX_SIZE,
-                    String.format(ERROR_MESSAGE_EXCEEDED_MAX_SIZE, TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize())),
-                    ""
-                ));
+                if (listener != null) {
+                    listener.onError(
+                        ERROR_CODE_EXCEEDED_MAX_SIZE,
+                        String.format(ERROR_MESSAGE_EXCEEDED_MAX_SIZE, TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize()))
+                    );
+                }
             }
         } catch (Exception e) {
-            view.onError(e);
+            if (listener != null) {
+                listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());
+            }
         }
     }
 
-    public void uploadFile(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
+    public void uploadFile(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TapCoreFileUploadListener listener) {
         try {
             File file;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -942,7 +964,7 @@ public class TAPFileUploadManager {
                 // Get file from file Uri if map is empty
                 String filePath = TAPFileUtils.getFilePath(context, uri);
                 if (filePath == null || filePath.isEmpty()) {
-                    view.onError(new TAPErrorModel(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND, ""));
+                    listener.onError(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
                     return;
                 }
                 file = new File(filePath);
@@ -950,25 +972,88 @@ public class TAPFileUploadManager {
             }
             if (file == null || file.length() == 0) {
                 // File not found
-                view.onError(new TAPErrorModel(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND, ""));
+                listener.onError(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
                 return;
             }
 
             if (isSizeAllowedForUpload(file.length())) {
                 // Run upload
-                TAPDataManager.getInstance(instanceKey).uploadFile(null, file, "", mimeType, uploadCallback, view);
+                if (listener != null) {
+                    listener.onStart(file, uri);
+                }
+                TAPDataManager.getInstance(instanceKey).uploadFile(null, file, "", mimeType, uploadCallback, coreUploadDataView(context, file, listener));
             }
             else {
                 // Size exceeds limit
-                view.onError(new TAPErrorModel(
+                listener.onError(
                     ERROR_CODE_EXCEEDED_MAX_SIZE,
-                    String.format(ERROR_MESSAGE_EXCEEDED_MAX_SIZE, TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize())),
-                    ""
-                ));
+                    String.format(ERROR_MESSAGE_EXCEEDED_MAX_SIZE, TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize()))
+                );
             }
         } catch (Exception e) {
-            view.onError(e);
+            if (listener != null) {
+                listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());
+            }
         }
+    }
+
+    // For uploadImage, uploadVideo, uploadFile
+    private TAPDefaultDataView<TAPUploadFileResponse> coreUploadDataView(Context context, File file, TapCoreFileUploadListener listener) {
+        return new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPUploadFileResponse response) {
+                if (null != listener && null != response) {
+                    try {
+                        String key = "";
+                        if (response.getFileURL() != null && !response.getFileURL().isEmpty()) {
+                            key = TAPUtils.getUriKeyFromUrl(response.getFileURL());
+                        }
+                        else if (response.getId() != null && !response.getId().isEmpty()) {
+                            key = response.getId();
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            // Copy file to storage for Android 10+
+                            // Message file will need to be downloaded if not saved
+                            File storageFile = new File(context.getFilesDir(), file.getName());
+                            storageFile = TAPFileUtils.renameDuplicateFile(storageFile);
+                            TAPFileDownloadManager.getInstance(instanceKey).copyFile(file, storageFile);
+
+                            Uri fileProviderUri = FileProvider.getUriForFile(appContext, FILEPROVIDER_AUTHORITY, storageFile);
+                            if (!key.isEmpty()) {
+                                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri("", key, fileProviderUri);
+                            }
+                            TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, storageFile.getAbsolutePath());
+                            TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, storageFile, TAPUtils.getFileMimeType(storageFile));
+                        }
+                        else {
+                            Uri fileUri = Uri.fromFile(file);
+                            if (fileUri != null && !key.isEmpty()) {
+                                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri("", key, fileUri);
+                            }
+                        }
+                        listener.onSuccess(response.getFileID(), response.getFileURL());
+                    }
+                    catch (Exception e) {
+                        listener.onSuccess(response.getFileID(), response.getFileURL());
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        };
     }
 
     private void callVideoUploadAPI(Context context, String roomID, TAPMessageModel messageModel,

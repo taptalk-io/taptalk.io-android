@@ -1,12 +1,20 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.net.Uri;
+
 import androidx.annotation.Keep;
 
+import java.io.File;
+
 import io.taptalk.TapTalk.Interface.TapFileUploadInterface;
-import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 @Keep
 public abstract class TapCoreFileUploadListener implements TapFileUploadInterface {
+    @Override
+    public void onStart(File file, Uri uri) {
+
+    }
+
     @Override
     public void onProgress(int percentage, long bytes) {
 

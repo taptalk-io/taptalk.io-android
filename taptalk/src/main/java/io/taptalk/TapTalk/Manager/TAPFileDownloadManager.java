@@ -638,11 +638,25 @@ public class TAPFileDownloadManager {
         TAPDataManager.getInstance(instanceKey).saveFileMessageUriMap(getFileMessageUriMap());
     }
 
+    public Uri getFileMessageUri(String roomID, String url) {
+        if (null == url || url.isEmpty()) {
+            return null;
+        }
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        if (null == roomUriMap) {
+            return null;
+        }
+        return Uri.parse(roomUriMap.get(TAPUtils.getUriKeyFromUrl(url)));
+    }
+
     public Uri getFileMessageUri(TAPMessageModel message) {
         if (null == message.getData()) {
             return null;
         }
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(message.getRoom().getRoomID());
+        if (null == roomUriMap) {
+            roomUriMap = getFileMessageUriMap().get("");
+        }
         if (null == roomUriMap) {
             return null;
         }
@@ -666,19 +680,15 @@ public class TAPFileDownloadManager {
     }
 
     public void saveFileMessageUri(String roomID, String fileID, String filePath) {
-        if (null == roomID || roomID.isEmpty() || null == fileID || fileID.isEmpty() || null == filePath || filePath.isEmpty()) {
+        if (null == fileID || fileID.isEmpty() || null == filePath || filePath.isEmpty()) {
             return;
         }
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
             roomUriMap.put(fileID, filePath);
-            Log.e(">>>>>", "saveFileMessageUri: " + fileID);
-            Log.e(">>>>>", "saveFileMessageUri: " + filePath);
         } else {
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put(fileID, filePath);
-            Log.e(">>>>>", "saveFileMessageUri: " + fileID);
-            Log.e(">>>>>", "saveFileMessageUri: " + filePath);
             getFileMessageUriMap().put(roomID, hashMap);
         }
     }
