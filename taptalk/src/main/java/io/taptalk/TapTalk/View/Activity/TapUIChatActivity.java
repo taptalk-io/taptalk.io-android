@@ -4590,9 +4590,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
                         linkMap.put(TITLE, document.title());
                         linkMap.put(TAPDefaultConstant.MessageData.URL, firstUrl);
-                        Element img = document.selectFirst("img");
+                        Element img = document.selectFirst("meta[property='og:image']");
                         if (img != null) {
-                            linkMap.put(IMAGE, img.absUrl("src"));
+                            linkMap.put(IMAGE, img.attr("content"));
+                        }
+                        else {
+                            img = document.selectFirst("img");
+                            if (img != null) {
+                                linkMap.put(IMAGE, img.absUrl("src"));
+                            }
                         }
                         Element desc = document.selectFirst("meta[property='og:description']");
                         if (desc != null) {

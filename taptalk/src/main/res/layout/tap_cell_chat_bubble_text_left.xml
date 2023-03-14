@@ -181,12 +181,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:visibility="gone"
+                app:layout_constrainedHeight="true"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="@id/barrier_end"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_message_body"
+                app:layout_constraintVertical_bias="0"
                 tools:visibility="visible">
 
                 <View
@@ -243,16 +245,18 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="8dp"
+                    android:adjustViewBounds="true"
                     android:maxHeight="200dp"
-                    android:minHeight="40dp"
                     android:scaleType="fitCenter"
                     android:visibility="gone"
+                    app:layout_constrainedHeight="true"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toEndOf="@id/v_decoration"
                     app:layout_constraintTop_toBottomOf="@id/tv_link_content"
+                    app:layout_constraintVertical_bias="0"
                     tools:src="@drawable/tap_img_empty_shared_media"
                     tools:visibility="visible" />
 
