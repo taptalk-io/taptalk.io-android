@@ -427,7 +427,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clLink;
         private TextView tvLinkTitle;
         private TextView tvLinkContent;
-        private ImageView ivLinkImage;
+        private TAPRoundedCornerImageView rcivLinkImage;
         private ImageView ivReadCount;
         private TextView tvReadCount;
         private Group gReadCount;
@@ -459,7 +459,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clLink = itemView.findViewById(R.id.cl_link);
             tvLinkTitle = itemView.findViewById(R.id.tv_link_title);
             tvLinkContent = itemView.findViewById(R.id.tv_link_content);
-            ivLinkImage = itemView.findViewById(R.id.iv_link_image);
+            rcivLinkImage = itemView.findViewById(R.id.rciv_link_image);
             ivReadCount = itemView.findViewById(R.id.iv_read_count);
             tvReadCount = itemView.findViewById(R.id.tv_read_count);
             gReadCount = itemView.findViewById(R.id.g_read_count);
@@ -580,10 +580,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         tvLinkContent.setText(description);
                     }
                     if (image == null || image.isEmpty()) {
-                        ivLinkImage.setVisibility(View.GONE);
+                        rcivLinkImage.setVisibility(View.GONE);
                     } else {
-                        ivLinkImage.setVisibility(View.VISIBLE);
-                        glide.load(image).fitCenter().into(ivLinkImage);
+                        rcivLinkImage.setVisibility(View.VISIBLE);
+                        glide.load(image).fitCenter().into(rcivLinkImage);
                     }
                     clLink.setOnClickListener(view -> TAPUtils.openCustomTabLayout((Activity) itemView.getContext(), url));
                 } else {

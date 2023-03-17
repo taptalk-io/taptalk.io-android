@@ -238,8 +238,8 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_link_title"
                     tools:text="In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit" />
 
-                <ImageView
-                    android:id="@+id/iv_link_image"
+                <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
+                    android:id="@+id/rciv_link_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"

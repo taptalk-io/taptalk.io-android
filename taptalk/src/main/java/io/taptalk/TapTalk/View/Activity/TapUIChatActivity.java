@@ -2388,24 +2388,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
-                // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
                 Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(message);
-//                Drawable drawable = null;
-//                String fileID = (String) message.getData().get(FILE_ID);
-//                if (null != fileID && !fileID.isEmpty()) {
-//                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
-//                }
-//                if (null == drawable) {
-//                    String fileUrl = (String) message.getData().get(FILE_URL);
-//                    if (null != fileUrl && !fileUrl.isEmpty()) {
-//                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
-//                        if (null == drawable) {
-//                            glide.load(fileUrl).into(rcivQuoteImage);
-//                        }
-//                    }
-//                }
                 if (null != drawable) {
                     rcivQuoteImage.setImageDrawable(drawable);
+                }
+                else if (null == rcivQuoteImage.getDrawable() && null != message.getData().get(FILE_URL)) {
+                    // Show image from url
+                    String url = (String) message.getData().get(FILE_URL);
+                    glide.load(url).into(rcivQuoteImage);
                 }
                 else if (null == rcivQuoteImage.getDrawable() && null != message.getData().get(THUMBNAIL)) {
                     // Show small thumbnail
@@ -2461,7 +2451,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (quotedOwnMessage) {
                         tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && message.getForwardFrom() != null) {
                             tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                         } else {
                             tvQuoteTitle.setText(message.getUser().getFullname());
@@ -2479,7 +2469,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 } else if (message.getData().get(IMAGE) != null){
                     //show link image
                     glide.load((String) message.getData().get(IMAGE)).into(rcivQuoteImage);
-                    vQuoteDecoration.setVisibility(View.VISIBLE);
+                    vQuoteDecoration.setVisibility(View.GONE);
                 } else {
                     vQuoteDecoration.setVisibility(View.GONE);
                 }
@@ -2494,7 +2484,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (quotedOwnMessage) {
                         tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && message.getForwardFrom() != null) {
                             tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                         } else {
                             tvQuoteTitle.setText(message.getUser().getFullname());
@@ -4739,7 +4729,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else {
             rcivLink.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_white_rounded_8dp));
             rcivLink.setPadding(0,0,0,0);
-            glide.load(imageUrl).fitCenter().into(rcivLink);
+            glide.load(imageUrl).into(rcivLink);
             rcivLink.setVisibility(View.VISIBLE);
         }
     }

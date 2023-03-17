@@ -815,13 +815,15 @@
                 android:id="@+id/cl_link"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:background="@color/tapWhite"
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@id/et_chat">
+                app:layout_constraintBottom_toTopOf="@id/et_chat"
+                tools:visibility="visible">
 
                 <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
                     android:id="@+id/rciv_link"
@@ -831,7 +833,9 @@
                     android:layout_marginLeft="16dp"
                     android:background="@drawable/tap_bg_rounded_primary_8dp"
                     android:padding="8dp"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/tap_ic_link_white"
+                    app:cornerRadius="5dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -943,11 +947,11 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/tap_ic_clock_grey"
                 android:visibility="gone"
-                tools:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@id/iv_attach"
                 app:layout_constraintEnd_toStartOf="@id/iv_attach"
                 app:layout_constraintTop_toTopOf="@id/iv_attach"
-                app:tint="@color/tapIconChatComposerAttach" />
+                app:tint="@color/tapIconChatComposerAttach"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/iv_attach"
