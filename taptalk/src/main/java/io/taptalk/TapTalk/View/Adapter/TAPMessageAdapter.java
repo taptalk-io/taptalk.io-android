@@ -585,7 +585,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         rcivLinkImage.setVisibility(View.VISIBLE);
                         glide.load(image).fitCenter().into(rcivLinkImage);
                     }
-                    clLink.setOnClickListener(view -> TAPUtils.openCustomTabLayout((Activity) itemView.getContext(), url));
+                    clLink.setOnClickListener(view -> TAPUtils.openUrl((Activity) itemView.getContext(), url));
                 } else {
                     clLink.setVisibility(View.GONE);
                 }

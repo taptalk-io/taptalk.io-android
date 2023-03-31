@@ -962,6 +962,14 @@ public class TAPUtils {
                 });
     }
 
+    public static void openUrl(Activity activity, String url) {
+        if (url == null || url.isEmpty()) {
+            return;
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        activity.startActivity(intent);
+    }
+
     public static void composeEmail(Activity activity, String emailRecipient) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse(emailRecipient));

@@ -3182,7 +3182,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onOpenLinkSelected(String url) {
-            TAPUtils.openCustomTabLayout(TapUIChatActivity.this, url);
+            TAPUtils.openUrl(TapUIChatActivity.this, url);
         }
 
         @Override
