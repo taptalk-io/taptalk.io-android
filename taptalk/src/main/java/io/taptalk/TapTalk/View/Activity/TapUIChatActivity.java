@@ -356,7 +356,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private View vRoomImage;
     private View vStatusBadge;
     private View vQuoteDecoration;
-    private View vSeparator;
     private TAPConnectionStatusFragment fConnectionStatus;
     private CardView cvEmptySavedMessages;
 
@@ -1082,7 +1081,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clSwipeVoiceNote = findViewById(R.id.cl_swipe_voice_note);
         gTooltip = findViewById(R.id.g_tooltip);
         seekBar = findViewById(R.id.seek_bar);
-        vSeparator = findViewById(R.id.v_separator);
         clForward = findViewById(R.id.cl_forward);
         tvForwardCount = findViewById(R.id.tv_forward_count);
         ivForward = findViewById(R.id.iv_forward);
@@ -1413,7 +1411,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivRemoveVoiceNote.setOnClickListener(v -> removeRecording());
             seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
         } else {
-            vSeparator.setVisibility(View.GONE);
             ivVoiceNote.setVisibility(View.GONE);
         }
         if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled()) {
@@ -1555,7 +1552,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             rightPaddingDp = 80;
         }
         else if (ivButtonAttach.getVisibility() == View.VISIBLE) {
-            rightPaddingDp = 44;
+            rightPaddingDp = 48;
         }
         etChat.setPadding(
                 TAPUtils.dpToPx(12),
@@ -2388,24 +2385,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
-                // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
                 Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(message);
-//                Drawable drawable = null;
-//                String fileID = (String) message.getData().get(FILE_ID);
-//                if (null != fileID && !fileID.isEmpty()) {
-//                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
-//                }
-//                if (null == drawable) {
-//                    String fileUrl = (String) message.getData().get(FILE_URL);
-//                    if (null != fileUrl && !fileUrl.isEmpty()) {
-//                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
-//                        if (null == drawable) {
-//                            glide.load(fileUrl).into(rcivQuoteImage);
-//                        }
-//                    }
-//                }
                 if (null != drawable) {
                     rcivQuoteImage.setImageDrawable(drawable);
+                }
+                else if (null == rcivQuoteImage.getDrawable() && null != message.getData().get(FILE_URL)) {
+                    // Show image from url
+                    String url = (String) message.getData().get(FILE_URL);
+                    glide.load(url).into(rcivQuoteImage);
                 }
                 else if (null == rcivQuoteImage.getDrawable() && null != message.getData().get(THUMBNAIL)) {
                     // Show small thumbnail
@@ -2461,7 +2448,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (quotedOwnMessage) {
                         tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && message.getForwardFrom() != null) {
                             tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                         } else {
                             tvQuoteTitle.setText(message.getUser().getFullname());
@@ -2479,7 +2466,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 } else if (message.getData().get(IMAGE) != null){
                     //show link image
                     glide.load((String) message.getData().get(IMAGE)).into(rcivQuoteImage);
-                    vQuoteDecoration.setVisibility(View.VISIBLE);
+                    vQuoteDecoration.setVisibility(View.GONE);
                 } else {
                     vQuoteDecoration.setVisibility(View.GONE);
                 }
@@ -2494,7 +2481,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (quotedOwnMessage) {
                         tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && message.getForwardFrom() != null) {
                             tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                         } else {
                             tvQuoteTitle.setText(message.getUser().getFullname());
@@ -3195,7 +3182,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onOpenLinkSelected(String url) {
-            TAPUtils.openCustomTabLayout(TapUIChatActivity.this, url);
+            TAPUtils.openUrl(TapUIChatActivity.this, url);
         }
 
         @Override
@@ -4590,9 +4577,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
                         linkMap.put(TITLE, document.title());
                         linkMap.put(TAPDefaultConstant.MessageData.URL, firstUrl);
-                        Element img = document.selectFirst("img");
+                        Element img = document.selectFirst("meta[property='og:image']");
                         if (img != null) {
-                            linkMap.put(IMAGE, img.absUrl("src"));
+                            linkMap.put(IMAGE, img.attr("content"));
+                        }
+                        else {
+                            img = document.selectFirst("img");
+                            if (img != null) {
+                                linkMap.put(IMAGE, img.absUrl("src"));
+                            }
                         }
                         Element desc = document.selectFirst("meta[property='og:description']");
                         if (desc != null) {
@@ -4733,7 +4726,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else {
             rcivLink.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_white_rounded_8dp));
             rcivLink.setPadding(0,0,0,0);
-            glide.load(imageUrl).fitCenter().into(rcivLink);
+            glide.load(imageUrl).into(rcivLink);
             rcivLink.setVisibility(View.VISIBLE);
         }
     }

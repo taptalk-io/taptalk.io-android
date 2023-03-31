@@ -120,7 +120,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                         return false;
                     } else if (null != url) {
                         // Url
-                        TAPUtils.openCustomTabLayout((Activity) itemView.getContext(), url);
+                        TAPUtils.openUrl((Activity) itemView.getContext(), url);
                         return true;
                     }
                     return false;
