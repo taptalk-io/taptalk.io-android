@@ -142,7 +142,6 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         tv_room_name.text = getString(R.string.tap_scheduled_message)
         cl_room_status.isVisible = false
         iv_voice_note.isVisible = false
-        v_separator.isVisible = false
         fl_connection_status.isVisible = false
         linkHandler = Handler(mainLooper)
         if (initViewModel())
@@ -663,7 +662,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             et_chat.setPadding(
                 TAPUtils.dpToPx(12),
                 TAPUtils.dpToPx(6),
-                TAPUtils.dpToPx(44),
+                TAPUtils.dpToPx(48),
                 TAPUtils.dpToPx(6)
             )
         }
@@ -2043,9 +2042,15 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         document = Jsoup.connect(firstUrl).get()
                         linkMap[MessageData.TITLE] = document.title()
                         linkMap[MessageData.URL] = firstUrl
-                        val img: Element? = document.selectFirst("img")
+                        var img: Element? = document.selectFirst("meta[property='og:image']")
                         if (img != null) {
-                            linkMap[MessageData.IMAGE] = img.absUrl("src")
+                            linkMap[MessageData.IMAGE] = img.attr("content")
+                        }
+                        else {
+                            img = document.selectFirst("img")
+                            if (img != null) {
+                                linkMap[MessageData.IMAGE] = img.absUrl("src")
+                            }
                         }
                         val desc: Element? = document.selectFirst("meta[property='og:description']")
                         if (desc != null) {
@@ -2210,26 +2215,20 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (isClearLinkMap) {
             vm.clearLinkHashMap()
         } else {
-            if (vm.getQuotedMessage() != null) {
-                cl_quote_layout.setVisibility(View.VISIBLE)
+            if (vm.quotedMessage != null) {
+                cl_quote_layout.visibility = View.VISIBLE
             }
         }
-        cl_link.setVisibility(View.GONE)
+        cl_link.visibility = View.GONE
         tv_link_title.setText(R.string.tap_loading_dots)
         tv_link_title.setTextColor(ContextCompat.getColor(this, R.color.tapMediaLinkColor))
-        tv_link_content.setText("")
-        tv_link_content.setVisibility(View.VISIBLE)
-        glide.load(R.drawable.tap_ic_link_white)
-            .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).into(rciv_link)
+        tv_link_content.text = ""
+        tv_link_content.visibility = View.VISIBLE
+        glide.load(R.drawable.tap_ic_link_white).override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).into(rciv_link)
         val padding = TAPUtils.dpToPx(8)
-        rciv_link.setBackgroundDrawable(
-            ContextCompat.getDrawable(
-                this,
-                R.drawable.tap_bg_rounded_primary_8dp
-            )
-        )
+        rciv_link.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_rounded_primary_8dp)
         rciv_link.setPadding(padding, padding, padding, padding)
-        rciv_link.setVisibility(View.VISIBLE)
+        rciv_link.visibility = View.VISIBLE
     }
 
     private fun setSendButtonDisabled() {

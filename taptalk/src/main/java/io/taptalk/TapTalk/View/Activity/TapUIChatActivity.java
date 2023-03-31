@@ -356,7 +356,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private View vRoomImage;
     private View vStatusBadge;
     private View vQuoteDecoration;
-    private View vSeparator;
     private TAPConnectionStatusFragment fConnectionStatus;
     private CardView cvEmptySavedMessages;
 
@@ -1082,7 +1081,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clSwipeVoiceNote = findViewById(R.id.cl_swipe_voice_note);
         gTooltip = findViewById(R.id.g_tooltip);
         seekBar = findViewById(R.id.seek_bar);
-        vSeparator = findViewById(R.id.v_separator);
         clForward = findViewById(R.id.cl_forward);
         tvForwardCount = findViewById(R.id.tv_forward_count);
         ivForward = findViewById(R.id.iv_forward);
@@ -1413,7 +1411,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivRemoveVoiceNote.setOnClickListener(v -> removeRecording());
             seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
         } else {
-            vSeparator.setVisibility(View.GONE);
             ivVoiceNote.setVisibility(View.GONE);
         }
         if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled()) {
@@ -1555,7 +1552,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             rightPaddingDp = 80;
         }
         else if (ivButtonAttach.getVisibility() == View.VISIBLE) {
-            rightPaddingDp = 44;
+            rightPaddingDp = 48;
         }
         etChat.setPadding(
                 TAPUtils.dpToPx(12),

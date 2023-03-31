@@ -199,7 +199,7 @@
     <color name="tapIconChatComposerSendBackgroundInactive">@color/tapColorGrayIcon</color>
     <color name="tapIconChatComposerBurgerMenuBackground">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatComposerShowKeyboardBackground">@color/tapColorPrimaryIcon</color>
-    <color name="tapIconChatComposerAttach">@color/tapColorGrayIcon</color>
+    <color name="tapIconChatComposerAttach">@color/tapTransparentBlack1960</color>
     <color name="tapIconFileWhite">@color/tapColorWhiteIcon</color>
     <color name="tapIconFileUploadDownloadWhite">@color/tapColorWhiteIcon</color>
     <color name="tapIconFileCancelUploadDownloadWhite">@color/tapColorWhiteIcon</color>
