@@ -125,6 +125,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -795,15 +796,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         for (TAPMediaPreviewModel media : medias) {
                             if (media.getType() == TYPE_IMAGE) {
                                 try {
-                                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), media.getUri());
+                                    ContentResolver contentResolver = getContentResolver();
+                                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(contentResolver, media.getUri());
                                     if (bitmap != null) {
                                         TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, new TAPFileUploadManager.BitmapInterface() {
                                             @Override
                                             public void onBitmapReady(Bitmap bitmap) {
-                                                String imagePath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "", "");
-                                                if (imagePath != null && !imagePath.isEmpty()) {
-                                                    Uri uri = Uri.parse(imagePath);
-                                                    media.setUri(uri);
+                                                if (bitmap != null) {
+                                                    String imagePath = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "", "");
+                                                    if (imagePath != null && !imagePath.isEmpty()) {
+                                                        Uri uri = Uri.parse(imagePath);
+                                                        media.setUri(uri);
+                                                    }
                                                 }
                                                 TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
                                             }
@@ -4188,7 +4192,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
             return;
         }
-        runOnUiThread(() -> {
+        rvMessageList.post(() -> runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
             if (-1 != position) {
                 // Update message in pointer and adapter
@@ -4269,7 +4273,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (0 == position) {
                 updateFirstVisibleMessageIndex();
             }
-        });
+        }));
     }
 
     private void removeDateSeparator(TAPMessageModel message) {

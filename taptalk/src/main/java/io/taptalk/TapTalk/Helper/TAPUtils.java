@@ -1454,7 +1454,17 @@ public class TAPUtils {
     }
 
     public static boolean isSavedMessagesRoom(String roomID, String instanceKey) {
-        String userID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+        if (roomID == null || instanceKey == null) {
+            return false;
+        }
+        TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        if (activeUser == null) {
+            return false;
+        }
+        String userID = activeUser.getUserID();
+        if (userID == null || userID.isEmpty()) {
+            return false;
+        }
         return roomID.equals(String.format("%s-%s", userID, userID));
     }
 
