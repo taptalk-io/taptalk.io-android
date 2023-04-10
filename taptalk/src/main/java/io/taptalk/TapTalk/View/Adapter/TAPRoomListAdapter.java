@@ -278,12 +278,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 if (null == ivPersonalRoomTypingIndicator.getDrawable()) {
                     glide.load(R.raw.gif_typing_indicator).into(ivPersonalRoomTypingIndicator);
                 }
-            } else if (null != item.getLastMessage().getUser() &&
-                    activeUser.getUserID().equals(item.getLastMessage().getUser().getUserID()) &&
-                    null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
-                // Show last message deleted by active user
-                tvLastMessage.setText(itemView.getResources().getString(R.string.tap_you_deleted_this_message));
-                ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
+//            } else if (null != item.getLastMessage().getUser() &&
+//                    activeUser.getUserID().equals(item.getLastMessage().getUser().getUserID()) &&
+//                    null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
+//                // Show last message deleted by active user
+//                tvLastMessage.setText(itemView.getResources().getString(R.string.tap_you_deleted_this_message));
+//                ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
             } else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
                 // Show last message deleted by sender
                 tvLastMessage.setText(itemView.getResources().getString(R.string.tap_this_deleted_message));

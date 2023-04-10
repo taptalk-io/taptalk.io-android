@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
-                android:text="@string/tap_you_deleted_this_message"
+                android:text="@string/tap_this_deleted_message"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_deleted_icon"
                 app:layout_constraintTop_toTopOf="parent" />
