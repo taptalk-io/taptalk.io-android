@@ -131,6 +131,7 @@ public class TapUI {
     private boolean isForwardMessageMenuDisabled;
     private boolean isCopyMessageMenuDisabled;
     private boolean isDeleteMessageMenuDisabled;
+    private boolean isAllowDeleteOthersMessageForAdminDisabled;
     private boolean isSaveMediaToGalleryMenuDisabled;
     private boolean isSaveDocumentMenuDisabled;
     private boolean isOpenLinkMenuDisabled;
@@ -913,7 +914,21 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isDeleteMessageMenuDisabled = !deleteMessageMenuEnabled;
+        isAllowDeleteOthersMessageForAdminDisabled = !deleteMessageMenuEnabled;
+    }
+
+    public boolean isAllowDeleteOthersMessageForAdminDisabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isAllowDeleteOthersMessageForAdminDisabled;
+    }
+
+    public void setAllowDeleteOthersMessageForAdminEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isAllowDeleteOthersMessageForAdminDisabled = !isEnabled;
     }
 
     public boolean isSaveMediaToGalleryMenuDisabled() {
@@ -1584,7 +1599,7 @@ public class TapUI {
 
         if (!isDeleteMessageMenuDisabled &&
             null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
-            (isMessageFromSelf || isActiveUserAdmin) &&
+            (isMessageFromSelf || (isActiveUserAdmin && !isAllowDeleteOthersMessageForAdminDisabled)) &&
             (null == messageModel.getIsSending() || !messageModel.getIsSending())
         ) {
             // Delete
