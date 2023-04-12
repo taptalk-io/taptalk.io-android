@@ -4728,9 +4728,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (imageUrl != null && imageUrl.isEmpty()) {
             rcivLink.setVisibility(View.GONE);
         } else {
-            rcivLink.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_white_rounded_8dp));
-            rcivLink.setPadding(0,0,0,0);
-            glide.load(imageUrl).into(rcivLink);
+            glide.load(imageUrl).placeholder(R.drawable.tap_ic_link_white).listener(new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    int padding = TAPUtils.dpToPx(8);
+                    rcivLink.setBackgroundDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_rounded_primary_8dp));
+                    rcivLink.setPadding(padding, padding, padding, padding);
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    rcivLink.setBackgroundDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_white_rounded_8dp));
+                    rcivLink.setPadding(0,0,0,0);
+                    return false;
+                }
+            }).error(R.drawable.tap_ic_link_white).into(rcivLink);
             rcivLink.setVisibility(View.VISIBLE);
         }
     }
