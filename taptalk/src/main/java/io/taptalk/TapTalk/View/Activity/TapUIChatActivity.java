@@ -4579,7 +4579,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         HashMap<String, String> linkMap = new HashMap<>();
                         document = Jsoup.connect(firstUrl).get();
 
-                        linkMap.put(TITLE, document.title());
+                        Element title = document.selectFirst("meta[property='og:title']");
+                        if (title != null && title.attr("content") != null && !title.attr("content").isEmpty()) {
+                            linkMap.put(TITLE, title.attr("content"));
+                        }
+                        else if (!document.title().isEmpty()) {
+                            linkMap.put(TITLE, document.title());
+                        }
                         linkMap.put(TAPDefaultConstant.MessageData.URL, firstUrl);
                         Element img = document.selectFirst("meta[property='og:image']");
                         if (img != null) {
@@ -4592,7 +4598,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             }
                         }
                         Element desc = document.selectFirst("meta[property='og:description']");
-                        if (desc != null) {
+                        if (desc != null && desc.attr("content") != null && !desc.attr("content").isEmpty()) {
                             linkMap.put(DESCRIPTION, desc.attr("content"));
                         }
                         Element type = document.selectFirst("meta[property='og:type']");
@@ -4607,6 +4613,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                 @Override
                                 public void onNext(HashMap<String, String> linkMap) {
                                     if (firstUrl.equals(TAPUtils.setUrlWithProtocol(TAPUtils.getFirstUrlFromString(etChat.getText().toString())))) {
+                                        if (linkMap.isEmpty() || (!linkMap.containsKey(TITLE) && !linkMap.containsKey(DESCRIPTION) && !linkMap.containsKey(IMAGE))) {
+                                            hideLinkPreview(true);
+                                            return;
+                                        }
                                         vm.setLinkHashMap(linkMap);
                                         updateLinkPreview(linkMap.get(TITLE), linkMap.get(DESCRIPTION), linkMap.get(IMAGE) == null ? "" : linkMap.get(IMAGE));
                                     }
@@ -4766,6 +4776,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         rcivLink.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_rounded_primary_8dp));
         rcivLink.setPadding(padding, padding, padding, padding);
         rcivLink.setVisibility(View.VISIBLE);
+
+        if (isClearLinkMap) {
+            etChat.post(() -> etChat.requestFocus());
+        }
     }
 
     private void setSendButtonDisabled() {
