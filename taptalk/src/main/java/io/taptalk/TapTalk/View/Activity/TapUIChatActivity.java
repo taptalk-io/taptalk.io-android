@@ -3186,7 +3186,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onOpenLinkSelected(String url) {
-            TAPUtils.openUrl(TapUIChatActivity.this, url);
+            TAPUtils.openUrl(instanceKey, TapUIChatActivity.this, url);
         }
 
         @Override

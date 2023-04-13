@@ -135,6 +135,7 @@ public class TapUI {
     private boolean isSaveMediaToGalleryMenuDisabled;
     private boolean isSaveDocumentMenuDisabled;
     private boolean isOpenLinkMenuDisabled;
+    private boolean isOpenLinkWithExternalBrowserEnabled;
     private boolean isComposeEmailMenuDisabled;
     private boolean isDialNumberMenuDisabled;
     private boolean isSendSMSMenuDisabled;
@@ -971,6 +972,20 @@ public class TapUI {
             return;
         }
         isOpenLinkMenuDisabled = !openLinkMenuEnabled;
+    }
+
+    public boolean isOpenLinkWithExternalBrowserEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isOpenLinkWithExternalBrowserEnabled;
+    }
+
+    public void setOpenLinkWithExternalBrowserEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isOpenLinkWithExternalBrowserEnabled = isEnabled;
     }
 
     public boolean isComposeEmailMenuDisabled() {

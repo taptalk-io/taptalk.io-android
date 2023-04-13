@@ -1458,7 +1458,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
 
             override fun onOpenLinkSelected(url: String) {
-                TAPUtils.openUrl(this@TapScheduledMessageActivity, url)
+                TAPUtils.openUrl(instanceKey, this@TapScheduledMessageActivity, url)
             }
 
             override fun onComposeSelected(emailRecipient: String) {

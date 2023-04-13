@@ -76,6 +76,7 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -947,6 +948,9 @@ public class TAPUtils {
     }
 
     public static void openCustomTabLayout(Activity activity, String url) {
+        if (activity == null || url == null || url.isEmpty()) {
+            return;
+        }
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
         intentBuilder.setToolbarColor(ContextCompat.getColor(activity, R.color.tapColorPrimary));
         intentBuilder.setShowTitle(true);
@@ -963,11 +967,22 @@ public class TAPUtils {
     }
 
     public static void openUrl(Activity activity, String url) {
-        if (url == null || url.isEmpty()) {
+        if (activity == null || url == null || url.isEmpty()) {
             return;
         }
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         activity.startActivity(intent);
+    }
+
+    public static void openUrl(String instanceKey, Activity activity, String url) {
+        if (instanceKey == null || activity == null || url == null || url.isEmpty()) {
+            return;
+        }
+        if (!TapUI.getInstance(instanceKey).isOpenLinkWithExternalBrowserEnabled()) {
+            openCustomTabLayout(activity, url);
+        } else {
+            openUrl(activity, url);
+        }
     }
 
     public static void composeEmail(Activity activity, String emailRecipient) {
