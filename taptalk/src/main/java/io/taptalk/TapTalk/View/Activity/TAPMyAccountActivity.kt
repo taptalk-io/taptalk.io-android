@@ -779,6 +779,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vm.isUpdatingProfile = false
             TAPDataManager.getInstance(instanceKey).saveActiveUser(response?.user)
             getPhotoList(null)
+            LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
         }
 
         override fun onError(error: TAPErrorModel?) {
