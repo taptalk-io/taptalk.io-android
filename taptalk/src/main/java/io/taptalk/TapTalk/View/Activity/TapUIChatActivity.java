@@ -2286,6 +2286,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vm.setQuotedMessage(message, quoteAction);
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
+            rcivQuoteImage.setPadding(0, 0, 0, 0);
             // Add other quotable message type here
             if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
                 // Show image quote
@@ -2448,6 +2449,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     rcivQuoteImage.setVisibility(View.VISIBLE);
                     vQuoteDecoration.setVisibility(View.GONE);
+                }
+                else if (message.getType() == TYPE_LINK) {
+                    // Show link icon
+                    vQuoteDecoration.setVisibility(View.GONE);
+                    rcivQuoteImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_link_white));
+                    rcivQuoteImage.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_rounded_primary_8dp));
+                    int padding = TAPUtils.dpToPx(10);
+                    rcivQuoteImage.setPadding(padding, padding, padding, padding);
+                    rcivQuoteImage.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconFileWhite));
+                    rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    rcivQuoteImage.setVisibility(View.VISIBLE);
                 }
                 else {
                     // Hide image
