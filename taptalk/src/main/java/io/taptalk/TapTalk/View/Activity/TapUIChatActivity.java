@@ -2373,18 +2373,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
             return;
         }
         vm.setQuotedMessage(message, quoteAction);
-        boolean quotedOwnMessage;
-        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
-            quotedOwnMessage = message.getForwardFrom() == null || message.getForwardFrom().getLocalID().isEmpty();
-        } else {
-            quotedOwnMessage = null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
-                    TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID());
-        }
+        boolean quotedOwnMessage = null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
+                TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID());
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
-            etChat.setFilters(new InputFilter[] { });
             // Add other quotable message type here
-            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
+            if ((message.getType() == TYPE_IMAGE ||
+                message.getType() == TYPE_VIDEO) &&
+                null != message.getData()
+            ) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(message);
@@ -2409,18 +2406,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
 
-                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
-                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                if (quotedOwnMessage) {
+                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                 } else {
-                    if (quotedOwnMessage) {
-                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
-                    } else {
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
-                            tvQuoteTitle.setText(message.getForwardFrom().getFullname());
-                        } else {
-                            tvQuoteTitle.setText(message.getUser().getFullname());
-                        }
-                    }
+                    tvQuoteTitle.setText(message.getUser().getFullname());
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
@@ -2435,60 +2424,41 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(TAPUtils.getFileDisplayName(message));
                 tvQuoteContent.setText(TAPUtils.getFileDisplayInfo(message));
                 tvQuoteContent.setMaxLines(1);
-            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE && message.getType() != TYPE_LINK) {
-                // Show image quote from file URL
-                glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
-                rcivQuoteImage.setColorFilter(null);
-                rcivQuoteImage.setBackground(null);
-                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivQuoteImage.setVisibility(View.VISIBLE);
-                vQuoteDecoration.setVisibility(View.GONE);
-
-                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
-                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
-                } else {
-                    if (quotedOwnMessage) {
-                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
-                    } else {
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && message.getForwardFrom() != null) {
-                            tvQuoteTitle.setText(message.getForwardFrom().getFullname());
-                        } else {
-                            tvQuoteTitle.setText(message.getUser().getFullname());
-                        }
-                    }
+            } else if (
+                null != message.getData() &&
+                (null != message.getData().get(FILE_URL) ||
+                null != message.getData().get(IMAGE_URL) ||
+                null != message.getData().get(IMAGE))
+            ) {
+                // Show image quote from URL
+                String url = "";
+                if (null != message.getData().get(IMAGE_URL)) {
+                    url = (String) message.getData().get(IMAGE_URL);
                 }
-                tvQuoteContent.setText(message.getBody());
-                tvQuoteContent.setMaxLines(1);
-            } else if (null != message.getData() &&
-                    (null != message.getData().get(IMAGE_URL) || null != message.getData().get(IMAGE))) {
-                // Show image quote from image URL
-                if (message.getData().get(IMAGE_URL) != null) {
-                    glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
-                    vQuoteDecoration.setVisibility(View.GONE);
-                } else if (message.getData().get(IMAGE) != null){
-                    //show link image
-                    glide.load((String) message.getData().get(IMAGE)).into(rcivQuoteImage);
-                    vQuoteDecoration.setVisibility(View.GONE);
-                } else {
+                else if (null != message.getData().get(IMAGE)) {
+                    url = (String) message.getData().get(IMAGE);
+                }
+                else if (null != message.getData().get(FILE_URL) && message.getType() != TYPE_LINK) {
+                    url = (String) message.getData().get(FILE_URL);
+                }
+                if (url != null && !url.isEmpty()) {
+                    glide.load(url).into(rcivQuoteImage);
+                    rcivQuoteImage.setColorFilter(null);
+                    rcivQuoteImage.setBackground(null);
+                    rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    rcivQuoteImage.setVisibility(View.VISIBLE);
                     vQuoteDecoration.setVisibility(View.GONE);
                 }
-                rcivQuoteImage.setColorFilter(null);
-                rcivQuoteImage.setBackground(null);
-                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivQuoteImage.setVisibility(View.VISIBLE);
+                else {
+                    // Hide image
+                    vQuoteDecoration.setVisibility(View.VISIBLE);
+                    rcivQuoteImage.setVisibility(View.GONE);
+                }
 
-                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
-                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                if (quotedOwnMessage) {
+                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                 } else {
-                    if (quotedOwnMessage) {
-                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
-                    } else {
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && message.getForwardFrom() != null) {
-                            tvQuoteTitle.setText(message.getForwardFrom().getFullname());
-                        } else {
-                            tvQuoteTitle.setText(message.getUser().getFullname());
-                        }
-                    }
+                    tvQuoteTitle.setText(message.getUser().getFullname());
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
@@ -2497,18 +2467,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
 
-                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
-                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                if (quotedOwnMessage) {
+                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                 } else {
-                    if (quotedOwnMessage) {
-                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
-                    } else {
-                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
-                            tvQuoteTitle.setText(message.getForwardFrom().getFullname());
-                        } else {
-                            tvQuoteTitle.setText(message.getUser().getFullname());
-                        }
-                    }
+                    tvQuoteTitle.setText(message.getUser().getFullname());
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
