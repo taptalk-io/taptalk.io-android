@@ -10,6 +10,7 @@ class TapMessageInfoViewModel : ViewModel() {
     var room :  TAPRoomModel? = null
     var isStarred = false
     var isPinned = false
+    var isFirstLoadFinished = false
     var readList = ArrayList<TapMessageRecipientModel>()
     var deliveredList = ArrayList<TapMessageRecipientModel>()
 }
