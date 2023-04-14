@@ -1743,45 +1743,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             TAPChatManager.getInstance(instanceKey).removeUserInfo(vm.getRoom().getRoomID());
         }
 
-//        @Override
-//        public void onRetrySendMessage(TAPMessageModel message) {
-//            if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
-//                return;
-//            }
-//            messageAdapter.removeMessage(message);
-//            vm.delete(message.getLocalID());
-//            if ((message.getType() == TYPE_IMAGE ||
-//                    message.getType() == TYPE_VIDEO ||
-//                    message.getType() == TYPE_FILE ||
-//                    message.getType() == TYPE_VOICE ||
-//                    message.getType() == TYPE_AUDIO) &&
-//                    null != message.getData() &&
-//                    (null == message.getData().get(FILE_URL) ||
-//                            ((String) message.getData().get(FILE_URL)).isEmpty())
-//            ) {
-//                // Re-upload image/video
-//                Log.e(">>>>>", "onRetrySendMessage: " + TAPUtils.toJsonString(message.getData()));
-//
-//                String uriString = (String) message.getData().get(FILE_URI);
-//                File tempFile = null;
-//                if (uriString != null) {
-//                    tempFile = TAPFileUtils.createTemporaryCachedFile(TapUIChatActivity.this, Uri.parse(uriString));
-//                }
-//                if (tempFile != null) {
-//                    Uri tempUri = Uri.fromFile(tempFile);
-//                    Log.e(">>>>>", "onRetrySendMessage tempUri: " + tempUri);
-//                    Log.e(">>>>>", "onRetrySendMessage tempFile: " + tempFile.length());
-//                    message.getData().put(FILE_URI, tempUri.toString());
-//                    TAPChatManager.getInstance(instanceKey).retryUpload(TapUIChatActivity.this, message);
-//                    return;
-//                }
-//                Toast.makeText(TapUIChatActivity.this, getString(R.string.tap_error_could_not_find_file), Toast.LENGTH_SHORT).show();
-//            } else {
-//                // Resend message
-//                TAPChatManager.getInstance(instanceKey).resendMessage(message);
-//            }
-//        }
-
         @Override
         public void onRetrySendMessage(TAPMessageModel message) {
             if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
@@ -2270,7 +2231,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case EDIT:
-                    showEditLayout(message, quoteAction);
+                    showQuoteLayout(message, quoteAction, true);
                     break;
                 default:
                     showQuoteLayout(message, quoteAction, false);
@@ -2377,7 +2338,33 @@ public class TapUIChatActivity extends TAPBaseActivity {
         boolean quotedOwnMessage = null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
                 TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID());
         runOnUiThread(() -> {
+            glide.clear(rcivQuoteImage);
+            rcivQuoteImage.setImageDrawable(null);
             clQuote.setVisibility(View.VISIBLE);
+
+            RequestListener<Drawable> glideListener = new RequestListener<>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    runOnUiThread(() -> {
+                        vQuoteDecoration.setVisibility(View.VISIBLE);
+                        rcivQuoteImage.setVisibility(View.GONE);
+                    });
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    runOnUiThread(() -> {
+                        rcivQuoteImage.setColorFilter(null);
+                        rcivQuoteImage.setBackground(null);
+                        rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        rcivQuoteImage.setVisibility(View.VISIBLE);
+                        vQuoteDecoration.setVisibility(View.GONE);
+                    });
+                    return false;
+                }
+            };
+
             // Add other quotable message type here
             if ((message.getType() == TYPE_IMAGE ||
                 message.getType() == TYPE_VIDEO) &&
@@ -2392,7 +2379,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 else if (null == rcivQuoteImage.getDrawable() && null != message.getData().get(FILE_URL)) {
                     // Show image from url
                     String url = (String) message.getData().get(FILE_URL);
-                    glide.load(url).into(rcivQuoteImage);
+                    glide.load(url).listener(glideListener).into(rcivQuoteImage);
                 }
                 else if (null == rcivQuoteImage.getDrawable() && null != message.getData().get(THUMBNAIL)) {
                     // Show small thumbnail
@@ -2402,14 +2389,25 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     );
                     rcivQuoteImage.setImageDrawable(thumbnail);
                 }
-                rcivQuoteImage.setColorFilter(null);
-                rcivQuoteImage.setBackground(null);
-                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivQuoteImage.setVisibility(View.VISIBLE);
+                if (null != rcivQuoteImage.getDrawable()) {
+                    rcivQuoteImage.setColorFilter(null);
+                    rcivQuoteImage.setBackground(null);
+                    rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    rcivQuoteImage.setVisibility(View.VISIBLE);
+                }
+                else {
+                    // Hide image
+                    vQuoteDecoration.setVisibility(View.VISIBLE);
+                    rcivQuoteImage.setVisibility(View.GONE);
+                }
 
-                if (quotedOwnMessage) {
+                if (quoteAction == EDIT) {
+                    tvQuoteTitle.setText(R.string.tap_edit_message);
+                }
+                else if (quotedOwnMessage) {
                     tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
-                } else {
+                }
+                else {
                     tvQuoteTitle.setText(message.getUser().getFullname());
                 }
                 tvQuoteContent.setText(message.getBody());
@@ -2422,8 +2420,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rcivQuoteImage.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_quote_layout_file));
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
-                tvQuoteTitle.setText(TAPUtils.getFileDisplayName(message));
-                tvQuoteContent.setText(TAPUtils.getFileDisplayInfo(message));
+                if (quoteAction == EDIT) {
+                    tvQuoteTitle.setText(R.string.tap_edit_message);
+                    tvQuoteContent.setText(message.getBody());
+                }
+                else {
+                    tvQuoteTitle.setText(TAPUtils.getFileDisplayName(message));
+                    tvQuoteContent.setText(TAPUtils.getFileDisplayInfo(message));
+                }
                 tvQuoteContent.setMaxLines(1);
             } else if (
                 null != message.getData() &&
@@ -2443,7 +2447,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     url = (String) message.getData().get(FILE_URL);
                 }
                 if (url != null && !url.isEmpty()) {
-                    glide.load(url).into(rcivQuoteImage);
+                    glide.load(url).listener(glideListener).into(rcivQuoteImage);
                     rcivQuoteImage.setColorFilter(null);
                     rcivQuoteImage.setBackground(null);
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -2467,9 +2471,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     rcivQuoteImage.setVisibility(View.GONE);
                 }
 
-                if (quotedOwnMessage) {
+                if (quoteAction == EDIT) {
+                    tvQuoteTitle.setText(R.string.tap_edit_message);
+                }
+                else if (quotedOwnMessage) {
                     tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
-                } else {
+                }
+                else {
                     tvQuoteTitle.setText(message.getUser().getFullname());
                 }
                 tvQuoteContent.setText(message.getBody());
@@ -2479,13 +2487,27 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
 
+                if (quoteAction == EDIT) {
+                    tvQuoteTitle.setText(R.string.tap_edit_message);
+                }
                 if (quotedOwnMessage) {
                     tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
-                } else {
+                }
+                else {
                     tvQuoteTitle.setText(message.getUser().getFullname());
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
+            }
+            if (quoteAction == EDIT) {
+                if (message.getData() != null && message.getData().get(CAPTION) != null && message.getData().get(CAPTION) instanceof String) {
+                    etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey))});
+                    etChat.setText(message.getData().get(CAPTION).toString());
+                }
+                else {
+                    etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(CHARACTER_LIMIT)});
+                    etChat.setText(message.getBody());
+                }
             }
             boolean hadFocus = etChat.hasFocus();
             if (/*hadFocus && */showKeyboard) {
@@ -3346,7 +3368,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
                 return;
             }
-            showEditLayout(message, EDIT);
+            showQuoteLayout(message, EDIT, true);
         }
 
         @Override
