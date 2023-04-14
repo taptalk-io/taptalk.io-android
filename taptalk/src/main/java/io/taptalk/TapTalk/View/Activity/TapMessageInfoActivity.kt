@@ -6,11 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.RecyclerView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageDetailsListener
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager
 import io.taptalk.TapTalk.Manager.TapUI
@@ -18,9 +20,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapMessageRecipientModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
-import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
 import io.taptalk.TapTalk.View.Adapter.TapMessageInfoAdapter
-import io.taptalk.TapTalk.ViewModel.TAPChatViewModel
 import io.taptalk.TapTalk.ViewModel.TapMessageInfoViewModel
 import kotlinx.android.synthetic.main.tap_activity_message_info.*
 
@@ -57,31 +57,27 @@ class TapMessageInfoActivity : TAPBaseActivity() {
         if (intent.getParcelableExtra<TAPMessageModel>(TAPDefaultConstant.Extras.MESSAGE) != null) {
             vm.message = intent.getParcelableExtra(TAPDefaultConstant.Extras.MESSAGE)
         }
+        if (vm.message == null) {
+            onBackPressed()
+        }
         if (intent.getParcelableExtra<TAPRoomModel>(TAPDefaultConstant.Extras.ROOM) != null) {
             vm.room = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
         }
         vm.isStarred = intent.getBooleanExtra(TAPDefaultConstant.Extras.IS_STARRED, false)
         vm.isPinned = intent.getBooleanExtra(TAPDefaultConstant.Extras.IS_PINNED, false)
-        val glide = Glide.with(this)
-        val chatViewModel = TAPChatViewModel(application, instanceKey)
-        chatViewModel.room = vm.room
-        val messageAdapter = TAPMessageAdapter(instanceKey, glide, chatViewModel)
-        messageAdapter.setMessages(listOf(vm.message))
-        if (vm.isStarred) {
-            messageAdapter.setStarredMessageIds(mutableListOf(vm.message?.messageID))
-        }
-        if (vm.isPinned) {
-            messageAdapter.setPinnedMessageIds(mutableListOf(vm.message?.messageID))
-        }
-        rv_message_list.adapter = messageAdapter
-        rv_message_list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        rv_message_list.setHasFixedSize(true)
 
-        val resultList = ArrayList<TapMessageRecipientModel>()
-        val adapter = TapMessageInfoAdapter(resultList)
+        val resultList = listOf(TapMessageRecipientModel())
+        val adapter = TapMessageInfoAdapter(instanceKey, vm.message!!, resultList)
         rv_message_info.adapter = adapter
         rv_message_info.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rv_message_info.setHasFixedSize(true)
+        rv_message_info.addItemDecoration(
+            TAPVerticalDecoration(
+                TAPUtils.dpToPx(12),
+                TAPUtils.dpToPx(16),
+                0
+            )
+        )
 
         iv_button_back.setOnClickListener { onBackPressed() }
     }
@@ -109,6 +105,8 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             if (deliveredTo != null) {
                 vm.deliveredList.addAll(ArrayList(deliveredTo))
             }
+
+            resultList.add(TapMessageRecipientModel())
             if (vm.readList.isNotEmpty() && !TapUI.getInstance(instanceKey).isReadStatusHidden) {
                 resultList.add(TapMessageRecipientModel(vm.readList.size.toLong(), null))
                 resultList.addAll(vm.readList)
@@ -125,7 +123,12 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             (rv_message_info.adapter as TapMessageInfoAdapter).items = resultList
 
             rv_message_info.post {
-                nsv_message_info.smoothScrollTo(0, rv_message_info.top + (TAPUtils.getScreenHeight() / 2))
+                addStickyHeaderScrollListener(vm.readList.size, vm.deliveredList.size)
+                val layoutManager = rv_message_info.layoutManager as LinearLayoutManager?
+                if (!vm.isFirstLoadFinished) {
+                    vm.isFirstLoadFinished = true
+                    layoutManager?.scrollToPositionWithOffset(1, TAPUtils.getScreenHeight() / 2)
+                }
             }
         }
 
@@ -134,5 +137,84 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             Toast.makeText(this@TapMessageInfoActivity, errorMessage, Toast.LENGTH_SHORT).show()
             finish()
         }
+    }
+
+    private fun addStickyHeaderScrollListener(readCount: Int, deliveredCount: Int) {
+        val onScrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                // Handle sticky section header
+                if (readCount <= 0 && deliveredCount <= 0) {
+                    fl_sticky_section_container.visibility = View.GONE
+                    return
+                }
+
+                val layoutManager = rv_message_info.layoutManager as LinearLayoutManager?
+                val adapter = rv_message_info.adapter as TapMessageInfoAdapter?
+                val firstVisibleIndex = layoutManager?.findFirstVisibleItemPosition() ?: -1
+
+                if (firstVisibleIndex < 0 || firstVisibleIndex >= (adapter?.itemCount ?: 0)) {
+                    return
+                }
+
+                val firstVisibleItem = adapter?.getItemAt(firstVisibleIndex)
+
+                if (null == firstVisibleItem/* || cl_sticky_section_container.visibility != View.VISIBLE*/) {
+                    return
+                }
+
+                if (
+                    firstVisibleItem.userID.isNullOrEmpty() &&
+                    (firstVisibleItem.readTime == null || firstVisibleItem.readTime <= 0L) &&
+                    (firstVisibleItem.deliveredTime == null || firstVisibleItem.deliveredTime <= 0L)
+                ) {
+                    fl_sticky_section_container.visibility = View.GONE
+                    return
+                }
+
+                if (firstVisibleItem.readTime != null && firstVisibleItem.readTime > 0L) {
+                    // Set Read by
+                    tv_sticky_section_title.text = String.format(getString(R.string.tap_read_by_d_format), readCount)
+                    iv_sticky_section_icon.setImageDrawable(ContextCompat.getDrawable(this@TapMessageInfoActivity, R.drawable.tap_ic_read_orange))
+                }
+                else if (firstVisibleItem.deliveredTime != null && firstVisibleItem.deliveredTime > 0L) {
+                    // Set Delivered to
+                    tv_sticky_section_title.text = String.format(getString(R.string.tap_delivered_to_d_format), deliveredCount)
+                    iv_sticky_section_icon.setImageDrawable(ContextCompat.getDrawable(this@TapMessageInfoActivity, R.drawable.tap_ic_delivered_grey))
+                }
+
+                val secondVisibleCell: View? = layoutManager?.findViewByPosition(firstVisibleIndex + 1)
+                val secondVisibleItem = adapter.getItemAt(firstVisibleIndex + 1)
+
+                if (null == secondVisibleCell || null == secondVisibleItem) {
+                    return
+                }
+
+                val recyclerViewLocation = IntArray(2)
+                rv_message_info?.getLocationOnScreen(recyclerViewLocation)
+                val recyclerViewY = recyclerViewLocation[1]
+
+                fl_sticky_section_container.visibility = View.VISIBLE
+
+                if (secondVisibleItem.userID.isNullOrEmpty()) {
+                    // Animate sticky header translation if second visible item is header
+                    val cellLocation = IntArray(2)
+                    secondVisibleCell.getLocationOnScreen(cellLocation)
+
+                    val heightDiff = cellLocation[1] - recyclerViewY
+                    val headerHeight = fl_sticky_section_container.height
+                    if (heightDiff < headerHeight) {
+                        cl_sticky_section_container.translationY = -((headerHeight - heightDiff).toFloat())
+                    }
+                    else {
+                        cl_sticky_section_container.translationY = 0f
+                    }
+                }
+                else {
+                    cl_sticky_section_container.translationY = 0f
+                }
+            }
+        }
+        rv_message_info.clearOnScrollListeners()
+        rv_message_info.addOnScrollListener(onScrollListener)
     }
 }

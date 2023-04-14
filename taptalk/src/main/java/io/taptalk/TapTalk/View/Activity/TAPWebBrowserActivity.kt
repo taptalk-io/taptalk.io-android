@@ -63,6 +63,7 @@ class TAPWebBrowserActivity : AppCompatActivity() {
 
         val webSettings: WebSettings = webView.settings
         webSettings.javaScriptEnabled = true
+        webSettings.domStorageEnabled = true
         webView.loadUrl(url)
     }
 

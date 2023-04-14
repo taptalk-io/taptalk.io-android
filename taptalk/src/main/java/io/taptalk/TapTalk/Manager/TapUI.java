@@ -131,9 +131,11 @@ public class TapUI {
     private boolean isForwardMessageMenuDisabled;
     private boolean isCopyMessageMenuDisabled;
     private boolean isDeleteMessageMenuDisabled;
+    private boolean isAllowDeleteOthersMessageForAdminDisabled;
     private boolean isSaveMediaToGalleryMenuDisabled;
     private boolean isSaveDocumentMenuDisabled;
     private boolean isOpenLinkMenuDisabled;
+    private boolean isOpenLinkWithExternalBrowserEnabled;
     private boolean isComposeEmailMenuDisabled;
     private boolean isDialNumberMenuDisabled;
     private boolean isSendSMSMenuDisabled;
@@ -913,7 +915,21 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isDeleteMessageMenuDisabled = !deleteMessageMenuEnabled;
+        isAllowDeleteOthersMessageForAdminDisabled = !deleteMessageMenuEnabled;
+    }
+
+    public boolean isAllowDeleteOthersMessageForAdminDisabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isAllowDeleteOthersMessageForAdminDisabled;
+    }
+
+    public void setAllowDeleteOthersMessageForAdminEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isAllowDeleteOthersMessageForAdminDisabled = !isEnabled;
     }
 
     public boolean isSaveMediaToGalleryMenuDisabled() {
@@ -956,6 +972,20 @@ public class TapUI {
             return;
         }
         isOpenLinkMenuDisabled = !openLinkMenuEnabled;
+    }
+
+    public boolean isOpenLinkWithExternalBrowserEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isOpenLinkWithExternalBrowserEnabled;
+    }
+
+    public void setOpenLinkWithExternalBrowserEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isOpenLinkWithExternalBrowserEnabled = isEnabled;
     }
 
     public boolean isComposeEmailMenuDisabled() {
@@ -1405,7 +1435,6 @@ public class TapUI {
         getLongPressMenuMap().put(messageType, longPressMenuType);
     }
 
-
     public List<TapLongPressMenuItem> getDefaultMessageLongPressMenuItems(Context context, TAPMessageModel messageModel) {
         if (messageModel == null) {
             // Message is null
@@ -1428,8 +1457,10 @@ public class TapUI {
         if (longPressMenuType == LongPressMenuType.TYPE_NONE) {
             return new ArrayList<>();
         }
+
         ArrayList<TapLongPressMenuItem> longPressMenuItems = new ArrayList<>();
         HashMap<String, Object> messageData = messageModel.getData();
+        String activeUserID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
 
         if (!isReplyMessageMenuDisabled() &&
             !TAPDataManager.getInstance(instanceKey).getBlockedUserIds().contains(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(messageModel.getRoom().getRoomID()))
@@ -1472,14 +1503,6 @@ public class TapUI {
             ));
         }
 
-        String fileID = "";
-        String fileUrl = "";
-        if (messageData != null && messageData.get(FILE_ID) != null) {
-            fileID = (String) messageData.get(FILE_ID);
-        }
-        if (messageData != null && messageData.get(FILE_URL) != null) {
-            fileUrl = (String) messageData.get(FILE_URL);
-        }
         if (!isSaveMediaToGalleryMenuDisabled() &&
             (longPressMenuType == LongPressMenuType.TYPE_IMAGE_MESSAGE ||
             longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE) &&
@@ -1529,7 +1552,7 @@ public class TapUI {
             longPressMenuType == LongPressMenuType.TYPE_IMAGE_MESSAGE ||
             longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE) &&
             null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
-            messageModel.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) &&
+            messageModel.getUser().getUserID().equals(activeUserID) &&
             (null == messageModel.getIsSending() || !messageModel.getIsSending()) &&
             (messageModel.getForwardFrom() == null || messageModel.getForwardFrom().getLocalID().isEmpty()) &&
             System.currentTimeMillis() - messageModel.getCreated() < TWO_DAYS_IN_MILLIS
@@ -1562,10 +1585,12 @@ public class TapUI {
             }
         }
 
+        boolean isMessageFromSelf = activeUserID.equals(messageModel.getUser().getUserID());
+
         if (isMessageInfoMenuEnabled() &&
             messageModel.getRoom().getType() != TYPE_PERSONAL &&
             null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
-            TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(messageModel.getUser().getUserID()) &&
+            isMessageFromSelf &&
             (null == messageModel.getIsSending() || !messageModel.getIsSending())
         ) {
             // Message Info
@@ -1576,9 +1601,20 @@ public class TapUI {
             ));
         }
 
+        boolean isActiveUserAdmin = false;
+        if (messageModel.getRoom().getType() != TYPE_PERSONAL) {
+            TAPRoomModel obtainedRoom = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(messageModel.getRoom().getRoomID());
+            if (obtainedRoom != null &&
+                obtainedRoom.getAdmins() != null &&
+                obtainedRoom.getAdmins().contains(activeUserID)
+            ) {
+                isActiveUserAdmin = true;
+            }
+        }
+
         if (!isDeleteMessageMenuDisabled &&
             null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
-            TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(messageModel.getUser().getUserID()) &&
+            (isMessageFromSelf || (isActiveUserAdmin && !isAllowDeleteOthersMessageForAdminDisabled)) &&
             (null == messageModel.getIsSending() || !messageModel.getIsSending())
         ) {
             // Delete
@@ -1591,7 +1627,7 @@ public class TapUI {
 
         if (isReportMessageMenuEnabled &&
             null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
-            !TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(messageModel.getUser().getUserID())
+            !isMessageFromSelf
         ) {
             // Report
             longPressMenuItems.add(new TapLongPressMenuItem(

@@ -227,7 +227,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "http://$url"
             }
-            TAPUtils.openUrl(activity, url)
+            TAPUtils.openUrl(instanceKey, activity, url)
         }
 
         override fun onItemLongClicked(item: TAPMessageModel) {

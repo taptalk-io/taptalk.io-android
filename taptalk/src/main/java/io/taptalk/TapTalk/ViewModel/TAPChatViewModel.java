@@ -83,6 +83,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private int duration, pausedPosition, pinnedMessageIndex;
     private boolean isSelectState;
     private HashMap<String, String> linkHashMap;
+    private String currentLinkPreviewUrl = "";
 
     public static class TAPChatViewModelFactory implements ViewModelProvider.Factory {
         private Application application;
@@ -827,5 +828,13 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void clearLinkHashMap() {
         getLinkHashMap().clear();
+    }
+
+    public String getCurrentLinkPreviewUrl() {
+        return currentLinkPreviewUrl;
+    }
+
+    public void setCurrentLinkPreviewUrl(String currentLinkPreviewUrl) {
+        this.currentLinkPreviewUrl = currentLinkPreviewUrl;
     }
 }

@@ -204,10 +204,10 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
                 if (null == ivPersonalRoomTypingIndicator.drawable) {
                     glide.load(R.raw.gif_typing_indicator).into(ivPersonalRoomTypingIndicator)
                 }
-            } else if (null != item.lastMessage.user && activeUser.userID == item.lastMessage.user.userID && null != item.lastMessage.isDeleted && item.lastMessage.isDeleted!!) {
-                // Show last message deleted by active user
-                tvLastMessage.text = itemView.resources.getString(R.string.tap_you_deleted_this_message)
-                ivPersonalRoomTypingIndicator.visibility = View.GONE
+//            } else if (null != item.lastMessage.user && activeUser.userID == item.lastMessage.user.userID && null != item.lastMessage.isDeleted && item.lastMessage.isDeleted!!) {
+//                // Show last message deleted by active user
+//                tvLastMessage.text = itemView.resources.getString(R.string.tap_you_deleted_this_message)
+//                ivPersonalRoomTypingIndicator.visibility = View.GONE
             } else if (null != item.lastMessage.isDeleted && item.lastMessage.isDeleted!!) {
                 // Show last message deleted by sender
                 tvLastMessage.text = itemView.resources.getString(R.string.tap_this_deleted_message)

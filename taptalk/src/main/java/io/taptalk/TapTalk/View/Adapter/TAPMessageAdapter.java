@@ -26,7 +26,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
@@ -560,6 +563,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private void setLinkPreview(TAPMessageModel item) {
             if (!TapUI.getInstance(instanceKey).isLinkPreviewInMessageEnabled() || item.getData() == null) {
                 clLink.setVisibility(View.GONE);
+                clLink.setOnLongClickListener(null);
             } else {
                 String title = (String) item.getData().get(TITLE);
                 if (title != null) {
@@ -585,9 +589,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         rcivLinkImage.setVisibility(View.VISIBLE);
                         glide.load(image).fitCenter().into(rcivLinkImage);
                     }
-                    clLink.setOnClickListener(view -> TAPUtils.openUrl((Activity) itemView.getContext(), url));
+                    clLink.setOnClickListener(view -> {
+                        if (itemView.getContext() != null && itemView.getContext() instanceof Activity) {
+                            TAPUtils.openUrl(instanceKey, (Activity) itemView.getContext(), url);
+                        }
+                    });
+                    clLink.setOnLongClickListener(v -> {
+                        Intent intent = new Intent(LongPressLink);
+                        intent.putExtra(MESSAGE, item);
+                        intent.putExtra(URL_MESSAGE, url);
+                        intent.putExtra(COPY_MESSAGE, url);
+                        LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(intent);
+                        return true;
+                    });
                 } else {
                     clLink.setVisibility(View.GONE);
+                    clLink.setOnLongClickListener(null);
                 }
             }
         }

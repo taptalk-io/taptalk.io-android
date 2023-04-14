@@ -120,7 +120,16 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                         return false;
                     } else if (null != url) {
                         // Url
-                        TAPUtils.openUrl((Activity) itemView.getContext(), url);
+                        if (itemView.getContext() != null) {
+                            if (itemView.getContext() instanceof TAPBaseActivity) {
+                                TAPBaseActivity activity = (TAPBaseActivity) itemView.getContext();
+                                String instanceKey = activity.instanceKey;
+                                TAPUtils.openUrl(instanceKey, activity, url);
+                            }
+                            else if (itemView.getContext() instanceof Activity) {
+                                TAPUtils.openUrl((Activity) itemView.getContext(), url);
+                            }
+                        }
                         return true;
                     }
                     return false;
