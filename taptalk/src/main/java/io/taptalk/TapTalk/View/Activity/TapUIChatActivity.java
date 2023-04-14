@@ -2340,14 +2340,31 @@ public class TapUIChatActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             glide.clear(rcivQuoteImage);
             rcivQuoteImage.setImageDrawable(null);
+            rcivQuoteImage.setColorFilter(null);
+            rcivQuoteImage.setBackground(null);
+            rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            rcivQuoteImage.setPadding(0, 0, 0, 0);
             clQuote.setVisibility(View.VISIBLE);
 
-            RequestListener<Drawable> glideListener = new RequestListener<>() {
+            RequestListener<Drawable> glideListener = new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     runOnUiThread(() -> {
-                        vQuoteDecoration.setVisibility(View.VISIBLE);
-                        rcivQuoteImage.setVisibility(View.GONE);
+                        if (message.getType() == TYPE_LINK) {
+                            // Show link icon
+                            vQuoteDecoration.setVisibility(View.GONE);
+                            rcivQuoteImage.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_link_white));
+                            rcivQuoteImage.setBackgroundDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_rounded_primary_8dp));
+                            int padding = TAPUtils.dpToPx(10);
+                            rcivQuoteImage.setPadding(padding, padding, padding, padding);
+                            rcivQuoteImage.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconFileWhite));
+                            rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            rcivQuoteImage.setVisibility(View.VISIBLE);
+                        }
+                        else {
+                            vQuoteDecoration.setVisibility(View.VISIBLE);
+                            rcivQuoteImage.setVisibility(View.GONE);
+                        }
                     });
                     return false;
                 }
@@ -2355,11 +2372,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 @Override
                 public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                     runOnUiThread(() -> {
+                        vQuoteDecoration.setVisibility(View.GONE);
                         rcivQuoteImage.setColorFilter(null);
                         rcivQuoteImage.setBackground(null);
                         rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         rcivQuoteImage.setVisibility(View.VISIBLE);
-                        vQuoteDecoration.setVisibility(View.GONE);
                     });
                     return false;
                 }
@@ -2447,12 +2464,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     url = (String) message.getData().get(FILE_URL);
                 }
                 if (url != null && !url.isEmpty()) {
-                    glide.load(url).listener(glideListener).into(rcivQuoteImage);
-                    rcivQuoteImage.setColorFilter(null);
-                    rcivQuoteImage.setBackground(null);
-                    rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    rcivQuoteImage.setVisibility(View.VISIBLE);
-                    vQuoteDecoration.setVisibility(View.GONE);
+                    glide.load(url)
+                        .placeholder(R.drawable.tap_ic_link_white)
+                        .listener(glideListener)
+                        .error(R.drawable.tap_ic_link_white)
+                        .into(rcivQuoteImage);
                 }
                 else if (message.getType() == TYPE_LINK) {
                     // Show link icon
@@ -4767,17 +4783,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void hideLinkPreview(boolean isClearLinkMap) {
+        boolean hadFocus = etChat.hasFocus();
         vm.setCurrentLinkPreviewUrl("");
         if (isClearLinkMap) {
             vm.clearLinkHashMap();
-        } else {
-            if (vm.getQuotedMessage() != null) {
-                clQuote.setVisibility(View.VISIBLE);
-            }
+        }
+        else if (vm.getQuotedMessage() != null) {
+            clQuote.setVisibility(View.VISIBLE);
         }
         clLink.setVisibility(View.GONE);
 
-        if (isClearLinkMap) {
+        if (hadFocus && isClearLinkMap) {
             etChat.post(() -> etChat.requestFocus());
         }
     }
