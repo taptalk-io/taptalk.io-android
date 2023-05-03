@@ -1447,7 +1447,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         }
 
-        if (TapUI.getInstance().isLinkPreviewInMessageEnabled()) {
+        if (TapUI.getInstance(instanceKey).isLinkPreviewInMessageEnabled()) {
             ivCloseLink.setOnClickListener(v -> {
                 vm.getLinkHashMap().remove(TITLE);
                 vm.getLinkHashMap().remove(DESCRIPTION);
@@ -4667,7 +4667,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (recordingState == RECORDING_STATE.DEFAULT) {
                 if (s.length() > 0 && s.toString().trim().length() > 0) {
-                    if (TapUI.getInstance().isLinkPreviewInMessageEnabled()) {
+                    if (TapUI.getInstance(instanceKey).isLinkPreviewInMessageEnabled()) {
                         // Delay 0.3 sec before url check
                         linkRunnable = setLinkRunnable(s.toString());
                         linkHandler.postDelayed(linkRunnable, 300);
