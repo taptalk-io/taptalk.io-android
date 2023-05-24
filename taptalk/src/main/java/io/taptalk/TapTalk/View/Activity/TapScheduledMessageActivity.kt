@@ -628,7 +628,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
         fl_loading.setOnClickListener { }
         // TODO: 05/10/22 handle schedule message icon MU
-        if (TapUI.getInstance().isLinkPreviewInMessageEnabled) {
+        if (TapUI.getInstance(instanceKey).isLinkPreviewInMessageEnabled) {
             iv_close_link.setOnClickListener {
                 vm.linkHashMap.remove(MessageData.TITLE)
                 vm.linkHashMap.remove(MessageData.DESCRIPTION)
@@ -2112,7 +2112,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             if (s.length > 0 && s.toString().trim { it <= ' ' }.length > 0) {
-                if (TapUI.getInstance().isLinkPreviewInMessageEnabled) {
+                if (TapUI.getInstance(instanceKey).isLinkPreviewInMessageEnabled) {
                     // Delay 0.3 sec before url check
                     linkRunnable = setLinkRunnable(s.toString())
                     linkHandler.postDelayed(linkRunnable, 300)

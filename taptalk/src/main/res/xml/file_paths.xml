@@ -3,4 +3,6 @@
     <files-path name="Files" path="." />
     <external-path name="TapTalkFiles" path="." />
     <cache-path name="TapTalkCache" path="."/>
+    <external-files-path name="TapTalkExternalFiles" path="."/>
+    <external-cache-path name="TapTalkExternalCache" path="."/>
 </paths>
