@@ -915,7 +915,7 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isAllowDeleteOthersMessageForAdminDisabled = !deleteMessageMenuEnabled;
+        isDeleteMessageMenuDisabled = !deleteMessageMenuEnabled;
     }
 
     public boolean isAllowDeleteOthersMessageForAdminDisabled() {
