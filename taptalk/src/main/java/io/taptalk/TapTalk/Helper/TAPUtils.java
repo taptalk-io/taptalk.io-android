@@ -456,17 +456,42 @@ public class TAPUtils {
         }
     }
 
+    private static String[] getStoragePermissions(boolean includeAudio) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (includeAudio) {
+                return new String[] {
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.READ_MEDIA_AUDIO
+                };
+            }
+            else {
+                return new String[] {
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                };
+            }
+        }
+        else {
+            return new String[] {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+        }
+    }
+
     /**
      * Reminder: Handle onRequestPermissionsResult in activity
      */
     public static void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
-        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+        if (!hasPermissions(activity, getStoragePermissions(false))) {
             // Check read & write storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
+            ActivityCompat.requestPermissions(activity, getStoragePermissions(false), PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
             Intent intent;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 String[] mimeTypes = {INTENT_TYPE_IMAGE};
                 intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images
@@ -485,9 +510,9 @@ public class TAPUtils {
      * Reminder: Handle onRequestPermissionsResult in activity
      */
     public static void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
-        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!hasPermissions(activity, getStoragePermissions(false))) {
             // Check read & write storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
+            ActivityCompat.requestPermissions(activity, getStoragePermissions(false), PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
             Intent intent;
@@ -511,9 +536,9 @@ public class TAPUtils {
      * Reminder: Handle onRequestPermissionsResult in activity
      */
     public static void requestPermissionAndOpenMediaPicker(Activity activity, int requestCode, String[] mimeTypes, boolean allowMultiple) {
-        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!hasPermissions(activity, getStoragePermissions(true))) {
             // Check read & write storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+            ActivityCompat.requestPermissions(activity, getStoragePermissions(true), requestCode);
         } else {
             // Permission granted
             Intent intent;
@@ -539,10 +564,10 @@ public class TAPUtils {
     public static Uri takePicture(String instanceKey, Activity activity, int requestCode) {
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
-        } else if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
+        } else if (!hasPermissions(activity, getStoragePermissions(false))) {
             // Check read & write storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA);
+            ActivityCompat.requestPermissions(activity, getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA);
         } else {
             // All permissions granted
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -1042,9 +1067,9 @@ public class TAPUtils {
      * Custom File Picker
      */
     public static void openDocumentPicker(Activity activity) {
-        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+        if (!hasPermissions(activity, getStoragePermissions(true))) {
             // Check read storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_FILE);
+            ActivityCompat.requestPermissions(activity, getStoragePermissions(true), PERMISSION_READ_EXTERNAL_STORAGE_FILE);
         } else {
             // Permission granted
             Intent intent = new Intent(activity, FilePickerActivity.class);
@@ -1059,9 +1084,9 @@ public class TAPUtils {
      * Default File Picker
      */
     public static void openDocumentPicker(Activity activity, int requestCode) {
-        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+        if (!hasPermissions(activity, getStoragePermissions(true))) {
             // Check read storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_FILE);
+            ActivityCompat.requestPermissions(activity, getStoragePermissions(true), PERMISSION_READ_EXTERNAL_STORAGE_FILE);
         } else {
             // Permission granted
             Intent intent;
