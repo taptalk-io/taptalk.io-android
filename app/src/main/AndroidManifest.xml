@@ -27,6 +27,12 @@
     <!--Permission to install apps from file messages-->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+
     <application
         android:name="io.moselo.SampleApps.SampleApplication"
         android:allowBackup="true"

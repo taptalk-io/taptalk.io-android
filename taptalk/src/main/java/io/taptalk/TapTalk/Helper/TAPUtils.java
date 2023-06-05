@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.net.Uri;
+
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -253,7 +254,7 @@ public class TAPUtils {
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     return false;
@@ -484,7 +485,6 @@ public class TAPUtils {
      * Reminder: Handle onRequestPermissionsResult in activity
      */
     public static void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
-
         if (!hasPermissions(activity, getStoragePermissions(false))) {
             // Check read & write storage permission
             ActivityCompat.requestPermissions(activity, getStoragePermissions(false), PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
@@ -516,7 +516,7 @@ public class TAPUtils {
         } else {
             // Permission granted
             Intent intent;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 String[] mimeTypes = {INTENT_TYPE_IMAGE, INTENT_TYPE_VIDEO};
                 intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images and videos
@@ -542,7 +542,7 @@ public class TAPUtils {
         } else {
             // Permission granted
             Intent intent;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter mime types
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
@@ -565,7 +565,7 @@ public class TAPUtils {
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
             ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
-        } else if (!hasPermissions(activity, getStoragePermissions(false))) {
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && !hasPermissions(activity, getStoragePermissions(false))) {
             // Check read & write storage permission
             ActivityCompat.requestPermissions(activity, getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA);
         } else {
@@ -1090,7 +1090,7 @@ public class TAPUtils {
         } else {
             // Permission granted
             Intent intent;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 String[] mimeTypes = {INTENT_TYPE_ALL};
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType(INTENT_TYPE_ALL);
