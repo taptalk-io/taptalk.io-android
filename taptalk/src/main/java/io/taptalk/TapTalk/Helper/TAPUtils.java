@@ -500,8 +500,10 @@ public class TAPUtils {
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
             intent.setType(INTENT_TYPE_IMAGE);
-            if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+            try {
                 activity.startActivityForResult(Intent.createChooser(intent, SELECT_PICTURE), requestCode);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -526,8 +528,10 @@ public class TAPUtils {
             }
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType(INTENT_TYPE_ALL);
-            if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+            try {
                 activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -551,8 +555,10 @@ public class TAPUtils {
             }
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType(INTENT_TYPE_ALL);
-            if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+            try {
                 activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -571,23 +577,24 @@ public class TAPUtils {
         } else {
             // All permissions granted
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                try {
-                    String filename = TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
-                    File dir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = File.createTempFile(filename, ".jpeg", dir);
-                    Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    }
-                    activity.startActivityForResult(intent, requestCode);
-                    // Save file path to map
-                    TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(imageUri, image.getAbsolutePath());
-                    return imageUri;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
+            try {
+                String filename = TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+                File dir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File image = File.createTempFile(filename, ".jpeg", dir);
+                Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 }
+                activity.startActivityForResult(intent, requestCode);
+                // Save file path to map
+                TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(imageUri, image.getAbsolutePath());
+                return imageUri;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+                return null;
             }
         }
         return null;
@@ -1100,8 +1107,10 @@ public class TAPUtils {
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
             intent.setType(INTENT_TYPE_ALL);
-            if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+            try {
                 activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }
