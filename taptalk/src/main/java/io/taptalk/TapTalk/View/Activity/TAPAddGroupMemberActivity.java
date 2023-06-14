@@ -231,9 +231,10 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContactList().contains(contact)) {
-                    if (vm.getSelectedContactList().size() + vm.getInitialGroupSize() > TAPGroupManager.Companion.getInstance(instanceKey).getGroupMaxParticipants()) {
-                        // TODO: 20 September 2018 CHANGE DIALOG LISTENER
+                    if (vm.getSelectedContactList().size() + vm.getInitialGroupSize() >= TAPGroupManager.Companion.getInstance(instanceKey).getGroupMaxParticipants()) {
                         // Member count exceeds limit
+                        contact.setSelected(false);
+                        contactListAdapter.notifyItemChanged(vm.getAdapterItems().indexOf(contact));
                         new TapTalkDialog.Builder(TAPAddGroupMemberActivity.this)
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                 .setTitle(getString(R.string.tap_cannot_add_more_people))
@@ -242,6 +243,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                                 .setPrimaryButtonListener(v -> {
 
                                 })
+                                .setCancelable(true)
                                 .show();
                         return false;
                     }

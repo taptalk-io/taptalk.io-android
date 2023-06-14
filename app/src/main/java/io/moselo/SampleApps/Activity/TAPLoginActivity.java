@@ -102,7 +102,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
     }
 
     public void showOTPVerification(Long otpID, String otpKey, String phoneNumber, String phoneNumberWithCode, int countryID, String countryCallingID, String countryFlagUrl, String channel, int nextRequestSeconds) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.BUILD_TYPE.equals("dev")) {
             String otpCode = phoneNumber.substring(phoneNumber.length() - 6);
             TAPDataManager.getInstance(instanceKey).verifyOTPLogin(otpID, otpKey, otpCode, new TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
                 @Override
