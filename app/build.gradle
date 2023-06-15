@@ -19,8 +19,8 @@ android {
         applicationId "io.taptalk.TapTalkSample"
         minSdk 16
         targetSdk 33
-        versionCode 132
-        versionName '2.10.3'
+        versionCode 133
+        versionName '2.11.0'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", applicationId + "-" + versionName)
