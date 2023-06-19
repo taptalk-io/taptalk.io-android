@@ -92,21 +92,14 @@
         <activity
             android:name="io.moselo.SampleApps.Activity.TapDeepLinkActivity"
             android:exported="true">
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="taptalk.io"
-                    android:scheme="https"
-                    android:pathPrefix="/powertalk" />
-
-                <data
-                    android:host="taptalk.io"
-                    android:scheme="http"
-                    android:pathPrefix="/powertalk" />
+                <data android:scheme="https" />
+                <data android:host="web.taptalk.io" />
             </intent-filter>
         </activity>
         <activity
