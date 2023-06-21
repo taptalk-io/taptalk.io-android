@@ -47,37 +47,51 @@ public class TapDeepLinkActivity extends AppCompatActivity {
                             public void onError(String errorCode, String errorMessage) {
 //                                Log.e(">>>>", "DeepLinkActivity get room error: " + errorMessage);
                                 // Fallback if room data is not found
-                                TapUI.getInstance().openRoomList(TapDeepLinkActivity.this);
+                                openRoomList();
                             }
                         });
                     }
                     else {
 //                        Log.e(">>>>", "DeepLinkActivity room ID not found");
                         // Fallback if room ID is not found
-                        TapUI.getInstance().openRoomList(TapDeepLinkActivity.this);
+                        openRoomList();
                     }
                 }
                 else {
 //                    Log.e(">>>>", "DeepLinkActivity user is not logged in");
                     // User is not logged in
-                    Intent mainActivityIntent = new Intent(this, MainActivity.class);
-                    startActivity(mainActivityIntent);
+                    openLoginActivity();
                 }
             }
             else {
 //                Log.e(">>>>", "DeepLinkActivity url is not chat");
                 // Fallback if tapped url is not chat
-                Intent mainActivityIntent = new Intent(this, MainActivity.class);
-                startActivity(mainActivityIntent);
+                openFallbackActivity();
             }
         }
         else {
 //            Log.e(">>>>", "DeepLinkActivity data null");
             // Fallback if data is null
-            Intent mainActivityIntent = new Intent(this, MainActivity.class);
-            startActivity(mainActivityIntent);
+            openFallbackActivity();
         }
 
         finish();
+    }
+
+    private void openRoomList() {
+        if (TapUI.getInstance().getCurrentTapTalkRoomListFragment() == null) {
+            TapUI.getInstance().openRoomList(this);
+        }
+    }
+
+    private void openLoginActivity() {
+        TAPLoginActivity.start(this, "");
+    }
+
+    private void openFallbackActivity() {
+        if (TapUI.getInstance().getCurrentTapTalkRoomListFragment() == null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
     }
 }
