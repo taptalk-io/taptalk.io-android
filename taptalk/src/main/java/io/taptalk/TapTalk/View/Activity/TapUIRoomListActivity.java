@@ -119,32 +119,12 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
 
             String roomID = intent.getStringExtra(ROOM_ID);
             if (roomID != null && !roomID.isEmpty()) {
-                boolean isRoomOpened = false;
-                if (roomID.contains("-")) {
-                    String otherUserID = TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomID);
-                    TAPUserModel otherUser = TAPContactManager.getInstance(instanceKey).getUserData(otherUserID);
-                    if (otherUser != null) {
-                        isRoomOpened = true;
-                        runOnUiThread(() -> TapUI.getInstance(instanceKey).openChatRoom(
-                            this,
-                            roomID,
-                            otherUser.getFullname(),
-                            otherUser.getImageURL(),
-                            TYPE_PERSONAL,
-                            ""
-                        ));
-//                        Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: open personal room");
-                    }
+                TAPRoomModel localRoom = TapCoreChatRoomManager.getInstance(instanceKey).getLocalChatRoomData(roomID);
+                if (localRoom != null) {
+                    runOnUiThread(() -> TapUI.getInstance(instanceKey).openChatRoomWithRoomModel(this, localRoom));
+//                    Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: open room from local data");
                 }
-                if (!isRoomOpened) {
-                    TAPRoomModel room = TapCoreChatRoomManager.getInstance(instanceKey).getLocalGroupChatRoom(roomID);
-                    if (room != null) {
-                        isRoomOpened = true;
-                        runOnUiThread(() -> TapUI.getInstance(instanceKey).openChatRoomWithRoomModel(this, room));
-//                        Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: open room from local data");
-                    }
-                }
-                if (!isRoomOpened) {
+                else {
 //                    Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: start fetch API");
                     runOnUiThread(() -> loadingToast.show());
                     TapCoreChatRoomManager.getInstance(instanceKey).getChatRoomData(roomID, new TapCoreGetRoomListener() {
