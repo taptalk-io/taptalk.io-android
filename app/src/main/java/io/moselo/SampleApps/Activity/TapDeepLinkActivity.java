@@ -9,10 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
-import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
 import io.taptalk.TapTalk.Manager.TapUI;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalkSample.R;
 
 public class TapDeepLinkActivity extends AppCompatActivity {
@@ -28,33 +25,18 @@ public class TapDeepLinkActivity extends AppCompatActivity {
             if (data.getHost().equals("web.taptalk.io")) {
                 if (TapTalk.isAuthenticated()) {
                     List<String> pathSegments = data.getPathSegments();
-//                    Log.e(">>>>", "DeepLinkActivity pathSegments: " + TAPUtils.toJsonString(pathSegments));
+//                    Log.e(">>>>", "DeepLinkActivity pathSegments: " + pathSegments);
 
                     if (pathSegments != null && !pathSegments.isEmpty()) {
                         // Get room ID from last path segment
                         String roomID = pathSegments.get(pathSegments.size() - 1);
-
-                        // Get room details from obtained room ID
-                        TapCoreChatRoomManager.getInstance().getGroupChatRoom(roomID, new TapCoreGetRoomListener() {
-                            @Override
-                            public void onSuccess(TAPRoomModel room) {
-//                                Log.e(">>>>", "DeepLinkActivity get room success: " + room.getName());
-                                // Open chat room
-                                TapUI.getInstance().openChatRoomWithRoomModel(TapDeepLinkActivity.this, room);
-                            }
-
-                            @Override
-                            public void onError(String errorCode, String errorMessage) {
-//                                Log.e(">>>>", "DeepLinkActivity get room error: " + errorMessage);
-                                // Fallback if room data is not found
-                                openRoomList();
-                            }
-                        });
+//                        Log.e(">>>>", "DeepLinkActivity open with room ID: " + roomID);
+                        openRoomList(roomID);
                     }
                     else {
-//                        Log.e(">>>>", "DeepLinkActivity room ID not found");
+//                        Log.e(">>>>", "DeepLinkActivity room ID not found, open room list");
                         // Fallback if room ID is not found
-                        openRoomList();
+                        openRoomList("");
                     }
                 }
                 else {
@@ -78,10 +60,8 @@ public class TapDeepLinkActivity extends AppCompatActivity {
         finish();
     }
 
-    private void openRoomList() {
-        if (TapUI.getInstance().getCurrentTapTalkRoomListFragment() == null) {
-            TapUI.getInstance().openRoomList(this);
-        }
+    private void openRoomList(String roomID) {
+        TapUI.getInstance().openRoomList(this, roomID);
     }
 
     private void openLoginActivity() {
@@ -89,9 +69,7 @@ public class TapDeepLinkActivity extends AppCompatActivity {
     }
 
     private void openFallbackActivity() {
-        if (TapUI.getInstance().getCurrentTapTalkRoomListFragment() == null) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }

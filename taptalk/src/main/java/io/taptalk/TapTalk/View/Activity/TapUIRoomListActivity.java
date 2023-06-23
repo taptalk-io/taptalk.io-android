@@ -3,22 +3,32 @@ package io.taptalk.TapTalk.View.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.orhanobut.hawk.Hawk;
 
 import io.taptalk.TapTalk.Helper.TAPAutoStartPermission;
+import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
+import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TapUIRoomListActivity extends TAPBaseActivity {
 
     private static final String TAG = TapUIRoomListActivity.class.getSimpleName();
     public static final String AUTO_START_PERMISSION = "kAutoStartPermission";
     private TapUIMainRoomListFragment fRoomList;
+    private boolean isResumed;
 
     public static void start(
             Context context,
@@ -52,6 +62,23 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
         context.startActivity(intent);
     }
 
+    public static void start(
+        Context context,
+        String instanceKey,
+        String roomID,
+        boolean flagNewTask
+    ) {
+        Intent intent = new Intent(context, TapUIRoomListActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        if (null != roomID && !roomID.isEmpty()) {
+            intent.putExtra(ROOM_ID, roomID);
+        }
+        if (flagNewTask) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,20 +86,88 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
         initView();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isResumed) {
+            isResumed = true;
+            redirectToChatActivity(getIntent());
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        redirectToChatActivity(intent);
+    }
+
     private void initView() {
 //        fRoomList = (TapUIMainRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
         fRoomList = TapUIMainRoomListFragment.newInstance(instanceKey);
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_room_list, fRoomList).commit();
         showRoomList();
-        redirectToChatActivityFromNotification();
         requestForAutoStartPermission();
     }
 
-    private void redirectToChatActivityFromNotification() {
-        TAPRoomModel roomModel = getIntent().getParcelableExtra(ROOM);
-        if (null != roomModel) {
-            TapUIChatActivity.start(this, instanceKey, roomModel);
-        }
+    private void redirectToChatActivity(Intent intent) {
+        Toast loadingToast = Toast.makeText(this, "Loading room…", Toast.LENGTH_SHORT);
+        new Thread(() -> {
+            TAPRoomModel roomModel = intent.getParcelableExtra(ROOM);
+            if (null != roomModel) {
+                runOnUiThread(() -> TapUIChatActivity.start(this, instanceKey, roomModel));
+            }
+
+            String roomID = intent.getStringExtra(ROOM_ID);
+            if (roomID != null && !roomID.isEmpty()) {
+                boolean isRoomOpened = false;
+                if (roomID.contains("-")) {
+                    String otherUserID = TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomID);
+                    TAPUserModel otherUser = TAPContactManager.getInstance(instanceKey).getUserData(otherUserID);
+                    if (otherUser != null) {
+                        isRoomOpened = true;
+                        runOnUiThread(() -> TapUI.getInstance(instanceKey).openChatRoom(
+                            this,
+                            roomID,
+                            otherUser.getFullname(),
+                            otherUser.getImageURL(),
+                            TYPE_PERSONAL,
+                            ""
+                        ));
+//                        Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: open personal room");
+                    }
+                }
+                if (!isRoomOpened) {
+                    TAPRoomModel room = TapCoreChatRoomManager.getInstance(instanceKey).getLocalGroupChatRoom(roomID);
+                    if (room != null) {
+                        isRoomOpened = true;
+                        runOnUiThread(() -> TapUI.getInstance(instanceKey).openChatRoomWithRoomModel(this, room));
+//                        Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: open room from local data");
+                    }
+                }
+                if (!isRoomOpened) {
+//                    Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: start fetch API");
+                    runOnUiThread(() -> loadingToast.show());
+                    TapCoreChatRoomManager.getInstance(instanceKey).getChatRoomData(roomID, new TapCoreGetRoomListener() {
+                        @Override
+                        public void onSuccess(TAPRoomModel room) {
+                            runOnUiThread(() -> {
+                                loadingToast.cancel();
+                                TapUI.getInstance(instanceKey).openChatRoomWithRoomModel(TapUIRoomListActivity.this, room);
+                            });
+//                            Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: open room from API");
+                        }
+
+                        @Override
+                        public void onError(String errorCode, String errorMessage) {
+                            runOnUiThread(() -> {
+                                loadingToast.cancel();
+                                Toast.makeText(TapUIRoomListActivity.this, "Room not found", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    });
+                }
+            }
+        }).start();
     }
 
     public void showRoomList() {

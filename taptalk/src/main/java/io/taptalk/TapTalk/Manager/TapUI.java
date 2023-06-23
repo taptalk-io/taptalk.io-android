@@ -334,10 +334,21 @@ public class TapUI {
     }
 
     public void openRoomList(Context context) {
+        openRoomList(context, "");
+    }
+
+    public void openRoomList(Context context, TAPRoomModel room) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TapUIRoomListActivity.start(context, instanceKey);
+        TapUIRoomListActivity.start(context, instanceKey, room);
+    }
+
+    public void openRoomList(Context context, String roomID) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TapUIRoomListActivity.start(context, instanceKey, roomID, false);
     }
 
     public void openGroupChatCreator(Context context) {

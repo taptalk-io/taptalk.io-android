@@ -105,7 +105,7 @@ public class SampleApplication extends MultiDexApplication {
 
         @Override
         public void onTaskRootChatRoomClosed(Activity activity) {
-            TapUIRoomListActivity.start(activity, INSTANCE_KEY, null, true);
+            TapUIRoomListActivity.start(activity, INSTANCE_KEY, "", true);
         }
     };
 
