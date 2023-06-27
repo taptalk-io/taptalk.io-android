@@ -3007,7 +3007,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         //if (!etChat.hasFocus()) {
         //    etChat.requestFocus();
         //}
-        TAPUtils.dismissKeyboard(this);
+        hideKeyboards();
         TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(instanceKey, attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }

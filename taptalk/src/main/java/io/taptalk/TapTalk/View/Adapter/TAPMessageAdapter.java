@@ -922,15 +922,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     });
                 } else if (null != imageUrl && !imageUrl.isEmpty()) {
                     // Load image from URL
-                    glide.load(imageUrl)
-                            .transition(DrawableTransitionOptions.withCrossFade(100))
-                            .apply(new RequestOptions()
-                                    .placeholder(thumbnail)
-                                    .centerCrop())
-                            .listener(imageBodyListener)
-                            .into(rcivImageBody);
-                    rcivImageBody.setOnClickListener(v -> {
-                        openImageDetailPreview(item);
+                    String finalImageUrl = imageUrl;
+                    activity.runOnUiThread(() -> {
+                        glide.load(finalImageUrl)
+                                .transition(DrawableTransitionOptions.withCrossFade(100))
+                                .apply(new RequestOptions()
+                                        .placeholder(thumbnail)
+                                        .centerCrop())
+                                .listener(imageBodyListener)
+                                .into(rcivImageBody);
+                        rcivImageBody.setOnClickListener(v -> {
+                            openImageDetailPreview(item);
+                        });
                     });
                 } else {
                     activity.runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
