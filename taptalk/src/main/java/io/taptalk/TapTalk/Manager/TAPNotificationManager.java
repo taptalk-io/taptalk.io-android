@@ -352,7 +352,7 @@ public class TAPNotificationManager {
                     },
                     TAPDataManager.getInstance(instanceKey).getNotificationMessageMap());
             setNotificationMessagesMap(tempNotifMessage);
-            TAPDataManager.getInstance(instanceKey).clearNotificationMessageMap();
+            TAPDataManager.getInstance(instanceKey).removeNotificationMap();
         }
     }
 
