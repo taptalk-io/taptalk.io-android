@@ -96,6 +96,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.AUDIO_MP3;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
@@ -1140,8 +1141,10 @@ public class TAPChatManager {
         try {
             String fileName = file.getName();
             Number fileSize = file.length();
-            String fileMimeType = null != TAPUtils.getFileMimeType(file) ?
-                    TAPUtils.getFileMimeType(file) : "application/octet-stream";
+            String fileMimeType = TAPUtils.getFileMimeType(file);
+            if (fileMimeType == null || fileMimeType.isEmpty()) {
+                fileMimeType = "application/octet-stream";
+            }
 
             // Build message model
             TAPMessageModel messageModel;
@@ -1330,8 +1333,10 @@ public class TAPChatManager {
         try {
             String fileName = file.getName();
             Number fileSize = file.length();
-            String fileMimeType = null != TAPUtils.getFileMimeType(file) ?
-                    TAPUtils.getFileMimeType(file) : "application/octet-stream";
+            String fileMimeType = TAPUtils.getFileMimeType(file);
+            if (fileMimeType == null || fileMimeType.isEmpty()) {
+                fileMimeType = AUDIO_MP3;
+            }
 
             // Build message model
             TAPMessageModel messageModel;
