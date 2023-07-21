@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -76,6 +77,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -89,11 +91,13 @@ import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static androidx.core.util.PatternsCompat.WEB_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE_ALL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE_IMAGE;
@@ -778,18 +782,46 @@ public class TAPUtils {
         return fileDisplayInfo;
     }
 
+    @Nullable
+    public static TAPMediaPreviewModel getPreviewFromUri(Context context, Uri uri, boolean isSelected) {
+        int messageType = getMessageTypeFromFileUri(context, uri);
+        if (messageType == TYPE_IMAGE) {
+            Bitmap bitmap = getBitmapFromUri(context, uri);
+            if (bitmap != null) {
+                File tempFile = TAPFileUtils.createTemporaryCachedBitmap(context, bitmap, IMAGE_JPEG, 100);
+                if (tempFile != null) {
+                    Uri bitmapUri = Uri.fromFile(tempFile);
+                    return TAPMediaPreviewModel.Builder(bitmapUri, messageType, isSelected);
+                }
+            }
+            return null;
+        }
+        return TAPMediaPreviewModel.Builder(uri, messageType, isSelected);
+    }
+
     public static ArrayList<TAPMediaPreviewModel> getPreviewsFromClipData(Context context, ClipData clipData, boolean isFirstSelected) {
-        ArrayList<TAPMediaPreviewModel> uris = new ArrayList<>();
+        ArrayList<TAPMediaPreviewModel> mediaPreviews = new ArrayList<>();
         int itemSize = clipData.getItemCount();
         for (int count = 0; count < itemSize; count++) {
             Uri uri = clipData.getItemAt(count).getUri();
-            if (count == 0 && isFirstSelected) {
-                uris.add(TAPMediaPreviewModel.Builder(uri, getMessageTypeFromFileUri(context, uri), true));
-            } else {
-                uris.add(TAPMediaPreviewModel.Builder(uri, getMessageTypeFromFileUri(context, uri), false));
+            boolean isSelected = count == 0 && isFirstSelected;
+            TAPMediaPreviewModel preview = getPreviewFromUri(context, uri, isSelected);
+            if (preview != null) {
+                mediaPreviews.add(preview);
             }
         }
-        return uris;
+        return mediaPreviews;
+    }
+
+    public static Bitmap getBitmapFromUri(Context context, Uri uri) {
+        try {
+            ContentResolver contentResolver = context.getContentResolver();
+            return MediaStore.Images.Media.getBitmap(contentResolver, uri);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static int getMessageTypeFromFileUri(Context context, Uri uri) {
@@ -1174,12 +1206,18 @@ public class TAPUtils {
 
     public static String getImageMimeType(Context context, Uri imageUri) {
         if (null != imageUri && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
-            return context.getContentResolver().getType(imageUri);
-        } else if (null != imageUri) {
-            return getFileMimeType(new File(imageUri.toString()));
-        } else {
-            return IMAGE_JPEG;
+            String mimeType = context.getContentResolver().getType(imageUri);
+            if (mimeType != null && !mimeType.isEmpty()) {
+                return mimeType;
+            }
         }
+        else if (null != imageUri) {
+            String mimeType = getFileMimeType(new File(imageUri.toString()));
+            if (mimeType != null && !mimeType.isEmpty()) {
+                return mimeType;
+            }
+        }
+        return IMAGE_JPEG;
     }
 
     public static String getMimeTypeFromUrl(String url) {

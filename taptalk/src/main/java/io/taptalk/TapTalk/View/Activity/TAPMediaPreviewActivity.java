@@ -142,9 +142,9 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
         @Override
         public void onPageSelected(int i) {
-            if (View.VISIBLE == tvMultipleImageIndicator.getVisibility())
+            if (View.VISIBLE == tvMultipleImageIndicator.getVisibility()) {
                 tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_format_dd_media_count), i + 1, medias.size()));
-
+            }
             new Thread(() -> {
                 for (TAPMediaPreviewModel recyclerItem : thumbnailAdapter.getItems()) {
                     recyclerItem.setSelected(false);
@@ -153,7 +153,9 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
                 runOnUiThread(() -> {
                     //thumbnailAdapter.notifyDataSetChanged();
-                    if (lastIndex == i) thumbnailAdapter.notifyItemRangeChanged(i, 1);
+                    if (lastIndex == i) {
+                        thumbnailAdapter.notifyItemRangeChanged(i, 1);
+                    }
                     else {
                         thumbnailAdapter.notifyItemChanged(i);
                         thumbnailAdapter.notifyItemChanged(lastIndex);
@@ -197,7 +199,10 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         } else {
             // Single media selection
             Uri uri = data.getData();
-            galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getMessageTypeFromFileUri(this, uri), false));
+            TAPMediaPreviewModel preview = TAPUtils.getPreviewFromUri(this, uri, false);
+            if (preview != null) {
+                galleryMediaPreviews.add(preview);
+            }
         }
         medias.addAll(galleryMediaPreviews);
         checkMediasForErrors();

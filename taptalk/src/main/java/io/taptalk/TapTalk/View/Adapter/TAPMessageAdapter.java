@@ -791,9 +791,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void setImageData(TAPMessageModel item, int position) {
+            rcivImageBody.setImageDrawable(null);
+
             if (null == item.getData()) {
                 return;
             }
+
             Activity activity = (Activity) itemView.getContext();
             Number widthDimension = (Number) item.getData().get(WIDTH);
             Number heightDimension = (Number) item.getData().get(HEIGHT);
@@ -1230,9 +1233,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void setVideoProgress(TAPMessageModel item, int position) {
+            rcivVideoThumbnail.setImageDrawable(null);
+
             if (null == item.getData()) {
                 return;
             }
+
             String localID = item.getLocalID();
             Number duration = (Number) item.getData().get(DURATION);
             Number size = (Number) item.getData().get(SIZE);
