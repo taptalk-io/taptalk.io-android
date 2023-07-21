@@ -796,6 +796,13 @@ public class TAPUtils {
             }
             return null;
         }
+        else if (messageType == TYPE_VIDEO) {
+            File tempFile = TAPFileUtils.createTemporaryCachedFile(context, uri);
+            if (tempFile != null) {
+                Uri fileUri = Uri.fromFile(tempFile);
+                return TAPMediaPreviewModel.Builder(fileUri, messageType, isSelected);
+            }
+        }
         return TAPMediaPreviewModel.Builder(uri, messageType, isSelected);
     }
 
@@ -1116,6 +1123,7 @@ public class TAPUtils {
     /**
      * Custom File Picker
      */
+    @Deprecated
     public static void openDocumentPicker(Activity activity) {
         if (!hasPermissions(activity, getStoragePermissions(true))) {
             // Check read storage permission

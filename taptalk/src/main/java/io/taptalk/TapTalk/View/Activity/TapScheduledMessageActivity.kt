@@ -254,7 +254,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         return
                     }
                     var tempFile: File? = null
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         var uri: Uri? = null
                         if (null != data.clipData) {
                             for (i in 0 until data.clipData!!.itemCount) {
@@ -267,12 +267,12 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                             // Write temporary file to cache for upload for Android 11+
                             tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri)
                         }
-                    } else {
-                        val filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
-                        if (!filePath.isNullOrEmpty()) {
-                            tempFile = File(filePath)
-                        }
-                    }
+//                    } else {
+//                        val filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
+//                        if (!filePath.isNullOrEmpty()) {
+//                            tempFile = File(filePath)
+//                        }
+//                    }
 
                     if (tempFile != null) {
                         if (TAPFileUploadManager.getInstance(instanceKey)
@@ -357,12 +357,12 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 )
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE -> messageAdapter.notifyDataSetChanged()
                 PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON)
                         TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity, SEND_FILE)
-                    } else {
-                        TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)
-                    }
+//                    } else {
+//                        TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)
+//                    }
                 }
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO -> attachmentListener.onSaveVideoToGallery(vm.pendingDownloadMessage)
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE -> startFileDownload(
@@ -1419,12 +1419,12 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
 
             override fun onDocumentSelected() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON)
                     TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity, SEND_FILE)
-                } else {
-                    TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)
-                }
+//                } else {
+//                    TAPUtils.openDocumentPicker(this@TapScheduledMessageActivity)
+//                }
             }
 
             override fun onCopySelected(text: String) {

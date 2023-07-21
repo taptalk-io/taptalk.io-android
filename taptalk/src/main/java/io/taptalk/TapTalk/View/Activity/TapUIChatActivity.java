@@ -838,7 +838,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
                 case SEND_FILE:
                     File tempFile = null;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         Uri uri = null;
                         if (null != intent.getClipData()) {
                             for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
@@ -852,12 +852,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             // Write temporary file to cache for upload for Android 11+
                             tempFile = TAPFileUtils.createTemporaryCachedFile(this, uri);
                         }
-                    } else {
-                        String filePath = intent.getStringExtra(RESULT_FILE_PATH);
-                        if (filePath != null && !filePath.isEmpty()) {
-                            tempFile = new File(filePath);
-                        }
-                    }
+//                    } else {
+//                        String filePath = intent.getStringExtra(RESULT_FILE_PATH);
+//                        if (filePath != null && !filePath.isEmpty()) {
+//                            tempFile = new File(filePath);
+//                        }
+//                    }
 
                     if (null != tempFile) {
                         if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length())) {
@@ -935,12 +935,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON);
                         TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
-                    } else {
-                        TAPUtils.openDocumentPicker(TapUIChatActivity.this);
-                    }
+//                    } else {
+//                        TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+//                    }
                     break;
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO:
                     if (null != attachmentListener) {
@@ -3145,12 +3145,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onDocumentSelected() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 TapTalk.setTapTalkSocketConnectionMode(instanceKey, TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON);
                 TAPUtils.openDocumentPicker(TapUIChatActivity.this, SEND_FILE);
-            } else {
-                TAPUtils.openDocumentPicker(TapUIChatActivity.this);
-            }
+//            } else {
+//                TAPUtils.openDocumentPicker(TapUIChatActivity.this);
+//            }
         }
 
         @Override

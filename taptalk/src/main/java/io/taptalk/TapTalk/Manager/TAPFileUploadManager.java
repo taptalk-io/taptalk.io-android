@@ -952,12 +952,12 @@ public class TAPFileUploadManager {
     public void uploadFile(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TapCoreFileUploadListener listener) {
         try {
             File file;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 file = TAPFileUtils.createTemporaryCachedFile(context, uri);
-            }
-            else {
-                file = new File(uri.toString());
-            }
+//            }
+//            else {
+//                file = new File(uri.toString());
+//            }
             String mimeType = TAPUtils.getFileMimeType(file);
 
             if ((file == null || file.length() == 0) && !uri.toString().isEmpty()) {
@@ -1011,7 +1011,7 @@ public class TAPFileUploadManager {
                         else if (response.getId() != null && !response.getId().isEmpty()) {
                             key = response.getId();
                         }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             // Copy file to storage for Android 10+
                             // Message file will need to be downloaded if not saved
                             File storageFile = new File(context.getFilesDir(), file.getName());
@@ -1024,13 +1024,13 @@ public class TAPFileUploadManager {
                             }
                             TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, storageFile.getAbsolutePath());
                             TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, storageFile, TAPUtils.getFileMimeType(storageFile));
-                        }
-                        else {
-                            Uri fileUri = Uri.fromFile(file);
-                            if (fileUri != null && !key.isEmpty()) {
-                                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri("", key, fileUri);
-                            }
-                        }
+//                        }
+//                        else {
+//                            Uri fileUri = Uri.fromFile(file);
+//                            if (fileUri != null && !key.isEmpty()) {
+//                                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri("", key, fileUri);
+//                            }
+//                        }
                         listener.onSuccess(response.getFileID(), response.getFileURL());
                     }
                     catch (Exception e) {
@@ -1528,7 +1528,7 @@ public class TAPFileUploadManager {
                 key = response.getId();
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // Copy file to storage for Android 10+
                 // Message file will need to be downloaded if not saved
                 File storageFile = new File(context.getFilesDir(), file.getName());
@@ -1541,13 +1541,13 @@ public class TAPFileUploadManager {
                 }
                 TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, storageFile.getAbsolutePath());
                 TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, storageFile, TAPUtils.getFileMimeType(storageFile));
-            }
-            else if (null != messageModel.getData()) {
-                String fileUriString = (String) messageModel.getData().get(FILE_URI);
-                if (fileUriString != null && !fileUriString.isEmpty() && !key.isEmpty()) {
-                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, key, fileUriString);
-                }
-            }
+//            }
+//            else if (null != messageModel.getData()) {
+//                String fileUriString = (String) messageModel.getData().get(FILE_URI);
+//                if (fileUriString != null && !fileUriString.isEmpty() && !key.isEmpty()) {
+//                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, key, fileUriString);
+//                }
+//            }
 
             TAPDataFileModel fileDataModel = TAPDataFileModel.Builder(
                     response.getId(),
