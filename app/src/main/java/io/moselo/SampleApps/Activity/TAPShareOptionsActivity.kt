@@ -541,12 +541,12 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     }
 
     private fun handleFileType(uri: Uri, roomModel: TAPRoomModel?, caption: String) {
-        val file: File? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//        val file: File? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Write temporary file to cache for upload for Android 11+
-            TAPFileUtils.createTemporaryCachedFile(this, uri)
-        } else {
-            File(TAPFileUtils.getFilePath(this, uri))
-        }
+            val file = TAPFileUtils.createTemporaryCachedFile(this, uri)
+//        } else {
+//            File(TAPFileUtils.getFilePath(this, uri))
+//        }
         if (file == null) {
             return
         }
