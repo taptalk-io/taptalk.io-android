@@ -62,8 +62,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.AUDIO_MP3;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.VIDEO_MP4;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
@@ -421,6 +423,9 @@ public class TAPFileUploadManager {
             Uri videoUri = Uri.parse(videoData.getFileUri());
             File videoFile = new File(videoUri.toString());
             String mimeType = TAPUtils.getFileMimeType(videoFile);
+            if (mimeType == null || mimeType.isEmpty()) {
+                mimeType = VIDEO_MP4;
+            }
 
             if (videoFile.length() == 0 && null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
                 // Get video file from file Uri if map is empty
@@ -623,11 +628,17 @@ public class TAPFileUploadManager {
         Uri videoUri = Uri.parse(videoData.getFileUri());
         File videoFile = new File(videoUri.toString());
         String mimeType = TAPUtils.getFileMimeType(videoFile);
+        if (mimeType == null || mimeType.isEmpty()) {
+            mimeType = VIDEO_MP4;
+        }
 
         if (videoFile.length() == 0 && null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
             // Get video file from file Uri if map is empty
             videoUri = Uri.parse(videoData.getFileUri());
-            videoFile = new File(TAPFileUtils.getFilePath(context, videoUri));
+            String path = TAPFileUtils.getFilePath(context, videoUri);
+            if (path != null && !path.isEmpty()) {
+                videoFile = new File(path);
+            }
             mimeType = context.getContentResolver().getType(videoUri);
         }
         if (videoFile.length() == 0) {
@@ -758,6 +769,9 @@ public class TAPFileUploadManager {
         Uri audioUri = Uri.parse(audioData.getFileUri());
         File audioFile = new File(audioUri.toString());
         String mimeType = TAPUtils.getFileMimeType(audioFile);
+        if (mimeType == null || mimeType.isEmpty()) {
+            mimeType = AUDIO_MP3;
+        }
 
         if (audioFile.length() == 0 && null != audioData.getFileUri() && !audioData.getFileUri().isEmpty()) {
             // Get video file from file Uri if map is empty
@@ -904,6 +918,9 @@ public class TAPFileUploadManager {
         try {
             File videoFile = new File(uri.toString());
             String mimeType = TAPUtils.getFileMimeType(videoFile);
+            if (mimeType == null || mimeType.isEmpty()) {
+                mimeType = VIDEO_MP4;
+            }
 
             if (videoFile.length() == 0 && !uri.toString().isEmpty()) {
                 // Get file from file Uri if map is empty
@@ -959,6 +976,9 @@ public class TAPFileUploadManager {
 //                file = new File(uri.toString());
 //            }
             String mimeType = TAPUtils.getFileMimeType(file);
+            if (mimeType == null || mimeType.isEmpty()) {
+                mimeType = "application/octet-stream";
+            }
 
             if ((file == null || file.length() == 0) && !uri.toString().isEmpty()) {
                 // Get file from file Uri if map is empty

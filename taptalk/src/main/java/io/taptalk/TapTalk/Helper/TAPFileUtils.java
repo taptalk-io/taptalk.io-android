@@ -559,7 +559,11 @@ public class TAPFileUtils {
 
     public static File createTemporaryCachedBitmap(Context context, Bitmap bitmap, String mimeType, int compressionQuality) {
         try {
-            String filename = TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+            String extension = mimeType.substring(mimeType.lastIndexOf("/") + 1);
+            if (extension.isEmpty()) {
+                extension = "jpeg";
+            }
+            String filename = String.format("%s.%s", TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS"), extension);
             File tempFile = new File(context.getCacheDir(), filename);
             FileOutputStream output = new FileOutputStream(tempFile);
             bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, compressionQuality, output);

@@ -703,9 +703,19 @@ public class TAPFileDownloadManager {
     }
 
     public void scanFile(Context context, File f, String mimeType) {
-        MediaScannerConnection
-                .scanFile(context, new String[]{f.getAbsolutePath()},
-                        new String[]{mimeType}, null);
+        String path = "";
+        if (f != null && !f.getAbsolutePath().isEmpty()) {
+            path = f.getAbsolutePath();
+        }
+        if (mimeType == null) {
+            mimeType = "";
+        }
+        MediaScannerConnection.scanFile(
+            context,
+            new String[]{path},
+            new String[]{mimeType},
+            null
+        );
     }
 
     public boolean checkPhysicalFileExists(TAPMessageModel message) {

@@ -408,6 +408,8 @@ public class TAPDefaultConstant {
         public static final String IMAGE_JPEG = "image/jpeg";
         public static final String IMAGE_PNG = "image/png";
         public static final String IMAGE_GIF = "image/gif";
+        public static final String VIDEO_MP4 = "video/mp4";
+        public static final String AUDIO_MP3 = "audio/mp3";
     }
 
     public static final class QuoteAction {
