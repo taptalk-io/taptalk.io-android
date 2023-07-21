@@ -781,47 +781,27 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (null != clipData) {
                         // Multiple media selection
                         galleryMediaPreviews = TAPUtils.getPreviewsFromClipData(TapUIChatActivity.this, clipData, true);
-                    } else {
+                    }
+                    else {
                         // Single media selection
                         Uri uri = intent.getData();
-                        galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getMessageTypeFromFileUri(TapUIChatActivity.this, uri), true));
+                        TAPMediaPreviewModel preview = TAPUtils.getPreviewFromUri(TapUIChatActivity.this, uri, true);
+                        if (preview != null) {
+                            galleryMediaPreviews.add(preview);
+                        }
                     }
-                    openMediaPreviewPage(galleryMediaPreviews);
+                    if (!galleryMediaPreviews.isEmpty()) {
+                        openMediaPreviewPage(galleryMediaPreviews);
+                    }
                     break;
                 case SEND_MEDIA_FROM_PREVIEW:
                     ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);
                     if (null != medias && 0 < medias.size()) {
                         for (TAPMediaPreviewModel media : medias) {
                             if (media.getType() == TYPE_IMAGE) {
-                                try {
-                                    ContentResolver contentResolver = getContentResolver();
-                                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(contentResolver, media.getUri());
-                                    if (bitmap != null) {
-                                        TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, new TAPFileUploadManager.BitmapInterface() {
-                                            @Override
-                                            public void onBitmapReady(Bitmap bitmap) {
-                                                if (bitmap != null) {
-                                                    String imagePath = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "", "");
-                                                    if (imagePath != null && !imagePath.isEmpty()) {
-                                                        Uri uri = Uri.parse(imagePath);
-                                                        media.setUri(uri);
-                                                    }
-                                                }
-                                                TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
-                                            }
-
-                                            @Override
-                                            public void onBitmapError() {
-                                                TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
-                                            }
-                                        });
-                                    }
-                                } catch (IOException e) {
-                                    TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
-                                    e.printStackTrace();
-                                }
-
-                            } else if (media.getType() == TYPE_VIDEO) {
+                                TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
+                            }
+                            else if (media.getType() == TYPE_VIDEO) {
                                 TAPChatManager.getInstance(instanceKey).createVideoMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
                             }
                         }
@@ -3007,7 +2987,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         //if (!etChat.hasFocus()) {
         //    etChat.requestFocus();
         //}
-        TAPUtils.dismissKeyboard(this);
+        hideKeyboards();
         TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(instanceKey, attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }

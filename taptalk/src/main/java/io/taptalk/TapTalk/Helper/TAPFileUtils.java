@@ -44,6 +44,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
@@ -547,6 +548,23 @@ public class TAPFileUtils {
             while ((count = input.read(data)) != -1) {
                 output.write(data, 0, count);
             }
+            output.flush();
+            output.close();
+            return tempFile;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static File createTemporaryCachedBitmap(Context context, Bitmap bitmap, String mimeType, int compressionQuality) {
+        try {
+            String filename = TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+            File tempFile = new File(context.getCacheDir(), filename);
+            FileOutputStream output = new FileOutputStream(tempFile);
+            bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, compressionQuality, output);
+            output.flush();
+            output.close();
             return tempFile;
         } catch (Exception e) {
             e.printStackTrace();

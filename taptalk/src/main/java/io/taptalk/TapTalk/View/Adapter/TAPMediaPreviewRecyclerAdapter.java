@@ -51,7 +51,10 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
 
         @Override
         protected void onBind(TAPMediaPreviewModel item, int position) {
-            Glide.with(itemView.getContext()).load(item.getUri()).into(ivImagePreview);
+            ivImagePreview.setImageDrawable(null);
+            if (item.getUri() != null) {
+                Glide.with(itemView.getContext()).load(item.getUri()).into(ivImagePreview);
+            }
 
             if (item.isSelected() && item.isLoading()) {
                 // Selected - Media is loading

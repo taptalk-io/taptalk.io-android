@@ -16,7 +16,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
-import android.provider.MediaStore
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
@@ -57,7 +56,6 @@ import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
 import io.taptalk.TapTalk.Manager.*
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager.BitmapInterface
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Manager.TapUI.LongPressMenuType
 import io.taptalk.TapTalk.Model.*
@@ -204,20 +202,18 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     val clipData = data.clipData
                     if (null != clipData) {
                         // Multiple media selection
-                        galleryMediaPreviews =
-                            TAPUtils.getPreviewsFromClipData(this@TapScheduledMessageActivity, clipData, true)
+                        galleryMediaPreviews = TAPUtils.getPreviewsFromClipData(this@TapScheduledMessageActivity, clipData, true)
                     } else {
                         // Single media selection
                         val uri = data.data
-                        galleryMediaPreviews.add(
-                            TAPMediaPreviewModel.Builder(
-                                uri,
-                                TAPUtils.getMessageTypeFromFileUri(this@TapScheduledMessageActivity, uri),
-                                true
-                            )
-                        )
+                        val preview = TAPUtils.getPreviewFromUri(this@TapScheduledMessageActivity, uri, true)
+                        if (preview != null) {
+                            galleryMediaPreviews.add(preview)
+                        }
                     }
-                    openMediaPreviewPage(galleryMediaPreviews)
+                    if (galleryMediaPreviews.isNotEmpty()) {
+                        openMediaPreviewPage(galleryMediaPreviews)
+                    }
                 }
                 RequestCode.SEND_MEDIA_FROM_PREVIEW -> {
                     val medias = data?.getParcelableArrayListExtra<TAPMediaPreviewModel>(Extras.MEDIA_PREVIEWS)
@@ -226,30 +222,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                             override fun onClick(position: Int, item: Long?) {
                                 for (media in medias) {
                                     if (media.type == MessageType.TYPE_IMAGE) {
-                                        try {
-                                            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, media.uri)
-                                            if (bitmap != null) {
-                                                TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, object : BitmapInterface {
-                                                    override fun onBitmapReady(bitmap: Bitmap) {
-                                                        val imagePath = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "", "")
-                                                        if (imagePath != null && !imagePath.isEmpty()) {
-                                                            val uri = Uri.parse(imagePath)
-                                                            media.uri = uri
-                                                        }
-                                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
-                                                    }
-
-                                                    override fun onBitmapError() {
-                                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
-                                                    }
-                                                })
-                                            }
-                                        } catch (e: IOException) {
-                                            TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
-                                            e.printStackTrace()
-                                        }
-                                    } else if (media.type == MessageType.TYPE_VIDEO) {
-                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption)
+                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption, item)
+                                    }
+                                    else if (media.type == MessageType.TYPE_VIDEO) {
+                                        TAPChatManager.getInstance(instanceKey).createVideoMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption, item)
                                     }
                                 }
                             }

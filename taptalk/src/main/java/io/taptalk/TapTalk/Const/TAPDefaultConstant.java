@@ -246,6 +246,8 @@ public class TAPDefaultConstant {
         public static final int PERMISSION_LOCATION = 41;
         public static final int PERMISSION_READ_CONTACT = 51;
         public static final int PERMISSION_RECORD_AUDIO = 61;
+
+        public static final int PERMISSION_POST_NOTIFICATIONS = 71;
     }
 
     public static final class Sorting {

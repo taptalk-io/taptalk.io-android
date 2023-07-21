@@ -38,6 +38,7 @@
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity"

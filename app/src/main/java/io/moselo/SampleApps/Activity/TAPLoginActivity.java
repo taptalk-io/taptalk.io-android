@@ -15,6 +15,7 @@ import io.moselo.SampleApps.Fragment.TAPLoginVerificationFragment;
 import io.moselo.SampleApps.Fragment.TAPPhoneLoginFragment;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
@@ -58,6 +59,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
         initViewModel();
         initView();
         initFirstPage();
+        TAPUtils.checkAndRequestNotificationPermission(this);
     }
 
     @Override

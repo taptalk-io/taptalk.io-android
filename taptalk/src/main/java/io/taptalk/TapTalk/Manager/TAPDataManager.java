@@ -238,6 +238,8 @@ public class TAPDataManager {
         removeRefreshToken();
         removeConfigs();
         removeLastUpdatedMessageTimestampMap();
+        removeLastRoomMessageDeleteTime();
+        removeNewestPinnedMessage();
         removeUserLastActivityMap();
         removeRoomDataMap();
         removeRoomListSetupFinished();
@@ -260,6 +262,7 @@ public class TAPDataManager {
         removeStarredMessageIds();
         removePinnedMessageIds();
         removeBlockedUserIds();
+//        removeCustomizedAppearance();
     }
 
     /**
@@ -290,9 +293,9 @@ public class TAPDataManager {
     }
 
     public void removeConfigs() {
-        removePreference(CORE);
-        removePreference(PROJECT);
-        removePreference(CUSTOM);
+        removePreference(instanceKey + CORE);
+        removePreference(instanceKey + PROJECT);
+        removePreference(instanceKey + CUSTOM);
     }
 
     /**
@@ -307,22 +310,22 @@ public class TAPDataManager {
     }
 
     public void removeCountryList() {
-        removePreference(K_COUNTRY_LIST);
+        removePreference(instanceKey + K_COUNTRY_LIST);
     }
 
     /**
      * LAST GET COUNTRY TIMESTAMP
      */
     public long getLastCallCountryTimestamp() {
-        return getLongTimestampPreference(LAST_CALL_COUNTRY_TIMESTAMP);
+        return getLongTimestampPreference(instanceKey + LAST_CALL_COUNTRY_TIMESTAMP);
     }
 
     public void saveLastCallCountryTimestamp(long timestamp) {
-        saveLongTimestampPreference(LAST_CALL_COUNTRY_TIMESTAMP, timestamp);
+        saveLongTimestampPreference(instanceKey + LAST_CALL_COUNTRY_TIMESTAMP, timestamp);
     }
 
     public void removeLastCallCountryTimestamp() {
-        removePreference(LAST_CALL_COUNTRY_TIMESTAMP);
+        removePreference(instanceKey + LAST_CALL_COUNTRY_TIMESTAMP);
     }
 
     /**
@@ -342,7 +345,7 @@ public class TAPDataManager {
     }
 
     public void removeActiveUser() {
-        removePreference(K_USER);
+        removePreference(instanceKey + K_USER);
     }
 
     /**
@@ -350,19 +353,19 @@ public class TAPDataManager {
      */
 
     public Boolean checkAuthTicketAvailable() {
-        return checkPreferenceKeyAvailable(K_AUTH_TICKET);
+        return checkPreferenceKeyAvailable(instanceKey + K_AUTH_TICKET);
     }
 
     public String getAuthTicket() {
-        return getStringPreference(K_AUTH_TICKET);
+        return getStringPreference(instanceKey + K_AUTH_TICKET);
     }
 
     public void saveAuthTicket(String authTicket) {
-        saveStringPreference(K_AUTH_TICKET, authTicket);
+        saveStringPreference(instanceKey + K_AUTH_TICKET, authTicket);
     }
 
     public void removeAuthTicket() {
-        removePreference(K_AUTH_TICKET);
+        removePreference(instanceKey + K_AUTH_TICKET);
     }
 
     /**
@@ -370,27 +373,27 @@ public class TAPDataManager {
      */
 
     public Boolean checkAccessTokenAvailable() {
-        return checkPreferenceKeyAvailable(K_ACCESS_TOKEN);
+        return checkPreferenceKeyAvailable(instanceKey + K_ACCESS_TOKEN);
     }
 
     public String getAccessToken() {
-        return getStringPreference(K_ACCESS_TOKEN);
+        return getStringPreference(instanceKey + K_ACCESS_TOKEN);
     }
 
     public void saveAccessToken(String accessToken) {
-        saveStringPreference(K_ACCESS_TOKEN, accessToken);
+        saveStringPreference(instanceKey + K_ACCESS_TOKEN, accessToken);
     }
 
     public void saveAccessTokenExpiry(Long accessTokenExpiry) {
-        saveLongTimestampPreference(K_ACCESS_TOKEN_EXPIRY, accessTokenExpiry);
+        saveLongTimestampPreference(instanceKey + K_ACCESS_TOKEN_EXPIRY, accessTokenExpiry);
     }
 
     public long getAccessTokenExpiry() {
-        return getLongTimestampPreference(K_ACCESS_TOKEN_EXPIRY);
+        return getLongTimestampPreference(instanceKey + K_ACCESS_TOKEN_EXPIRY);
     }
 
     public void removeAccessToken() {
-        removePreference(K_ACCESS_TOKEN);
+        removePreference(instanceKey + K_ACCESS_TOKEN);
     }
 
     /**
@@ -398,23 +401,23 @@ public class TAPDataManager {
      */
 
     public Boolean checkRefreshTokenAvailable() {
-        return checkPreferenceKeyAvailable(K_REFRESH_TOKEN);
+        return checkPreferenceKeyAvailable(instanceKey + K_REFRESH_TOKEN);
     }
 
     public String getRefreshToken() {
-        return getStringPreference(K_REFRESH_TOKEN);
+        return getStringPreference(instanceKey + K_REFRESH_TOKEN);
     }
 
     public void saveRefreshToken(String refreshToken) {
-        saveStringPreference(K_REFRESH_TOKEN, refreshToken);
+        saveStringPreference(instanceKey + K_REFRESH_TOKEN, refreshToken);
     }
 
     public void saveRefreshTokenExpiry(Long refreshTokenExpiry) {
-        saveLongTimestampPreference(K_REFRESH_TOKEN_EXPIRY, refreshTokenExpiry);
+        saveLongTimestampPreference(instanceKey + K_REFRESH_TOKEN_EXPIRY, refreshTokenExpiry);
     }
 
     public void removeRefreshToken() {
-        removePreference(K_REFRESH_TOKEN);
+        removePreference(instanceKey + K_REFRESH_TOKEN);
     }
 
     /**
@@ -450,7 +453,7 @@ public class TAPDataManager {
     }
 
     private void removeLastUpdatedMessageTimestampMap() {
-        removePreference(K_LAST_UPDATED);
+        removePreference(instanceKey + K_LAST_UPDATED);
     }
 
     /**
@@ -463,6 +466,10 @@ public class TAPDataManager {
 
     public Long getLastRoomMessageDeleteTime() {
         return Hawk.get(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, null);
+    }
+
+    private void removeLastRoomMessageDeleteTime() {
+        removePreference(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME);
     }
 
     /**
@@ -489,6 +496,10 @@ public class TAPDataManager {
         } else return null;
     }
 
+    private void removeNewestPinnedMessage() {
+        removePreference(instanceKey + K_PINNED_MESSAGE);
+    }
+
     /**
      * USER LAST ACTIVITY
      */
@@ -502,7 +513,7 @@ public class TAPDataManager {
     }
 
     public void removeUserLastActivityMap() {
-        removePreference(K_USER_LAST_ACTIVITY);
+        removePreference(instanceKey + K_USER_LAST_ACTIVITY);
     }
 
     /**
@@ -517,11 +528,11 @@ public class TAPDataManager {
     }
 
     public void removeRoomDataMap() {
-        removePreference(K_GROUP_DATA_MAP);
+        removePreference(instanceKey + K_GROUP_DATA_MAP);
     }
 
     public boolean isRoomDataMapAvailable() {
-        return Hawk.contains(K_GROUP_DATA_MAP) && null != Hawk.get(instanceKey + K_GROUP_DATA_MAP);
+        return Hawk.contains(instanceKey + K_GROUP_DATA_MAP) && null != Hawk.get(instanceKey + K_GROUP_DATA_MAP);
     }
 
     /**
@@ -572,7 +583,7 @@ public class TAPDataManager {
     }
 
     public void removeChatRoomContactActionDismissed() {
-        removePreference(K_CHAT_ROOM_CONTACT_ACTION);
+        removePreference(instanceKey + K_CHAT_ROOM_CONTACT_ACTION);
     }
 
 
@@ -589,7 +600,7 @@ public class TAPDataManager {
     }
 
     public void removeBlockedUserIds() {
-        removePreference(K_BLOCKED_USER);
+        removePreference(instanceKey + K_BLOCKED_USER);
     }
 
 
@@ -610,7 +621,7 @@ public class TAPDataManager {
     }
 
     public void removeUnreadRoomIDs() {
-        removePreference(K_UNREAD_ROOM_LIST);
+        removePreference(instanceKey + K_UNREAD_ROOM_LIST);
     }
 
     public void removeUnreadRoomID(String roomId) {
@@ -632,7 +643,7 @@ public class TAPDataManager {
     }
 
     public void removeMutedRoomIds() {
-        removePreference(K_MUTED_ROOM_LIST);
+        removePreference(instanceKey + K_MUTED_ROOM_LIST);
     }
 
     public ArrayList<String> getPinnedRoomIDs() {
@@ -648,7 +659,7 @@ public class TAPDataManager {
     }
 
     public void removePinnedRoomIDs() {
-        removePreference(K_PINNED_ROOM_LIST);
+        removePreference(instanceKey + K_PINNED_ROOM_LIST);
     }
 
     public void removePinnedRoomID(String roomId) {
@@ -686,7 +697,7 @@ public class TAPDataManager {
     }
 
     public void removeStarredMessageIds() {
-        removePreference(K_STARRED_MESSAGE);
+        removePreference(instanceKey + K_STARRED_MESSAGE);
     }
 
     /**
@@ -718,13 +729,8 @@ public class TAPDataManager {
     }
 
     public void removePinnedMessageIds() {
-        removePreference(K_PINNED_MESSAGE_IDS);
+        removePreference(instanceKey + K_PINNED_MESSAGE_IDS);
     }
-
-    /**
-     * MESSAGE READ COUNT
-     */
-
 
     /**
      * MY COUNTRY CODE
@@ -759,15 +765,15 @@ public class TAPDataManager {
      */
 
     public void setRoomListSetupFinished() {
-        saveLongTimestampPreference(K_IS_ROOM_LIST_SETUP_FINISHED, System.currentTimeMillis());
+        saveLongTimestampPreference(instanceKey + K_IS_ROOM_LIST_SETUP_FINISHED, System.currentTimeMillis());
     }
 
     public Boolean isRoomListSetupFinished() {
-        return checkPreferenceKeyAvailable(K_IS_ROOM_LIST_SETUP_FINISHED);
+        return checkPreferenceKeyAvailable(instanceKey + K_IS_ROOM_LIST_SETUP_FINISHED);
     }
 
     private void removeRoomListSetupFinished() {
-        removePreference(K_IS_ROOM_LIST_SETUP_FINISHED);
+        removePreference(instanceKey + K_IS_ROOM_LIST_SETUP_FINISHED);
     }
 
     /**
@@ -782,7 +788,7 @@ public class TAPDataManager {
     }
 
     public void removeFileProviderPathMap() {
-        removePreference(K_FILE_PATH_MAP);
+        removePreference(instanceKey + K_FILE_PATH_MAP);
     }
 
     /**
@@ -797,7 +803,7 @@ public class TAPDataManager {
     }
 
     public void removeFileMessageUriMap() {
-        removePreference(K_FILE_URI_MAP);
+        removePreference(instanceKey + K_FILE_URI_MAP);
     }
 
     /**
@@ -820,15 +826,15 @@ public class TAPDataManager {
      * Firebase Token
      */
     public void saveFirebaseToken(String firebaseToken) {
-        saveStringPreference(K_FIREBASE_TOKEN, firebaseToken);
+        saveStringPreference(instanceKey + K_FIREBASE_TOKEN, firebaseToken);
     }
 
     public String getFirebaseToken() {
-        return getStringPreference(K_FIREBASE_TOKEN);
+        return getStringPreference(instanceKey + K_FIREBASE_TOKEN);
     }
 
     public Boolean checkFirebaseToken(String newFirebaseToken) {
-        if (!checkPreferenceKeyAvailable(K_FIREBASE_TOKEN)) {
+        if (!checkPreferenceKeyAvailable(instanceKey + K_FIREBASE_TOKEN)) {
             return false;
         } else {
             return newFirebaseToken.equals(getFirebaseToken());
@@ -836,7 +842,7 @@ public class TAPDataManager {
     }
 
     public Boolean checkFirebaseToken() {
-        return checkPreferenceKeyAvailable(K_FIREBASE_TOKEN) &&
+        return checkPreferenceKeyAvailable(instanceKey + K_FIREBASE_TOKEN) &&
                 null != getFirebaseToken() &&
                 !getFirebaseToken().isEmpty() &&
                 !"0".equals(getFirebaseToken());
@@ -846,15 +852,15 @@ public class TAPDataManager {
      * Old Data (Auto Clean) Last Delete Timestamp
      */
     public void saveLastDeleteTimestamp(Long lastDeleteTimestamp) {
-        saveLongTimestampPreference(K_LAST_DELETE_TIMESTAMP, lastDeleteTimestamp);
+        saveLongTimestampPreference(instanceKey + K_LAST_DELETE_TIMESTAMP, lastDeleteTimestamp);
     }
 
     public Long getLastDeleteTimestamp() {
-        return getLongTimestampPreference(K_LAST_DELETE_TIMESTAMP);
+        return getLongTimestampPreference(instanceKey + K_LAST_DELETE_TIMESTAMP);
     }
 
     public Boolean isLastDeleteTimestampExists() {
-        if (!checkPreferenceKeyAvailable(K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp()) {
+        if (!checkPreferenceKeyAvailable(instanceKey + K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp()) {
             return false;
         } else {
             return 0L != getLastDeleteTimestamp();
@@ -862,31 +868,137 @@ public class TAPDataManager {
     }
 
     private void removeLastDeleteTimestamp() {
-        removePreference(K_LAST_DELETE_TIMESTAMP);
+        removePreference(instanceKey + K_LAST_DELETE_TIMESTAMP);
     }
 
     /**
      * Notification Message Map
      */
     public void saveNotificationMessageMap(String notificationMessagesMap) {
-        saveStringPreference(K_NOTIFICATION_MESSAGE_MAP, notificationMessagesMap);
+        saveStringPreference(instanceKey + K_NOTIFICATION_MESSAGE_MAP, notificationMessagesMap);
     }
 
     public String getNotificationMessageMap() {
-        return getStringPreference(K_NOTIFICATION_MESSAGE_MAP);
-    }
-
-    public void clearNotificationMessageMap() {
-        removePreference(K_NOTIFICATION_MESSAGE_MAP);
+        return getStringPreference(instanceKey + K_NOTIFICATION_MESSAGE_MAP);
     }
 
     public boolean checkNotificationMap() {
-        return checkPreferenceKeyAvailable(K_NOTIFICATION_MESSAGE_MAP);
+        return checkPreferenceKeyAvailable(instanceKey + K_NOTIFICATION_MESSAGE_MAP);
     }
 
-    private void removeNotificationMap() {
-        removePreference(K_NOTIFICATION_MESSAGE_MAP);
+    public void removeNotificationMap() {
+        removePreference(instanceKey + K_NOTIFICATION_MESSAGE_MAP);
     }
+
+    // FIXME: GET CONTACT LIST FROM SERVER ONCE AT APPLICATION START TO FIX DATABASE CONTACT
+    /**
+     * CONTACT LIST UPDATE
+     */
+    public void setContactListUpdated() {
+        saveLongTimestampPreference(instanceKey + K_IS_CONTACT_LIST_UPDATED, System.currentTimeMillis());
+    }
+
+    public Boolean isContactListUpdated() {
+        return checkPreferenceKeyAvailable(instanceKey + K_IS_CONTACT_LIST_UPDATED);
+    }
+
+    private void removeContactListUpdated() {
+        removePreference(instanceKey + K_IS_CONTACT_LIST_UPDATED);
+    }
+
+    /**
+     * API HEADER
+     */
+    public void saveApplicationID(String applicationID) {
+        saveStringPreference(instanceKey + APP_ID, applicationID);
+    }
+
+    public String getApplicationID() {
+        return getStringPreference(instanceKey + APP_ID);
+    }
+
+    public boolean checkApplicationIDAvailability() {
+        return checkPreferenceKeyAvailable(instanceKey + APP_ID);
+    }
+
+    public void removeApplicationID() {
+        removePreference(instanceKey + APP_ID);
+    }
+
+    public void saveApplicationSecret(String applicationSecret) {
+        saveStringPreference(instanceKey + APP_SECRET, applicationSecret);
+    }
+
+    public String getApplicationSecret() {
+        return getStringPreference(instanceKey + APP_SECRET);
+    }
+
+    public boolean checkApplicationSecretAvailability() {
+        return checkPreferenceKeyAvailable(instanceKey + APP_SECRET);
+    }
+
+    public void removeApplicationSecret() {
+        removePreference(instanceKey + APP_SECRET);
+    }
+
+    public void saveUserAgent(String userAgent) {
+        saveStringPreference(instanceKey + USER_AGENT, userAgent);
+    }
+
+    public String getUserAgent() {
+        return getStringPreference(instanceKey + USER_AGENT);
+    }
+
+    public boolean checkUserAgentAvailability() {
+        return checkPreferenceKeyAvailable(instanceKey + USER_AGENT);
+    }
+
+    public void removeUserAgent() {
+        removePreference(instanceKey + USER_AGENT);
+    }
+
+    /**
+     * APPEARANCE CONFIGS
+     */
+
+//    public void setCustomizedFontSize(String size) {
+//        Hawk.put(instanceKey + FONT_SIZE, size);
+//    }
+//
+//    public String getCustomizedFontSize() {
+//        return Hawk.get(instanceKey + FONT_SIZE, FONT_MEDIUM);
+//    }
+//
+//    public void setCustomizedBackgroundColor(String color) {
+//        Hawk.put(instanceKey + BACKGROUND_COLOR, color);
+//    }
+//
+//    public String getCustomizedBackgroundColor() {
+//        return Hawk.get(instanceKey + BACKGROUND_COLOR);
+//    }
+//
+//    public void setCustomizedBackgroundImage(String base64) {
+//        saveStringPreference(instanceKey + BACKGROUND_IMAGE, base64);
+//    }
+//
+//    public String getCustomizedBackgroundImage() {
+//        return getStringPreference(instanceKey + BACKGROUND_IMAGE);
+//    }
+//
+//    public void setCustomizedBubbleColor(String color) {
+//        Hawk.put(instanceKey + BUBBLE_COLOR, color);
+//    }
+//
+//    public String getCustomizedBubbleColor() {
+//        return Hawk.get(instanceKey + BUBBLE_COLOR);
+//    }
+//
+//    public void removeCustomizedAppearance() {
+//        removePreference(instanceKey + FONT_SIZE);
+//        removePreference(instanceKey + BACKGROUND_COLOR);
+//        removePreference(instanceKey + BACKGROUND_IMAGE);
+//        removePreference(instanceKey + BUBBLE_COLOR);
+//    }
 
     /**
      * DELETE FILE
@@ -921,73 +1033,6 @@ public class TAPDataManager {
                 }
             }
         }
-    }
-
-    // FIXME: GET CONTACT LIST FROM SERVER ONCE AT APPLICATION START TO FIX DATABASE CONTACT
-    /**
-     * CONTACT LIST UPDATE
-     */
-    public void setContactListUpdated() {
-        saveLongTimestampPreference(K_IS_CONTACT_LIST_UPDATED, System.currentTimeMillis());
-    }
-
-    public Boolean isContactListUpdated() {
-        return checkPreferenceKeyAvailable(K_IS_CONTACT_LIST_UPDATED);
-    }
-
-    private void removeContactListUpdated() {
-        removePreference(K_IS_CONTACT_LIST_UPDATED);
-    }
-
-    /**
-     * API HEADER
-     */
-    public void saveApplicationID(String applicationID) {
-        saveStringPreference(APP_ID, applicationID);
-    }
-
-    public String getApplicationID() {
-        return getStringPreference(APP_ID);
-    }
-
-    public boolean checkApplicationIDAvailability() {
-        return checkPreferenceKeyAvailable(APP_ID);
-    }
-
-    public void removeApplicationID() {
-        removePreference(APP_ID);
-    }
-
-    public void saveApplicationSecret(String applicationSecret) {
-        saveStringPreference(APP_SECRET, applicationSecret);
-    }
-
-    public String getApplicationSecret() {
-        return getStringPreference(APP_SECRET);
-    }
-
-    public boolean checkApplicationSecretAvailability() {
-        return checkPreferenceKeyAvailable(APP_SECRET);
-    }
-
-    public void removeApplicationSecret() {
-        removePreference(APP_SECRET);
-    }
-
-    public void saveUserAgent(String userAgent) {
-        saveStringPreference(USER_AGENT, userAgent);
-    }
-
-    public String getUserAgent() {
-        return getStringPreference(USER_AGENT);
-    }
-
-    public boolean checkUserAgentAvailability() {
-        return checkPreferenceKeyAvailable(USER_AGENT);
-    }
-
-    public void removeUserAgent() {
-        removePreference(USER_AGENT);
     }
 
     /**
