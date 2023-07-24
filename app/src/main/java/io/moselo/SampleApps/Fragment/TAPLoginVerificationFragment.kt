@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import io.moselo.SampleApps.Activity.TAPLoginActivity
+import io.moselo.SampleApps.Activity.TAPLoginActivityOld
 import io.moselo.SampleApps.Activity.TAPRegisterActivity
 import io.moselo.SampleApps.Activity.TapDeleteAccountActivity
 import io.taptalk.TapTalk.API.Api.TAPApiManager
@@ -257,7 +258,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String, message: String, nextRequestSeconds: Int, whatsAppFailureReason: String) {
             if (succeess) {
                 if (otpType == LOGIN) {
-                    val loginActivity = activity as TAPLoginActivity
+                    val loginActivity = activity as TAPLoginActivityOld
                     loginActivity.vm.otpID = otpID
                     loginActivity.vm.otpKey = otpKey
                 }
@@ -363,7 +364,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     private fun setupTimer() {
         val lastLoginTimestamp =
             when (otpType) {
-                LOGIN -> (activity as TAPLoginActivity).vm.lastLoginTimestamp
+                LOGIN -> (activity as TAPLoginActivityOld).vm.lastLoginTimestamp
                 else -> (activity as TapDeleteAccountActivity).vm.lastLoginTimestamp
             }
         if (0L != lastLoginTimestamp && (System.currentTimeMillis() - lastLoginTimestamp) < waitTime) {
@@ -424,8 +425,8 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
         if (this.waitTime == waitTime) {
             if (otpType == LOGIN) {
-                (activity as TAPLoginActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
-                (activity as TAPLoginActivity).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
+                (activity as TAPLoginActivityOld).vm.lastLoginTimestamp = System.currentTimeMillis()
+                (activity as TAPLoginActivityOld).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
             } else {
                 (activity as TapDeleteAccountActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
                 (activity as TapDeleteAccountActivity).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
@@ -546,8 +547,8 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                         countryFlagUrl,
                         phoneNumber)
                 //set phonenumber and countryID in viewmodel to default state
-                (activity as TAPLoginActivity).vm.phoneNumber = "0"
-                (activity as TAPLoginActivity).vm.countryID = 0
+                (activity as TAPLoginActivityOld).vm.phoneNumber = "0"
+                (activity as TAPLoginActivityOld).vm.countryID = 0
                 activity?.onBackPressed()
             }
         }

@@ -5,14 +5,14 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
-public class TAPLoginViewModel extends AndroidViewModel {
+public class TAPLoginViewModelOld extends AndroidViewModel {
 
     private long otpID = 0L, lastLoginTimestamp = 0L;
     private String otpKey = "", phoneNumber = "0", phoneNumberWithCode = "0", countryCallingID = "62", channel = "sms";
     private int countryID = 0;
     private int waitTimeRequestOtp = 0;
 
-    public TAPLoginViewModel(@NonNull Application application) {
+    public TAPLoginViewModelOld(@NonNull Application application) {
         super(application);
     }
 

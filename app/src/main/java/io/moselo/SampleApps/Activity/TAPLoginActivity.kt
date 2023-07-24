@@ -1,10 +1,14 @@
 package io.moselo.SampleApps.Activity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.FrameLayout
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import io.moselo.SampleApps.Activity.TAPRegisterActivity.Companion.start
 import io.moselo.SampleApps.Fragment.TAPLoginVerificationFragment.Companion.getInstance
 import io.moselo.SampleApps.Fragment.TAPPhoneLoginFragment.Companion.getInstance
@@ -17,28 +21,50 @@ import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
+import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel
 import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
+import kotlinx.android.synthetic.main.tap_layout_login_input.*
+import java.util.Locale
 
 class TAPLoginActivity : TAPBaseActivity() {
-    private var flContainer: FrameLayout? = null
+
     private var vm: TAPLoginViewModel? = null
+
+    private val defaultCallingCode = "62"
+    private val defaultCountryID = 1
+
+    companion object {
+
+        @JvmStatic
+        @JvmOverloads
+        fun start(
+            context: Context,
+            instanceKey: String?,
+            newTask: Boolean = true
+        ) {
+            val intent = Intent(context, TAPLoginActivity::class.java)
+            intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
+            if (newTask) {
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            context.startActivity(intent)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_login)
         initViewModel()
         initView()
-        initFirstPage()
+        initCountryList()
         TAPUtils.checkAndRequestNotificationPermission(this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -59,165 +85,246 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun initView() {
-        flContainer = findViewById(R.id.fl_container)
+
     }
 
-    fun initFirstPage() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fl_container, getInstance())
-            .commit()
+    private fun initCountryList() {
+        val lastCallCountryTimestamp = TAPDataManager.getInstance(instanceKey).lastCallCountryTimestamp
+        val oneDayAgoTimestamp: Long = 24 * 60 * 60 * 1000
+
+        if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp >= lastCallCountryTimestamp) {
+            Log.e(">>>>", "initCountryList: call API")
+            callCountryListFromAPI()
+        }
+        else if (vm?.isNeedResetData == true) {
+            Log.e(">>>>", "initCountryList: reset data")
+            callCountryListFromAPI()
+            vm?.countryIsoCode = TAPUtils.getDeviceCountryCode(this)
+            //vm?.countryHashMap = TAPDataManager.getInstance(instanceKey).countryList
+            vm?.countryListitems = TAPDataManager.getInstance(instanceKey).countryList
+            vm?.countryHashMap = vm?.countryListitems?.associateBy({ it.iso2Code }, { it })?.toMutableMap() ?: HashMap()
+            vm?.isNeedResetData = false
+
+            if (vm?.countryHashMap?.containsKey(vm?.countryIsoCode) == false ||
+                "" == vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode
+            ) {
+                setCountry(defaultCountryID, defaultCallingCode, "")
+            }
+            else {
+                setCountry(vm?.countryHashMap?.get(vm?.countryIsoCode)?.countryID ?: 0,
+                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode ?: "",
+                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.flagIconUrl ?: "")
+            }
+        }
+        else {
+            Log.e(">>>>", "initCountryList: set country")
+            setCountry(defaultCountryID, defaultCallingCode, vm?.countryFlagUrl)
+        }
     }
 
-    fun showPhoneLogin() {
-        supportFragmentManager.beginTransaction()
-            .setCustomAnimations(
-                R.animator.tap_slide_left_fragment,
-                R.animator.tap_fade_out_fragment,
-                R.animator.tap_fade_in_fragment,
-                R.animator.tap_slide_right_fragment
-            )
-            .replace(R.id.fl_container, getInstance())
-            .addToBackStack(null)
-            .commit()
-    }
+    private fun callCountryListFromAPI() {
+        TAPDataManager.getInstance(instanceKey).getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
+            override fun startLoading() {
+                et_phone_number?.isEnabled = false
+                tv_country_code?.visibility = View.GONE
+                iv_loading_progress_country?.let {
+                    it.visibility = View.VISIBLE
+                    TAPUtils.rotateAnimateInfinitely(this@TAPLoginActivity, it)
+                }
+            }
 
-    fun showOTPVerification(
-        otpID: Long?,
-        otpKey: String?,
-        phoneNumber: String,
-        phoneNumberWithCode: String?,
-        countryID: Int,
-        countryCallingID: String?,
-        countryFlagUrl: String?,
-        channel: String?,
-        nextRequestSeconds: Int
-    ) {
-        if (BuildConfig.BUILD_TYPE == "dev") {
-            val otpCode = phoneNumber.substring(phoneNumber.length - 6)
-            TAPDataManager.getInstance(instanceKey).verifyOTPLogin(
-                otpID!!,
-                otpKey,
-                otpCode,
-                object : TAPDefaultDataView<TAPLoginOTPVerifyResponse?>() {
-                    override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
-                        if (response.isRegistered) {
-                            TapTalk.authenticateWithAuthTicket(
-                                instanceKey,
-                                response.ticket,
-                                true,
-                                object : TapCommonListener() {
-                                    override fun onSuccess(successMessage: String) {
-                                        TapDevLandingActivity.start(
-                                            this@TAPLoginActivity,
-                                            instanceKey
-                                        )
-                                    }
+            @SuppressLint("SetTextI18n")
+            override fun onSuccess(response: TAPCountryListResponse?) {
+                et_phone_number?.isEnabled = true
+                vm?.countryListitems?.clear()
+                TAPDataManager.getInstance(instanceKey).saveLastCallCountryTimestamp(System.currentTimeMillis())
+                setCountry(0, "", "")
+                Thread {
+                    var defaultCountry: TAPCountryListItem? = null
+                    response?.countries?.forEach {
+                        vm?.countryListitems?.add(it)
+                        vm?.countryHashMap?.put(it.iso2Code, it)
 
-                                    override fun onError(errorCode: String, errorMessage: String) {
-                                        TapTalkDialog.Builder(this@TAPLoginActivity)
-                                            .setTitle("Error Verifying OTP")
-                                            .setMessage(errorMessage)
-                                            .setPrimaryButtonTitle("OK")
-                                            .show()
-                                    }
-                                })
-                        } else {
-                            start(
-                                this@TAPLoginActivity,
-                                instanceKey,
-                                countryID,
-                                countryCallingID!!,
-                                countryFlagUrl!!,
-                                phoneNumber
-                            )
-                            vm!!.phoneNumber = "0"
-                            vm!!.countryID = 0
+                        if (vm?.countryIsoCode.equals(it.iso2Code, true)) {
+                            runOnUiThread {
+                                setCountry(it.countryID, it.callingCode, it.flagIconUrl)
+                            }
+                        }
+
+                        if (it.iso2Code.lowercase() == "id") {
+                            defaultCountry = it
                         }
                     }
 
-                    override fun onError(error: TAPErrorModel) {
-                        onError(error.message)
+                    if ("" == tv_country_code.text) {
+                        val callingCode: String = defaultCountry?.callingCode ?: ""
+                        runOnUiThread {
+                            setCountry(defaultCountry?.countryID ?: 0, callingCode, defaultCountry?.flagIconUrl ?: "")
+                        }
                     }
 
-                    override fun onError(errorMessage: String) {
-                        TapTalkDialog.Builder(this@TAPLoginActivity)
-                            .setTitle("Error Verifying OTP")
-                            .setMessage(errorMessage)
-                            .setPrimaryButtonTitle("OK")
-                            .show()
+                    TAPDataManager.getInstance(instanceKey).saveCountryList(vm?.countryListitems)
+
+                    runOnUiThread {
+                        iv_loading_progress_country.visibility = View.GONE
+                        iv_loading_progress_country.clearAnimation()
+                        tv_country_code.visibility = View.VISIBLE
                     }
-                })
-        } else {
-            supportFragmentManager.beginTransaction()
-                .setCustomAnimations(
-                    R.animator.tap_slide_left_fragment,
-                    R.animator.tap_fade_out_fragment,
-                    R.animator.tap_fade_in_fragment,
-                    R.animator.tap_slide_right_fragment
-                )
-                .replace(
-                    R.id.fl_container,
-                    getInstance(
-                        otpID!!,
-                        otpKey!!,
-                        phoneNumber,
-                        phoneNumberWithCode!!,
-                        countryID,
-                        countryCallingID!!,
-                        countryFlagUrl!!,
-                        channel!!,
-                        nextRequestSeconds
-                    )
-                )
-                .addToBackStack(null)
-                .commit()
+                }.start()
+            }
+
+            override fun onError(error: TAPErrorModel?) {
+                onError(error?.message ?: getString(R.string.tap_error_message_general))
+            }
+
+            override fun onError(errorMessage: String?) {
+                iv_loading_progress_country.visibility = View.GONE
+                iv_loading_progress_country.clearAnimation()
+                tv_country_code.visibility = View.VISIBLE
+                setCountry(0, "", "")
+                // TODO: SHOW ERROR
+            }
+        })
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setCountry(countryID: Int, callingCode: String, flagIconUrl: String?) {
+        if (callingCode.isNotEmpty()) {
+            tv_country_code.text = "+$callingCode"
+            tv_country_code.hint = ""
+            et_phone_number.visibility = View.VISIBLE
+        }
+        else {
+            tv_country_code.text = ""
+            tv_country_code.hint = getString(R.string.tap_hint_select_country)
+            et_phone_number.visibility = View.GONE
+        }
+        vm?.countryID = countryID
+        vm?.countryCallingID = callingCode
+        vm?.countryFlagUrl = flagIconUrl ?: ""
+
+        if ("" != flagIconUrl) {
+            Glide.with(this).load(flagIconUrl).into(iv_country_flag)
+        }
+        else {
+            iv_country_flag.setImageResource(R.drawable.tap_ic_default_flag)
         }
     }
 
-    fun setLastLoginData(
-        otpID: Long?,
-        otpKey: String?,
-        phoneNumber: String?,
-        phoneNumberWithCode: String?,
-        countryID: Int,
-        countryCallingID: String?,
-        channel: String?
-    ) {
-        vm!!.setLastLoginData(
-            otpID,
-            otpKey,
-            phoneNumber,
-            phoneNumberWithCode,
-            countryID,
-            countryCallingID,
-            channel
-        )
-    }
+//    fun showOTPVerification(
+//        otpID: Long?,
+//        otpKey: String?,
+//        phoneNumber: String,
+//        phoneNumberWithCode: String?,
+//        countryID: Int,
+//        countryCallingID: String?,
+//        countryFlagUrl: String?,
+//        channel: String?,
+//        nextRequestSeconds: Int
+//    ) {
+//        if (BuildConfig.BUILD_TYPE == "dev") {
+//            val otpCode = phoneNumber.substring(phoneNumber.length - 6)
+//            TAPDataManager.getInstance(instanceKey).verifyOTPLogin(
+//                otpID!!,
+//                otpKey,
+//                otpCode,
+//                object : TAPDefaultDataView<TAPLoginOTPVerifyResponse?>() {
+//                    override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
+//                        if (response.isRegistered) {
+//                            TapTalk.authenticateWithAuthTicket(
+//                                instanceKey,
+//                                response.ticket,
+//                                true,
+//                                object : TapCommonListener() {
+//                                    override fun onSuccess(successMessage: String) {
+//                                        TapDevLandingActivity.start(
+//                                            this@TAPLoginActivity,
+//                                            instanceKey
+//                                        )
+//                                    }
+//
+//                                    override fun onError(errorCode: String, errorMessage: String) {
+//                                        TapTalkDialog.Builder(this@TAPLoginActivity)
+//                                            .setTitle("Error Verifying OTP")
+//                                            .setMessage(errorMessage)
+//                                            .setPrimaryButtonTitle("OK")
+//                                            .show()
+//                                    }
+//                                })
+//                        } else {
+//                            start(
+//                                this@TAPLoginActivity,
+//                                instanceKey,
+//                                countryID,
+//                                countryCallingID!!,
+//                                countryFlagUrl!!,
+//                                phoneNumber
+//                            )
+//                            vm!!.phoneNumber = "0"
+//                            vm!!.countryID = 0
+//                        }
+//                    }
+//
+//                    override fun onError(error: TAPErrorModel) {
+//                        onError(error.message)
+//                    }
+//
+//                    override fun onError(errorMessage: String) {
+//                        TapTalkDialog.Builder(this@TAPLoginActivity)
+//                            .setTitle("Error Verifying OTP")
+//                            .setMessage(errorMessage)
+//                            .setPrimaryButtonTitle("OK")
+//                            .show()
+//                    }
+//                })
+//        } else {
+//            supportFragmentManager.beginTransaction()
+//                .setCustomAnimations(
+//                    R.animator.tap_slide_left_fragment,
+//                    R.animator.tap_fade_out_fragment,
+//                    R.animator.tap_fade_in_fragment,
+//                    R.animator.tap_slide_right_fragment
+//                )
+//                .replace(
+//                    R.id.fl_container,
+//                    getInstance(
+//                        otpID!!,
+//                        otpKey!!,
+//                        phoneNumber,
+//                        phoneNumberWithCode!!,
+//                        countryID,
+//                        countryCallingID!!,
+//                        countryFlagUrl!!,
+//                        channel!!,
+//                        nextRequestSeconds
+//                    )
+//                )
+//                .addToBackStack(null)
+//                .commit()
+//        }
+//    }
+
+//    fun setLastLoginData(
+//        otpID: Long?,
+//        otpKey: String?,
+//        phoneNumber: String?,
+//        phoneNumberWithCode: String?,
+//        countryID: Int,
+//        countryCallingID: String?,
+//        channel: String?
+//    ) {
+//        vm!!.setLastLoginData(
+//            otpID,
+//            otpKey,
+//            phoneNumber,
+//            phoneNumberWithCode,
+//            countryID,
+//            countryCallingID,
+//            channel
+//        )
+//    }
 
     private fun initViewModel() {
         vm = ViewModelProvider(this).get(TAPLoginViewModel::class.java)
-    }
-
-    fun getVm(): TAPLoginViewModel {
-        return if (null == vm) ViewModelProvider(this).get(TAPLoginViewModel::class.java)
-            .also { vm = it } else vm!!
-    }
-
-    companion object {
-        private val TAG = TAPLoginActivity::class.java.simpleName
-        @JvmStatic
-        @JvmOverloads
-        fun start(
-            context: Context,
-            instanceKey: String?,
-            newTask: Boolean = true
-        ) {
-            val intent = Intent(context, TAPLoginActivity::class.java)
-            intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
-            if (newTask) {
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-            context.startActivity(intent)
-        }
     }
 }

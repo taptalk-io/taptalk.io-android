@@ -24,7 +24,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
-import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel;
+import io.taptalk.TapTalk.ViewModel.TAPLoginViewModelOld;
 import io.taptalk.TapTalkSample.BuildConfig;
 import io.taptalk.TapTalkSample.R;
 
@@ -32,7 +32,7 @@ public class TAPLoginActivityOld extends TAPBaseActivity {
 
     private static final String TAG = TAPLoginActivityOld.class.getSimpleName();
     private FrameLayout flContainer;
-    private TAPLoginViewModel vm;
+    private TAPLoginViewModelOld vm;
 
     public static void start(
             Context context,
@@ -169,10 +169,10 @@ public class TAPLoginActivityOld extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = new ViewModelProvider(this).get(TAPLoginViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPLoginViewModelOld.class);
     }
 
-    public TAPLoginViewModel getVm() {
-        return null == vm ? vm = new ViewModelProvider(this).get(TAPLoginViewModel.class) : vm;
+    public TAPLoginViewModelOld getVm() {
+        return null == vm ? vm = new ViewModelProvider(this).get(TAPLoginViewModelOld.class) : vm;
     }
 }

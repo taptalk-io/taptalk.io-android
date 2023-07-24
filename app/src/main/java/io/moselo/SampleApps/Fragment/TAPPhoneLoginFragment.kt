@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import io.moselo.SampleApps.Activity.TAPCountryListActivity
-import io.moselo.SampleApps.Activity.TAPLoginActivity
+import io.moselo.SampleApps.Activity.TAPLoginActivityOld
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
@@ -160,7 +160,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun checkNumberAndCallAPI() {
-        val loginActivity = activity as TAPLoginActivity
+        val loginActivity = activity as TAPLoginActivityOld
         val loginViewModel = loginActivity.vm
         val currentOTPTimestampLength = System.currentTimeMillis() - loginViewModel.lastLoginTimestamp
         if (defaultCountryID == loginViewModel.countryID
@@ -217,10 +217,10 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
             if (isVisible) {
                 stopAndHideProgress()
                 if (succeess) {
-                    if (activity is TAPLoginActivity) {
+                    if (activity is TAPLoginActivityOld) {
                         try {
                             val phoneNumber = "+$phone"
-                            val loginActivity = activity as TAPLoginActivity
+                            val loginActivity = activity as TAPLoginActivityOld
                             loginActivity.setLastLoginData(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, channel)
                             loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, countryFlagUrl, channel, nextRequestSeconds)
                         } catch (e: Exception) {
