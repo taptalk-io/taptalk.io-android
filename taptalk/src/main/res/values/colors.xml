@@ -32,6 +32,7 @@
 
     <color name="tapTextFieldCursorColor">@color/tapColorPrimary</color>
     <color name="tapTextFieldBorderActiveColor">@color/tapColorPrimary</color>
+    <color name="tapTextFieldBorderLightColor">@color/tapTransparentBlack1910</color>
     <color name="tapTextFieldBorderInactiveColor">@color/tapTransparentBlack1940</color>
     <color name="tapTextFieldBorderErrorColor">@color/tapColorError</color>
 
@@ -249,6 +250,8 @@
     <color name="tapInfoLabelSubtitleColor">@color/tapColorTextDark</color>
     <color name="tapInfoLabelBodyColor">@color/tapColorTextDark</color>
     <color name="tapPopupLoadingLabelColor">@color/tapColorPrimary</color>
+    <color name="tapLoginTitleColor">@color/tapColorTextDark</color>
+    <color name="tapLoginDescriptionColor">@color/tapTransparentBlack1980</color>
     <color name="tapSearchConnectionLostTitleColor">@color/tapColorTextDark</color>
     <color name="tapSearchConnectionLostDescriptionColor">@color/tapColorTextDark</color>
     <color name="tapDefaultRoomAvatarSmallFontColor">@color/tapColorTextLight</color>
