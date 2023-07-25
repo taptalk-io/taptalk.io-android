@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -30,6 +31,7 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel
 import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
+import kotlinx.android.synthetic.main.tap_layout_login_country_list.*
 import kotlinx.android.synthetic.main.tap_layout_login_input.*
 import java.util.Locale
 
@@ -119,6 +121,9 @@ class TAPLoginActivity : TAPBaseActivity() {
         else {
             Log.e(">>>>", "initCountryList: set country")
             setCountry(defaultCountryID, defaultCallingCode, vm?.countryFlagUrl)
+            ll_country_picker_button.setOnClickListener {
+                showCountryList()
+            }
         }
     }
 
@@ -166,9 +171,12 @@ class TAPLoginActivity : TAPBaseActivity() {
                     TAPDataManager.getInstance(instanceKey).saveCountryList(vm?.countryListitems)
 
                     runOnUiThread {
+                        tv_country_code.visibility = View.VISIBLE
                         iv_loading_progress_country.visibility = View.GONE
                         iv_loading_progress_country.clearAnimation()
-                        tv_country_code.visibility = View.VISIBLE
+                        ll_country_picker_button.setOnClickListener {
+                            showCountryList()
+                        }
                     }
                 }.start()
             }
@@ -209,6 +217,23 @@ class TAPLoginActivity : TAPBaseActivity() {
         else {
             iv_country_flag.setImageResource(R.drawable.tap_ic_default_flag)
         }
+    }
+
+    private fun showCountryList() {
+        cl_login_input_container.animate()
+            .translationY(TAPUtils.dpToPx(resources, 16f).toFloat())
+            .setDuration(200L)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .withEndAction {
+                cl_login_input_container.visibility = View.GONE
+            }
+            .start()
+        cl_country_list_container.visibility = View.VISIBLE
+        cl_country_list_container.animate()
+            .translationY(0f)
+            .setDuration(200L)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
     }
 
 //    fun showOTPVerification(
