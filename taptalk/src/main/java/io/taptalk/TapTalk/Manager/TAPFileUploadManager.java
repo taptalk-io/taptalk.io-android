@@ -874,12 +874,12 @@ public class TAPFileUploadManager {
     }
 
     public void uploadImage(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TapCoreFileUploadListener listener) {
-        if (!TAPFileUtils.getMimeTypeFromUri(context, uri).contains("image")) {
-            if (listener != null) {
-                listener.onError(ERROR_CODE_OTHERS, "Invalid file format.");
-            }
-            return;
-        }
+//        if (!TAPFileUtils.getMimeTypeFromUri(context, uri).contains("image")) {
+//            if (listener != null) {
+//                listener.onError(ERROR_CODE_OTHERS, "Invalid file format.");
+//            }
+//            return;
+//        }
         try {
             createAndResizeImageFile(context, uri, IMAGE_MAX_DIMENSION, new BitmapInterface() {
                 @Override
@@ -909,18 +909,21 @@ public class TAPFileUploadManager {
     }
 
     public void uploadVideo(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TapCoreFileUploadListener listener) {
-        if (!TAPFileUtils.getMimeTypeFromUri(context, uri).contains("video")) {
-            if (listener != null) {
-                listener.onError(ERROR_CODE_OTHERS, "Invalid file format.");
-            }
-            return;
-        }
+//        if (TAPFileUtils.getMimeTypeFromUri(context, uri) == null ||
+//            !TAPFileUtils.getMimeTypeFromUri(context, uri).contains("video")
+//        ) {
+//            if (listener != null) {
+//                listener.onError(ERROR_CODE_OTHERS, "Invalid file format.");
+//            }
+//            return;
+//        }
         try {
-            File videoFile = new File(uri.toString());
-            String mimeType = TAPUtils.getFileMimeType(videoFile);
-            if (mimeType == null || mimeType.isEmpty()) {
-                mimeType = VIDEO_MP4;
+            File videoFile = TAPFileUtils.createTemporaryCachedFile(context, uri, ".mp4");
+            if (videoFile == null || videoFile.length() == 0) {
+                videoFile = new File(uri.toString());
             }
+
+            String mimeType = TAPUtils.getFileMimeType(videoFile);
 
             if (videoFile.length() == 0 && !uri.toString().isEmpty()) {
                 // Get file from file Uri if map is empty
@@ -933,7 +936,9 @@ public class TAPFileUploadManager {
                     return;
                 }
                 videoFile = new File(videoPath);
-                mimeType = context.getContentResolver().getType(uri);
+                if (mimeType == null || mimeType.isEmpty()) {
+                    mimeType = context.getContentResolver().getType(uri);
+                }
             }
             if (videoFile.length() == 0) {
                 // File not found
@@ -941,6 +946,10 @@ public class TAPFileUploadManager {
                     listener.onError(ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
                 }
                 return;
+            }
+
+            if (mimeType == null || mimeType.isEmpty()) {
+                mimeType = VIDEO_MP4;
             }
 
             if (isSizeAllowedForUpload(videoFile.length())) {

@@ -537,12 +537,39 @@ public class TAPFileUtils {
     }
 
     public static File createTemporaryCachedFile(Context context, Uri uri) {
+        return createTemporaryCachedFile(context, uri, "");
+    }
+
+    public static File createTemporaryCachedFile(Context context, Uri uri, String defaultExtension) {
         try {
             ParcelFileDescriptor parcelFileDescriptor = context.getContentResolver().openFileDescriptor(uri, "r");
             InputStream input = new FileInputStream(parcelFileDescriptor.getFileDescriptor());
-            File tempFile = new File(context.getCacheDir(), TAPFileUtils.getFileName(context, uri));
+            String filename = getFileName(context, uri);
+            String mimeType = getMimeTypeFromUri(context, uri);
+            String extension = "";
+            if (filename != null && filename.contains(".")) {
+                extension = filename.substring(filename.lastIndexOf("."));
+            }
+            if (extension.isEmpty()) {
+                if (mimeType != null && !mimeType.isEmpty()) {
+                    extension = String.format(".%s", mimeType.substring(mimeType.lastIndexOf("/") + 1));
+                }
+                if (extension.isEmpty() && defaultExtension != null && defaultExtension.contains(".")) {
+                    extension = defaultExtension;
+                }
+            }
+            else {
+                extension = "";
+            }
+            String child;
+            if (filename != null && !filename.isEmpty()) {
+                child = String.format("%s%s", filename, extension);
+            }
+            else {
+                child = String.format("%s.%s", TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS"), extension);
+            }
+            File tempFile = new File(context.getCacheDir(), child);
             FileOutputStream output = new FileOutputStream(tempFile);
-
             byte[] data = new byte[4096];
             int count;
             while ((count = input.read(data)) != -1) {
@@ -550,8 +577,10 @@ public class TAPFileUtils {
             }
             output.flush();
             output.close();
+            parcelFileDescriptor.close();
             return tempFile;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return null;
         }
