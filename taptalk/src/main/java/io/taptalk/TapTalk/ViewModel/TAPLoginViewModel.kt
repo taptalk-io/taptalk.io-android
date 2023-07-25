@@ -11,11 +11,11 @@ class TAPLoginViewModel(application: Application) : AndroidViewModel(application
     var phoneNumber = "0"
     var phoneNumberWithCode = "0"
     var countryCallingID = "62"
-    var countryID = 1
+    var selectedCountryID = 1
     var lastLoginTimestamp = 0L
     var isNeedResetData = true
     var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
-    var countryListitems = arrayListOf<TAPCountryListItem>()
+    var countryListItems = arrayListOf<TAPCountryListItem>()
     var countryFlagUrl = ""
     var previousPhoneNumber = "0"
 }

@@ -29,6 +29,7 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
         implements FastScrollRecyclerView.SectionedAdapter, FastScrollRecyclerView.MeasurableAdapter<TAPBaseViewHolder<TAPCountryRecycleItem>> {
 
     private TAPCountryListActivity.TAPCountryPickInterface countryPickInterface;
+    private TAPCountryRecycleItem selectedItem;
 
     public TAPCountryListAdapter(List<TAPCountryRecycleItem> items, TAPCountryListActivity.TAPCountryPickInterface countryPickInterface) {
         setItems(items);
@@ -85,7 +86,19 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
 
             Glide.with(itemView).load(item.getCountryListItem().getFlagIconUrl()).into(ivCountryFlag);
 
-            itemView.setOnClickListener(v -> countryPickInterface.onPick(item.getCountryListItem()));
+            itemView.setOnClickListener(v -> {
+                if (selectedItem != null) {
+                    selectedItem.setSelected(false);
+                    int previousItemIndex = getItems().indexOf(selectedItem);
+                    if (previousItemIndex >= 0 && previousItemIndex < getItemCount()) {
+                        notifyItemChanged(previousItemIndex);
+                    }
+                }
+                item.setSelected(true);
+                notifyItemChanged(getBindingAdapterPosition());
+                selectedItem = item;
+                countryPickInterface.onPick(item.getCountryListItem());
+            });
 
             if (item.isSelected()) {
                 ivCountryChoosen.setVisibility(View.VISIBLE);
@@ -107,5 +120,13 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
         protected void onBind(TAPCountryRecycleItem item, int position) {
             tvCountryInitial.setText(item.getCountryInitial() + "");
         }
+    }
+
+    public TAPCountryRecycleItem getSelectedItem() {
+        return selectedItem;
+    }
+
+    public void setSelectedItem(TAPCountryRecycleItem selectedItem) {
+        this.selectedItem = selectedItem;
     }
 }

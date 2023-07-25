@@ -4,27 +4,27 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.FrameLayout
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import io.moselo.SampleApps.Activity.TAPRegisterActivity.Companion.start
-import io.moselo.SampleApps.Fragment.TAPLoginVerificationFragment.Companion.getInstance
-import io.moselo.SampleApps.Fragment.TAPPhoneLoginFragment.Companion.getInstance
+import io.moselo.SampleApps.Adapter.TAPCountryListAdapter
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
 import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TapTalk
-import io.taptalk.TapTalk.Helper.TapTalkDialog
-import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
-import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
+import io.taptalk.TapTalk.Model.TAPCountryRecycleItem
+import io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
@@ -33,17 +33,16 @@ import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_layout_login_country_list.*
 import kotlinx.android.synthetic.main.tap_layout_login_input.*
-import java.util.Locale
 
 class TAPLoginActivity : TAPBaseActivity() {
 
     private var vm: TAPLoginViewModel? = null
+    private lateinit var countryListAdapter: TAPCountryListAdapter
 
     private val defaultCallingCode = "62"
     private val defaultCountryID = 1
 
     companion object {
-
         @JvmStatic
         @JvmOverloads
         fun start(
@@ -60,6 +59,10 @@ class TAPLoginActivity : TAPBaseActivity() {
         }
     }
 
+    /**=============================================================================================
+     * Override Methods
+    =============================================================================================*/
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_login)
@@ -67,6 +70,14 @@ class TAPLoginActivity : TAPBaseActivity() {
         initView()
         initCountryList()
         TAPUtils.checkAndRequestNotificationPermission(this)
+    }
+
+    override fun onBackPressed() {
+        if (cl_country_list_container.visibility == View.VISIBLE) {
+            showPhoneNumberInput()
+            return
+        }
+        super.onBackPressed()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -86,9 +97,79 @@ class TAPLoginActivity : TAPBaseActivity() {
         }
     }
 
-    private fun initView() {
+    /**=============================================================================================
+     * Initialization
+    =============================================================================================*/
 
+    private fun initViewModel() {
+        vm = ViewModelProvider(this).get(TAPLoginViewModel::class.java)
     }
+
+    private fun initView() {
+        try {
+            countryListAdapter = TAPCountryListAdapter(setupDataForRecycler(""), countryPickInterface)
+            rv_country_list?.adapter = countryListAdapter
+            rv_country_list?.setHasFixedSize(true)
+            rv_country_list?.layoutManager = LinearLayoutManager(
+                this,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        iv_button_close_country_list.setOnClickListener {
+            showPhoneNumberInput()
+        }
+
+        et_search_country_list.addTextChangedListener(searchTextWatcher)
+    }
+
+    /**=============================================================================================
+     * Phone Number Input
+     =============================================================================================*/
+
+    @SuppressLint("SetTextI18n")
+    private fun setCountry(countryID: Int, callingCode: String, flagIconUrl: String?) {
+        if (callingCode.isNotEmpty()) {
+            tv_country_code.text = "+$callingCode"
+            tv_country_code.hint = ""
+            et_phone_number.visibility = View.VISIBLE
+        }
+        else {
+            tv_country_code.text = ""
+            tv_country_code.hint = getString(R.string.tap_hint_select_country)
+            et_phone_number.visibility = View.GONE
+        }
+        vm?.selectedCountryID = countryID
+        vm?.countryCallingID = callingCode
+        vm?.countryFlagUrl = flagIconUrl ?: ""
+
+        if ("" != flagIconUrl) {
+            Glide.with(this).load(flagIconUrl).into(iv_country_flag)
+        }
+        else {
+            iv_country_flag.setImageResource(R.drawable.tap_ic_default_flag)
+        }
+    }
+
+    private fun checkAndEditPhoneNumber(): String {
+        var phoneNumber = et_phone_number.text.toString().replace("-", "").trim()
+        val callingCodeLength: Int = defaultCallingCode.length
+        when {
+            phoneNumber.isEmpty() || callingCodeLength > phoneNumber.length -> {
+            }
+            '0' == phoneNumber.elementAt(0) -> phoneNumber = phoneNumber.replaceFirst("0", "")
+            //"+$defaultCallingCode" == phoneNumber.substring(0, (callingCodeLength + 1)) -> phoneNumber = phoneNumber.substring(3)
+            defaultCallingCode == phoneNumber.substring(0, callingCodeLength) -> phoneNumber = phoneNumber.substring(callingCodeLength-1)
+        }
+        return phoneNumber
+    }
+
+    /**=============================================================================================
+     * Country List
+    =============================================================================================*/
 
     private fun initCountryList() {
         val lastCallCountryTimestamp = TAPDataManager.getInstance(instanceKey).lastCallCountryTimestamp
@@ -103,8 +184,8 @@ class TAPLoginActivity : TAPBaseActivity() {
             callCountryListFromAPI()
             vm?.countryIsoCode = TAPUtils.getDeviceCountryCode(this)
             //vm?.countryHashMap = TAPDataManager.getInstance(instanceKey).countryList
-            vm?.countryListitems = TAPDataManager.getInstance(instanceKey).countryList
-            vm?.countryHashMap = vm?.countryListitems?.associateBy({ it.iso2Code }, { it })?.toMutableMap() ?: HashMap()
+            vm?.countryListItems = TAPDataManager.getInstance(instanceKey).countryList
+            vm?.countryHashMap = vm?.countryListItems?.associateBy({ it.iso2Code }, { it })?.toMutableMap() ?: HashMap()
             vm?.isNeedResetData = false
 
             if (vm?.countryHashMap?.containsKey(vm?.countryIsoCode) == false ||
@@ -121,10 +202,66 @@ class TAPLoginActivity : TAPBaseActivity() {
         else {
             Log.e(">>>>", "initCountryList: set country")
             setCountry(defaultCountryID, defaultCallingCode, vm?.countryFlagUrl)
+            searchCountry("")
             ll_country_picker_button.setOnClickListener {
                 showCountryList()
             }
         }
+    }
+
+    private fun setupDataForRecycler(searchKeyword: String): List<TAPCountryRecycleItem> {
+        val filteredCountries: MutableList<TAPCountryRecycleItem> = ArrayList()
+        val countryListSize: Int = vm?.countryListItems?.size ?: 0
+        for (counter in 0 until countryListSize) {
+            val country: TAPCountryListItem? =  vm?.countryListItems?.get(counter)
+            if (country?.commonName?.contains(searchKeyword, true) == true) {
+                val countryInitial = country.commonName[0]
+                var previousItemName = ""
+                if (counter > 0) {
+                    previousItemName = vm?.countryListItems?.get(counter - 1)?.commonName ?: ""
+                }
+
+                if (searchKeyword.isEmpty() &&
+                    (counter == 0 || (previousItemName.isNotEmpty() && previousItemName[0] != countryInitial))
+                ) {
+                    val countryRecycleFirstInitial = TAPCountryRecycleItem()
+                    countryRecycleFirstInitial.recyclerItemType = RecyclerItemType.COUNTRY_INITIAL
+                    countryRecycleFirstInitial.countryInitial = countryInitial
+                    filteredCountries.add(countryRecycleFirstInitial)
+                }
+                val countryRecycleItem = TAPCountryRecycleItem()
+                countryRecycleItem.recyclerItemType = RecyclerItemType.COUNTRY_ITEM
+                countryRecycleItem.countryListItem = country
+                countryRecycleItem.countryInitial = countryInitial
+                if (vm?.selectedCountryID == country.countryID) {
+                    countryRecycleItem.isSelected = true
+                    countryListAdapter.selectedItem = countryRecycleItem
+                }
+                else {
+                    countryRecycleItem.isSelected = false
+                }
+                filteredCountries.add(countryRecycleItem)
+            }
+        }
+        if (searchKeyword.isNotEmpty()) {
+            val filteredCountriesCopy: List<TAPCountryRecycleItem> = ArrayList(filteredCountries)
+            var initialCount = 0
+            for (counter in filteredCountriesCopy.indices) {
+                val country = filteredCountriesCopy[counter]
+                val countryInitial = country.countryInitial
+                if (counter == 0 ||
+                    filteredCountriesCopy[counter - 1].countryListItem.commonName.isNotEmpty() &&
+                    filteredCountriesCopy[counter - 1].countryListItem.commonName[0] != countryInitial
+                ) {
+                    val countryRecycleFirstInitial = TAPCountryRecycleItem()
+                    countryRecycleFirstInitial.recyclerItemType = RecyclerItemType.COUNTRY_INITIAL
+                    countryRecycleFirstInitial.countryInitial = countryInitial
+                    filteredCountries.add(counter + initialCount, countryRecycleFirstInitial)
+                    initialCount++
+                }
+            }
+        }
+        return filteredCountries
     }
 
     private fun callCountryListFromAPI() {
@@ -141,13 +278,13 @@ class TAPLoginActivity : TAPBaseActivity() {
             @SuppressLint("SetTextI18n")
             override fun onSuccess(response: TAPCountryListResponse?) {
                 et_phone_number?.isEnabled = true
-                vm?.countryListitems?.clear()
+                vm?.countryListItems?.clear()
                 TAPDataManager.getInstance(instanceKey).saveLastCallCountryTimestamp(System.currentTimeMillis())
                 setCountry(0, "", "")
                 Thread {
                     var defaultCountry: TAPCountryListItem? = null
                     response?.countries?.forEach {
-                        vm?.countryListitems?.add(it)
+                        vm?.countryListItems?.add(it)
                         vm?.countryHashMap?.put(it.iso2Code, it)
 
                         if (vm?.countryIsoCode.equals(it.iso2Code, true)) {
@@ -168,9 +305,12 @@ class TAPLoginActivity : TAPBaseActivity() {
                         }
                     }
 
-                    TAPDataManager.getInstance(instanceKey).saveCountryList(vm?.countryListitems)
+                    Log.e(">>>>>", "onSuccess: ${vm?.countryListItems?.size}")
+
+                    TAPDataManager.getInstance(instanceKey).saveCountryList(vm?.countryListItems)
 
                     runOnUiThread {
+                        searchCountry("")
                         tv_country_code.visibility = View.VISIBLE
                         iv_loading_progress_country.visibility = View.GONE
                         iv_loading_progress_country.clearAnimation()
@@ -195,28 +335,66 @@ class TAPLoginActivity : TAPBaseActivity() {
         })
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun setCountry(countryID: Int, callingCode: String, flagIconUrl: String?) {
-        if (callingCode.isNotEmpty()) {
-            tv_country_code.text = "+$callingCode"
-            tv_country_code.hint = ""
-            et_phone_number.visibility = View.VISIBLE
+    private fun searchCountry(countryKeyword: String?) {
+        countryListAdapter.items = setupDataForRecycler(countryKeyword ?: "")
+//        countryListAdapter.notifyDataSetChanged()
+        if (countryListAdapter.items.size == 0) {
+            showCountryListEmptyState()
         }
         else {
-            tv_country_code.text = ""
-            tv_country_code.hint = getString(R.string.tap_hint_select_country)
-            et_phone_number.visibility = View.GONE
+            hideCountryListEmptyState()
         }
-        vm?.countryID = countryID
-        vm?.countryCallingID = callingCode
-        vm?.countryFlagUrl = flagIconUrl ?: ""
+    }
 
-        if ("" != flagIconUrl) {
-            Glide.with(this).load(flagIconUrl).into(iv_country_flag)
+    private fun showCountryListEmptyState() {
+        cl_country_list_empty_state.visibility = View.VISIBLE
+        rv_country_list.visibility = View.GONE
+    }
+
+    private fun hideCountryListEmptyState() {
+        cl_country_list_empty_state.visibility = View.GONE
+        rv_country_list.visibility = View.VISIBLE
+    }
+
+    private val searchTextWatcher: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            searchCountry(s.toString())
         }
-        else {
-            iv_country_flag.setImageResource(R.drawable.tap_ic_default_flag)
+
+        override fun afterTextChanged(s: Editable) {}
+    }
+
+    private val countryPickInterface = TAPCountryListActivity.TAPCountryPickInterface {
+        val callingCode: String = it?.callingCode ?: ""
+        setCountry(it?.countryID ?: 0, callingCode, it?.flagIconUrl ?: "")
+        val textCount = callingCode.length + checkAndEditPhoneNumber().length
+        if (textCount > 15) {
+            et_phone_number.setText("")
         }
+        et_search_country_list.setText("")
+        showPhoneNumberInput()
+    }
+
+    /**=============================================================================================
+     * Login Flow
+    =============================================================================================*/
+
+    private fun showPhoneNumberInput() {
+        cl_login_input_container.visibility = View.VISIBLE
+        cl_login_input_container.animate()
+            .translationY(0f)
+            .setDuration(200L)
+            .start()
+        cl_country_list_container.animate()
+            .translationY(TAPUtils.dpToPx(resources, 960f).toFloat())
+            .setDuration(200L)
+            .setInterpolator(AccelerateInterpolator())
+            .withEndAction {
+                cl_country_list_container.visibility = View.GONE
+            }
+            .start()
     }
 
     private fun showCountryList() {
@@ -232,7 +410,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         cl_country_list_container.animate()
             .translationY(0f)
             .setDuration(200L)
-            .setInterpolator(AccelerateDecelerateInterpolator())
+            .setInterpolator(DecelerateInterpolator())
             .start()
     }
 
@@ -348,8 +526,4 @@ class TAPLoginActivity : TAPBaseActivity() {
 //            channel
 //        )
 //    }
-
-    private fun initViewModel() {
-        vm = ViewModelProvider(this).get(TAPLoginViewModel::class.java)
-    }
 }
