@@ -5,11 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import android.view.View.OnClickListener
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.core.content.ContextCompat
@@ -22,8 +23,11 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Helper.TapTalkDialog.DialogType.ERROR_DIALOG
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType
@@ -111,6 +115,13 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun initView() {
+        val numberFilter = InputFilter { source, _, _, _, _, _ ->
+            val numberRegex = Regex("[^0-9]")
+            return@InputFilter numberRegex.replace(source, "")
+        }
+        et_phone_number.filters = et_phone_number.filters + numberFilter
+        et_phone_number.addTextChangedListener(phoneTextWatcher)
+
         try {
             countryListAdapter = TAPCountryListAdapter(setupDataForRecycler(""), countryPickInterface)
             rv_country_list?.adapter = countryListAdapter
@@ -120,7 +131,8 @@ class TAPLoginActivity : TAPBaseActivity() {
                 LinearLayoutManager.VERTICAL,
                 false
             )
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             e.printStackTrace()
         }
 
@@ -155,6 +167,9 @@ class TAPLoginActivity : TAPBaseActivity() {
         vm?.countryCallingID = callingCode
         vm?.countryFlagUrl = flagIconUrl ?: ""
 
+        et_phone_number.filters = et_phone_number.filters + InputFilter.LengthFilter(15 - callingCode.length)
+//        et_phone_number.filters = arrayOf(InputFilter.LengthFilter(15 - callingCode.length))
+
         if ("" != flagIconUrl) {
             Glide.with(this).load(flagIconUrl).into(iv_country_flag)
         }
@@ -177,7 +192,7 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun showPhoneNumberInputLoading() {
-        iv_button_continue_loading.visibility = View.VISIBLE
+        pb_button_continue_loading.visibility = View.VISIBLE
         iv_country_chevron.alpha = 0.4f
         tv_country_code.alpha = 0.4f
         et_phone_number.alpha = 0.4f
@@ -190,7 +205,7 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun hidePhoneNumberInputLoading() {
-        iv_button_continue_loading.visibility = View.GONE
+        pb_button_continue_loading.visibility = View.GONE
         iv_country_chevron.alpha = 1f
         tv_country_code.alpha = 1f
         et_phone_number.alpha = 1f
@@ -207,8 +222,23 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private val submitPhoneNumberClickListener = OnClickListener {
-        // TODO:
-        showVerificationView()
+        if (validatePhoneNumber()) {
+            requestWhatsAppVerification()
+        }
+    }
+
+    private val phoneTextWatcher: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            if (ll_input_error_info.visibility == View.VISIBLE) {
+                et_phone_number.removeTextChangedListener(this)
+                validatePhoneNumber()
+                et_phone_number.addTextChangedListener(this)
+            }
+        }
+
+        override fun afterTextChanged(s: Editable) {}
     }
 
     /**=============================================================================================
@@ -311,10 +341,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             override fun startLoading() {
                 et_phone_number?.isEnabled = false
                 tv_country_code?.visibility = View.GONE
-                iv_loading_progress_country?.let {
-                    it.visibility = View.VISIBLE
-                    TAPUtils.rotateAnimateInfinitely(this@TAPLoginActivity, it)
-                }
+                pb_loading_progress_country?.visibility = View.VISIBLE
             }
 
             @SuppressLint("SetTextI18n")
@@ -354,8 +381,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     runOnUiThread {
                         searchCountry("")
                         tv_country_code.visibility = View.VISIBLE
-                        iv_loading_progress_country.visibility = View.GONE
-                        iv_loading_progress_country.clearAnimation()
+                        pb_loading_progress_country.visibility = View.GONE
                         ll_country_picker_button.setOnClickListener(countryPickerClickListener)
                     }
                 }.start()
@@ -366,8 +392,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             }
 
             override fun onError(errorMessage: String?) {
-                iv_loading_progress_country.visibility = View.GONE
-                iv_loading_progress_country.clearAnimation()
+                pb_loading_progress_country.visibility = View.GONE
                 tv_country_code.visibility = View.VISIBLE
                 setCountry(0, "", "")
                 // TODO: SHOW ERROR
@@ -471,6 +496,72 @@ class TAPLoginActivity : TAPBaseActivity() {
         showViewWithAnimation(cl_verification_container)
         hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
         hideViewWithAnimation(cl_country_list_container)
+    }
+
+    /**=============================================================================================
+     * Login Flow
+    ==============================================================================================*/
+
+    private fun validatePhoneNumber(): Boolean {
+        val phoneNumber = checkAndEditPhoneNumber()
+        val phoneNumberWithCode = String.format("%s%s", vm?.countryCallingID ?: "", phoneNumber)
+        return if (et_phone_number.text.isEmpty()) {
+            tv_input_error_info.text = getString(R.string.tap_this_field_is_required)
+            ll_input_error_info.visibility = View.VISIBLE
+            false
+        }
+        else if (!Patterns.PHONE.matcher(phoneNumber).matches() || phoneNumberWithCode.length !in 7..15) {
+            tv_input_error_info.text = getString(R.string.tap_error_invalid_phone_number)
+            ll_input_error_info.visibility = View.VISIBLE
+            false
+        }
+        else {
+            ll_input_error_info.visibility = View.GONE
+            vm?.phoneNumber = phoneNumber
+            true
+        }
+    }
+
+    private fun requestWhatsAppVerification() {
+        TAPDataManager.getInstance(instanceKey).requestWhatsAppVerification(
+            vm?.selectedCountryID ?: 0,
+            vm?.phoneNumber ?: "",
+            object : TAPDefaultDataView<TAPOTPResponse>() {
+                override fun startLoading() {
+                    showPhoneNumberInputLoading()
+                }
+
+                override fun endLoading() {
+                    hidePhoneNumberInputLoading()
+                }
+
+                override fun onSuccess(response: TAPOTPResponse?) {
+                    Log.e(">>>>>", "onSuccess: ${TAPUtils.toJsonString(response)}")
+                    if (response?.isSuccess == true) {
+                        tv_verification_phone_number.text = String.format("+%s%s", vm?.countryCallingID, vm?.phoneNumber)
+                        showVerificationView()
+                    }
+                    else {
+                        onError(response?.message ?: response?.whatsAppFailureReason)
+                    }
+                }
+
+                override fun onError(error: TAPErrorModel?) {
+                    onError(error?.message)
+                }
+
+                override fun onError(errorMessage: String?) {
+                    endLoading()
+                    TapTalkDialog.Builder(this@TAPLoginActivity)
+                        .setDialogType(ERROR_DIALOG)
+                        .setTitle(getString(R.string.tap_error))
+                        .setMessage(errorMessage ?: getString(R.string.tap_error_message_general))
+                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                        .setCancelable(true)
+                        .show()
+                }
+            }
+        )
     }
 
 //    fun showOTPVerification(

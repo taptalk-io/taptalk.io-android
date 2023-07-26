@@ -33,6 +33,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapStarMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapWhatsAppVerificationRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -89,6 +90,9 @@ public interface TAPTalkApiService {
 
     @POST("client/login/verify_otp")
     Observable<TAPBaseResponse<TAPLoginOTPVerifyResponse>> verifyingOTPLogin(@Body TAPOTPVerifyRequest request);
+
+    @POST("client/login/request_whatsapp_verification")
+    Observable<TAPBaseResponse<TAPOTPResponse>> requestWhatsAppVerification(@Body TapWhatsAppVerificationRequest request);
 
     @POST("chat/message/send/custom")
     Observable<TAPBaseResponse<TAPCommonResponse>> sendCustomMessage(@Body TAPSendCustomMessageRequest request);

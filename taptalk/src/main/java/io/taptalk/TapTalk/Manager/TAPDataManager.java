@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -1368,6 +1369,14 @@ public class TAPDataManager {
 
     public void verifyOTPLogin(long otpID, String otpKey, String otpCode, TAPDefaultDataView<TAPLoginOTPVerifyResponse> view) {
         TAPApiManager.getInstance(instanceKey).verifyingOTPLogin(otpID, otpKey, otpCode, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void requestWhatsAppVerification(int countryID, String phone, TAPDefaultDataView<TAPOTPResponse> view) {
+        String languageCode = Locale.getDefault().getLanguage();
+        if (!languageCode.equals("id")) {
+            languageCode = "en";
+        }
+        TAPApiManager.getInstance(instanceKey).requestWhatsAppVerification(countryID, phone, languageCode, new TAPDefaultSubscriber<>(view));
     }
 
     public void refreshAccessToken(TAPDefaultDataView<TAPGetAccessTokenResponse> view) {

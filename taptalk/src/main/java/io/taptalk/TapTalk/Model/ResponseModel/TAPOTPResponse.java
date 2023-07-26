@@ -2,6 +2,8 @@ package io.taptalk.TapTalk.Model.ResponseModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.taptalk.TapTalk.Model.TapVerificationModel;
+
 public class TAPOTPResponse {
     @JsonProperty("success") private boolean success;
     @JsonProperty("message") private String message;
@@ -12,6 +14,7 @@ public class TAPOTPResponse {
     @JsonProperty("channel") private String channel;
     @JsonProperty("whatsAppFailureReason") private String whatsAppFailureReason;
     @JsonProperty("nextRequestSeconds") private int nextRequestSeconds;
+    @JsonProperty("verification") private TapVerificationModel verification;
 
     public TAPOTPResponse(boolean success, String message, String phoneWithCode, long otpID, String otpKey, int codeLength, String channel, String whatsAppFailureReason, int nextRequestSeconds) {
         this.success = success;
@@ -87,4 +90,12 @@ public class TAPOTPResponse {
     public int getNextRequestSeconds() { return nextRequestSeconds; }
 
     public void setNextRequestSeconds(int nextRequestSeconds) { this.nextRequestSeconds = nextRequestSeconds; }
+
+    public TapVerificationModel getVerification() {
+        return verification;
+    }
+
+    public void setVerification(TapVerificationModel verification) {
+        this.verification = verification;
+    }
 }

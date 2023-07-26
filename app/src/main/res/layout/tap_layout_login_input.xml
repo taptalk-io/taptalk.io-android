@@ -60,14 +60,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/iv_loading_progress_country"
+            <ProgressBar
+                android:id="@+id/pb_loading_progress_country"
                 android:layout_width="32dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/tap_ic_loading_progress_solid_orange"
+                android:indeterminateTint="@color/tapColorPrimary"
                 android:visibility="gone"
-                app:tint="@color/tapIconLoadingProgressPrimary"
                 tools:visibility="visible" />
 
             <androidx.cardview.widget.CardView
@@ -157,6 +156,7 @@
             tools:ignore="UseAppTint" />
 
         <TextView
+            android:id="@+id/tv_input_error_info"
             style="@style/tapFormErrorInfoLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -175,17 +175,15 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/ll_input_error_info">
 
-        <ImageView
-            android:id="@+id/iv_button_continue_loading"
+        <ProgressBar
+            android:id="@+id/pb_button_continue_loading"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
-            android:alpha="0.4"
-            android:src="@drawable/tap_ic_loading_progress_solid_orange"
+            android:indeterminateTint="@color/tapTransparentBlack1940"
             android:visibility="gone"
-            app:tint="@color/tapColorTextDark"
             tools:visibility="visible" />
 
         <TextView

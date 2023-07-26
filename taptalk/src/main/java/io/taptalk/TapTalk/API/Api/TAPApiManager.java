@@ -64,6 +64,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapStarMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapWhatsAppVerificationRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -302,6 +303,11 @@ public class TAPApiManager {
     public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, Subscriber<TAPBaseResponse<TAPLoginOTPVerifyResponse>> subscriber) {
         TAPOTPVerifyRequest request = new TAPOTPVerifyRequest(otpID, otpKey, otpCode);
         execute(homingPigeon.verifyingOTPLogin(request), subscriber);
+    }
+
+    public void requestWhatsAppVerification(int countryID, String phone, String languageCode, Subscriber<TAPBaseResponse<TAPOTPResponse>> subscriber) {
+        TapWhatsAppVerificationRequest request = new TapWhatsAppVerificationRequest(countryID, phone, languageCode, null);
+        execute(homingPigeon.requestWhatsAppVerification(request), subscriber);
     }
 
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
