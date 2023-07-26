@@ -4,6 +4,7 @@
     android:id="@+id/cl_login_input_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@drawable/tap_bg_login_input"
     android:elevation="4dp"
     android:padding="32dp"
@@ -85,6 +86,7 @@
             </androidx.cardview.widget.CardView>
 
             <ImageView
+                android:id="@+id/iv_country_chevron"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginStart="4dp"
@@ -163,17 +165,18 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/fl_button_continue"
+        android:id="@+id/ll_button_continue"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="32dp"
+        android:animateLayoutChanges="true"
         android:background="@drawable/tap_bg_button_active_ripple"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/ll_input_error_info">
 
         <ImageView
-            android:id="@+id/iv_loading_progress_request_otp"
+            android:id="@+id/iv_button_continue_loading"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"

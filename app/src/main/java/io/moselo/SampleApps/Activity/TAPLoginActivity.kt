@@ -8,9 +8,11 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -33,6 +35,7 @@ import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_layout_login_country_list.*
 import kotlinx.android.synthetic.main.tap_layout_login_input.*
+import kotlinx.android.synthetic.main.tap_layout_login_verification.*
 
 class TAPLoginActivity : TAPBaseActivity() {
 
@@ -61,7 +64,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     /**=============================================================================================
      * Override Methods
-    =============================================================================================*/
+    ==============================================================================================*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,8 +76,10 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (cl_country_list_container.visibility == View.VISIBLE) {
-            showPhoneNumberInput()
+        if (cl_country_list_container.visibility == View.VISIBLE ||
+            cl_verification_container.visibility == View.VISIBLE
+        ) {
+            showPhoneNumberInputView()
             return
         }
         super.onBackPressed()
@@ -99,7 +104,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     /**=============================================================================================
      * Initialization
-    =============================================================================================*/
+    ==============================================================================================*/
 
     private fun initViewModel() {
         vm = ViewModelProvider(this).get(TAPLoginViewModel::class.java)
@@ -119,11 +124,15 @@ class TAPLoginActivity : TAPBaseActivity() {
             e.printStackTrace()
         }
 
-        iv_button_close_country_list.setOnClickListener {
-            showPhoneNumberInput()
-        }
+        iv_button_close_country_list.setOnClickListener(backButtonClickListener)
+        ll_button_change_number.setOnClickListener(backButtonClickListener)
+        ll_button_continue.setOnClickListener(submitPhoneNumberClickListener)
 
         et_search_country_list.addTextChangedListener(searchTextWatcher)
+    }
+
+    private val backButtonClickListener = OnClickListener {
+        showPhoneNumberInputView()
     }
 
     /**=============================================================================================
@@ -167,9 +176,44 @@ class TAPLoginActivity : TAPBaseActivity() {
         return phoneNumber
     }
 
+    private fun showPhoneNumberInputLoading() {
+        iv_button_continue_loading.visibility = View.VISIBLE
+        iv_country_chevron.alpha = 0.4f
+        tv_country_code.alpha = 0.4f
+        et_phone_number.alpha = 0.4f
+        cl_input_phone_number.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+        ll_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+        tv_button_continue.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
+        et_phone_number.isEnabled = false
+        ll_country_picker_button.setOnClickListener(null)
+        ll_button_continue.setOnClickListener(null)
+    }
+
+    private fun hidePhoneNumberInputLoading() {
+        iv_button_continue_loading.visibility = View.GONE
+        iv_country_chevron.alpha = 1f
+        tv_country_code.alpha = 1f
+        et_phone_number.alpha = 1f
+        cl_input_phone_number.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
+        ll_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
+        tv_button_continue.setTextColor(ContextCompat.getColor(this, R.color.tapButtonLabelColor))
+        et_phone_number.isEnabled = true
+        ll_country_picker_button.setOnClickListener(countryPickerClickListener)
+        ll_button_continue.setOnClickListener(submitPhoneNumberClickListener)
+    }
+
+    private val countryPickerClickListener = OnClickListener {
+        showCountryListView()
+    }
+
+    private val submitPhoneNumberClickListener = OnClickListener {
+        // TODO:
+        showVerificationView()
+    }
+
     /**=============================================================================================
      * Country List
-    =============================================================================================*/
+    ==============================================================================================*/
 
     private fun initCountryList() {
         val lastCallCountryTimestamp = TAPDataManager.getInstance(instanceKey).lastCallCountryTimestamp
@@ -203,9 +247,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             Log.e(">>>>", "initCountryList: set country")
             setCountry(defaultCountryID, defaultCallingCode, vm?.countryFlagUrl)
             searchCountry("")
-            ll_country_picker_button.setOnClickListener {
-                showCountryList()
-            }
+            ll_country_picker_button.setOnClickListener(countryPickerClickListener)
         }
     }
 
@@ -314,9 +356,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                         tv_country_code.visibility = View.VISIBLE
                         iv_loading_progress_country.visibility = View.GONE
                         iv_loading_progress_country.clearAnimation()
-                        ll_country_picker_button.setOnClickListener {
-                            showCountryList()
-                        }
+                        ll_country_picker_button.setOnClickListener(countryPickerClickListener)
                     }
                 }.start()
             }
@@ -373,45 +413,64 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (textCount > 15) {
             et_phone_number.setText("")
         }
-        et_search_country_list.setText("")
-        showPhoneNumberInput()
+        showPhoneNumberInputView()
     }
 
     /**=============================================================================================
-     * Login Flow
-    =============================================================================================*/
+     * Layout Changes
+    ==============================================================================================*/
 
-    private fun showPhoneNumberInput() {
-        cl_login_input_container.visibility = View.VISIBLE
-        cl_login_input_container.animate()
+    private val animationDuration = 250L
+    private val phoneInputHiddenTranslation = TAPUtils.dpToPx(16).toFloat()
+    private val hiddenTranslation = TAPUtils.dpToPx(960).toFloat()
+
+    private fun showViewWithAnimation(view: View) {
+        TAPUtils.dismissKeyboard(this)
+        view.visibility = View.VISIBLE
+        view.animate()
             .translationY(0f)
-            .setDuration(200L)
+            .setDuration(animationDuration)
+            .setInterpolator(DecelerateInterpolator())
             .start()
-        cl_country_list_container.animate()
-            .translationY(TAPUtils.dpToPx(resources, 960f).toFloat())
-            .setDuration(200L)
+    }
+
+    private fun hideViewWithAnimation(view: View) {
+        hideViewWithAnimation(view, hiddenTranslation)
+    }
+
+    private fun hideViewWithAnimation(view: View, translationY: Float) {
+        if (view.visibility == View.GONE) {
+            return
+        }
+        view.animate()
+            .translationY(translationY)
+            .setDuration(animationDuration)
             .setInterpolator(AccelerateInterpolator())
             .withEndAction {
-                cl_country_list_container.visibility = View.GONE
+                view.visibility = View.GONE
+                if (view == cl_country_list_container) {
+                    et_search_country_list.setText("")
+                }
             }
             .start()
     }
 
-    private fun showCountryList() {
-        cl_login_input_container.animate()
-            .translationY(TAPUtils.dpToPx(resources, 16f).toFloat())
-            .setDuration(200L)
-            .setInterpolator(AccelerateDecelerateInterpolator())
-            .withEndAction {
-                cl_login_input_container.visibility = View.GONE
-            }
-            .start()
-        cl_country_list_container.visibility = View.VISIBLE
-        cl_country_list_container.animate()
-            .translationY(0f)
-            .setDuration(200L)
-            .setInterpolator(DecelerateInterpolator())
-            .start()
+    private fun showPhoneNumberInputView() {
+        showViewWithAnimation(cl_login_input_container)
+        hideViewWithAnimation(cl_country_list_container)
+        hideViewWithAnimation(cl_verification_container)
+    }
+
+    private fun showCountryListView() {
+        showViewWithAnimation(cl_country_list_container)
+        hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+        hideViewWithAnimation(cl_verification_container)
+    }
+
+    private fun showVerificationView() {
+        showViewWithAnimation(cl_verification_container)
+        hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+        hideViewWithAnimation(cl_country_list_container)
     }
 
 //    fun showOTPVerification(

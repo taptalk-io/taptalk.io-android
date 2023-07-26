@@ -428,6 +428,9 @@
     <string name="tap_delete">Delete</string>
     <string name="tap_why_delete_account">Why are you deleting your account? (Optional)</string>
     <string name="tap_verification">Verification</string>
+    <string name="tap_verification_whatsapp_description">You will be redirected to WhatsApp.\nPlease send the template message to the chatroom without making any changes.</string>
+    <string name="tap_verify_via_whatsapp">Verify via WhatsApp</string>
+    <string name="tap_change_phone_number">Change Phone Number</string>
     <string name="tap_verification_succeed">Verification succeed, see you again!</string>
     <string name="tap_deleted_user">Deleted User</string>
     <string name="tap_saved_messages">Saved Messages</string>
