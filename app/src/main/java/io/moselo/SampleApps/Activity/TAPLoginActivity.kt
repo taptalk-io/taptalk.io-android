@@ -3,6 +3,7 @@ package io.moselo.SampleApps.Activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
@@ -139,6 +140,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         iv_button_close_country_list.setOnClickListener(backButtonClickListener)
         ll_button_change_number.setOnClickListener(backButtonClickListener)
         ll_button_continue.setOnClickListener(submitPhoneNumberClickListener)
+        ll_button_verify.setOnClickListener { openWhatsAppLink() }
 
         et_search_country_list.addTextChangedListener(searchTextWatcher)
     }
@@ -537,8 +539,9 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                 override fun onSuccess(response: TAPOTPResponse?) {
                     Log.e(">>>>>", "onSuccess: ${TAPUtils.toJsonString(response)}")
+                    vm?.verification = response?.verification
                     if (response?.isSuccess == true) {
-                        tv_verification_phone_number.text = String.format("+%s%s", vm?.countryCallingID, vm?.phoneNumber)
+                        tv_verification_phone_number.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
                         showVerificationView()
                     }
                     else {
@@ -562,6 +565,21 @@ class TAPLoginActivity : TAPBaseActivity() {
                 }
             }
         )
+    }
+
+    private fun openWhatsAppLink() {
+        val waLink = vm?.verification?.waLink ?: ""
+        if (waLink.isNotEmpty() && Patterns.WEB_URL.matcher(waLink).matches()) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse(waLink)
+                startActivity(intent)
+                vm?.isCheckWhatsAppVerificationPending = true
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
 //    fun showOTPVerification(

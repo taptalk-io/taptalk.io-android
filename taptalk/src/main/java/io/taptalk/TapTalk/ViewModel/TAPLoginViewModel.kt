@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.ViewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import io.taptalk.TapTalk.Model.TAPCountryListItem
+import io.taptalk.TapTalk.Model.TapVerificationModel
 
 class TAPLoginViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -18,4 +19,6 @@ class TAPLoginViewModel(application: Application) : AndroidViewModel(application
     var countryListItems = arrayListOf<TAPCountryListItem>()
     var countryFlagUrl = ""
     var previousPhoneNumber = "0"
+    var isCheckWhatsAppVerificationPending = false
+    var verification: TapVerificationModel? = null
 }
