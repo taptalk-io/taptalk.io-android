@@ -1379,6 +1379,10 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).requestWhatsAppVerification(countryID, phone, languageCode, new TAPDefaultSubscriber<>(view));
     }
 
+    public void checkWhatsAppVerification(String phoneWithCode, String verificationID, TAPDefaultDataView<TAPLoginOTPVerifyResponse> view) {
+        TAPApiManager.getInstance(instanceKey).checkWhatsAppVerification(phoneWithCode, verificationID, new TAPDefaultSubscriber<>(view));
+    }
+
     public void refreshAccessToken(TAPDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPApiManager.getInstance(instanceKey).refreshAccessToken(new TAPDefaultSubscriber<>(view));
     }

@@ -14,6 +14,7 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,13 +22,19 @@ import com.bumptech.glide.Glide
 import io.moselo.SampleApps.Adapter.TAPCountryListAdapter
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Helper.TapTalkDialog.DialogType.ERROR_DIALOG
+import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem
@@ -41,6 +48,8 @@ import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_layout_login_country_list.*
 import kotlinx.android.synthetic.main.tap_layout_login_input.*
 import kotlinx.android.synthetic.main.tap_layout_login_verification.*
+import java.util.Timer
+import java.util.TimerTask
 
 class TAPLoginActivity : TAPBaseActivity() {
 
@@ -78,6 +87,18 @@ class TAPLoginActivity : TAPBaseActivity() {
         initView()
         initCountryList()
         TAPUtils.checkAndRequestNotificationPermission(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (vm?.isCheckWhatsAppVerificationPending == true) {
+            checkWhatsAppVerification(true)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        vm?.checkVerificationTimer?.cancel()
     }
 
     override fun onBackPressed() {
@@ -538,7 +559,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                 }
 
                 override fun onSuccess(response: TAPOTPResponse?) {
-                    Log.e(">>>>>", "onSuccess: ${TAPUtils.toJsonString(response)}")
+                    Log.e(">>>>>", "request onSuccess: ${TAPUtils.toJsonString(response)}")
                     vm?.verification = response?.verification
                     if (response?.isSuccess == true) {
                         tv_verification_phone_number.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
@@ -580,6 +601,52 @@ class TAPLoginActivity : TAPBaseActivity() {
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun checkWhatsAppVerification(resetAttempt: Boolean) {
+        vm?.isCheckWhatsAppVerificationPending = false
+        if (resetAttempt) {
+            vm?.checkVerificationAttempts = 0
+        }
+        // TODO: SHOW LOADING VIEW
+        val phoneWithCode = String.format("%s%s", vm?.countryCallingID, vm?.phoneNumber)
+        TAPDataManager.getInstance(instanceKey).checkWhatsAppVerification(
+            phoneWithCode,
+            vm?.verification?.id,
+            object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
+                override fun onSuccess(response: TAPLoginOTPVerifyResponse?) {
+                    Log.e(">>>>>", "check onSuccess: ${TAPUtils.toJsonString(response)}")
+                    // TODO: SHOW SUCCESS VIEW
+                    Toast.makeText(this@TAPLoginActivity, "Verification success: ${response?.userID}", Toast.LENGTH_LONG).show()
+                }
+
+                override fun onError(error: TAPErrorModel?) {
+                    Log.e(">>>>>", "check onError: ${error?.code} - ${error?.message}")
+                    vm?.isCheckWhatsAppVerificationPending = true
+                    Toast.makeText(this@TAPLoginActivity, "Verification error: ${error?.code} - ${error?.message}", Toast.LENGTH_LONG).show()
+
+
+                    if ((vm?.checkVerificationAttempts ?: 0) >= 10) {
+                        // TODO: SHOW ERROR VIEW
+                    }
+                    else {
+                        vm?.checkVerificationAttempts = (vm?.checkVerificationAttempts ?: 0) + 1
+                        vm?.checkVerificationTimer?.cancel()
+                        vm?.checkVerificationTimer = Timer()
+                        Log.e(">>>>>", "check onError: retry attempt ${vm?.checkVerificationAttempts}")
+                        vm?.checkVerificationTimer?.schedule(object : TimerTask() {
+                            override fun run() {
+                                checkWhatsAppVerification(false)
+                            }
+                        }, 3000L)
+                    }
+                }
+
+                override fun onError(errorMessage: String?) {
+                    onError(TAPErrorModel(ERROR_CODE_OTHERS, errorMessage, ""))
+                }
+            }
+        )
     }
 
 //    fun showOTPVerification(

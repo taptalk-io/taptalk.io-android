@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TapVerificationModel
+import java.util.Timer
 
 class TAPLoginViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -21,4 +22,6 @@ class TAPLoginViewModel(application: Application) : AndroidViewModel(application
     var previousPhoneNumber = "0"
     var isCheckWhatsAppVerificationPending = false
     var verification: TapVerificationModel? = null
+    var checkVerificationTimer: Timer? = null
+    var checkVerificationAttempts = 0
 }
