@@ -203,12 +203,14 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun checkAndEditPhoneNumber(): String {
         var phoneNumber = et_phone_number.text.toString().replace("-", "").trim()
         val callingCodeLength: Int = defaultCallingCode.length
-        when {
-            '0' == phoneNumber.elementAt(0) -> {
-                phoneNumber = phoneNumber.replaceFirst("0", "")
-            }
-            defaultCallingCode == phoneNumber.substring(0, callingCodeLength) -> {
-                phoneNumber = phoneNumber.substring(callingCodeLength - 1)
+        if (phoneNumber.isNotEmpty() && callingCodeLength < phoneNumber.length) {
+            when {
+                '0' == phoneNumber.elementAt(0) -> {
+                    phoneNumber = phoneNumber.replaceFirst("0", "")
+                }
+                defaultCallingCode == phoneNumber.substring(0, callingCodeLength) -> {
+                    phoneNumber = phoneNumber.substring(callingCodeLength - 1)
+                }
             }
         }
         return phoneNumber
