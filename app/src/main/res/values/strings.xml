@@ -15,8 +15,9 @@
     <string name="error_register_privacy_policy">Please read and agree to our privacy policy before continuing.</string>
 
     <!--Verification-->
-    <string name="tap_verification_whatsapp_description">You will be redirected to WhatsApp.\nPlease send the template message to the chatroom without making any changes.</string>
-    <string name="tap_verify_via_whatsapp">Verify via WhatsApp</string>
+    <string name="tap_whatsapp_verification">WhatsApp Verification</string>
+    <string name="tap_whatsapp_verification_description">To continue the verification process, click on the ‘Open WhatsApp’ button.\nPlease send the generated message to the opened chat without making any changes. </string>
+    <string name="tap_open_whatsapp">Open WhatsApp</string>
     <string name="tap_change_phone_number">Change Phone Number</string>
     <string name="tap_verification_loading_description">We are checking your verification status.\nPlease wait, this may take a while.</string>
     <string name="tap_verification_success">Verification Success</string>

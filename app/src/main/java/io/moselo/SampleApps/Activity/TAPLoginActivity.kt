@@ -90,14 +90,15 @@ class TAPLoginActivity : TAPBaseActivity() {
     override fun onResume() {
         super.onResume()
         if (vm?.isCheckWhatsAppVerificationPending == true) {
+            vm?.isCheckWhatsAppVerificationPending = false
             checkWhatsAppVerification(true)
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        vm?.checkVerificationTimer?.cancel()
-    }
+//    override fun onPause() {
+//        super.onPause()
+//        vm?.checkVerificationTimer?.cancel()
+//    }
 
     override fun onBackPressed() {
         if (cl_country_list_container.visibility == View.VISIBLE ||
@@ -681,7 +682,7 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun checkWhatsAppVerification(resetAttempt: Boolean) {
-        vm?.isCheckWhatsAppVerificationPending = false
+        //vm?.isCheckWhatsAppVerificationPending = false
         if (resetAttempt) {
             vm?.checkVerificationAttempts = 0
         }
@@ -718,7 +719,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                 }
 
                 override fun onError(error: TAPErrorModel?) {
-                    vm?.isCheckWhatsAppVerificationPending = true
+                    //vm?.isCheckWhatsAppVerificationPending = true
                     vm?.checkVerificationAttempts = (vm?.checkVerificationAttempts ?: 0) + 1
 
                     if ((vm?.checkVerificationAttempts ?: 0) >= 5) {
