@@ -29,6 +29,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Helper.TapTalkDialog.DialogType.ERROR_DIALOG
+import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus
 import io.taptalk.TapTalk.Manager.TAPDataManager
@@ -48,6 +49,7 @@ import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_layout_login_country_list.*
 import kotlinx.android.synthetic.main.tap_layout_login_input.*
 import kotlinx.android.synthetic.main.tap_layout_login_verification.*
+import kotlinx.android.synthetic.main.tap_layout_login_verification_status.*
 import java.util.Timer
 import java.util.TimerTask
 
@@ -108,6 +110,13 @@ class TAPLoginActivity : TAPBaseActivity() {
             showPhoneNumberInputView()
             return
         }
+        if (ll_button_retry_verification.visibility == View.VISIBLE) {
+            showVerificationView()
+            return
+        }
+        if (iv_verification_status_loading.visibility == View.VISIBLE) {
+            return
+        }
         super.onBackPressed()
     }
 
@@ -116,13 +125,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (resultCode == RESULT_OK) {
             when (requestCode) {
                 RequestCode.REGISTER -> {
-                    TAPApiManager.getInstance(instanceKey).isLoggedOut = false
-                    if (BuildConfig.DEBUG) {
-                        TapDevLandingActivity.start(this@TAPLoginActivity, instanceKey)
-                    } else {
-                        TapUIRoomListActivity.start(this@TAPLoginActivity, instanceKey)
-                    }
-                    finish()
+                    continueToHome()
                 }
             }
         }
@@ -141,8 +144,8 @@ class TAPLoginActivity : TAPBaseActivity() {
             val numberRegex = Regex("[^0-9]")
             return@InputFilter numberRegex.replace(source, "")
         }
-        et_phone_number.filters = et_phone_number.filters + numberFilter
-        et_phone_number.addTextChangedListener(phoneTextWatcher)
+        et_phone_number?.filters = et_phone_number.filters + numberFilter
+        et_phone_number?.addTextChangedListener(phoneTextWatcher)
 
         try {
             countryListAdapter = TAPCountryListAdapter(setupDataForRecycler(""), countryPickInterface)
@@ -158,12 +161,13 @@ class TAPLoginActivity : TAPBaseActivity() {
             e.printStackTrace()
         }
 
-        iv_button_close_country_list.setOnClickListener(backButtonClickListener)
-        ll_button_change_number.setOnClickListener(backButtonClickListener)
-        ll_button_continue.setOnClickListener(submitPhoneNumberClickListener)
-        ll_button_verify.setOnClickListener { openWhatsAppLink() }
+        iv_button_close_country_list?.setOnClickListener(backButtonClickListener)
+        ll_button_change_number?.setOnClickListener(backButtonClickListener)
+        ll_button_continue?.setOnClickListener(submitPhoneNumberClickListener)
+        ll_button_verify?.setOnClickListener { openWhatsAppLink() }
+        ll_button_retry_verification?.setOnClickListener { showVerificationView() }
 
-        et_search_country_list.addTextChangedListener(searchTextWatcher)
+        et_search_country_list?.addTextChangedListener(searchTextWatcher)
     }
 
     private val backButtonClickListener = OnClickListener {
@@ -177,27 +181,26 @@ class TAPLoginActivity : TAPBaseActivity() {
     @SuppressLint("SetTextI18n")
     private fun setCountry(countryID: Int, callingCode: String, flagIconUrl: String?) {
         if (callingCode.isNotEmpty()) {
-            tv_country_code.text = "+$callingCode"
-            tv_country_code.hint = ""
-            et_phone_number.visibility = View.VISIBLE
+            tv_country_code?.text = "+$callingCode"
+            tv_country_code?.hint = ""
+            et_phone_number?.visibility = View.VISIBLE
         }
         else {
-            tv_country_code.text = ""
-            tv_country_code.hint = getString(R.string.tap_hint_select_country)
-            et_phone_number.visibility = View.GONE
+            tv_country_code?.text = ""
+            tv_country_code?.hint = getString(R.string.tap_hint_select_country)
+            et_phone_number?.visibility = View.GONE
         }
         vm?.selectedCountryID = countryID
         vm?.countryCallingID = callingCode
         vm?.countryFlagUrl = flagIconUrl ?: ""
 
-        et_phone_number.filters = et_phone_number.filters + InputFilter.LengthFilter(15 - callingCode.length)
-//        et_phone_number.filters = arrayOf(InputFilter.LengthFilter(15 - callingCode.length))
+        et_phone_number?.filters = et_phone_number.filters + InputFilter.LengthFilter(15 - callingCode.length)
 
         if ("" != flagIconUrl) {
             Glide.with(this).load(flagIconUrl).into(iv_country_flag)
         }
         else {
-            iv_country_flag.setImageResource(R.drawable.tap_ic_default_flag)
+            iv_country_flag?.setImageResource(R.drawable.tap_ic_default_flag)
         }
     }
 
@@ -215,29 +218,33 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun showPhoneNumberInputLoading() {
-        pb_button_continue_loading.visibility = View.VISIBLE
-        iv_country_chevron.alpha = 0.4f
-        tv_country_code.alpha = 0.4f
-        et_phone_number.alpha = 0.4f
-        cl_input_phone_number.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-        ll_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-        tv_button_continue.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
-        et_phone_number.isEnabled = false
-        ll_country_picker_button.setOnClickListener(null)
-        ll_button_continue.setOnClickListener(null)
+        runOnUiThread {
+            pb_button_continue_loading?.visibility = View.VISIBLE
+            iv_country_chevron?.alpha = 0.4f
+            tv_country_code?.alpha = 0.4f
+            et_phone_number?.alpha = 0.4f
+            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+            ll_button_continue?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+            tv_button_continue?.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
+            et_phone_number?.isEnabled = false
+            ll_country_picker_button?.setOnClickListener(null)
+            ll_button_continue?.setOnClickListener(null)
+        }
     }
 
     private fun hidePhoneNumberInputLoading() {
-        pb_button_continue_loading.visibility = View.GONE
-        iv_country_chevron.alpha = 1f
-        tv_country_code.alpha = 1f
-        et_phone_number.alpha = 1f
-        cl_input_phone_number.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
-        ll_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
-        tv_button_continue.setTextColor(ContextCompat.getColor(this, R.color.tapButtonLabelColor))
-        et_phone_number.isEnabled = true
-        ll_country_picker_button.setOnClickListener(countryPickerClickListener)
-        ll_button_continue.setOnClickListener(submitPhoneNumberClickListener)
+        runOnUiThread {
+            pb_button_continue_loading?.visibility = View.GONE
+            iv_country_chevron?.alpha = 1f
+            tv_country_code?.alpha = 1f
+            et_phone_number?.alpha = 1f
+            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
+            ll_button_continue?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
+            tv_button_continue?.setTextColor(ContextCompat.getColor(this, R.color.tapButtonLabelColor))
+            et_phone_number?.isEnabled = true
+            ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
+            ll_button_continue?.setOnClickListener(submitPhoneNumberClickListener)
+        }
     }
 
     private val countryPickerClickListener = OnClickListener {
@@ -254,10 +261,10 @@ class TAPLoginActivity : TAPBaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if (ll_input_error_info.visibility == View.VISIBLE) {
-                et_phone_number.removeTextChangedListener(this)
+            if (ll_input_error_info?.visibility == View.VISIBLE) {
+                et_phone_number?.removeTextChangedListener(this)
                 validatePhoneNumber()
-                et_phone_number.addTextChangedListener(this)
+                et_phone_number?.addTextChangedListener(this)
             }
         }
 
@@ -300,7 +307,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             Log.e(">>>>", "initCountryList: set country")
             setCountry(defaultCountryID, defaultCallingCode, vm?.countryFlagUrl)
             searchCountry("")
-            ll_country_picker_button.setOnClickListener(countryPickerClickListener)
+            ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
         }
     }
 
@@ -362,17 +369,18 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun callCountryListFromAPI() {
         TAPDataManager.getInstance(instanceKey).getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
             override fun startLoading() {
-                et_phone_number?.isEnabled = false
-                tv_country_code?.visibility = View.GONE
-                pb_loading_progress_country?.visibility = View.VISIBLE
+                runOnUiThread {
+                    et_phone_number?.visibility = View.GONE
+                    cv_country_flag?.visibility = View.GONE
+                    pb_loading_progress_country?.visibility = View.VISIBLE
+                }
             }
 
             @SuppressLint("SetTextI18n")
             override fun onSuccess(response: TAPCountryListResponse?) {
-                et_phone_number?.isEnabled = true
                 vm?.countryListItems?.clear()
                 TAPDataManager.getInstance(instanceKey).saveLastCallCountryTimestamp(System.currentTimeMillis())
-                setCountry(0, "", "")
+                //setCountry(0, "", "")
                 Thread {
                     var defaultCountry: TAPCountryListItem? = null
                     response?.countries?.forEach {
@@ -390,7 +398,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                         }
                     }
 
-                    if ("" == tv_country_code.text) {
+                    if ("" == tv_country_code?.text) {
                         val callingCode: String = defaultCountry?.callingCode ?: ""
                         runOnUiThread {
                             setCountry(defaultCountry?.countryID ?: 0, callingCode, defaultCountry?.flagIconUrl ?: "")
@@ -403,9 +411,10 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                     runOnUiThread {
                         searchCountry("")
-                        tv_country_code.visibility = View.VISIBLE
-                        pb_loading_progress_country.visibility = View.GONE
-                        ll_country_picker_button.setOnClickListener(countryPickerClickListener)
+                        et_phone_number?.visibility = View.VISIBLE
+                        cv_country_flag?.visibility = View.VISIBLE
+                        pb_loading_progress_country?.visibility = View.GONE
+                        ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
                     }
                 }.start()
             }
@@ -415,9 +424,12 @@ class TAPLoginActivity : TAPBaseActivity() {
             }
 
             override fun onError(errorMessage: String?) {
-                pb_loading_progress_country.visibility = View.GONE
-                tv_country_code.visibility = View.VISIBLE
-                setCountry(0, "", "")
+                runOnUiThread {
+                    et_phone_number?.visibility = View.VISIBLE
+                    cv_country_flag?.visibility = View.VISIBLE
+                    pb_loading_progress_country?.visibility = View.GONE
+                    setCountry(0, "", "")
+                }
                 // TODO: SHOW ERROR
             }
         })
@@ -435,13 +447,17 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun showCountryListEmptyState() {
-        cl_country_list_empty_state.visibility = View.VISIBLE
-        rv_country_list.visibility = View.GONE
+        runOnUiThread {
+            cl_country_list_empty_state?.visibility = View.VISIBLE
+            rv_country_list?.visibility = View.GONE
+        }
     }
 
     private fun hideCountryListEmptyState() {
-        cl_country_list_empty_state.visibility = View.GONE
-        rv_country_list.visibility = View.VISIBLE
+        runOnUiThread {
+            cl_country_list_empty_state?.visibility = View.GONE
+            rv_country_list?.visibility = View.VISIBLE
+        }
     }
 
     private val searchTextWatcher: TextWatcher = object : TextWatcher {
@@ -459,7 +475,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         setCountry(it?.countryID ?: 0, callingCode, it?.flagIconUrl ?: "")
         val textCount = callingCode.length + checkAndEditPhoneNumber().length
         if (textCount > 15) {
-            et_phone_number.setText("")
+            et_phone_number?.setText("")
         }
         showPhoneNumberInputView()
     }
@@ -472,53 +488,121 @@ class TAPLoginActivity : TAPBaseActivity() {
     private val phoneInputHiddenTranslation = TAPUtils.dpToPx(16).toFloat()
     private val hiddenTranslation = TAPUtils.dpToPx(960).toFloat()
 
-    private fun showViewWithAnimation(view: View) {
+    private fun showViewWithAnimation(view: View?) {
         TAPUtils.dismissKeyboard(this)
-        view.visibility = View.VISIBLE
-        view.animate()
-            .translationY(0f)
-            .setDuration(animationDuration)
-            .setInterpolator(DecelerateInterpolator())
-            .start()
+        view?.visibility = View.VISIBLE
+        view?.animate()
+            ?.translationY(0f)
+            ?.setDuration(animationDuration)
+            ?.setInterpolator(DecelerateInterpolator())
+            ?.start()
     }
 
-    private fun hideViewWithAnimation(view: View) {
+    private fun hideViewWithAnimation(view: View?) {
         hideViewWithAnimation(view, hiddenTranslation)
     }
 
-    private fun hideViewWithAnimation(view: View, translationY: Float) {
-        if (view.visibility == View.GONE) {
+    private fun hideViewWithAnimation(view: View?, translationY: Float) {
+        if (view?.visibility == View.GONE) {
             return
         }
-        view.animate()
-            .translationY(translationY)
-            .setDuration(animationDuration)
-            .setInterpolator(AccelerateInterpolator())
-            .withEndAction {
+        view?.animate()
+            ?.translationY(translationY)
+            ?.setDuration(animationDuration)
+            ?.setInterpolator(AccelerateInterpolator())
+            ?.withEndAction {
                 view.visibility = View.GONE
                 if (view == cl_country_list_container) {
                     et_search_country_list.setText("")
                 }
             }
-            .start()
+            ?.start()
     }
 
     private fun showPhoneNumberInputView() {
-        showViewWithAnimation(cl_login_input_container)
-        hideViewWithAnimation(cl_country_list_container)
-        hideViewWithAnimation(cl_verification_container)
+        runOnUiThread {
+            showViewWithAnimation(cl_login_input_container)
+            hideViewWithAnimation(cl_country_list_container)
+            hideViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(cl_verification_status_container)
+        }
     }
 
     private fun showCountryListView() {
-        showViewWithAnimation(cl_country_list_container)
-        hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
-        hideViewWithAnimation(cl_verification_container)
+        runOnUiThread {
+            showViewWithAnimation(cl_country_list_container)
+            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+            hideViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(cl_verification_status_container)
+        }
     }
 
     private fun showVerificationView() {
-        showViewWithAnimation(cl_verification_container)
-        hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
-        hideViewWithAnimation(cl_country_list_container)
+        runOnUiThread {
+            showViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+            hideViewWithAnimation(cl_country_list_container)
+            hideViewWithAnimation(cl_verification_status_container)
+        }
+    }
+
+    private fun showVerificationStatusView() {
+        runOnUiThread {
+            showViewWithAnimation(cl_verification_status_container)
+            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+            hideViewWithAnimation(cl_country_list_container)
+            hideViewWithAnimation(cl_verification_container)
+        }
+    }
+
+    private fun showVerificationLoading() {
+        runOnUiThread {
+            if (iv_verification_status_loading?.animation == null) {
+                TAPUtils.rotateAnimateInfinitely(this, iv_verification_status_loading)
+            }
+            iv_verification_status_loading?.visibility = View.VISIBLE
+            iv_verification_status_image?.visibility = View.GONE
+            v_verification_status_background?.visibility = View.GONE
+            ll_button_continue_to_home?.visibility = View.GONE
+            ll_button_retry_verification?.visibility = View.GONE
+            tv_verification_status_title?.text = getString(R.string.tap_loading_dots)
+            tv_verification_status_description?.text = getString(R.string.tap_verification_loading_description)
+            showVerificationStatusView()
+        }
+    }
+
+    private fun showVerificationSuccess() {
+        runOnUiThread {
+            iv_verification_status_loading.clearAnimation()
+            iv_verification_status_loading?.visibility = View.GONE
+            iv_verification_status_image?.visibility = View.VISIBLE
+            v_verification_status_background?.visibility = View.VISIBLE
+            ll_button_continue_to_home?.visibility = View.VISIBLE
+            ll_button_retry_verification?.visibility = View.GONE
+            tv_verification_status_title?.text = getString(R.string.tap_verification_success)
+            tv_verification_status_description?.text = getString(R.string.tap_verification_success_description)
+            v_verification_status_background?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_success)
+            iv_verification_status_image?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_success)
+            iv_verification_status_image?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_rounded_check_green))
+            showVerificationStatusView()
+        }
+    }
+
+    private fun showVerificationError() {
+        runOnUiThread {
+            iv_verification_status_loading.clearAnimation()
+            iv_verification_status_loading?.visibility = View.GONE
+            iv_verification_status_image?.visibility = View.VISIBLE
+            v_verification_status_background?.visibility = View.VISIBLE
+            ll_button_continue_to_home?.visibility = View.GONE
+            ll_button_retry_verification?.visibility = View.VISIBLE
+            tv_verification_status_title?.text = getString(R.string.tap_verification_error)
+            tv_verification_status_description?.text = getString(R.string.tap_verification_error_description)
+            v_verification_status_background?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_error)
+            iv_verification_status_image?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_error)
+            iv_verification_status_image?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_cancel_white))
+            showVerificationStatusView()
+        }
     }
 
     /**=============================================================================================
@@ -529,17 +613,17 @@ class TAPLoginActivity : TAPBaseActivity() {
         val phoneNumber = checkAndEditPhoneNumber()
         val phoneNumberWithCode = String.format("%s%s", vm?.countryCallingID ?: "", phoneNumber)
         return if (et_phone_number.text.isEmpty()) {
-            tv_input_error_info.text = getString(R.string.tap_this_field_is_required)
-            ll_input_error_info.visibility = View.VISIBLE
+            tv_input_error_info?.text = getString(R.string.tap_this_field_is_required)
+            ll_input_error_info?.visibility = View.VISIBLE
             false
         }
         else if (!Patterns.PHONE.matcher(phoneNumber).matches() || phoneNumberWithCode.length !in 7..15) {
-            tv_input_error_info.text = getString(R.string.tap_error_invalid_phone_number)
-            ll_input_error_info.visibility = View.VISIBLE
+            tv_input_error_info?.text = getString(R.string.tap_error_invalid_phone_number)
+            ll_input_error_info?.visibility = View.VISIBLE
             false
         }
         else {
-            ll_input_error_info.visibility = View.GONE
+            ll_input_error_info?.visibility = View.GONE
             vm?.phoneNumber = phoneNumber
             true
         }
@@ -562,7 +646,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     Log.e(">>>>>", "request onSuccess: ${TAPUtils.toJsonString(response)}")
                     vm?.verification = response?.verification
                     if (response?.isSuccess == true) {
-                        tv_verification_phone_number.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
+                        tv_verification_phone_number?.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
                         showVerificationView()
                     }
                     else {
@@ -608,29 +692,50 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (resetAttempt) {
             vm?.checkVerificationAttempts = 0
         }
-        // TODO: SHOW LOADING VIEW
+        showVerificationLoading()
         val phoneWithCode = String.format("%s%s", vm?.countryCallingID, vm?.phoneNumber)
         TAPDataManager.getInstance(instanceKey).checkWhatsAppVerification(
             phoneWithCode,
             vm?.verification?.id,
             object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
                 override fun onSuccess(response: TAPLoginOTPVerifyResponse?) {
-                    Log.e(">>>>>", "check onSuccess: ${TAPUtils.toJsonString(response)}")
-                    // TODO: SHOW SUCCESS VIEW
-                    Toast.makeText(this@TAPLoginActivity, "Verification success: ${response?.userID}", Toast.LENGTH_LONG).show()
+                    if (response?.isRegistered == true && !response.ticket.isNullOrEmpty()) {
+                        Log.e(">>>>>", "check onSuccess to authenticate: ${TAPUtils.toJsonString(response)}")
+                        TapTalk.authenticateWithAuthTicket(
+                            instanceKey,
+                            response.ticket,
+                            true,
+                            object : TapCommonListener() {
+                                override fun onSuccess(successMessage: String?) {
+                                    Log.e(">>>>>", "authenticate onSuccess: $successMessage")
+                                    showVerificationSuccess()
+                                    ll_button_continue_to_home?.setOnClickListener { continueToHome() }
+                                }
+
+                                override fun onError(errorCode: String?, errorMessage: String?) {
+                                    showVerificationError()
+                                    Log.e(">>>>>", "authenticate onError: $errorMessage")
+                                }
+                            }
+                        )
+                    }
+                    else {
+                        // Register
+                        showVerificationSuccess()
+                        ll_button_continue_to_home?.setOnClickListener { continueToRegister() }
+                        Log.e(">>>>>", "check onSuccess to register: ${TAPUtils.toJsonString(response)}")
+                    }
                 }
 
                 override fun onError(error: TAPErrorModel?) {
                     Log.e(">>>>>", "check onError: ${error?.code} - ${error?.message}")
                     vm?.isCheckWhatsAppVerificationPending = true
-                    Toast.makeText(this@TAPLoginActivity, "Verification error: ${error?.code} - ${error?.message}", Toast.LENGTH_LONG).show()
+                    vm?.checkVerificationAttempts = (vm?.checkVerificationAttempts ?: 0) + 1
 
-
-                    if ((vm?.checkVerificationAttempts ?: 0) >= 10) {
-                        // TODO: SHOW ERROR VIEW
+                    if ((vm?.checkVerificationAttempts ?: 0) >= 5) {
+                        showVerificationError()
                     }
                     else {
-                        vm?.checkVerificationAttempts = (vm?.checkVerificationAttempts ?: 0) + 1
                         vm?.checkVerificationTimer?.cancel()
                         vm?.checkVerificationTimer = Timer()
                         Log.e(">>>>>", "check onError: retry attempt ${vm?.checkVerificationAttempts}")
@@ -649,116 +754,25 @@ class TAPLoginActivity : TAPBaseActivity() {
         )
     }
 
-//    fun showOTPVerification(
-//        otpID: Long?,
-//        otpKey: String?,
-//        phoneNumber: String,
-//        phoneNumberWithCode: String?,
-//        countryID: Int,
-//        countryCallingID: String?,
-//        countryFlagUrl: String?,
-//        channel: String?,
-//        nextRequestSeconds: Int
-//    ) {
-//        if (BuildConfig.BUILD_TYPE == "dev") {
-//            val otpCode = phoneNumber.substring(phoneNumber.length - 6)
-//            TAPDataManager.getInstance(instanceKey).verifyOTPLogin(
-//                otpID!!,
-//                otpKey,
-//                otpCode,
-//                object : TAPDefaultDataView<TAPLoginOTPVerifyResponse?>() {
-//                    override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
-//                        if (response.isRegistered) {
-//                            TapTalk.authenticateWithAuthTicket(
-//                                instanceKey,
-//                                response.ticket,
-//                                true,
-//                                object : TapCommonListener() {
-//                                    override fun onSuccess(successMessage: String) {
-//                                        TapDevLandingActivity.start(
-//                                            this@TAPLoginActivity,
-//                                            instanceKey
-//                                        )
-//                                    }
-//
-//                                    override fun onError(errorCode: String, errorMessage: String) {
-//                                        TapTalkDialog.Builder(this@TAPLoginActivity)
-//                                            .setTitle("Error Verifying OTP")
-//                                            .setMessage(errorMessage)
-//                                            .setPrimaryButtonTitle("OK")
-//                                            .show()
-//                                    }
-//                                })
-//                        } else {
-//                            start(
-//                                this@TAPLoginActivity,
-//                                instanceKey,
-//                                countryID,
-//                                countryCallingID!!,
-//                                countryFlagUrl!!,
-//                                phoneNumber
-//                            )
-//                            vm!!.phoneNumber = "0"
-//                            vm!!.countryID = 0
-//                        }
-//                    }
-//
-//                    override fun onError(error: TAPErrorModel) {
-//                        onError(error.message)
-//                    }
-//
-//                    override fun onError(errorMessage: String) {
-//                        TapTalkDialog.Builder(this@TAPLoginActivity)
-//                            .setTitle("Error Verifying OTP")
-//                            .setMessage(errorMessage)
-//                            .setPrimaryButtonTitle("OK")
-//                            .show()
-//                    }
-//                })
-//        } else {
-//            supportFragmentManager.beginTransaction()
-//                .setCustomAnimations(
-//                    R.animator.tap_slide_left_fragment,
-//                    R.animator.tap_fade_out_fragment,
-//                    R.animator.tap_fade_in_fragment,
-//                    R.animator.tap_slide_right_fragment
-//                )
-//                .replace(
-//                    R.id.fl_container,
-//                    getInstance(
-//                        otpID!!,
-//                        otpKey!!,
-//                        phoneNumber,
-//                        phoneNumberWithCode!!,
-//                        countryID,
-//                        countryCallingID!!,
-//                        countryFlagUrl!!,
-//                        channel!!,
-//                        nextRequestSeconds
-//                    )
-//                )
-//                .addToBackStack(null)
-//                .commit()
-//        }
-//    }
+    private fun continueToHome() {
+        TAPApiManager.getInstance(instanceKey).isLoggedOut = false
+        if (BuildConfig.DEBUG) {
+            TapDevLandingActivity.start(this, instanceKey)
+        }
+        else {
+            TapUIRoomListActivity.start(this, instanceKey)
+        }
+        finish()
+    }
 
-//    fun setLastLoginData(
-//        otpID: Long?,
-//        otpKey: String?,
-//        phoneNumber: String?,
-//        phoneNumberWithCode: String?,
-//        countryID: Int,
-//        countryCallingID: String?,
-//        channel: String?
-//    ) {
-//        vm!!.setLastLoginData(
-//            otpID,
-//            otpKey,
-//            phoneNumber,
-//            phoneNumberWithCode,
-//            countryID,
-//            countryCallingID,
-//            channel
-//        )
-//    }
+    private fun continueToRegister() {
+        TAPRegisterActivity.start(
+            this,
+            instanceKey,
+            vm?.selectedCountryID ?: 0,
+            vm?.countryCallingID ?: "",
+            vm?.countryFlagUrl ?: "",
+            vm?.phoneNumber ?: ""
+        )
+    }
 }

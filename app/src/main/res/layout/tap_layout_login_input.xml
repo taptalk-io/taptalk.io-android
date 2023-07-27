@@ -70,6 +70,7 @@
                 tools:visibility="visible" />
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cv_country_flag"
                 android:layout_width="32dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"

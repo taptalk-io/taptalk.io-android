@@ -13,4 +13,17 @@
     <string name="send_this_message_to_sf">Send this message to %s?</string>
     <string name="register_privacy_policy">By registering, I have read and agree to TapTalk.io\'s Privacy Policy</string>
     <string name="error_register_privacy_policy">Please read and agree to our privacy policy before continuing.</string>
+
+    <!--Verification-->
+    <string name="tap_verification_whatsapp_description">You will be redirected to WhatsApp.\nPlease send the template message to the chatroom without making any changes.</string>
+    <string name="tap_verify_via_whatsapp">Verify via WhatsApp</string>
+    <string name="tap_change_phone_number">Change Phone Number</string>
+    <string name="tap_verification_loading_description">We are checking your verification status.\nPlease wait, this may take a while.</string>
+    <string name="tap_verification_success">Verification Success</string>
+    <string name="tap_verification_success_description">Your number has been successfully verified</string>
+    <string name="tap_continue_to_home">Continue to Home</string>
+    <string name="tap_continue_to_register">Continue to Register</string>
+    <string name="tap_verification_error">There’s something wrong</string>
+    <string name="tap_verification_error_description">Your number has not been verified.</string>
+    <string name="tap_retry_verification">Retry Verification</string>
 </resources>

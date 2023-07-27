@@ -8,9 +8,9 @@
     android:elevation="4dp"
     android:translationY="960dp"
     android:visibility="gone"
-    tools:visibility="visible"
+    tools:targetApi="lollipop"
     tools:translationY="0dp"
-    tools:targetApi="lollipop">
+    tools:visibility="visible">
 
     <TextView
         android:id="@+id/tv_country_list_title"
@@ -92,26 +92,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:letterSpacing="-0.03"
+            android:text="@string/tap_no_countries_found"
+            android:textColor="@color/tapColorTextDark"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/tapColorTextDark"
-            android:text="@string/tap_no_countries_found"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:targetApi="lollipop" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:letterSpacing="-0.02"
-            android:textSize="16sp"
-            android:textColor="@color/tapTransparentBlack1960"
-            android:text="@string/tap_try_a_different_search"
             android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:letterSpacing="-0.02"
+            android:text="@string/tap_try_a_different_search"
+            android:textColor="@color/tapTransparentBlack1960"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_no_country"
             tools:targetApi="lollipop" />
 
@@ -123,6 +123,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:background="@color/tapWhiteF3"
+        android:overScrollMode="never"
         app:fastScrollPopupBackgroundSize="88dp"
         app:fastScrollPopupBgColor="@color/tapColorPrimaryDark"
         app:fastScrollPopupPosition="adjacent"
