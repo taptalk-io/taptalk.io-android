@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.View.OnClickListener
@@ -30,10 +29,7 @@ import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Helper.TapTalkDialog.DialogType.ERROR_DIALOG
 import io.taptalk.TapTalk.Listener.TapCommonListener
-import io.taptalk.TapTalk.Manager.TAPChatManager
-import io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus
 import io.taptalk.TapTalk.Manager.TAPDataManager
-import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse
@@ -208,11 +204,12 @@ class TAPLoginActivity : TAPBaseActivity() {
         var phoneNumber = et_phone_number.text.toString().replace("-", "").trim()
         val callingCodeLength: Int = defaultCallingCode.length
         when {
-            phoneNumber.isEmpty() || callingCodeLength > phoneNumber.length -> {
+            '0' == phoneNumber.elementAt(0) -> {
+                phoneNumber = phoneNumber.replaceFirst("0", "")
             }
-            '0' == phoneNumber.elementAt(0) -> phoneNumber = phoneNumber.replaceFirst("0", "")
-            //"+$defaultCallingCode" == phoneNumber.substring(0, (callingCodeLength + 1)) -> phoneNumber = phoneNumber.substring(3)
-            defaultCallingCode == phoneNumber.substring(0, callingCodeLength) -> phoneNumber = phoneNumber.substring(callingCodeLength-1)
+            defaultCallingCode == phoneNumber.substring(0, callingCodeLength) -> {
+                phoneNumber = phoneNumber.substring(callingCodeLength - 1)
+            }
         }
         return phoneNumber
     }
@@ -280,11 +277,9 @@ class TAPLoginActivity : TAPBaseActivity() {
         val oneDayAgoTimestamp: Long = 24 * 60 * 60 * 1000
 
         if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp >= lastCallCountryTimestamp) {
-            Log.e(">>>>", "initCountryList: call API")
             callCountryListFromAPI()
         }
         else if (vm?.isNeedResetData == true) {
-            Log.e(">>>>", "initCountryList: reset data")
             callCountryListFromAPI()
             vm?.countryIsoCode = TAPUtils.getDeviceCountryCode(this)
             //vm?.countryHashMap = TAPDataManager.getInstance(instanceKey).countryList
@@ -298,13 +293,14 @@ class TAPLoginActivity : TAPBaseActivity() {
                 setCountry(defaultCountryID, defaultCallingCode, "")
             }
             else {
-                setCountry(vm?.countryHashMap?.get(vm?.countryIsoCode)?.countryID ?: 0,
+                setCountry(
+                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.countryID ?: 0,
                     vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode ?: "",
-                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.flagIconUrl ?: "")
+                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.flagIconUrl ?: ""
+                )
             }
         }
         else {
-            Log.e(">>>>", "initCountryList: set country")
             setCountry(defaultCountryID, defaultCallingCode, vm?.countryFlagUrl)
             searchCountry("")
             ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
@@ -380,7 +376,6 @@ class TAPLoginActivity : TAPBaseActivity() {
             override fun onSuccess(response: TAPCountryListResponse?) {
                 vm?.countryListItems?.clear()
                 TAPDataManager.getInstance(instanceKey).saveLastCallCountryTimestamp(System.currentTimeMillis())
-                //setCountry(0, "", "")
                 Thread {
                     var defaultCountry: TAPCountryListItem? = null
                     response?.countries?.forEach {
@@ -405,8 +400,6 @@ class TAPLoginActivity : TAPBaseActivity() {
                         }
                     }
 
-                    Log.e(">>>>>", "onSuccess: ${vm?.countryListItems?.size}")
-
                     TAPDataManager.getInstance(instanceKey).saveCountryList(vm?.countryListItems)
 
                     runOnUiThread {
@@ -429,15 +422,14 @@ class TAPLoginActivity : TAPBaseActivity() {
                     cv_country_flag?.visibility = View.VISIBLE
                     pb_loading_progress_country?.visibility = View.GONE
                     setCountry(0, "", "")
+                    Toast.makeText(this@TAPLoginActivity, getString(R.string.tap_no_countries_found), Toast.LENGTH_SHORT).show()
                 }
-                // TODO: SHOW ERROR
             }
         })
     }
 
     private fun searchCountry(countryKeyword: String?) {
         countryListAdapter.items = setupDataForRecycler(countryKeyword ?: "")
-//        countryListAdapter.notifyDataSetChanged()
         if (countryListAdapter.items.size == 0) {
             showCountryListEmptyState()
         }
@@ -643,7 +635,6 @@ class TAPLoginActivity : TAPBaseActivity() {
                 }
 
                 override fun onSuccess(response: TAPOTPResponse?) {
-                    Log.e(">>>>>", "request onSuccess: ${TAPUtils.toJsonString(response)}")
                     vm?.verification = response?.verification
                     if (response?.isSuccess == true) {
                         tv_verification_phone_number?.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
@@ -700,21 +691,19 @@ class TAPLoginActivity : TAPBaseActivity() {
             object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
                 override fun onSuccess(response: TAPLoginOTPVerifyResponse?) {
                     if (response?.isRegistered == true && !response.ticket.isNullOrEmpty()) {
-                        Log.e(">>>>>", "check onSuccess to authenticate: ${TAPUtils.toJsonString(response)}")
+                        // Login
                         TapTalk.authenticateWithAuthTicket(
                             instanceKey,
                             response.ticket,
                             true,
                             object : TapCommonListener() {
                                 override fun onSuccess(successMessage: String?) {
-                                    Log.e(">>>>>", "authenticate onSuccess: $successMessage")
                                     showVerificationSuccess()
                                     ll_button_continue_to_home?.setOnClickListener { continueToHome() }
                                 }
 
                                 override fun onError(errorCode: String?, errorMessage: String?) {
                                     showVerificationError()
-                                    Log.e(">>>>>", "authenticate onError: $errorMessage")
                                 }
                             }
                         )
@@ -723,12 +712,10 @@ class TAPLoginActivity : TAPBaseActivity() {
                         // Register
                         showVerificationSuccess()
                         ll_button_continue_to_home?.setOnClickListener { continueToRegister() }
-                        Log.e(">>>>>", "check onSuccess to register: ${TAPUtils.toJsonString(response)}")
                     }
                 }
 
                 override fun onError(error: TAPErrorModel?) {
-                    Log.e(">>>>>", "check onError: ${error?.code} - ${error?.message}")
                     vm?.isCheckWhatsAppVerificationPending = true
                     vm?.checkVerificationAttempts = (vm?.checkVerificationAttempts ?: 0) + 1
 
@@ -738,7 +725,6 @@ class TAPLoginActivity : TAPBaseActivity() {
                     else {
                         vm?.checkVerificationTimer?.cancel()
                         vm?.checkVerificationTimer = Timer()
-                        Log.e(">>>>>", "check onError: retry attempt ${vm?.checkVerificationAttempts}")
                         vm?.checkVerificationTimer?.schedule(object : TimerTask() {
                             override fun run() {
                                 checkWhatsAppVerification(false)
