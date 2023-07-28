@@ -20,7 +20,7 @@
         style="@style/tapLoginTitleStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/tap_verification"
+        android:text="@string/tap_whatsapp_verification"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
