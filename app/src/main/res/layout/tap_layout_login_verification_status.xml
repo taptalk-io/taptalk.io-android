@@ -64,10 +64,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="@string/tap_loading_dots"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fl_verification_status_image_container" />
+        app:layout_constraintTop_toBottomOf="@id/fl_verification_status_image_container"
+        tools:text="@string/tap_loading_dots" />
 
     <TextView
         android:id="@+id/tv_verification_status_description"
@@ -76,10 +76,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="@string/tap_verification_loading_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_verification_status_title" />
+        app:layout_constraintTop_toBottomOf="@id/tv_verification_status_title"
+        tools:text="@string/tap_verification_loading_description" />
 
     <LinearLayout
         android:id="@+id/ll_button_continue_to_home"

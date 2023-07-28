@@ -41,6 +41,8 @@ public class SampleApplication extends MultiDexApplication {
     public static final String INSTANCE_KEY_DEV = "TAPTALK-DEV";
     public static final String INSTANCE_KEY_STAGING = "TAPTALK-STAGING";
 
+    public boolean loginActivityExists = false;
+
     @Override
     public void onCreate() {
         super.onCreate();

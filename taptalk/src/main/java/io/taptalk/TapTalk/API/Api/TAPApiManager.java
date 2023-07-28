@@ -307,7 +307,7 @@ public class TAPApiManager {
     }
 
     public void requestWhatsAppVerification(int countryID, String phone, String languageCode, Subscriber<TAPBaseResponse<TAPOTPResponse>> subscriber) {
-        TapWhatsAppVerificationRequest request = new TapWhatsAppVerificationRequest(countryID, phone, languageCode, null);
+        TapWhatsAppVerificationRequest request = new TapWhatsAppVerificationRequest(countryID, phone, languageCode, "https://web.taptalk.io/");
         execute(homingPigeon.requestWhatsAppVerification(request), subscriber);
     }
 

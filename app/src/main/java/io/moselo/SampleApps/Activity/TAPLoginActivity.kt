@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import io.moselo.SampleApps.Adapter.TAPCountryListAdapter
+import io.moselo.SampleApps.SampleApplication
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS
@@ -85,6 +86,10 @@ class TAPLoginActivity : TAPBaseActivity() {
         initView()
         initCountryList()
         TAPUtils.checkAndRequestNotificationPermission(this)
+
+        if (application != null && application is SampleApplication) {
+            (application as SampleApplication).loginActivityExists = true
+        }
     }
 
     override fun onResume() {
@@ -111,10 +116,17 @@ class TAPLoginActivity : TAPBaseActivity() {
             showVerificationView()
             return
         }
-        if (iv_verification_status_loading.visibility == View.VISIBLE) {
+        if (iv_verification_status_loading?.visibility == View.VISIBLE) {
             return
         }
         super.onBackPressed()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (application != null && application is SampleApplication) {
+            (application as SampleApplication).loginActivityExists = false
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -490,6 +502,11 @@ class TAPLoginActivity : TAPBaseActivity() {
             ?.translationY(0f)
             ?.setDuration(animationDuration)
             ?.setInterpolator(DecelerateInterpolator())
+            ?.withEndAction {
+                if (view != cl_verification_status_container) {
+                    resetVerificationStatus()
+                }
+            }
             ?.start()
     }
 
@@ -568,7 +585,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showVerificationSuccess() {
         runOnUiThread {
-            iv_verification_status_loading.clearAnimation()
+            iv_verification_status_loading?.clearAnimation()
             iv_verification_status_loading?.visibility = View.GONE
             iv_verification_status_image?.visibility = View.VISIBLE
             v_verification_status_background?.visibility = View.VISIBLE
@@ -585,7 +602,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showVerificationError() {
         runOnUiThread {
-            iv_verification_status_loading.clearAnimation()
+            iv_verification_status_loading?.clearAnimation()
             iv_verification_status_loading?.visibility = View.GONE
             iv_verification_status_image?.visibility = View.VISIBLE
             v_verification_status_background?.visibility = View.VISIBLE
@@ -597,6 +614,19 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_image?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_error)
             iv_verification_status_image?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_cancel_white))
             showVerificationStatusView()
+        }
+    }
+
+    private fun resetVerificationStatus() {
+        runOnUiThread {
+            iv_verification_status_loading?.clearAnimation()
+            iv_verification_status_loading?.visibility = View.GONE
+            iv_verification_status_image?.visibility = View.GONE
+            v_verification_status_background?.visibility = View.GONE
+            ll_button_continue_to_home?.visibility = View.GONE
+            ll_button_retry_verification?.visibility = View.GONE
+            tv_verification_status_title?.text = ""
+            tv_verification_status_description?.text = ""
         }
     }
 
