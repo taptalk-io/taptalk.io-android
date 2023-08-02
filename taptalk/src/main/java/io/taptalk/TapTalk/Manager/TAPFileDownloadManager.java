@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.MediaStore;
@@ -492,39 +493,46 @@ public class TAPFileDownloadManager {
 
     public void writeImageFileToDisk(Context context, Long timestamp, Bitmap bitmap, String mimeType, TapTalkActionInterface listener) {
         new Thread(() -> {
-            String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
-            String filename = TAPTimeFormatter.formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
-
-//            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey));
-//            dir.mkdirs();
-//
-//            File file = new File(dir, filename);
-//            if (file.exists()) {
-//                file.delete();
-//            }
-
             try {
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
-                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
-                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/" + TapTalk.getClientAppName(instanceKey));
-                ContentResolver contentResolver = context.getContentResolver();
-                Uri contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                Uri uri = contentResolver.insert(contentUri, contentValues);
+                String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
+                String filename = TAPTimeFormatter.formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
 
-                if (uri == null) {
-                    listener.onError("Could not obtain directory.");
+                OutputStream out;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+                    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+                    contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/" + TapTalk.getClientAppName(instanceKey));
+                    ContentResolver contentResolver = context.getContentResolver();
+                    Uri contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    Uri uri = contentResolver.insert(contentUri, contentValues);
+
+                    if (uri == null) {
+                        listener.onError("Could not obtain directory.");
+                        return;
+                    }
+                    out = contentResolver.openOutputStream(uri);
+                }
+                else {
+                    File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey));
+                    dir.mkdirs();
+
+                    File file = new File(dir, filename);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    out = new FileOutputStream(file);
+                }
+                if (out == null) {
                     return;
                 }
-
-//                FileOutputStream out = new FileOutputStream(file);
-                OutputStream out = contentResolver.openOutputStream(uri);
                 bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, TapTalk.getImageCompressionQuality(instanceKey), out);
                 out.flush();
                 out.close();
 //                scanFile(context, file, TAPUtils.getFileMimeType(file));
                 listener.onSuccess(String.format(context.getString(R.string.tap_format_s_successfully_saved), filename));
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 listener.onError(e.getMessage());
             }
