@@ -24,15 +24,15 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
-import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel;
+import io.taptalk.TapTalk.ViewModel.TAPLoginViewModelOld;
 import io.taptalk.TapTalkSample.BuildConfig;
 import io.taptalk.TapTalkSample.R;
 
-public class TAPLoginActivity extends TAPBaseActivity {
+public class TAPLoginActivityOld extends TAPBaseActivity {
 
-    private static final String TAG = TAPLoginActivity.class.getSimpleName();
+    private static final String TAG = TAPLoginActivityOld.class.getSimpleName();
     private FrameLayout flContainer;
-    private TAPLoginViewModel vm;
+    private TAPLoginViewModelOld vm;
 
     public static void start(
             Context context,
@@ -44,7 +44,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
             Context context,
             String instanceKey,
             boolean newTask) {
-        Intent intent = new Intent(context, TAPLoginActivity.class);
+        Intent intent = new Intent(context, TAPLoginActivityOld.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         if (newTask) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -55,7 +55,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tap_activity_login);
+        setContentView(R.layout.tap_activity_login_old);
         initViewModel();
         initView();
         initFirstPage();
@@ -75,9 +75,9 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 case REGISTER:
                     TAPApiManager.getInstance(instanceKey).setLoggedOut(false);
                     if (BuildConfig.DEBUG) {
-                        TapDevLandingActivity.Companion.start(TAPLoginActivity.this, instanceKey);
+                        TapDevLandingActivity.Companion.start(TAPLoginActivityOld.this, instanceKey);
                     } else {
-                        TapUIRoomListActivity.start(TAPLoginActivity.this, instanceKey);
+                        TapUIRoomListActivity.start(TAPLoginActivityOld.this, instanceKey);
                     }
                     finish();
                     break;
@@ -113,12 +113,12 @@ public class TAPLoginActivity extends TAPBaseActivity {
                         TapTalk.authenticateWithAuthTicket(instanceKey, response.getTicket(), true, new TapCommonListener() {
                             @Override
                             public void onSuccess(String successMessage) {
-                                TapDevLandingActivity.Companion.start(TAPLoginActivity.this, instanceKey);
+                                TapDevLandingActivity.Companion.start(TAPLoginActivityOld.this, instanceKey);
                             }
 
                             @Override
                             public void onError(String errorCode, String errorMessage) {
-                                new TapTalkDialog.Builder(TAPLoginActivity.this)
+                                new TapTalkDialog.Builder(TAPLoginActivityOld.this)
                                         .setTitle("Error Verifying OTP")
                                         .setMessage(errorMessage)
                                         .setPrimaryButtonTitle("OK")
@@ -128,7 +128,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
                     }
                     else {
                         TAPRegisterActivity.Companion.start(
-                                TAPLoginActivity.this,
+                                TAPLoginActivityOld.this,
                                 instanceKey,
                                 countryID,
                                 countryCallingID,
@@ -147,7 +147,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
 
                 @Override
                 public void onError(String errorMessage) {
-                    new TapTalkDialog.Builder(TAPLoginActivity.this)
+                    new TapTalkDialog.Builder(TAPLoginActivityOld.this)
                             .setTitle("Error Verifying OTP")
                             .setMessage(errorMessage)
                             .setPrimaryButtonTitle("OK")
@@ -169,10 +169,10 @@ public class TAPLoginActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = new ViewModelProvider(this).get(TAPLoginViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPLoginViewModelOld.class);
     }
 
-    public TAPLoginViewModel getVm() {
-        return null == vm ? vm = new ViewModelProvider(this).get(TAPLoginViewModel.class) : vm;
+    public TAPLoginViewModelOld getVm() {
+        return null == vm ? vm = new ViewModelProvider(this).get(TAPLoginViewModelOld.class) : vm;
     }
 }

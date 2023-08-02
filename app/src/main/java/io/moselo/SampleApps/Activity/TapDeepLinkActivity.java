@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
 
+import io.moselo.SampleApps.SampleApplication;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalkSample.R;
@@ -65,7 +66,11 @@ public class TapDeepLinkActivity extends AppCompatActivity {
     }
 
     private void openLoginActivity() {
-        TAPLoginActivity.start(this, "");
+        if (getApplication() != null && getApplication() instanceof SampleApplication) {
+            if (!((SampleApplication) getApplication()).loginActivityExists) {
+                TAPLoginActivity.start(this, "");
+            }
+        }
     }
 
     private void openFallbackActivity() {

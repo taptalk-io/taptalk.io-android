@@ -211,6 +211,7 @@
     <string name="tap_error_invalid_otp">OTP tidak valid, silakan coba lagi</string>
     <string name="tap_error_invalid_full_name">Nama lengkap tidak valid</string>
     <string name="tap_error_invalid_username">Username tidak valid</string>
+    <string name="tap_error_invalid_phone_number">Nomor telepon tidak valid</string>
     <string name="tap_error_username_length">Panjang username harus 4–32 karakter</string>
     <string name="tap_error_username_exists">Username sudah terdaftar</string>
     <string name="tap_error_unable_to_verify_username">Tidak dapat verifikasi username, silakan periksa koneksi Anda dan coba lagi</string>
@@ -325,6 +326,8 @@
     <string name="tap_hint_username">misal user_1234</string>
     <string name="tap_hint_calling_code">+62</string>
     <string name="tap_hint_phone_number">12345678910</string>
+    <string name="tap_hint_phone_number_x">8XXX XXXX XXX</string>
+    <string name="tap_hint_select_country">Select country first</string>
     <string name="tap_hint_email_address">misal example@work.com</string>
     <string name="tap_hint_insert_password">Masukkan Kata Sandi</string>
     <string name="tap_hint_insert_name">Masukkan Nama</string>

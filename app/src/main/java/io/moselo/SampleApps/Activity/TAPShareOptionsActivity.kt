@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
@@ -29,7 +28,6 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
-import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils

@@ -53,6 +53,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapCheckWhatsAppVerificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapCreateScheduledMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdsWithRoomIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdRequest;
@@ -64,6 +65,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapStarMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapWhatsAppVerificationRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -302,6 +304,16 @@ public class TAPApiManager {
     public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, Subscriber<TAPBaseResponse<TAPLoginOTPVerifyResponse>> subscriber) {
         TAPOTPVerifyRequest request = new TAPOTPVerifyRequest(otpID, otpKey, otpCode);
         execute(homingPigeon.verifyingOTPLogin(request), subscriber);
+    }
+
+    public void requestWhatsAppVerification(int countryID, String phone, String languageCode, Subscriber<TAPBaseResponse<TAPOTPResponse>> subscriber) {
+        TapWhatsAppVerificationRequest request = new TapWhatsAppVerificationRequest(countryID, phone, languageCode, "https://web.taptalk.io/");
+        execute(homingPigeon.requestWhatsAppVerification(request), subscriber);
+    }
+
+    public void checkWhatsAppVerification(String phoneWithCode, String verificationID, Subscriber<TAPBaseResponse<TAPLoginOTPVerifyResponse>> subscriber) {
+        TapCheckWhatsAppVerificationRequest request = new TapCheckWhatsAppVerificationRequest(phoneWithCode, verificationID);
+        execute(homingPigeon.checkWhatsAppVerification(request), subscriber);
     }
 
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
