@@ -863,10 +863,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             // Load thumbnail when download is not in progress
-            if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
+//            if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
                 rcivImageBody.setImageDrawable(thumbnail);
                 fixImageOrVideoViewSize(item, rcivImageBody, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
-            }
+//            }
 
 //            if (null != imageUrl && !imageUrl.isEmpty()) {
 //                // Load image from URL
@@ -1312,10 +1312,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //            });
 
             // Load thumbnail when download is not in progress
-            if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID()) || null != dataUri) {
+//            if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID()) || null != dataUri) {
                 rcivVideoThumbnail.setImageDrawable(thumbnail);
                 fixImageOrVideoViewSize(item, rcivVideoThumbnail, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
-            }
+//            }
 
             if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
                 // Message failed to send

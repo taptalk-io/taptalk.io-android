@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.util.Patterns
 import android.view.View
 import android.view.View.OnClickListener
+import android.view.View.OnLongClickListener
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
@@ -177,6 +178,10 @@ class TAPLoginActivity : TAPBaseActivity() {
         ll_button_retry_verification?.setOnClickListener { showVerificationView() }
 
         et_search_country_list?.addTextChangedListener(searchTextWatcher)
+
+        if (BuildConfig.BUILD_TYPE == "dev") {
+            ll_button_continue?.setOnLongClickListener(devPhoneNumberLongClickListener)
+        }
     }
 
     private val backButtonClickListener = OnClickListener {
@@ -267,6 +272,83 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (validatePhoneNumber()) {
             requestWhatsAppVerification()
         }
+    }
+
+    private val devPhoneNumberLongClickListener = OnLongClickListener {
+        if (validatePhoneNumber()) {
+            val phoneNumber = checkAndEditPhoneNumber()
+            showPhoneNumberInputLoading()
+            TAPDataManager.getInstance(instanceKey).requestOTPLogin(
+                vm?.selectedCountryID ?: defaultCountryID,
+                phoneNumber,
+                "",
+                object : TAPDefaultDataView<TAPOTPResponse>() {
+                    override fun onSuccess(response: TAPOTPResponse) {
+                        val otpCode: String = phoneNumber.substring(phoneNumber.length - 6)
+                        TAPDataManager.getInstance(instanceKey).verifyOTPLogin(
+                            response.otpID,
+                            response.otpKey,
+                            otpCode,
+                            object : TAPDefaultDataView<TAPLoginOTPVerifyResponse?>() {
+                                override fun onSuccess(response: TAPLoginOTPVerifyResponse?) {
+                                    if (response?.isRegistered == true) {
+                                        TapTalk.authenticateWithAuthTicket(
+                                            instanceKey,
+                                            response.ticket,
+                                            true,
+                                            object : TapCommonListener() {
+                                                override fun onSuccess(successMessage: String) {
+                                                    continueToHome()
+                                                }
+
+                                                override fun onError(
+                                                    errorCode: String,
+                                                    errorMessage: String
+                                                ) {
+                                                    hidePhoneNumberInputLoading()
+                                                    TapTalkDialog.Builder(this@TAPLoginActivity)
+                                                        .setTitle("Error $errorCode")
+                                                        .setMessage(errorMessage)
+                                                        .setPrimaryButtonTitle("OK")
+                                                        .show()
+                                                }
+                                            })
+                                    } else {
+                                        continueToRegister()
+                                    }
+                                }
+
+                                override fun onError(error: TAPErrorModel) {
+                                    hidePhoneNumberInputLoading()
+                                    TapTalkDialog.Builder(this@TAPLoginActivity)
+                                        .setTitle("Error ${error.code}")
+                                        .setMessage(error.message)
+                                        .setPrimaryButtonTitle("OK")
+                                        .show()
+                                }
+
+                                override fun onError(errorMessage: String) {
+                                    onError(TAPErrorModel(ERROR_CODE_OTHERS, errorMessage, ""))
+                                }
+                            })
+                    }
+
+                    override fun onError(error: TAPErrorModel) {
+                        hidePhoneNumberInputLoading()
+                        TapTalkDialog.Builder(this@TAPLoginActivity)
+                            .setTitle("Error ${error.code}")
+                            .setMessage(error.message)
+                            .setPrimaryButtonTitle("OK")
+                            .show()
+                    }
+
+                    override fun onError(errorMessage: String) {
+                        onError(TAPErrorModel(ERROR_CODE_OTHERS, errorMessage, ""))
+                    }
+                }
+            )
+        }
+        false
     }
 
     private val phoneTextWatcher: TextWatcher = object : TextWatcher {

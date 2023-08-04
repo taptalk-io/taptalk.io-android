@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Helper;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
@@ -33,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.R;
@@ -47,6 +50,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPFileUtils {
@@ -448,30 +452,56 @@ public class TAPFileUtils {
         }
     }
 
-    private static File saveFileIntoExternalStorageByUri(Context context, Uri uri) throws Exception {
-        InputStream inputStream = context.getContentResolver().openInputStream(uri);
-        int originalSize = inputStream.available();
+    private static File saveFileIntoExternalStorageByUri(Context context, Uri sourceUri) {
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(sourceUri);
+            int originalSize = inputStream.available();
+            BufferedInputStream bis = new BufferedInputStream(inputStream);
+            BufferedOutputStream bos;
+            String fileName = getFileName(context, sourceUri);
+            File file;
 
-        BufferedInputStream bis;
-        BufferedOutputStream bos;
-        String fileName = getFileName(context, uri);
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Videos");
-        dir.mkdirs();
-        File file = new File(dir, fileName);
-        bis = new BufferedInputStream(inputStream);
-        bos = new BufferedOutputStream(new FileOutputStream(file, false));
+            // FIXME: getExternalStoragePublicDirectory deprecated for Android 10+
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                ContentValues contentValues = new ContentValues();
+//                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+//                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, getMimeTypeFromUri(context, sourceUri));
+//                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + context.getString(R.string.app_name));
+//                ContentResolver contentResolver = context.getContentResolver();
+//                Uri uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
+//
+//                if (uri == null) {
+//                    return null;
+//                }
+//
+//                String path = getFilePath(context, uri);
+//                if (path != null) {
+//                    file = new File(path);
+//                }
+//            }
+//            else {
+                File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name));
+                dir.mkdirs();
+                file = new File(dir, fileName);
+//            }
 
-        byte[] buf = new byte[originalSize];
-        bis.read(buf);
-        do {
-            bos.write(buf);
-        } while (bis.read(buf) != -1);
+            bos = new BufferedOutputStream(new FileOutputStream(file, false));
+            byte[] buf = new byte[originalSize];
+            bis.read(buf);
+            do {
+                bos.write(buf);
+            } while (bis.read(buf) != -1);
 
-        bos.flush();
-        bos.close();
-        bis.close();
+            bos.flush();
+            bos.close();
+            bis.close();
 
-        return file;
+            return file;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static @Nullable String getFileName(Context context, Uri uri) {

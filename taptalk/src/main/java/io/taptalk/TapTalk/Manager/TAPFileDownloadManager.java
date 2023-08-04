@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,10 +10,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -220,9 +225,15 @@ public class TAPFileDownloadManager {
         private String instanceKey = "";
         private PowerManager.WakeLock wakeLock;
         private TAPMessageModel message;
-        private File file;
+        @Nullable private File file;
+        @Nullable private Uri uri;
         private String urlString;
 
+        public DownloadFromUrlTask(String instanceKey, TAPMessageModel message, Uri uri) {
+            this.instanceKey = instanceKey;
+            this.message = message;
+            this.uri = uri;
+        }
         public DownloadFromUrlTask(String instanceKey, TAPMessageModel message, File file) {
             this.instanceKey = instanceKey;
             this.message = message;
@@ -256,7 +267,12 @@ public class TAPFileDownloadManager {
 
                 // Download the file
                 input = connection.getInputStream();
-                output = new FileOutputStream(file);
+                if (file != null) {
+                    output = new FileOutputStream(file);
+                }
+                else {
+                    output = appContext.getContentResolver().openOutputStream(uri);
+                }
 
                 byte[] data = new byte[4096];
                 long bytesDownloaded = 0L;
@@ -281,6 +297,8 @@ public class TAPFileDownloadManager {
                     }
                     output.write(data, 0, count);
                 }
+                output.flush();
+                output.close();
             } catch (Exception e) {
                 e.printStackTrace();
                 return e.getMessage();
@@ -312,37 +330,71 @@ public class TAPFileDownloadManager {
                 TAPFileDownloadManager.getInstance(instanceKey).getDownloadTaskMap().remove(message.getLocalID());
 
                 // Send download success broadcast
-                Uri fileProviderUri = FileProvider.getUriForFile(appContext, FILEPROVIDER_AUTHORITY, file);
-                TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, file.getAbsolutePath());
-                TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, file, TAPUtils.getFileMimeType(file));
-
                 Intent intent = new Intent(DownloadFinish);
+                Uri broadcastUri;
+                if (file != null) {
+                    Uri fileProviderUri = FileProvider.getUriForFile(appContext, FILEPROVIDER_AUTHORITY, file);
+                    TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, file.getAbsolutePath());
+                    TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, file, TAPUtils.getFileMimeType(file));
+                    intent.putExtra(DownloadedFile, file);
+                    intent.putExtra(FILE_URI, fileProviderUri);
+                    broadcastUri = fileProviderUri;
+                }
+                else {
+                    String path = TAPFileUtils.getFilePath(appContext, uri);
+                    if (path != null) {
+                        TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(uri, path);
+                        intent.putExtra(DownloadedFile, new File(path));
+                        intent.putExtra(FILE_URI, uri);
+                    }
+                    broadcastUri = uri;
+                }
+
                 intent.putExtra(DownloadLocalID, message.getLocalID());
-                intent.putExtra(DownloadedFile, file);
                 intent.putExtra(FILE_URL, urlString);
-                intent.putExtra(FILE_URI, fileProviderUri);
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                 TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(
-                        message.getRoom().getRoomID(),
-                        TAPUtils.getUriKeyFromUrl(urlString),
-                        fileProviderUri);
+                    message.getRoom().getRoomID(),
+                    TAPUtils.getUriKeyFromUrl(urlString),
+                    broadcastUri
+                );
             }
         }
     }
 
     private void downloadFileFromUrl(TAPMessageModel message, String fileUrl) {
+        if (message.getData() == null) {
+            return;
+        }
         String filename = getFileNameFromMessage(message);
-        String dirString = TYPE_VIDEO == message.getType() ?
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey) :
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "";
+        File targetFile;
+        DownloadFromUrlTask downloadFromUrlTask;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            String mimeType = (String) message.getData().get(MEDIA_TYPE);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + TapTalk.getClientAppName(instanceKey));
+            ContentResolver contentResolver = appContext.getContentResolver();
+            Uri uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
+            if (uri == null) {
+                return;
+            }
+            downloadFromUrlTask = new DownloadFromUrlTask(instanceKey, message, uri);
+        }
+        else {
+            String dirString = TYPE_VIDEO == message.getType() ?
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey) :
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "";
 
-        File dir = new File(dirString);
-        dir.mkdirs();
+            File dir = new File(dirString);
+            dir.mkdirs();
 
-        File targetFile = new File(dir, filename);
-        targetFile = TAPFileUtils.renameDuplicateFile(targetFile);
+            targetFile = new File(dir, filename);
+            targetFile = TAPFileUtils.renameDuplicateFile(targetFile);
 
-        final DownloadFromUrlTask downloadFromUrlTask = new DownloadFromUrlTask(instanceKey, message, targetFile);
+            downloadFromUrlTask = new DownloadFromUrlTask(instanceKey, message, targetFile);
+        }
         downloadFromUrlTask.execute(fileUrl);
         getDownloadTaskMap().put(message.getLocalID(), downloadFromUrlTask);
     }
@@ -489,24 +541,45 @@ public class TAPFileDownloadManager {
 
     public void writeImageFileToDisk(Context context, Long timestamp, Bitmap bitmap, String mimeType, TapTalkActionInterface listener) {
         new Thread(() -> {
-            String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
-            String filename = TAPTimeFormatter.formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
-            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey));
-            dir.mkdirs();
-
-            File file = new File(dir, filename);
-            if (file.exists()) {
-                file.delete();
-            }
-
             try {
-                FileOutputStream out = new FileOutputStream(file);
+                String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
+                String filename = TAPTimeFormatter.formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
+
+                OutputStream out;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+                    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+                    contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/" + TapTalk.getClientAppName(instanceKey));
+                    ContentResolver contentResolver = context.getContentResolver();
+                    Uri uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
+                    if (uri == null) {
+                        listener.onError("Could not obtain directory.");
+                        return;
+                    }
+                    out = contentResolver.openOutputStream(uri);
+                }
+                else {
+                    File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey));
+                    dir.mkdirs();
+
+                    File file = new File(dir, filename);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    out = new FileOutputStream(file);
+                }
+                if (out == null) {
+                    return;
+                }
                 bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, TapTalk.getImageCompressionQuality(instanceKey), out);
                 out.flush();
                 out.close();
-                scanFile(context, file, TAPUtils.getFileMimeType(file));
+//                scanFile(context, file, TAPUtils.getFileMimeType(file));
                 listener.onSuccess(String.format(context.getString(R.string.tap_format_s_successfully_saved), filename));
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 listener.onError(e.getMessage());
             }
@@ -514,31 +587,62 @@ public class TAPFileDownloadManager {
     }
 
     public void writeFileToDisk(Context context, TAPMessageModel message, TapTalkActionInterface listener) {
+        if (message.getData() == null || getFileMessageUri(message) == null) {
+            listener.onError(context.getString(R.string.tap_error_could_not_find_file));
+            return;
+        }
         new Thread(() -> {
             try {
                 String filename = getFileNameFromMessage(message);
 
-                File dir = new File(TYPE_VIDEO == message.getType() ?
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey) :
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "");
-                dir.mkdirs();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    String mimeType = (String) message.getData().get(MEDIA_TYPE);
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+                    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+                    contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + TapTalk.getClientAppName(instanceKey));
+                    ContentResolver contentResolver = context.getContentResolver();
+                    Uri uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
 
-                File targetFile = new File(dir, filename);
-                targetFile = TAPFileUtils.renameDuplicateFile(targetFile);
+                    if (uri == null) {
+                        listener.onError("Could not obtain directory.");
+                        return;
+                    }
 
-                if (null != getFileMessageUri(message)) {
+                    Uri sourceUri = getFileMessageUri(message);
+                    InputStream input = contentResolver.openInputStream(sourceUri);
+                    OutputStream output = contentResolver.openOutputStream(uri);
+                    byte[] data = new byte[4096];
+                    int count;
+                    while ((count = input.read(data)) != -1) {
+                        output.write(data, 0, count);
+                    }
+                    input.close();
+                    output.flush();
+                    output.close();
+                    listener.onSuccess(String.format(context.getString(R.string.tap_format_s_successfully_saved), filename));
+                }
+                else {
+                    File dir = new File(TYPE_VIDEO == message.getType() ?
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey) :
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "");
+                    dir.mkdirs();
+
+                    File targetFile = new File(dir, filename);
+                    targetFile = TAPFileUtils.renameDuplicateFile(targetFile);
+
                     File sourceFile = new File(getFileProviderPath(getFileMessageUri(message)));
                     if (sourceFile.exists()) {
                         copyFile(sourceFile, targetFile);
                         scanFile(context, targetFile, TAPUtils.getFileMimeType(targetFile));
                         listener.onSuccess(String.format(context.getString(R.string.tap_format_s_successfully_saved), filename));
-                    } else {
+                    }
+                    else {
                         listener.onError(context.getString(R.string.tap_error_could_not_find_file));
                     }
-                } else {
-                    listener.onError(context.getString(R.string.tap_error_could_not_find_file));
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 Log.e(TAG, "writeFileToDisk: ", e);
                 listener.onError(e.getMessage());
@@ -546,28 +650,33 @@ public class TAPFileDownloadManager {
         }).start();
     }
 
-    public void copyFile(File sourceFile, File destFile) throws IOException {
-        if (!destFile.getParentFile().exists())
-            destFile.getParentFile().mkdirs();
-
-        if (!destFile.exists()) {
-            destFile.createNewFile();
-        }
-
-        FileChannel source = null;
-        FileChannel destination = null;
-
+    public void copyFile(File sourceFile, File destFile) {
         try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
-        } finally {
-            if (source != null) {
-                source.close();
+            if (!destFile.getParentFile().exists())
+                destFile.getParentFile().mkdirs();
+
+            if (!destFile.exists()) {
+                destFile.createNewFile();
             }
-            if (destination != null) {
-                destination.close();
+
+            FileChannel source = null;
+            FileChannel destination = null;
+
+            try {
+                source = new FileInputStream(sourceFile).getChannel();
+                destination = new FileOutputStream(destFile).getChannel();
+                destination.transferFrom(source, 0, source.size());
+            } finally {
+                if (source != null) {
+                    source.close();
+                }
+                if (destination != null) {
+                    destination.close();
+                }
             }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
