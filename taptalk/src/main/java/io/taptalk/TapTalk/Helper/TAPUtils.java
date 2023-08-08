@@ -261,7 +261,9 @@ public class TAPUtils {
     public static boolean hasPermissions(Context context, String... permissions) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED &&
+                    (!permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE) || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
+                ) {
                     return false;
                 }
             }
