@@ -166,7 +166,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ll_button_continue"
+        android:id="@+id/ll_button_whatsapp"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="32dp"
@@ -177,7 +177,48 @@
         app:layout_constraintTop_toBottomOf="@id/ll_input_error_info">
 
         <ProgressBar
-            android:id="@+id/pb_button_continue_loading"
+            android:id="@+id/pb_button_whatsapp_loading"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:indeterminateTint="@color/tapTransparentBlack1940"
+            android:visibility="gone"
+            tools:visibility="visible" />
+        
+        <ImageView
+            android:id="@+id/iv_button_whatsapp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/tap_ic_whatsapp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp" />
+
+        <TextView
+            android:id="@+id/tv_button_whatsapp"
+            style="@style/tapButtonLabelStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/tap_login_via_whatsapp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_button_otp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/tap_bg_button_border_ripple"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/ll_button_whatsapp">
+
+        <ProgressBar
+            android:id="@+id/pb_button_otp_loading"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
@@ -187,13 +228,23 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
+        <ImageView
+            android:id="@+id/iv_button_otp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/tap_ic_mobile_orange"
+            android:layout_gravity="center"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp" />
+
         <TextView
-            android:id="@+id/tv_button_continue"
+            android:id="@+id/tv_button_otp"
             style="@style/tapButtonLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/tap_continue" />
+            android:text="@string/tap_login_via_otp"
+            android:textColor="@color/tapColorPrimary" />
 
     </LinearLayout>
 

@@ -15,6 +15,8 @@
     <string name="error_register_privacy_policy">Please read and agree to our privacy policy before continuing.</string>
 
     <!--Verification-->
+    <string name="tap_login_via_whatsapp">Login via WhatsApp</string>
+    <string name="tap_login_via_otp">Login via OTP</string>
     <string name="tap_whatsapp_verification">WhatsApp Verification</string>
     <string name="tap_whatsapp_verification_description">To continue the verification process, click on the ‘Open WhatsApp’ button.\nPlease send the generated message to the opened chat without making any changes. </string>
     <string name="tap_open_whatsapp">Open WhatsApp</string>

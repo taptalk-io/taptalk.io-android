@@ -3,6 +3,7 @@ package io.moselo.SampleApps.Activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -16,6 +17,7 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -173,14 +175,16 @@ class TAPLoginActivity : TAPBaseActivity() {
 
         iv_button_close_country_list?.setOnClickListener(backButtonClickListener)
         ll_button_change_number?.setOnClickListener(backButtonClickListener)
-        ll_button_continue?.setOnClickListener(submitPhoneNumberClickListener)
+        ll_button_whatsapp?.setOnClickListener(loginViaWhatsAppClickListener)
+        ll_button_otp?.setOnClickListener(loginViaOTPClickListener)
         ll_button_verify?.setOnClickListener { openWhatsAppLink() }
         ll_button_retry_verification?.setOnClickListener { showVerificationView() }
+        cl_login_input_container?.setOnClickListener { TAPUtils.dismissKeyboard(this, et_phone_number) }
 
         et_search_country_list?.addTextChangedListener(searchTextWatcher)
 
         if (BuildConfig.BUILD_TYPE == "dev") {
-            ll_button_continue?.setOnLongClickListener(devPhoneNumberLongClickListener)
+            ll_button_otp?.setOnLongClickListener(devPhoneNumberLongClickListener)
         }
     }
 
@@ -234,33 +238,55 @@ class TAPLoginActivity : TAPBaseActivity() {
         return phoneNumber
     }
 
-    private fun showPhoneNumberInputLoading() {
+    private fun showPhoneNumberInputLoading(isLoadingOTP: Boolean = false) {
         runOnUiThread {
-            pb_button_continue_loading?.visibility = View.VISIBLE
+            if (isLoadingOTP) {
+                pb_button_whatsapp_loading?.visibility = View.GONE
+                pb_button_otp_loading?.visibility = View.VISIBLE
+                iv_button_whatsapp?.visibility = View.VISIBLE
+                iv_button_otp?.visibility = View.GONE
+            }
+            else {
+                pb_button_whatsapp_loading?.visibility = View.VISIBLE
+                pb_button_otp_loading?.visibility = View.GONE
+                iv_button_whatsapp?.visibility = View.GONE
+                iv_button_otp?.visibility = View.VISIBLE
+            }
             iv_country_chevron?.alpha = 0.4f
             tv_country_code?.alpha = 0.4f
             et_phone_number?.alpha = 0.4f
             cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-            ll_button_continue?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-            tv_button_continue?.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
+            ll_button_whatsapp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+            ll_button_otp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_border_inactive)
+            ImageViewCompat.setImageTintList(iv_button_otp, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapTransparentBlack1920)))
+            tv_button_whatsapp?.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
+            tv_button_otp?.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
             et_phone_number?.isEnabled = false
             ll_country_picker_button?.setOnClickListener(null)
-            ll_button_continue?.setOnClickListener(null)
+            ll_button_whatsapp?.setOnClickListener(null)
+            ll_button_otp?.setOnClickListener(null)
         }
     }
 
     private fun hidePhoneNumberInputLoading() {
         runOnUiThread {
-            pb_button_continue_loading?.visibility = View.GONE
+            pb_button_whatsapp_loading?.visibility = View.GONE
+            pb_button_otp_loading?.visibility = View.GONE
+            iv_button_whatsapp?.visibility = View.VISIBLE
+            iv_button_otp?.visibility = View.VISIBLE
             iv_country_chevron?.alpha = 1f
             tv_country_code?.alpha = 1f
             et_phone_number?.alpha = 1f
             cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
-            ll_button_continue?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
-            tv_button_continue?.setTextColor(ContextCompat.getColor(this, R.color.tapButtonLabelColor))
+            ll_button_whatsapp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
+            ll_button_otp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_border_ripple)
+            ImageViewCompat.setImageTintList(iv_button_otp, null)
+            tv_button_whatsapp?.setTextColor(ContextCompat.getColor(this, R.color.tapButtonLabelColor))
+            tv_button_otp?.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
             et_phone_number?.isEnabled = true
             ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
-            ll_button_continue?.setOnClickListener(submitPhoneNumberClickListener)
+            ll_button_whatsapp?.setOnClickListener(loginViaWhatsAppClickListener)
+            ll_button_otp?.setOnClickListener(loginViaOTPClickListener)
         }
     }
 
@@ -268,9 +294,15 @@ class TAPLoginActivity : TAPBaseActivity() {
         showCountryListView()
     }
 
-    private val submitPhoneNumberClickListener = OnClickListener {
+    private val loginViaWhatsAppClickListener = OnClickListener {
         if (validatePhoneNumber()) {
             requestWhatsAppVerification()
+        }
+    }
+
+    private val loginViaOTPClickListener = OnClickListener {
+        if (validatePhoneNumber()) {
+            requestOTP()
         }
     }
 
@@ -853,6 +885,11 @@ class TAPLoginActivity : TAPBaseActivity() {
                 }
             }
         )
+    }
+
+    private fun requestOTP() {
+        // TODO:
+        showPhoneNumberInputLoading(true)
     }
 
     private fun continueToHome() {
