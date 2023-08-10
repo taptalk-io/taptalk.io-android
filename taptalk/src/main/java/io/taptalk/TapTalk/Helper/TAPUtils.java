@@ -262,10 +262,24 @@ public class TAPUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED &&
-                    (!permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE) || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
+                    (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                    (!permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
+                    !permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)))
                 ) {
                     return false;
                 }
+            }
+        }
+        return true;
+    }
+
+    public static boolean allPermissionsGranted(int[] grantResults) {
+        if (0 == grantResults.length) {
+            return false;
+        }
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                return false;
             }
         }
         return true;
@@ -464,7 +478,7 @@ public class TAPUtils {
         }
     }
 
-    private static String[] getStoragePermissions(boolean includeAudio) {
+    public static String[] getStoragePermissions(boolean includeAudio) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (includeAudio) {
                 return new String[] {

@@ -121,7 +121,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (TAPUtils.allPermissionsGranted(grantResults)) {
             if (requestCode == PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO) {
                 saveVideo();
             }
@@ -355,9 +355,9 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         if (null == vm.getMessage()) {
             return;
         }
-        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, TAPUtils.getStoragePermissions(false))) {
             // Request storage permission
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
+            ActivityCompat.requestPermissions(this, TAPUtils.getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
         } else {
             showLoading();
             TAPFileDownloadManager.getInstance(instanceKey).writeFileToDisk(this, vm.getMessage(), saveVideoListener);

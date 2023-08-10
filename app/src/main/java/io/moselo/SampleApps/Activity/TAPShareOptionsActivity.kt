@@ -99,16 +99,18 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
         TAPDataManager.getInstance(instanceKey).getRoomList(false, listener)
         btn_send_message.setOnClickListener {
-            if ((!intent.type?.startsWith("text")!!
-                    || !intent.type?.startsWith("image")!!
-                    || !intent.type?.startsWith("video")!!)
-                    && !TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    ActivityCompat.requestPermissions(
-                            this, arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                            TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE)
-            } else {
+            if ((!intent.type?.startsWith("text")!! ||
+                !intent.type?.startsWith("image")!! ||
+                !intent.type?.startsWith("video")!!) &&
+                !TAPUtils.hasPermissions(this, *TAPUtils.getStoragePermissions(true))
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    TAPUtils.getStoragePermissions(true),
+                    TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
+                )
+            }
+            else {
                 val list = vm?.selectedRooms
                 val recipient: String
                 val keys: List<String> = ArrayList(list?.keys)

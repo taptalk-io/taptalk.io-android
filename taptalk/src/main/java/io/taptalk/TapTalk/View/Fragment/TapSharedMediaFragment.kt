@@ -149,7 +149,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (TAPUtils.allPermissionsGranted(grantResults)) {
             when (requestCode) {
                 TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE -> startVideoDownload(
                     vm.pendingDownloadMessage
@@ -422,14 +422,12 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     }
 
     private fun startVideoDownload(message: TAPMessageModel?) {
-        if (!TAPUtils.hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(context, *TAPUtils.getStoragePermissions(false))) {
             // Request storage permission
             vm.pendingDownloadMessage = message
             ActivityCompat.requestPermissions(
-                requireActivity(), arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
+                requireActivity(),
+                TAPUtils.getStoragePermissions(false),
                 TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
             )
         } else {
@@ -522,14 +520,12 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     }
 
     private fun startFileDownload(message: TAPMessageModel?) {
-        if (!TAPUtils.hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(context, *TAPUtils.getStoragePermissions(true))) {
             // Request storage permission
             vm.pendingDownloadMessage = message
             ActivityCompat.requestPermissions(
-                requireActivity(), arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
+                requireActivity(),
+                TAPUtils.getStoragePermissions(true),
                 TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
             )
         } else {

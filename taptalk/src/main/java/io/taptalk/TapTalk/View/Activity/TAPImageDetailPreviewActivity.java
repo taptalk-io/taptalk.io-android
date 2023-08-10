@@ -171,7 +171,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (TAPUtils.allPermissionsGranted(grantResults)) {
             switch (requestCode) {
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE:
                     saveImage();
@@ -243,9 +243,9 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
         if (null == image) {
             return;
         }
-        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, TAPUtils.getStoragePermissions(false))) {
             // Request storage permission
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
+            ActivityCompat.requestPermissions(this, TAPUtils.getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
         } else {
             showLoading();
             TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(this, System.currentTimeMillis(), image.getBitmap(), mimeType, saveImageListener);

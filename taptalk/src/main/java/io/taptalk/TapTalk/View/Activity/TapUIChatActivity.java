@@ -920,7 +920,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (TAPUtils.allPermissionsGranted(grantResults)) {
             switch (requestCode) {
                 case PERMISSION_CAMERA_CAMERA:
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA:
@@ -2743,11 +2743,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //            }
 //        else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 //            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_RECORD_AUDIO);
-        if (!TAPUtils.hasPermissions(this, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            }, PERMISSION_RECORD_AUDIO);
+        if (!TAPUtils.hasPermissions(this, Manifest.permission.RECORD_AUDIO)) {
+            ActivityCompat.requestPermissions(
+                this,
+                new String[]{ Manifest.permission.RECORD_AUDIO },
+                PERMISSION_RECORD_AUDIO
+            );
+        }
+        else if (!TAPUtils.hasPermissions(this, TAPUtils.getStoragePermissions(true))) {
+            ActivityCompat.requestPermissions(
+                this,
+                TAPUtils.getStoragePermissions(true),
+                PERMISSION_RECORD_AUDIO
+            );
         }
         else {
             messageAdapter.removePlayer();
@@ -3204,10 +3212,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onSaveImageToGallery(TAPMessageModel message) {
-            if (!TAPUtils.hasPermissions(TapUIChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (!TAPUtils.hasPermissions(TapUIChatActivity.this, TAPUtils.getStoragePermissions(false))) {
                 // Request storage permission
                 vm.setPendingDownloadMessage(message);
-                ActivityCompat.requestPermissions(TapUIChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
+                ActivityCompat.requestPermissions(TapUIChatActivity.this, TAPUtils.getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
             } else if (null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
                 new Thread(() -> {
                     vm.setPendingDownloadMessage(null);
@@ -3267,10 +3275,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onSaveVideoToGallery(TAPMessageModel message) {
-            if (!TAPUtils.hasPermissions(TapUIChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (!TAPUtils.hasPermissions(TapUIChatActivity.this, TAPUtils.getStoragePermissions(false))) {
                 // Request storage permission
                 vm.setPendingDownloadMessage(message);
-                ActivityCompat.requestPermissions(TapUIChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
+                ActivityCompat.requestPermissions(TapUIChatActivity.this, TAPUtils.getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
             } else if (null != message.getData()) {
                 String fileID = (String) message.getData().get(FILE_ID);
                 String fileUrl = (String) message.getData().get(FILE_URL);
@@ -6126,15 +6134,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
      */
 
     private void startFileDownload(TAPMessageModel message) {
-        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, TAPUtils.getStoragePermissions(true))) {
             // Request storage permission
             vm.setPendingDownloadMessage(message);
             ActivityCompat.requestPermissions(
-                    TapUIChatActivity.this, new String[]{
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE);
-        } else {
+                this,
+                TAPUtils.getStoragePermissions(true),
+                PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
+            );
+        }
+        else {
             // Download file
             vm.setPendingDownloadMessage(null);
             TAPFileDownloadManager.getInstance(instanceKey).downloadMessageFile(message);
