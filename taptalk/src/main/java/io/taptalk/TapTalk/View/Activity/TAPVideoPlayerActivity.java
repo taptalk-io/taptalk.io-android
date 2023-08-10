@@ -226,6 +226,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             videoView.setVideoURI(vm.getVideoUri());
             videoView.setOnPreparedListener(onPreparedListener);
             videoView.setOnCompletionListener(onCompletionListener);
+            videoView.setOnErrorListener(onErrorListener);
         } catch (Exception e) {
             e.printStackTrace();
             finish();
@@ -445,6 +446,11 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             vm.getMediaPlayer().seekTo(vm.getDuration());
             seekBar.setProgress(seekBar.getMax());
         }
+    };
+
+    private MediaPlayer.OnErrorListener onErrorListener = (mp, what, extra) -> {
+        finish();
+        return false;
     };
 
     private SeekBar.OnSeekBarChangeListener seekBarListener = new SeekBar.OnSeekBarChangeListener() {
