@@ -26,6 +26,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.io.IOException;
 
 import io.taptalk.TapTalk.Helper.TAPQRDetection;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TAPScanResultActivity;
@@ -136,9 +137,10 @@ public class TAPBarcodeScannerFragment extends Fragment {
     }
 
     public void startCameraSource() {
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
-        } else {
+        if (!TAPUtils.hasPermissions(activity, Manifest.permission.CAMERA)) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
+        }
+        else {
             try {
                 cameraSource.start(svScanner.getHolder());
             } catch (IOException e) {
@@ -149,7 +151,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (TAPUtils.allPermissionsGranted(grantResults)) {
             switch (requestCode) {
                 case PERMISSION_CAMERA_CAMERA:
                     startCameraSource();
