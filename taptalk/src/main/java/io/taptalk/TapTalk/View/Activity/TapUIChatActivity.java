@@ -27,7 +27,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.SOCKET_CONNECTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
@@ -108,7 +107,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
-import static io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity.RESULT_FILE_PATH;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
@@ -124,10 +122,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -142,7 +138,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
 import android.text.InputFilter;
@@ -3206,7 +3201,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onPhoneSmsSelected(String phoneNumber) {
             if (!TAPUtils.composeSMS(TapUIChatActivity.this, phoneNumber)) {
-                Toast.makeText(TapUIChatActivity.this, R.string.error_unable_to_send_sms, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TapUIChatActivity.this, R.string.tap_error_unable_to_send_sms, Toast.LENGTH_SHORT).show();
             }
         }
 

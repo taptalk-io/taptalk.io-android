@@ -1,11 +1,9 @@
 package io.taptalk.TapTalk.View.Activity
 
-import android.Manifest
 import android.animation.LayoutTransition
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.*
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -51,7 +49,6 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE
 import io.taptalk.TapTalk.Helper.*
-import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity
 import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.*
@@ -1447,7 +1444,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
             override fun onPhoneSmsSelected(phoneNumber: String) {
                 if (!TAPUtils.composeSMS(this@TapScheduledMessageActivity, phoneNumber)) {
-                    Toast.makeText(this@TapScheduledMessageActivity, R.string.error_unable_to_send_sms, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@TapScheduledMessageActivity, R.string.tap_error_unable_to_send_sms, Toast.LENGTH_SHORT).show()
                 }
             }
 

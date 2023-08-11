@@ -11,6 +11,10 @@
     android:paddingTop="12dp"
     android:paddingEnd="16dp"
     android:paddingBottom="12dp"
+    android:visibility="gone"
+    android:alpha="0"
+    tools:visibility="visible"
+    tools:alpha="1"
     tools:targetApi="lollipop">
 
     <ImageView
@@ -36,6 +40,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_tap_custom_snackbar_icon"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="TapTalk.io Custom Snackbar TapTalk.io Custom Snackbar TapTalk.io Custom Snackbar " />
+        tools:text="TapTalk.io Custom Snackbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

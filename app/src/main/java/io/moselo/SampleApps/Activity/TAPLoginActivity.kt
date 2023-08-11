@@ -12,7 +12,6 @@ import android.os.Looper
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.View.OnClickListener
@@ -32,13 +31,12 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
-import io.taptalk.TapTalk.Helper.TAPTimeFormatter
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapCustomSnackbarView
 import io.taptalk.TapTalk.Helper.TapTalk
-import io.taptalk.TapTalk.Helper.TapTalkDialog
-import io.taptalk.TapTalk.Helper.TapTalkDialog.DialogType.ERROR_DIALOG
 import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse
@@ -51,7 +49,7 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel
 import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
-import kotlinx.android.synthetic.main.tap_activity_login.cl_login_container
+import kotlinx.android.synthetic.main.tap_activity_login.*
 import kotlinx.android.synthetic.main.tap_layout_login_country_list.*
 import kotlinx.android.synthetic.main.tap_layout_login_input.*
 import kotlinx.android.synthetic.main.tap_layout_login_otp.*
@@ -303,7 +301,12 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private val countryPickerClickListener = OnClickListener {
-        showCountryListView()
+        if (!vm?.countryListItems.isNullOrEmpty()) {
+            showCountryListView()
+        }
+        else {
+            callCountryListFromAPI(true)
+        }
     }
 
     private val loginViaWhatsAppClickListener = OnClickListener {
@@ -350,11 +353,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                                                     errorMessage: String
                                                 ) {
                                                     hidePhoneNumberInputLoading()
-                                                    TapTalkDialog.Builder(this@TAPLoginActivity)
-                                                        .setTitle("Error $errorCode")
-                                                        .setMessage(errorMessage)
-                                                        .setPrimaryButtonTitle("OK")
-                                                        .show()
+                                                    showErrorSnackbar(errorMessage)
                                                 }
                                             })
                                     } else {
@@ -364,11 +363,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                                 override fun onError(error: TAPErrorModel) {
                                     hidePhoneNumberInputLoading()
-                                    TapTalkDialog.Builder(this@TAPLoginActivity)
-                                        .setTitle("Error ${error.code}")
-                                        .setMessage(error.message)
-                                        .setPrimaryButtonTitle("OK")
-                                        .show()
+                                    showErrorSnackbar(error.message)
                                 }
 
                                 override fun onError(errorMessage: String) {
@@ -379,11 +374,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                     override fun onError(error: TAPErrorModel) {
                         hidePhoneNumberInputLoading()
-                        TapTalkDialog.Builder(this@TAPLoginActivity)
-                            .setTitle("Error ${error.code}")
-                            .setMessage(error.message)
-                            .setPrimaryButtonTitle("OK")
-                            .show()
+                        showErrorSnackbar(error.message)
                     }
 
                     override fun onError(errorMessage: String) {
@@ -414,38 +405,24 @@ class TAPLoginActivity : TAPBaseActivity() {
     ==============================================================================================*/
 
     private fun initCountryList() {
-        val lastCallCountryTimestamp = TAPDataManager.getInstance(instanceKey).lastCallCountryTimestamp
-        val oneDayAgoTimestamp: Long = 24 * 60 * 60 * 1000
+        vm?.countryIsoCode = TAPUtils.getDeviceCountryCode(this)
+        vm?.countryListItems = TAPDataManager.getInstance(instanceKey).countryList
+        vm?.countryHashMap = vm?.countryListItems?.associateBy({ it.iso2Code }, { it })?.toMutableMap() ?: HashMap()
+        vm?.isNeedResetData = false
 
-        if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp >= lastCallCountryTimestamp) {
-            callCountryListFromAPI()
-        }
-        else if (vm?.isNeedResetData == true) {
-            callCountryListFromAPI()
-            vm?.countryIsoCode = TAPUtils.getDeviceCountryCode(this)
-            //vm?.countryHashMap = TAPDataManager.getInstance(instanceKey).countryList
-            vm?.countryListItems = TAPDataManager.getInstance(instanceKey).countryList
-            vm?.countryHashMap = vm?.countryListItems?.associateBy({ it.iso2Code }, { it })?.toMutableMap() ?: HashMap()
-            vm?.isNeedResetData = false
-
-            if (vm?.countryHashMap?.containsKey(vm?.countryIsoCode) == false ||
-                "" == vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode
-            ) {
-                setCountry(defaultCountryID, defaultCallingCode, "")
-            }
-            else {
-                setCountry(
-                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.countryID ?: 0,
-                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode ?: "",
-                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.flagIconUrl ?: ""
-                )
-            }
+        if (vm?.countryHashMap?.containsKey(vm?.countryIsoCode) == false ||
+            "" == vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode
+        ) {
+            setCountry(defaultCountryID, defaultCallingCode, "")
         }
         else {
-            setCountry(defaultCountryID, defaultCallingCode, vm?.countryFlagUrl)
-            searchCountry("")
-            ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
+            setCountry(
+                vm?.countryHashMap?.get(vm?.countryIsoCode)?.countryID ?: 0,
+                vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode ?: "",
+                vm?.countryHashMap?.get(vm?.countryIsoCode)?.flagIconUrl ?: ""
+            )
         }
+        callCountryListFromAPI()
     }
 
     private fun setupDataForRecycler(searchKeyword: String): List<TAPCountryRecycleItem> {
@@ -503,7 +480,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         return filteredCountries
     }
 
-    private fun callCountryListFromAPI() {
+    private fun callCountryListFromAPI(openListOnSuccess: Boolean = false) {
         TAPDataManager.getInstance(instanceKey).getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
             override fun startLoading() {
                 runOnUiThread {
@@ -549,6 +526,10 @@ class TAPLoginActivity : TAPBaseActivity() {
                         cv_country_flag?.visibility = View.VISIBLE
                         pb_loading_progress_country?.visibility = View.GONE
                         ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
+
+                        if (openListOnSuccess) {
+                            showCountryListView()
+                        }
                     }
                 }.start()
             }
@@ -563,6 +544,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     cv_country_flag?.visibility = View.VISIBLE
                     pb_loading_progress_country?.visibility = View.GONE
                     setCountry(0, "", "")
+                    ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
                     Toast.makeText(this@TAPLoginActivity, getString(R.string.tap_no_countries_found), Toast.LENGTH_SHORT).show()
                 }
             }
@@ -824,13 +806,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                 override fun onError(errorMessage: String?) {
                     endLoading()
-                    TapTalkDialog.Builder(this@TAPLoginActivity)
-                        .setDialogType(ERROR_DIALOG)
-                        .setTitle(getString(R.string.tap_error))
-                        .setMessage(errorMessage ?: getString(R.string.tap_error_message_general))
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .setCancelable(true)
-                        .show()
+                    showErrorSnackbar(errorMessage)
                 }
             }
         )
@@ -1173,14 +1149,8 @@ class TAPLoginActivity : TAPBaseActivity() {
             vm!!.nextOtpRequestTimestamp > System.currentTimeMillis() &&
             vm?.lastRequestOtpPhoneNumber == vm?.phoneNumber
         ) {
-            // TODO: SHOW SNACK BAR ERROR
-            TapTalkDialog.Builder(this@TAPLoginActivity)
-                .setDialogType(ERROR_DIALOG)
-                .setTitle(getString(R.string.tap_error))
-                .setMessage("Please wait 999s before requesting a new OTP")
-                .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                .setCancelable(true)
-                .show()
+            val waitSeconds = ((vm!!.nextOtpRequestTimestamp - System.currentTimeMillis()) / 1000).toInt()
+            showErrorSnackbar(String.format(getString(R.string.tap_d_format_error_otp_wait), waitSeconds))
             return
         }
         TAPDataManager.getInstance(instanceKey).requestOTPLogin(
@@ -1223,6 +1193,11 @@ class TAPLoginActivity : TAPBaseActivity() {
                             ll_loading_otp.visibility = View.GONE
                             tv_otp_timer.visibility = View.GONE
                             ll_otp_sent.visibility = View.VISIBLE
+                            tap_custom_snackbar?.show(
+                                TapCustomSnackbarView.Companion.Type.DEFAULT,
+                                R.drawable.tap_ic_rounded_check,
+                                R.string.tap_otp_successfully_sent
+                            )
                         }
                     }
                     else {
@@ -1236,13 +1211,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                 override fun onError(errorMessage: String?) {
                     endLoading()
-                    TapTalkDialog.Builder(this@TAPLoginActivity)
-                        .setDialogType(ERROR_DIALOG)
-                        .setTitle(getString(R.string.tap_error))
-                        .setMessage(errorMessage ?: getString(R.string.tap_error_message_general))
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .setCancelable(true)
-                        .show()
+                    showErrorSnackbar(errorMessage)
                 }
             }
         )
@@ -1250,6 +1219,23 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun verifyOtp() {
 
+    }
+
+    private fun showErrorSnackbar(errorMessage: String?) {
+        if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this@TAPLoginActivity)) {
+            tap_custom_snackbar?.show(
+                TapCustomSnackbarView.Companion.Type.ERROR,
+                R.drawable.tap_ic_info_outline_primary,
+                errorMessage ?: getString(R.string.tap_error_message_general)
+            )
+        }
+        else {
+            tap_custom_snackbar?.show(
+                TapCustomSnackbarView.Companion.Type.ERROR,
+                R.drawable.tap_ic_wifi_off_red,
+                R.string.tap_error_check_your_network
+            )
+        }
     }
 
     /**=============================================================================================

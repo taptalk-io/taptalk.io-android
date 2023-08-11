@@ -509,6 +509,8 @@
     <string name="tap_read_by_d_format">Read by (%d)</string>
     <string name="tap_delivered_to_d_format">Delivered to (%d)</string>
     <string name="tap_s_format_groups_in_common">%s Groups in common</string>
-    <string name="error_unable_to_send_sms">Gagal membuka SMS</string>
+    <string name="tap_error_unable_to_send_sms">Gagal membuka SMS</string>
+    <string name="tap_error_check_your_network">Harap periksa jaringan Anda</string>
+    <string name="tap_d_format_error_otp_wait">Harap tunggu %d detik sebelum meminta OTP baru</string>
 
 </resources>
