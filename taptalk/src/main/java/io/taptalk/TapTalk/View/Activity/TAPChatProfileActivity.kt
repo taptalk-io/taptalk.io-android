@@ -100,7 +100,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (TAPUtils.allPermissionsGranted(grantResults)) {
             when (requestCode) {
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE -> startVideoDownload(
                     vm!!.pendingDownloadMessage
@@ -1149,14 +1149,12 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun startVideoDownload(message: TAPMessageModel) {
-        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, *TAPUtils.getStoragePermissions(false))) {
             // Request storage permission
             vm!!.pendingDownloadMessage = message
             ActivityCompat.requestPermissions(
-                this@TAPChatProfileActivity, arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
+                this@TAPChatProfileActivity,
+                TAPUtils.getStoragePermissions(false),
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
             )
         } else {
@@ -1251,11 +1249,11 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         if (url.isNullOrEmpty()) {
             return
         }
-        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, *TAPUtils.getStoragePermissions(false))) {
             // Request storage permission
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                TAPUtils.getStoragePermissions(false),
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE
             )
         } else {

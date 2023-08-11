@@ -342,7 +342,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (TAPUtils.allPermissionsGranted(grantResults)) {
             when (requestCode) {
                 PermissionRequest.PERMISSION_CAMERA_CAMERA, PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> vm.cameraImageUri =
                     TAPUtils.takePicture(
@@ -1454,14 +1454,14 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             override fun onSaveImageToGallery(message: TAPMessageModel) {
                 if (!TAPUtils.hasPermissions(
                         this@TapScheduledMessageActivity,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        *TAPUtils.getStoragePermissions(false)
                     )
                 ) {
                     // Request storage permission
                     vm.pendingDownloadMessage = message
                     ActivityCompat.requestPermissions(
                         this@TapScheduledMessageActivity,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        TAPUtils.getStoragePermissions(false),
                         PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE
                     )
                 } else if (null != message.data && null != message.data!![MessageData.MEDIA_TYPE]) {
@@ -1542,14 +1542,14 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             override fun onSaveVideoToGallery(message: TAPMessageModel) {
                 if (!TAPUtils.hasPermissions(
                         this@TapScheduledMessageActivity,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        *TAPUtils.getStoragePermissions(false)
                     )
                 ) {
                     // Request storage permission
                     vm.pendingDownloadMessage = message
                     ActivityCompat.requestPermissions(
                         this@TapScheduledMessageActivity,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        TAPUtils.getStoragePermissions(false),
                         PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO
                     )
                 } else if (null != message.data) {
@@ -2766,14 +2766,12 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
 
     private fun startFileDownload(message: TAPMessageModel?) {
-        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, *TAPUtils.getStoragePermissions(true))) {
             // Request storage permission
             vm.setPendingDownloadMessage(message)
             ActivityCompat.requestPermissions(
-                this@TapScheduledMessageActivity, arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
+                this@TapScheduledMessageActivity,
+                TAPUtils.getStoragePermissions(true),
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
             )
         } else {

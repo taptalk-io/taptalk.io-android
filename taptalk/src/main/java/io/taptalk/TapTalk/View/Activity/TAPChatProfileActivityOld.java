@@ -200,7 +200,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (TAPUtils.allPermissionsGranted(grantResults)) {
             switch (requestCode) {
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE:
                     startVideoDownload(vm.getPendingDownloadMessage());
@@ -778,13 +778,12 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
     }
 
     private void startVideoDownload(TAPMessageModel message) {
-        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, TAPUtils.getStoragePermissions(false))) {
             // Request storage permission
             vm.setPendingDownloadMessage(message);
             ActivityCompat.requestPermissions(
-                    TAPChatProfileActivityOld.this, new String[]{
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    TAPChatProfileActivityOld.this,
+                    TAPUtils.getStoragePermissions(false),
                     PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE);
         } else {
             // Download file

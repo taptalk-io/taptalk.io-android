@@ -121,7 +121,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (TAPUtils.allPermissionsGranted(grantResults)) {
             when (requestCode) {
                 PERMISSION_CAMERA_CAMERA, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> {
                     vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)

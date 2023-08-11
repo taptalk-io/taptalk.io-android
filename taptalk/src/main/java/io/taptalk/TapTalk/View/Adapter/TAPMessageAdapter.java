@@ -30,6 +30,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.VIDEO_MP4;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
@@ -41,6 +43,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.HEIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IS_PLAYING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
@@ -759,12 +762,21 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openImageDetailPreview(TAPMessageModel message) {
-            if (isBubbleTapOnly()) {
-                chatListener.onOutsideClicked(message);
-            } else {
+            HashMap<String, Object> messageData = message.getData();
+            if (messageData == null) {
+                return;
+            }
+            String mediaType = (String) messageData.get(MEDIA_TYPE);
+            if (mediaType != null && !mediaType.contains("image")) {
+                mediaType = IMAGE_JPEG;
+                TAPMessageModel messageCopy = message.copyMessageModel();
+                messageData.put(MEDIA_TYPE, mediaType);
+                messageCopy.setData(messageData);
+                TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, messageCopy, rcivImageBody);
+            }
+            else {
                 TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, message, rcivImageBody);
             }
-            chatListener.onBubbleTapped(message);
         }
 
         private void setProgress(TAPMessageModel item) {
@@ -1526,7 +1538,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             .show();
                 } else {
                     // Open video
-                    TAPVideoPlayerActivity.start(itemView.getContext(), instanceKey, videoUri, message);
+                    HashMap<String, Object> messageData = message.getData();
+                    String mediaType = (String) messageData.get(MEDIA_TYPE);
+                    if (mediaType != null && !mediaType.contains("video")) {
+                        mediaType = VIDEO_MP4;
+                        TAPMessageModel messageCopy = message.copyMessageModel();
+                        messageData.put(MEDIA_TYPE, mediaType);
+                        messageCopy.setData(messageData);
+                        TAPVideoPlayerActivity.start(itemView.getContext(), instanceKey, videoUri, messageCopy);
+                    }
+                    else {
+                        TAPVideoPlayerActivity.start(itemView.getContext(), instanceKey, videoUri, message);
+                    }
                 }
             }
             chatListener.onBubbleTapped(message);

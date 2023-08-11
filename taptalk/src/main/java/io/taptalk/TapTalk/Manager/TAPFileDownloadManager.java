@@ -194,7 +194,8 @@ public class TAPFileDownloadManager {
 
         if (null != fileUrl && !fileUrl.isEmpty()) {
             downloadFileFromUrl(message, fileUrl);
-        } else if (null != fileID && !fileID.isEmpty()) {
+        }
+        else if (null != fileID && !fileID.isEmpty()) {
             TAPDataManager.getInstance(instanceKey).downloadFile(message.getRoom().getRoomID(), localID, fileID, fileSize, new TAPDefaultDataView<ResponseBody>() {
                 @Override
                 public void onSuccess(ResponseBody response) {
@@ -472,70 +473,126 @@ public class TAPFileDownloadManager {
     }
 
     private void writeFileToDiskAndSendBroadcast(Context context, TAPMessageModel message, ResponseBody responseBody) {
+        if (message.getData() == null) {
+            return;
+        }
         String localID = message.getLocalID();
         String filename = getFileNameFromMessage(message);
 
         String folder;
         switch (message.getType()) {
             case TYPE_VIDEO:
-                folder = " Videos";
+                folder = "Videos";
                 break;
             case TYPE_VOICE:
-                folder = " Voice Notes";
+                folder = "Voice Notes";
                 break;
             default:
-                folder = " Files";
+                folder = "Files";
                 break;
-        };
-        File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.getClientAppName(instanceKey) + "/" + folder);
-        dir.mkdirs();
-
-        File noMediaFile = new File(dir, ".nomedia");
-        if (!noMediaFile.exists()) {
-            try {
-                noMediaFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
-        File file = new File(dir, filename);
-        file = TAPFileUtils.renameDuplicateFile(file);
-        try {
-            // Write file to disk
-            BufferedSink sink = Okio.buffer(Okio.sink(file));
-            sink.writeAll(responseBody.source());
-            sink.close();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            String mimeType = (String) message.getData().get(MEDIA_TYPE);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + TapTalk.getClientAppName(instanceKey));
+            ContentResolver contentResolver = context.getContentResolver();
+            Uri uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
 
-            // Remove message from progress map
-            removeDownloadProgressMap(localID);
-            if (hasFailedDownloads()) {
-                removeFailedDownload(localID);
+            if (uri == null) {
+                return;
             }
 
-            // Send download success broadcast
-            Uri fileProviderUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
-            String fileID = (String) message.getData().get(FILE_ID);
-            String fileUrl = (String) message.getData().get(FILE_URL);
-            addFileProviderPath(fileProviderUri, file.getAbsolutePath());
-            scanFile(context, file, TAPUtils.getFileMimeType(file));
-            Intent intent = new Intent(DownloadFinish);
-            intent.putExtra(DownloadLocalID, localID);
-            intent.putExtra(DownloadedFile, file);
-            intent.putExtra(FILE_ID, fileID);
-            intent.putExtra(FILE_URL, fileUrl);
-            intent.putExtra(FILE_URI, fileProviderUri);
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-            if (null != fileUrl && null != fileProviderUri) {
-                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(message.getRoom().getRoomID(), fileUrl, fileProviderUri);
+            try {
+                // Write file to disk
+                OutputStream output = contentResolver.openOutputStream(uri);
+                BufferedSink sink = Okio.buffer(Okio.sink(output));
+                sink.writeAll(responseBody.source());
+                sink.close();
+                output.flush();
+                output.close();
+
+                // Remove message from progress map
+                removeDownloadProgressMap(localID);
+                if (hasFailedDownloads()) {
+                    removeFailedDownload(localID);
+                }
+
+                // Send download success broadcast
+                String path = TAPFileUtils.getFilePath(context, uri);
+                String fileID = (String) message.getData().get(FILE_ID);
+                String fileUrl = (String) message.getData().get(FILE_URL);
+                Intent intent = new Intent(DownloadFinish);
+                intent.putExtra(DownloadLocalID, localID);
+                intent.putExtra(FILE_ID, fileID);
+                intent.putExtra(FILE_URL, fileUrl);
+                if (path != null) {
+                    File file = new File(path);
+                    Uri fileProviderUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
+                    addFileProviderPath(fileProviderUri, path);
+                    intent.putExtra(DownloadedFile, file);
+                    intent.putExtra(FILE_URI, fileProviderUri);
+                    String key = TAPUtils.getUriKeyFromMessage(message);
+                    TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(message.getRoom().getRoomID(), key, fileProviderUri);
+                }
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
             }
-            else if (null != fileID && null != fileProviderUri) {
-                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(message.getRoom().getRoomID(), fileID, fileProviderUri);
+            catch (Exception e) {
+                e.printStackTrace();
+                setDownloadFailed(localID, ERROR_CODE_OTHERS, e.getMessage());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            setDownloadFailed(localID, ERROR_CODE_OTHERS, e.getMessage());
-            Log.e(TAG, "writeFileToDiskAndSendBroadcast: " + e);
+        }
+        else {
+            File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.getClientAppName(instanceKey) + "/" + folder);
+            dir.mkdirs();
+
+            File noMediaFile = new File(dir, ".nomedia");
+            if (!noMediaFile.exists()) {
+                try {
+                    noMediaFile.createNewFile();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            File file = new File(dir, filename);
+            file = TAPFileUtils.renameDuplicateFile(file);
+            try {
+                // Write file to disk
+                BufferedSink sink = Okio.buffer(Okio.sink(file));
+                sink.writeAll(responseBody.source());
+                sink.close();
+
+                // Remove message from progress map
+                removeDownloadProgressMap(localID);
+                if (hasFailedDownloads()) {
+                    removeFailedDownload(localID);
+                }
+
+                // Send download success broadcast
+                Uri fileProviderUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
+                String fileID = (String) message.getData().get(FILE_ID);
+                String fileUrl = (String) message.getData().get(FILE_URL);
+                addFileProviderPath(fileProviderUri, file.getAbsolutePath());
+                scanFile(context, file, TAPUtils.getFileMimeType(file));
+                Intent intent = new Intent(DownloadFinish);
+                intent.putExtra(DownloadLocalID, localID);
+                intent.putExtra(DownloadedFile, file);
+                intent.putExtra(FILE_ID, fileID);
+                intent.putExtra(FILE_URL, fileUrl);
+                intent.putExtra(FILE_URI, fileProviderUri);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                String key = TAPUtils.getUriKeyFromMessage(message);
+                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(message.getRoom().getRoomID(), key, fileProviderUri);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                setDownloadFailed(localID, ERROR_CODE_OTHERS, e.getMessage());
+                Log.e(TAG, "writeFileToDiskAndSendBroadcast: " + e.getMessage());
+            }
         }
     }
 

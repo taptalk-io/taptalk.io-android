@@ -227,6 +227,7 @@
     <string name="tap_error_we_are_experiencing_some_issues">Kami sedang mengalami masalah, silakan coba lagi nanti.</string>
     <string name="tap_currently_unavailable">Sedang tidak tersedia</string>
     <string name="tap_error_unable_to_edit_message">Gagal Mengubah Pesan</string>
+    <string name="tap_error_unable_to_play_video">Tidak dapat memutar video ini.</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
