@@ -1,10 +1,13 @@
 package io.taptalk.TapTalk.View.Activity;
 
-import android.Manifest;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -12,7 +15,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -24,6 +26,7 @@ import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -32,19 +35,14 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.ViewModel.TAPVideoPlayerViewModel;
 import io.taptalk.TapTalk.R;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
+import io.taptalk.TapTalk.ViewModel.TAPVideoPlayerViewModel;
 
 public class TAPVideoPlayerActivity extends TAPBaseActivity {
 
@@ -60,18 +58,18 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     private TAPVideoPlayerViewModel vm;
 
     public static void start(
-            Context context,
-            String instanceKey,
-            Uri uri
+        Context context,
+        String instanceKey,
+        Uri uri
     ) {
         start(context, instanceKey, uri, null);
     }
 
     public static void start(
-            Context context,
-            String instanceKey,
-            Uri uri,
-            @Nullable TAPMessageModel message
+        Context context,
+        String instanceKey,
+        Uri uri,
+        @Nullable TAPMessageModel message
     ) {
         Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
@@ -142,7 +140,8 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
 //            Uri parsedUri = TAPFileUtils.parseFileUri(Uri.parse(uriString));
 //            vm.setVideoUri(parsedUri);
             vm.setVideoUri(Uri.parse(uriString));
-        } else {
+        }
+        else {
             onBackPressed();
         }
     }
@@ -178,9 +177,9 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         seekBar.setOnSeekBarChangeListener(seekBarListener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ivButtonClose.setBackground(getDrawable(R.drawable.tap_bg_video_player_button_ripple));
-            ivButtonSave.setBackground(getDrawable(R.drawable.tap_bg_video_player_button_ripple));
-            ivButtonMute.setBackground(getDrawable(R.drawable.tap_bg_video_player_button_ripple));
+            ivButtonClose.setBackground(AppCompatResources.getDrawable(this, R.drawable.tap_bg_video_player_button_ripple));
+            ivButtonSave.setBackground(AppCompatResources.getDrawable(this, R.drawable.tap_bg_video_player_button_ripple));
+            ivButtonMute.setBackground(AppCompatResources.getDrawable(this, R.drawable.tap_bg_video_player_button_ripple));
         }
     }
 
@@ -196,11 +195,12 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             int width, height;
             if (null != rotation && (rotation.equals("90") || rotation.equals("270"))) {
                 // Swap width and height when video is rotated
-                width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-                height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-            } else {
-                width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-                height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            }
+            else {
+                width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
             }
 
             // Fix videoView layout params
@@ -215,9 +215,10 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             }
 
             retriever.release();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
-            finish();
+            finishActivity();
         }
     }
 
@@ -227,9 +228,10 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             videoView.setOnPreparedListener(onPreparedListener);
             videoView.setOnCompletionListener(onCompletionListener);
             videoView.setOnErrorListener(onErrorListener);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
-            finish();
+            finishActivity();
         }
     }
 
@@ -301,33 +303,40 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void hideLayout(View view) {
-        view.animate()
+        runOnUiThread(() -> {
+            view.animate()
                 .alpha(0f)
                 .setDuration(200L)
                 .withEndAction(() -> view.setVisibility(View.GONE))
                 .start();
+        });
     }
 
     private void showLayout(View view, float alpha) {
-        view.setAlpha(0f);
-        view.setVisibility(View.VISIBLE);
-        view.animate()
+        runOnUiThread(() -> {
+            view.setAlpha(0f);
+            view.setVisibility(View.VISIBLE);
+            view.animate()
                 .alpha(alpha)
                 .setDuration(200L)
                 .start();
+        });
     }
 
     private void onMuteButtonTapped() {
-        if (vm.getMediaVolume() > 0f) {
-            // Mute video
-            vm.setMediaVolume(0f);
-            ivButtonMute.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_volume_off));
-        } else {
-            // Turn sound on
-            vm.setMediaVolume(1f);
-            ivButtonMute.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_volume_on));
-        }
-        vm.getMediaPlayer().setVolume(vm.getMediaVolume(), vm.getMediaVolume());
+        runOnUiThread(() -> {
+            if (vm.getMediaVolume() > 0f) {
+                // Mute video
+                vm.setMediaVolume(0f);
+                ivButtonMute.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_volume_off));
+            }
+            else {
+                // Turn sound on
+                vm.setMediaVolume(1f);
+                ivButtonMute.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_volume_on));
+            }
+            vm.getMediaPlayer().setVolume(vm.getMediaVolume(), vm.getMediaVolume());
+        });
     }
 
     private void onPlayOrPauseButtonTapped() {
@@ -339,17 +348,29 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void pauseVideo() {
-        vm.setVideoPlaying(false);
-        vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
-        vm.getMediaPlayer().pause();
-        ivButtonPlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_button_play));
-        stopProgressTimer();
+        try {
+            vm.setVideoPlaying(false);
+            vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
+            vm.getMediaPlayer().pause();
+            ivButtonPlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_button_play));
+            stopProgressTimer();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            finishActivity();
+        }
     }
 
     private void resumeVideo() {
-        vm.setVideoPlaying(true);
-        vm.getMediaPlayer().seekTo(vm.getPausedPosition());
-        ivButtonPlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_button_pause));
+        try {
+            vm.setVideoPlaying(true);
+            vm.getMediaPlayer().seekTo(vm.getPausedPosition());
+            ivButtonPlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_button_pause));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            finishActivity();
+        }
     }
 
     private void saveVideo() {
@@ -359,7 +380,8 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         if (!TAPUtils.hasPermissions(this, TAPUtils.getStoragePermissions(false))) {
             // Request storage permission
             ActivityCompat.requestPermissions(this, TAPUtils.getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
-        } else {
+        }
+        else {
             showLoading();
             TAPFileDownloadManager.getInstance(instanceKey).writeFileToDisk(this, vm.getMessage(), saveVideoListener);
         }
@@ -387,16 +409,17 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void hideLoading() {
-        flLoading.setVisibility(View.GONE);
-        ivButtonSave.setOnClickListener(saveButtonListener);
-        flLoading.setOnClickListener(emptyListener);
+        runOnUiThread(() -> {
+            flLoading.setVisibility(View.GONE);
+            ivButtonSave.setOnClickListener(saveButtonListener);
+            flLoading.setOnClickListener(emptyListener);
+        });
     }
 
-    private View.OnClickListener saveButtonListener = v -> saveVideo();
-    private View.OnClickListener emptyListener = v -> {
-    };
+    private final View.OnClickListener saveButtonListener = v -> saveVideo();
+    private final View.OnClickListener emptyListener = v -> {};
 
-    private MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
+    private final MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
             if (!vm.isFirstLoadFinished()) {
@@ -419,18 +442,20 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         }
     };
 
-    private MediaPlayer.OnSeekCompleteListener onSeekListener = new MediaPlayer.OnSeekCompleteListener() {
+    private final MediaPlayer.OnSeekCompleteListener onSeekListener = new MediaPlayer.OnSeekCompleteListener() {
         @Override
         public void onSeekComplete(MediaPlayer mediaPlayer) {
             try {
                 tvCurrentTime.setText(TAPUtils.getMediaDurationString(mediaPlayer.getCurrentPosition(), vm.getDuration()));
-            } catch (Exception e) {
-                Log.e(TAG, "onProgressChanged: " + e.getMessage());
+            }
+            catch (Exception e) {
+                e.printStackTrace();
             }
             if (!vm.isSeeking() && vm.isVideoPlaying()) {
                 mediaPlayer.start();
                 TAPVideoPlayerActivity.this.startProgressTimer();
-            } else {
+            }
+            else {
                 vm.setPausedPosition(mediaPlayer.getCurrentPosition());
                 if (vm.getPausedPosition() >= vm.getDuration()) {
                     vm.setPausedPosition(0);
@@ -439,7 +464,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         }
     };
 
-    private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
+    private final MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
             pauseVideo();
@@ -448,18 +473,20 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         }
     };
 
-    private MediaPlayer.OnErrorListener onErrorListener = (mp, what, extra) -> {
-        finish();
+    private final MediaPlayer.OnErrorListener onErrorListener = (mp, what, extra) -> {
+        Toast.makeText(TapTalk.appContext, getString(R.string.tap_error_unable_to_play_video), Toast.LENGTH_SHORT).show();
+        finishActivity();
         return false;
     };
 
-    private SeekBar.OnSeekBarChangeListener seekBarListener = new SeekBar.OnSeekBarChangeListener() {
+    private final SeekBar.OnSeekBarChangeListener seekBarListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             try {
                 tvCurrentTime.setText(TAPUtils.getMediaDurationString(vm.getMediaPlayer().getCurrentPosition(), vm.getDuration()));
-            } catch (Exception e) {
-                Log.e(TAG, "onProgressChanged: " + e.getMessage());
+            }
+            catch (Exception e) {
+                e.printStackTrace();
             }
             if (vm.isSeeking()) {
                 //videoView.seekTo(vm.getDuration() * seekBar.getProgress() / seekBar.getMax());
@@ -485,7 +512,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         }
     };
 
-    private TapTalkActionInterface saveVideoListener = new TapTalkActionInterface() {
+    private final TapTalkActionInterface saveVideoListener = new TapTalkActionInterface() {
         @Override
         public void onSuccess(String message) {
             endLoading();
@@ -499,4 +526,10 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             });
         }
     };
+    
+    private void finishActivity() {
+        if (!isFinishing()) {
+            finish();
+        }
+    }
 }
