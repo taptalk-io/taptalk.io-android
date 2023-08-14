@@ -25,6 +25,7 @@
     <string name="tap_search_results">Hasil Pencarian</string>
     <string name="tap_send_message">Kirim Pesan</string>
     <string name="tap_shared_media">Media</string>
+    <string name="tap_qr_code">Kode QR</string>
     <string name="tap_scan_qr_code">Pindai Kode QR</string>
     <string name="tap_user_details">Detail Pengguna</string>
     <string name="tap_show_qr_code">Tampilkan Kode QR</string>
@@ -344,6 +345,7 @@
     <string name="tap_clear">Hapus</string>
     <string name="tap_close">Tutup</string>
     <string name="tap_continue">Lanjut</string>
+    <string name="tap_back">Kembali</string>
     <string name="tap_details">Detail</string>
     <string name="tap_edit">Ubah</string>
     <string name="tap_loading">Memuat</string>

@@ -19,11 +19,13 @@
     <string name="tap_login_via_otp">Login via OTP</string>
     <string name="tap_whatsapp_verification">WhatsApp Verification</string>
     <string name="tap_otp_verification">OTP Verification</string>
-    <string name="tap_whatsapp_verification_description">To continue the verification process, click on the ‘Open WhatsApp’ button.\nPlease send the generated message to the opened chat without making any changes.</string>
+    <string name="tap_whatsapp_verification_description">To continue the verification process, click on the ‘Open WhatsApp’ button. If you wish to use WhatsApp from another device, click on the ‘QR Code’ button to scan it on your device.\n\nPlease send the generated message to the opened chat without making any changes.</string>
+    <string name="tap_whatsapp_verification_qr_description">To continue the verification process, scan the QR code to open WhatsApp.\nPlease send the generated message to the opened chat without making any changes and confirm when you have sent the generated message by clicking the button below.</string>
     <string name="tap_otp_verification_whatsapp_description">Enter the 6 digit OTP we’ve sent by WhatsApp to your number below.</string>
     <string name="tap_otp_verification_sms_description">Enter the 6 digit OTP we’ve sent by SMS to your number below.</string>
     <string name="tap_open_whatsapp">Open WhatsApp</string>
     <string name="tap_change_phone_number">Change Phone Number</string>
+    <string name="tap_i_have_sent_the_message">I have sent the message</string>
     <string name="tap_verification_loading_description">We are checking your verification status.\nPlease wait, this may take a while.</string>
     <string name="tap_verification_success">Verification Success</string>
     <string name="tap_verification_success_description">Your number has been successfully verified</string>

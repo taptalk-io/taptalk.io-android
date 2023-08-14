@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name" translatable="false">TapTalk</string>
+
+    <!--Share Options-->
+    <string name="add_message_dots">Tambah pesan…</string>
+    <string name="select_chat">Pilih Chat</string>
+    <string name="df_recipients">%d Penerima</string>
+    <string name="one_recipient">1 Penerima</string>
+    <string name="selected_df_recipients">%d penerima dipilih</string>
+    <string name="selected_one_recipient">1 rpenerima dipilih</string>
+    <string name="groups">Grup</string>
+    <string name="contacts">Kontak</string>
+    <string name="send_this_message_to_sf">Kirim pesan ini ke %s?</string>
+    <string name="register_privacy_policy">Dengan mendaftar, saya telah membaca dan menyetujui kebijakan pribadi TapTalk.io</string>
+    <string name="error_register_privacy_policy">Harap baca dan setujui kebijakan pribade kami sebelum melanjutkan.</string>
+
+    <!--Verification-->
+    <string name="tap_login_via_whatsapp">Login dengan WhatsApp</string>
+    <string name="tap_login_via_otp">Login dengan OTP</string>
+    <string name="tap_whatsapp_verification">Verifikasi WhatsApp</string>
+    <string name="tap_otp_verification">Verifikasi OTP</string>
+    <string name="tap_whatsapp_verification_description">Untuk melanjutkan proses verifikasi, klik pada tombol ‘Buka WhatsApp’. Jika Anda ingin menggunakan WhatsApp dari perangkat lain, klik pada tombol ‘Kode QR’ untuk scan dari perangkat tersebut.\n\nHarap kirim pesan yang ada di chat yang terbuka tanpa mengubah apapun.</string>
+    <string name="tap_whatsapp_verification_qr_description">Untuk melanjutkan proses verifikasi, scan kode QR di bawah untuk membuka WhatsApp.\nHarap kirim pesan yang ada di chat yang terbuka tanpa mengubah apapun dan lakukan konfirmasi setelah Anda telah mengirim pesan dengan klik tombol di bawah.</string>
+    <string name="tap_otp_verification_whatsapp_description">Masukkan 6 digit OTP yang telah kami kirim melalui WhatsApp ke nomor Anda di bawah ini.</string>
+    <string name="tap_otp_verification_sms_description">Masukkan 6 digit OTP yang telah kami kirim melalui SMS ke nomor Anda di bawah ini</string>
+    <string name="tap_open_whatsapp">Buka WhatsApp</string>
+    <string name="tap_change_phone_number">Ganti Nomor Telepon</string>
+    <string name="tap_i_have_sent_the_message">Saya sudah mengirim pesan</string>
+    <string name="tap_verification_loading_description">Kami sedang mengecek status verifikasi\nHarap menunggu, ini mungkin memakan waktu cukup lama.</string>
+    <string name="tap_verification_success">Verifikasi Berhasil</string>
+    <string name="tap_verification_success_description">Nomor Anda telah berhasil diverifikasi</string>
+    <string name="tap_continue_to_home">Lanjut ke Beranda</string>
+    <string name="tap_continue_to_register">Lanjut ke Pendaftaran</string>
+    <string name="tap_verification_error">Ada sesuatu yang salah</string>
+    <string name="tap_verification_error_description">Nomor Anda belum berhasil diverifikasi.</string>
+    <string name="tap_retry_verification">Coba Verifikasi Ulang</string>
+</resources>

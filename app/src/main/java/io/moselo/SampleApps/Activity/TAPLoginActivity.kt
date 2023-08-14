@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -18,7 +19,6 @@ import android.view.View.OnClickListener
 import android.view.View.OnLongClickListener
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
-import android.widget.TextView
 import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -33,6 +33,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
+import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapCustomSnackbarView
 import io.taptalk.TapTalk.Helper.TapLoadingDialog
@@ -56,9 +57,8 @@ import kotlinx.android.synthetic.main.tap_activity_login.*
 import kotlinx.android.synthetic.main.tap_layout_login_country_list.*
 import kotlinx.android.synthetic.main.tap_layout_login_input.*
 import kotlinx.android.synthetic.main.tap_layout_login_otp.*
-import kotlinx.android.synthetic.main.tap_layout_login_verification.*
 import kotlinx.android.synthetic.main.tap_layout_login_verification_status.*
-import java.util.Locale
+import kotlinx.android.synthetic.main.tap_layout_login_whatsapp_verification.*
 import java.util.Timer
 import java.util.TimerTask
 
@@ -119,9 +119,13 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     override fun onBackPressed() {
         if (cl_country_list_container.visibility == View.VISIBLE ||
-            cl_verification_container.visibility == View.VISIBLE ||
+            sv_whatsapp_verification.visibility == View.VISIBLE ||
             cl_otp_container.visibility == View.VISIBLE
         ) {
+            if (iv_qr_code.visibility == View.VISIBLE) {
+                hideQR()
+                return
+            }
             showPhoneNumberInputView()
             return
         }
@@ -188,8 +192,9 @@ class TAPLoginActivity : TAPBaseActivity() {
         ll_button_change_number_otp?.setOnClickListener(backButtonClickListener)
         ll_button_whatsapp?.setOnClickListener(loginViaWhatsAppClickListener)
         ll_button_otp?.setOnClickListener(loginViaOTPClickListener)
+        ll_button_verify?.setOnClickListener(openWhatsAppClickListener)
+        ll_button_show_qr_code?.setOnClickListener { showQR() }
         ll_request_otp_again.setOnClickListener { requestOtp() }
-        ll_button_verify?.setOnClickListener { openWhatsAppLink() }
         ll_button_retry_verification?.setOnClickListener { showVerificationView() }
         cl_login_container?.setOnClickListener { TAPUtils.dismissKeyboard(this) }
         cl_login_input_container?.setOnClickListener { TAPUtils.dismissKeyboard(this, et_phone_number) }
@@ -205,7 +210,7 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private val backButtonClickListener = OnClickListener {
-        showPhoneNumberInputView()
+        onBackPressed()
     }
 
     /**=============================================================================================
@@ -649,7 +654,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         runOnUiThread {
             showViewWithAnimation(cl_login_input_container)
             hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(sv_whatsapp_verification)
             hideViewWithAnimation(cl_otp_container)
             hideViewWithAnimation(cl_verification_status_container)
         }
@@ -659,7 +664,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         runOnUiThread {
             showViewWithAnimation(cl_country_list_container)
             hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
-            hideViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(sv_whatsapp_verification)
             hideViewWithAnimation(cl_otp_container)
             hideViewWithAnimation(cl_verification_status_container)
         }
@@ -667,7 +672,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showVerificationView() {
         runOnUiThread {
-            showViewWithAnimation(cl_verification_container)
+            showViewWithAnimation(sv_whatsapp_verification)
             hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
             hideViewWithAnimation(cl_country_list_container)
             hideViewWithAnimation(cl_otp_container)
@@ -680,7 +685,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             showViewWithAnimation(cl_otp_container)
             hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
             hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(sv_whatsapp_verification)
             hideViewWithAnimation(cl_verification_status_container)
         }
     }
@@ -691,7 +696,45 @@ class TAPLoginActivity : TAPBaseActivity() {
             hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
             hideViewWithAnimation(cl_country_list_container)
             hideViewWithAnimation(cl_otp_container)
-            hideViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(sv_whatsapp_verification)
+        }
+    }
+
+    private fun showQR() {
+        if (!vm?.verification?.qrCode.isNullOrEmpty()) {
+            try {
+                val identifier = ";base64,"
+                var base64 = vm?.verification?.qrCode
+                if (base64 != null && base64.contains(identifier)) {
+                    base64 = base64.substring(base64.indexOf(identifier) + identifier.length)
+                }
+                val qrCode = BitmapDrawable(resources, TAPFileUtils.decodeBase64(base64))
+                runOnUiThread {
+                    iv_qr_code.setImageDrawable(qrCode)
+                    iv_qr_code.visibility = View.VISIBLE
+                    ll_button_show_qr_code.visibility = View.GONE
+                    tv_button_verify?.text = getString(R.string.tap_i_have_sent_the_message)
+                    tv_verification_description?.text = getString(R.string.tap_whatsapp_verification_qr_description)
+                    tv_button_change_number?.text = getString(R.string.tap_back)
+                    ll_button_verify?.setOnClickListener(checkVerificationClickListener)
+                }
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+    }
+
+    private fun hideQR() {
+        runOnUiThread {
+            iv_qr_code.setImageDrawable(null)
+            iv_qr_code.visibility = View.GONE
+            ll_button_show_qr_code.visibility = View.VISIBLE
+            tv_button_verify?.text = getString(R.string.tap_open_whatsapp)
+            tv_verification_description?.text = getString(R.string.tap_whatsapp_verification_description)
+            tv_button_change_number?.text = getString(R.string.tap_change_phone_number)
+            ll_button_verify?.setOnClickListener(openWhatsAppClickListener)
         }
     }
 
@@ -833,6 +876,14 @@ class TAPLoginActivity : TAPBaseActivity() {
                 }
             }
         )
+    }
+
+    private val openWhatsAppClickListener = OnClickListener {
+        openWhatsAppLink()
+    }
+
+    private val checkVerificationClickListener = OnClickListener {
+        checkWhatsAppVerification(true)
     }
 
     private fun openWhatsAppLink() {
