@@ -28,6 +28,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
@@ -173,7 +174,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
     }
 
     private void checkAndSearchUserMentionList(EditText etCaption, ConstraintLayout clUserMentionList, MaxHeightRecyclerView rvUserMentionList) {
-        if (roomParticipants.isEmpty()) {
+        if (roomParticipants.isEmpty() || TapUI.getInstance(instanceKey).isMentionUsernameDisabled()) {
             hideUserMentionList(etCaption, clUserMentionList, rvUserMentionList);
             return;
         }
