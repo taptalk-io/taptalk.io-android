@@ -194,7 +194,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         ll_button_otp?.setOnClickListener(loginViaOTPClickListener)
         ll_button_verify?.setOnClickListener(openWhatsAppClickListener)
         ll_button_show_qr_code?.setOnClickListener { showQR() }
-        ll_request_otp_again.setOnClickListener { requestOtp() }
+        ll_request_otp_again.setOnClickListener { requestOtp(true) }
         ll_button_retry_verification?.setOnClickListener { showVerificationView() }
         cl_login_container?.setOnClickListener { TAPUtils.dismissKeyboard(this) }
         cl_login_input_container?.setOnClickListener { TAPUtils.dismissKeyboard(this, et_phone_number) }
@@ -843,6 +843,14 @@ class TAPLoginActivity : TAPBaseActivity() {
     ==============================================================================================*/
 
     private fun requestWhatsAppVerification() {
+        if (vm != null &&
+            vm!!.nextWhatsAppRequestTimestamp > System.currentTimeMillis() &&
+            vm?.lastRequestWhatsAppPhoneNumber == vm?.phoneNumber
+        ) {
+            val waitSeconds = ((vm!!.nextWhatsAppRequestTimestamp - System.currentTimeMillis()) / 1000).toInt()
+            showErrorSnackbar(String.format(getString(R.string.tap_d_format_error_verification_wait), waitSeconds))
+            return
+        }
         TAPDataManager.getInstance(instanceKey).requestWhatsAppVerification(
             vm?.selectedCountryID ?: 0,
             vm?.phoneNumber ?: "",
@@ -858,6 +866,8 @@ class TAPLoginActivity : TAPBaseActivity() {
                 override fun onSuccess(response: TAPOTPResponse?) {
                     vm?.verification = response?.verification
                     if (response?.isSuccess == true) {
+                        vm?.nextWhatsAppRequestTimestamp = (response.nextRequestSeconds * 1000).toLong() + System.currentTimeMillis()
+                        vm?.lastRequestWhatsAppPhoneNumber = vm?.phoneNumber ?: ""
                         tv_verification_phone_number?.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
                         showVerificationView()
                     }

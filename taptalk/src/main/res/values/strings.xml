@@ -516,5 +516,6 @@
     <string name="tap_error_unable_to_send_sms">Unable to send SMS</string>
     <string name="tap_error_check_your_network">Please check your network</string>
     <string name="tap_d_format_error_otp_wait">Please wait %ds before requesting a new OTP</string>
+    <string name="tap_d_format_error_verification_wait">Please wait %ds before requesting a new verification</string>
 
 </resources>

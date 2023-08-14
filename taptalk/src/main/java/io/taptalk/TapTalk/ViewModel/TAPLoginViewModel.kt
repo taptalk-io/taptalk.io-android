@@ -20,6 +20,8 @@ class TAPLoginViewModel(application: Application) : AndroidViewModel(application
     var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
     var countryListItems = arrayListOf<TAPCountryListItem>()
     var countryFlagUrl = ""
+    var nextWhatsAppRequestTimestamp = 0L
+    var lastRequestWhatsAppPhoneNumber = ""
     var isCheckWhatsAppVerificationPending = false
     var verification: TapVerificationModel? = null
     var checkVerificationTimer: Timer? = null

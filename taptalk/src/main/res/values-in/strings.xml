@@ -514,5 +514,6 @@
     <string name="tap_error_unable_to_send_sms">Gagal membuka SMS</string>
     <string name="tap_error_check_your_network">Harap periksa jaringan Anda</string>
     <string name="tap_d_format_error_otp_wait">Harap tunggu %d detik sebelum meminta OTP baru</string>
+    <string name="tap_d_format_error_verification_wait">Harap tunggu %d detik sebelum meminta verifikasi baru</string>
 
 </resources>
