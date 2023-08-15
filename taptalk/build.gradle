@@ -145,8 +145,6 @@ project.afterEvaluate {
                 groupId = 'com.github.taptalk-io'
                 artifactId = 'taptalk.io-android'
                 version = "$taptalk_version_name"
-//                version = "$taptalk_version_name"
-//                version = "\"${defaultConfig.versionName}\""
             }
         }
     }
