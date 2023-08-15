@@ -34,4 +34,6 @@
     <string name="tap_verification_error">Ada sesuatu yang salah</string>
     <string name="tap_verification_error_description">Nomor Anda belum berhasil diverifikasi.</string>
     <string name="tap_retry_verification">Coba Verifikasi Ulang</string>
+    <string name="tap_d_format_error_otp_wait">Harap tunggu %d detik sebelum meminta OTP baru</string>
+    <string name="tap_d_format_error_verification_wait">Harap tunggu %d detik sebelum meminta verifikasi baru</string>
 </resources>

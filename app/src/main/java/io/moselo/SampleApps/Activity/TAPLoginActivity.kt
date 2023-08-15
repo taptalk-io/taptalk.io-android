@@ -120,7 +120,7 @@ class TAPLoginActivity : TAPBaseActivity() {
     override fun onBackPressed() {
         if (cl_country_list_container.visibility == View.VISIBLE ||
             sv_whatsapp_verification.visibility == View.VISIBLE ||
-            cl_otp_container.visibility == View.VISIBLE
+            sv_otp_verification.visibility == View.VISIBLE
         ) {
             if (iv_qr_code.visibility == View.VISIBLE) {
                 hideQR()
@@ -203,6 +203,8 @@ class TAPLoginActivity : TAPBaseActivity() {
         et_search_country_list?.addTextChangedListener(searchTextWatcher)
         et_otp_code?.addTextChangedListener(otpTextWatcher)
         et_otp_code?.setOnEditorActionListener(otpEditorListener)
+
+        showPhoneNumberInputView()
 
         if (BuildConfig.BUILD_TYPE == "dev") {
             ll_button_otp?.setOnLongClickListener(devPhoneNumberLongClickListener)
@@ -652,10 +654,10 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showPhoneNumberInputView() {
         runOnUiThread {
-            showViewWithAnimation(cl_login_input_container)
+            showViewWithAnimation(sv_login_phone_number_input)
             hideViewWithAnimation(cl_country_list_container)
             hideViewWithAnimation(sv_whatsapp_verification)
-            hideViewWithAnimation(cl_otp_container)
+            hideViewWithAnimation(sv_otp_verification)
             hideViewWithAnimation(cl_verification_status_container)
         }
     }
@@ -663,9 +665,9 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun showCountryListView() {
         runOnUiThread {
             showViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
             hideViewWithAnimation(sv_whatsapp_verification)
-            hideViewWithAnimation(cl_otp_container)
+            hideViewWithAnimation(sv_otp_verification)
             hideViewWithAnimation(cl_verification_status_container)
         }
     }
@@ -673,17 +675,17 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun showVerificationView() {
         runOnUiThread {
             showViewWithAnimation(sv_whatsapp_verification)
-            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
             hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(cl_otp_container)
+            hideViewWithAnimation(sv_otp_verification)
             hideViewWithAnimation(cl_verification_status_container)
         }
     }
 
     private fun showOtpView() {
         runOnUiThread {
-            showViewWithAnimation(cl_otp_container)
-            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+            showViewWithAnimation(sv_otp_verification)
+            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
             hideViewWithAnimation(cl_country_list_container)
             hideViewWithAnimation(sv_whatsapp_verification)
             hideViewWithAnimation(cl_verification_status_container)
@@ -693,9 +695,9 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun showVerificationStatusView() {
         runOnUiThread {
             showViewWithAnimation(cl_verification_status_container)
-            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
             hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(cl_otp_container)
+            hideViewWithAnimation(sv_otp_verification)
             hideViewWithAnimation(sv_whatsapp_verification)
         }
     }
@@ -807,16 +809,19 @@ class TAPLoginActivity : TAPBaseActivity() {
         return if (et_phone_number.text.isEmpty()) {
             tv_input_error_info?.text = getString(R.string.tap_this_field_is_required)
             ll_input_error_info?.visibility = View.VISIBLE
+            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
             false
         }
         else if (!Patterns.PHONE.matcher(phoneNumber).matches() || phoneNumberWithCode.length !in 7..15) {
             tv_input_error_info?.text = getString(R.string.tap_error_invalid_phone_number)
             ll_input_error_info?.visibility = View.VISIBLE
+            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
             false
         }
         else {
             ll_input_error_info?.visibility = View.GONE
             vm?.phoneNumber = phoneNumber
+            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
             true
         }
     }
@@ -1265,6 +1270,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                 override fun onError(errorMessage: String?) {
                     endLoading()
                     showErrorSnackbar(errorMessage)
+                    showRequestOtpAgain()
                 }
             }
         )

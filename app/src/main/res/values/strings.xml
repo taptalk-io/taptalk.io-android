@@ -34,4 +34,6 @@
     <string name="tap_verification_error">There’s something wrong</string>
     <string name="tap_verification_error_description">Your number has not been verified.</string>
     <string name="tap_retry_verification">Retry Verification</string>
+    <string name="tap_d_format_error_otp_wait">Please wait %d seconds before requesting OTP</string>
+    <string name="tap_d_format_error_verification_wait">Please wait %d seconds before requesting verification</string>
 </resources>
