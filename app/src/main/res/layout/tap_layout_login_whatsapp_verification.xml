@@ -1,0 +1,171 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sv_whatsapp_verification"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/tap_bg_login_rounded_top_16"
+    android:elevation="4dp"
+    android:overScrollMode="never"
+    android:scrollbars="none"
+    android:translationY="960dp"
+    android:visibility="gone"
+    tools:targetApi="lollipop"
+    tools:translationY="0dp"
+    tools:visibility="visible">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_verification_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:paddingStart="24dp"
+        android:paddingTop="32dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="32dp">
+
+        <TextView
+            android:id="@+id/tv_verification_title"
+            style="@style/tapLoginTitleStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tap_whatsapp_verification"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_verification_description"
+            style="@style/tapLoginDescriptionStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/tap_whatsapp_verification_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_verification_title" />
+
+        <TextView
+            android:id="@+id/tv_verification_phone_number"
+            style="@style/tapLoginDescriptionStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/tapColorPrimary"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_verification_description"
+            tools:text="+62 81234567890" />
+
+        <ImageView
+            android:id="@+id/iv_qr_code"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="44dp"
+            android:layout_marginEnd="60dp"
+            android:visibility="gone"
+            app:layout_constraintDimensionRatio="W, 1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_verification_phone_number"
+            tools:src="@drawable/tap_ic_scan_qr_orange"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/ll_button_verify"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="44dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/tap_bg_button_active_ripple"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/iv_qr_code">
+
+            <ProgressBar
+                android:id="@+id/pb_button_verification_loading"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:indeterminateTint="@color/tapTransparentBlack1940"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_button_verify"
+                style="@style/tapButtonLabelStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/tap_open_whatsapp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_button_show_qr_code"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/tap_bg_button_border_ripple"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/ll_button_verify">
+
+            <ProgressBar
+                android:id="@+id/pb_button_show_qr_code_loading"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:indeterminateTint="@color/tapTransparentBlack1940"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_button_show_qr_code"
+                style="@style/tapButtonLabelStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/tap_qr_code"
+                android:textColor="@color/tapColorPrimary" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_button_change_number"
+            android:layout_width="match_parent"
+            android:layout_height="26dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/ll_button_show_qr_code">
+
+            <ImageView
+                android:id="@+id/iv_button_change_number_icon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:src="@drawable/tap_ic_arrow_left_orange" />
+
+            <TextView
+                android:id="@+id/tv_button_change_number"
+                style="@style/tapPrimaryLabelButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/tap_change_phone_number" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

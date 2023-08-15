@@ -27,6 +27,7 @@
     <string name="tap_search_results">Search Results</string>
     <string name="tap_send_message">Send Message</string>
     <string name="tap_shared_media">Shared Media</string>
+    <string name="tap_qr_code">QR Code</string>
     <string name="tap_scan_qr_code">Scan QR Code</string>
     <string name="tap_show_qr_code">Show QR Code</string>
     <string name="tap_user_details">User Details</string>
@@ -346,6 +347,7 @@
     <string name="tap_clear">Clear</string>
     <string name="tap_close">Close</string>
     <string name="tap_continue">Continue</string>
+    <string name="tap_back">Back</string>
     <string name="tap_details">Details</string>
     <string name="tap_edit">Edit</string>
     <string name="tap_loading">Loading</string>
@@ -511,6 +513,7 @@
     <string name="tap_read_by_d_format">Read by (%d)</string>
     <string name="tap_delivered_to_d_format">Delivered to (%d)</string>
     <string name="tap_s_format_groups_in_common">%s Groups in common</string>
-    <string name="error_unable_to_send_sms">Unable to send SMS</string>
+    <string name="tap_error_unable_to_send_sms">Unable to send SMS</string>
+    <string name="tap_error_check_your_network">Please check your network</string>
 
 </resources>

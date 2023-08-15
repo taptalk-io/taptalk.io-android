@@ -177,6 +177,12 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="tapPopupLoadingBlackLabelStyle" parent="tapFontFamilyRegular">
+        <item name="android:lineSpacingExtra">7sp</item>
+        <item name="android:textColor">@color/tapPopupLoadingBlackLabelColor</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="tapLoginTitleStyle" parent="tapFontFamilyBold">
         <item name="android:textColor">@color/tapLoginTitleColor</item>
         <item name="android:textSize">24sp</item>
@@ -186,6 +192,11 @@
         <item name="android:textColor">@color/tapLoginDescriptionColor</item>
         <item name="android:textSize">16sp</item>
         <item name="android:lineSpacingExtra">8sp</item>
+    </style>
+
+    <style name="tapLoginOtpStyle" parent="tapFontFamilyBold">
+        <item name="android:textColor">@color/tapLoginOtpColor</item>
+        <item name="android:textSize">24sp</item>
     </style>
 
     <style name="tapSearchConnectionLostTitleStyle" parent="tapFontFamilyMedium">
@@ -275,6 +286,19 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="tapCustomSnackbarStyle" parent="tapFontFamilyBold">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.05</item>
+        <item name="android:lineSpacingExtra">8sp</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="tapCustomSnackbarErrorStyle" parent="tapFontFamilyBold">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.05</item>
+        <item name="android:lineSpacingExtra">8sp</item>
+        <item name="android:textColor">@color/tapColorError</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 
     <style name="tapActionSheetPrimaryLabelStyle" parent="tapFontFamilyMedium">
         <item name="android:textColor">@color/tapActionSheetPrimaryLabelColor</item>
@@ -785,7 +809,7 @@
 
     <style name="tapLoginVerificationStatusCountdownLabelStyle" parent="tapFontFamilyBold">
         <item name="android:textColor">@color/tapLoginVerificationStatusCountdownLabelColor</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapLoginVerificationStatusLoadingLabelStyle" parent="tapFontFamilyBold">

@@ -112,7 +112,8 @@
             android:name="io.moselo.SampleApps.Activity.TAPLoginActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
             android:exported="true"

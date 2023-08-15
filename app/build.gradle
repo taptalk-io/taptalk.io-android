@@ -19,8 +19,8 @@ android {
         applicationId "io.taptalk.TapTalkSample"
         minSdk 16
         targetSdk 33
-        versionCode 134
-        versionName '2.12.4'
+        versionCode taptalk_version_code
+        versionName taptalk_version_name
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", applicationId + "-" + versionName)
@@ -99,7 +99,7 @@ android {
         }
         staging {
             signingConfig signingConfigs.debug
-            debuggable true
+            debuggable false
             minifyEnabled false
             applicationIdSuffix '.staging'
             versionNameSuffix '-STAGING'
@@ -163,7 +163,7 @@ android {
         }
         dev {
             signingConfig signingConfigs.debug
-            debuggable true
+            debuggable false
             minifyEnabled false
             applicationIdSuffix '.dev'
             versionNameSuffix '-DEV'
@@ -234,6 +234,10 @@ android {
 
     kotlinOptions {
         jvmTarget = '11'
+    }
+
+    lintOptions {
+        disable "Instantiatable"
     }
 }
 

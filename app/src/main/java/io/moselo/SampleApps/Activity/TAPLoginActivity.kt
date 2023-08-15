@@ -3,8 +3,13 @@ package io.moselo.SampleApps.Activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -14,8 +19,10 @@ import android.view.View.OnClickListener
 import android.view.View.OnLongClickListener
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -26,12 +33,14 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
+import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapCustomSnackbarView
+import io.taptalk.TapTalk.Helper.TapLoadingDialog
 import io.taptalk.TapTalk.Helper.TapTalk
-import io.taptalk.TapTalk.Helper.TapTalkDialog
-import io.taptalk.TapTalk.Helper.TapTalkDialog.DialogType.ERROR_DIALOG
 import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse
@@ -44,10 +53,12 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel
 import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
+import kotlinx.android.synthetic.main.tap_activity_login.*
 import kotlinx.android.synthetic.main.tap_layout_login_country_list.*
 import kotlinx.android.synthetic.main.tap_layout_login_input.*
-import kotlinx.android.synthetic.main.tap_layout_login_verification.*
+import kotlinx.android.synthetic.main.tap_layout_login_otp.*
 import kotlinx.android.synthetic.main.tap_layout_login_verification_status.*
+import kotlinx.android.synthetic.main.tap_layout_login_whatsapp_verification.*
 import java.util.Timer
 import java.util.TimerTask
 
@@ -108,8 +119,13 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     override fun onBackPressed() {
         if (cl_country_list_container.visibility == View.VISIBLE ||
-            cl_verification_container.visibility == View.VISIBLE
+            sv_whatsapp_verification.visibility == View.VISIBLE ||
+            sv_otp_verification.visibility == View.VISIBLE
         ) {
+            if (iv_qr_code.visibility == View.VISIBLE) {
+                hideQR()
+                return
+            }
             showPhoneNumberInputView()
             return
         }
@@ -173,19 +189,30 @@ class TAPLoginActivity : TAPBaseActivity() {
 
         iv_button_close_country_list?.setOnClickListener(backButtonClickListener)
         ll_button_change_number?.setOnClickListener(backButtonClickListener)
-        ll_button_continue?.setOnClickListener(submitPhoneNumberClickListener)
-        ll_button_verify?.setOnClickListener { openWhatsAppLink() }
+        ll_button_change_number_otp?.setOnClickListener(backButtonClickListener)
+        ll_button_whatsapp?.setOnClickListener(loginViaWhatsAppClickListener)
+        ll_button_otp?.setOnClickListener(loginViaOTPClickListener)
+        ll_button_verify?.setOnClickListener(openWhatsAppClickListener)
+        ll_button_show_qr_code?.setOnClickListener { showQR() }
+        ll_request_otp_again.setOnClickListener { requestOtp(true) }
         ll_button_retry_verification?.setOnClickListener { showVerificationView() }
+        cl_login_container?.setOnClickListener { TAPUtils.dismissKeyboard(this) }
+        cl_login_input_container?.setOnClickListener { TAPUtils.dismissKeyboard(this, et_phone_number) }
+        cl_otp_container?.setOnClickListener { TAPUtils.dismissKeyboard(this, et_otp_code) }
 
         et_search_country_list?.addTextChangedListener(searchTextWatcher)
+        et_otp_code?.addTextChangedListener(otpTextWatcher)
+        et_otp_code?.setOnEditorActionListener(otpEditorListener)
+
+        showPhoneNumberInputView()
 
         if (BuildConfig.BUILD_TYPE == "dev") {
-            ll_button_continue?.setOnLongClickListener(devPhoneNumberLongClickListener)
+            ll_button_otp?.setOnLongClickListener(devPhoneNumberLongClickListener)
         }
     }
 
     private val backButtonClickListener = OnClickListener {
-        showPhoneNumberInputView()
+        onBackPressed()
     }
 
     /**=============================================================================================
@@ -234,43 +261,76 @@ class TAPLoginActivity : TAPBaseActivity() {
         return phoneNumber
     }
 
-    private fun showPhoneNumberInputLoading() {
+    private fun showPhoneNumberInputLoading(isLoadingOTP: Boolean = false) {
         runOnUiThread {
-            pb_button_continue_loading?.visibility = View.VISIBLE
+            if (isLoadingOTP) {
+                pb_button_whatsapp_loading?.visibility = View.GONE
+                pb_button_otp_loading?.visibility = View.VISIBLE
+                iv_button_whatsapp?.visibility = View.VISIBLE
+                iv_button_otp?.visibility = View.GONE
+            }
+            else {
+                pb_button_whatsapp_loading?.visibility = View.VISIBLE
+                pb_button_otp_loading?.visibility = View.GONE
+                iv_button_whatsapp?.visibility = View.GONE
+                iv_button_otp?.visibility = View.VISIBLE
+            }
             iv_country_chevron?.alpha = 0.4f
             tv_country_code?.alpha = 0.4f
             et_phone_number?.alpha = 0.4f
             cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-            ll_button_continue?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-            tv_button_continue?.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
+            ll_button_whatsapp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+            ll_button_otp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_border_inactive)
+            ImageViewCompat.setImageTintList(iv_button_otp, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapTransparentBlack1920)))
+            tv_button_whatsapp?.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
+            tv_button_otp?.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
             et_phone_number?.isEnabled = false
             ll_country_picker_button?.setOnClickListener(null)
-            ll_button_continue?.setOnClickListener(null)
+            ll_button_whatsapp?.setOnClickListener(null)
+            ll_button_otp?.setOnClickListener(null)
         }
     }
 
     private fun hidePhoneNumberInputLoading() {
         runOnUiThread {
-            pb_button_continue_loading?.visibility = View.GONE
+            pb_button_whatsapp_loading?.visibility = View.GONE
+            pb_button_otp_loading?.visibility = View.GONE
+            iv_button_whatsapp?.visibility = View.VISIBLE
+            iv_button_otp?.visibility = View.VISIBLE
             iv_country_chevron?.alpha = 1f
             tv_country_code?.alpha = 1f
             et_phone_number?.alpha = 1f
             cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
-            ll_button_continue?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
-            tv_button_continue?.setTextColor(ContextCompat.getColor(this, R.color.tapButtonLabelColor))
+            ll_button_whatsapp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
+            ll_button_otp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_border_ripple)
+            ImageViewCompat.setImageTintList(iv_button_otp, null)
+            tv_button_whatsapp?.setTextColor(ContextCompat.getColor(this, R.color.tapButtonLabelColor))
+            tv_button_otp?.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
             et_phone_number?.isEnabled = true
             ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
-            ll_button_continue?.setOnClickListener(submitPhoneNumberClickListener)
+            ll_button_whatsapp?.setOnClickListener(loginViaWhatsAppClickListener)
+            ll_button_otp?.setOnClickListener(loginViaOTPClickListener)
         }
     }
 
     private val countryPickerClickListener = OnClickListener {
-        showCountryListView()
+        if (!vm?.countryListItems.isNullOrEmpty()) {
+            showCountryListView()
+        }
+        else {
+            callCountryListFromAPI(true)
+        }
     }
 
-    private val submitPhoneNumberClickListener = OnClickListener {
+    private val loginViaWhatsAppClickListener = OnClickListener {
         if (validatePhoneNumber()) {
             requestWhatsAppVerification()
+        }
+    }
+
+    private val loginViaOTPClickListener = OnClickListener {
+        if (validatePhoneNumber()) {
+            requestOtp()
         }
     }
 
@@ -306,11 +366,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                                                     errorMessage: String
                                                 ) {
                                                     hidePhoneNumberInputLoading()
-                                                    TapTalkDialog.Builder(this@TAPLoginActivity)
-                                                        .setTitle("Error $errorCode")
-                                                        .setMessage(errorMessage)
-                                                        .setPrimaryButtonTitle("OK")
-                                                        .show()
+                                                    showErrorSnackbar(errorMessage)
                                                 }
                                             })
                                     } else {
@@ -320,11 +376,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                                 override fun onError(error: TAPErrorModel) {
                                     hidePhoneNumberInputLoading()
-                                    TapTalkDialog.Builder(this@TAPLoginActivity)
-                                        .setTitle("Error ${error.code}")
-                                        .setMessage(error.message)
-                                        .setPrimaryButtonTitle("OK")
-                                        .show()
+                                    showErrorSnackbar(error.message)
                                 }
 
                                 override fun onError(errorMessage: String) {
@@ -335,11 +387,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                     override fun onError(error: TAPErrorModel) {
                         hidePhoneNumberInputLoading()
-                        TapTalkDialog.Builder(this@TAPLoginActivity)
-                            .setTitle("Error ${error.code}")
-                            .setMessage(error.message)
-                            .setPrimaryButtonTitle("OK")
-                            .show()
+                        showErrorSnackbar(error.message)
                     }
 
                     override fun onError(errorMessage: String) {
@@ -370,38 +418,24 @@ class TAPLoginActivity : TAPBaseActivity() {
     ==============================================================================================*/
 
     private fun initCountryList() {
-        val lastCallCountryTimestamp = TAPDataManager.getInstance(instanceKey).lastCallCountryTimestamp
-        val oneDayAgoTimestamp: Long = 24 * 60 * 60 * 1000
+        vm?.countryIsoCode = TAPUtils.getDeviceCountryCode(this)
+        vm?.countryListItems = TAPDataManager.getInstance(instanceKey).countryList
+        vm?.countryHashMap = vm?.countryListItems?.associateBy({ it.iso2Code }, { it })?.toMutableMap() ?: HashMap()
+        vm?.isNeedResetData = false
 
-        if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp >= lastCallCountryTimestamp) {
-            callCountryListFromAPI()
-        }
-        else if (vm?.isNeedResetData == true) {
-            callCountryListFromAPI()
-            vm?.countryIsoCode = TAPUtils.getDeviceCountryCode(this)
-            //vm?.countryHashMap = TAPDataManager.getInstance(instanceKey).countryList
-            vm?.countryListItems = TAPDataManager.getInstance(instanceKey).countryList
-            vm?.countryHashMap = vm?.countryListItems?.associateBy({ it.iso2Code }, { it })?.toMutableMap() ?: HashMap()
-            vm?.isNeedResetData = false
-
-            if (vm?.countryHashMap?.containsKey(vm?.countryIsoCode) == false ||
-                "" == vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode
-            ) {
-                setCountry(defaultCountryID, defaultCallingCode, "")
-            }
-            else {
-                setCountry(
-                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.countryID ?: 0,
-                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode ?: "",
-                    vm?.countryHashMap?.get(vm?.countryIsoCode)?.flagIconUrl ?: ""
-                )
-            }
+        if (vm?.countryHashMap?.containsKey(vm?.countryIsoCode) == false ||
+            "" == vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode
+        ) {
+            setCountry(defaultCountryID, defaultCallingCode, "")
         }
         else {
-            setCountry(defaultCountryID, defaultCallingCode, vm?.countryFlagUrl)
-            searchCountry("")
-            ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
+            setCountry(
+                vm?.countryHashMap?.get(vm?.countryIsoCode)?.countryID ?: 0,
+                vm?.countryHashMap?.get(vm?.countryIsoCode)?.callingCode ?: "",
+                vm?.countryHashMap?.get(vm?.countryIsoCode)?.flagIconUrl ?: ""
+            )
         }
+        callCountryListFromAPI()
     }
 
     private fun setupDataForRecycler(searchKeyword: String): List<TAPCountryRecycleItem> {
@@ -459,7 +493,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         return filteredCountries
     }
 
-    private fun callCountryListFromAPI() {
+    private fun callCountryListFromAPI(openListOnSuccess: Boolean = false) {
         TAPDataManager.getInstance(instanceKey).getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
             override fun startLoading() {
                 runOnUiThread {
@@ -505,6 +539,10 @@ class TAPLoginActivity : TAPBaseActivity() {
                         cv_country_flag?.visibility = View.VISIBLE
                         pb_loading_progress_country?.visibility = View.GONE
                         ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
+
+                        if (openListOnSuccess) {
+                            showCountryListView()
+                        }
                     }
                 }.start()
             }
@@ -519,6 +557,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     cv_country_flag?.visibility = View.VISIBLE
                     pb_loading_progress_country?.visibility = View.GONE
                     setCountry(0, "", "")
+                    ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
                     Toast.makeText(this@TAPLoginActivity, getString(R.string.tap_no_countries_found), Toast.LENGTH_SHORT).show()
                 }
             }
@@ -615,9 +654,10 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showPhoneNumberInputView() {
         runOnUiThread {
-            showViewWithAnimation(cl_login_input_container)
+            showViewWithAnimation(sv_login_phone_number_input)
             hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(sv_whatsapp_verification)
+            hideViewWithAnimation(sv_otp_verification)
             hideViewWithAnimation(cl_verification_status_container)
         }
     }
@@ -625,17 +665,29 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun showCountryListView() {
         runOnUiThread {
             showViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
-            hideViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
+            hideViewWithAnimation(sv_whatsapp_verification)
+            hideViewWithAnimation(sv_otp_verification)
             hideViewWithAnimation(cl_verification_status_container)
         }
     }
 
     private fun showVerificationView() {
         runOnUiThread {
-            showViewWithAnimation(cl_verification_container)
-            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+            showViewWithAnimation(sv_whatsapp_verification)
+            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
             hideViewWithAnimation(cl_country_list_container)
+            hideViewWithAnimation(sv_otp_verification)
+            hideViewWithAnimation(cl_verification_status_container)
+        }
+    }
+
+    private fun showOtpView() {
+        runOnUiThread {
+            showViewWithAnimation(sv_otp_verification)
+            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
+            hideViewWithAnimation(cl_country_list_container)
+            hideViewWithAnimation(sv_whatsapp_verification)
             hideViewWithAnimation(cl_verification_status_container)
         }
     }
@@ -643,9 +695,48 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun showVerificationStatusView() {
         runOnUiThread {
             showViewWithAnimation(cl_verification_status_container)
-            hideViewWithAnimation(cl_login_input_container, phoneInputHiddenTranslation)
+            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
             hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(cl_verification_container)
+            hideViewWithAnimation(sv_otp_verification)
+            hideViewWithAnimation(sv_whatsapp_verification)
+        }
+    }
+
+    private fun showQR() {
+        if (!vm?.verification?.qrCode.isNullOrEmpty()) {
+            try {
+                val identifier = ";base64,"
+                var base64 = vm?.verification?.qrCode
+                if (base64 != null && base64.contains(identifier)) {
+                    base64 = base64.substring(base64.indexOf(identifier) + identifier.length)
+                }
+                val qrCode = BitmapDrawable(resources, TAPFileUtils.decodeBase64(base64))
+                runOnUiThread {
+                    iv_qr_code.setImageDrawable(qrCode)
+                    iv_qr_code.visibility = View.VISIBLE
+                    ll_button_show_qr_code.visibility = View.GONE
+                    tv_button_verify?.text = getString(R.string.tap_i_have_sent_the_message)
+                    tv_verification_description?.text = getString(R.string.tap_whatsapp_verification_qr_description)
+                    tv_button_change_number?.text = getString(R.string.tap_back)
+                    ll_button_verify?.setOnClickListener(checkVerificationClickListener)
+                }
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+    }
+
+    private fun hideQR() {
+        runOnUiThread {
+            iv_qr_code.setImageDrawable(null)
+            iv_qr_code.visibility = View.GONE
+            ll_button_show_qr_code.visibility = View.VISIBLE
+            tv_button_verify?.text = getString(R.string.tap_open_whatsapp)
+            tv_verification_description?.text = getString(R.string.tap_whatsapp_verification_description)
+            tv_button_change_number?.text = getString(R.string.tap_change_phone_number)
+            ll_button_verify?.setOnClickListener(openWhatsAppClickListener)
         }
     }
 
@@ -712,31 +803,59 @@ class TAPLoginActivity : TAPBaseActivity() {
         }
     }
 
-    /**=============================================================================================
-     * Login Flow
-    ==============================================================================================*/
-
     private fun validatePhoneNumber(): Boolean {
         val phoneNumber = checkAndEditPhoneNumber()
         val phoneNumberWithCode = String.format("%s%s", vm?.countryCallingID ?: "", phoneNumber)
         return if (et_phone_number.text.isEmpty()) {
             tv_input_error_info?.text = getString(R.string.tap_this_field_is_required)
             ll_input_error_info?.visibility = View.VISIBLE
+            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
             false
         }
         else if (!Patterns.PHONE.matcher(phoneNumber).matches() || phoneNumberWithCode.length !in 7..15) {
             tv_input_error_info?.text = getString(R.string.tap_error_invalid_phone_number)
             ll_input_error_info?.visibility = View.VISIBLE
+            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
             false
         }
         else {
             ll_input_error_info?.visibility = View.GONE
             vm?.phoneNumber = phoneNumber
+            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
             true
         }
     }
 
+    private fun showErrorSnackbar(errorMessage: String?) {
+        if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this)) {
+            tap_custom_snackbar?.show(
+                TapCustomSnackbarView.Companion.Type.ERROR,
+                R.drawable.tap_ic_info_outline_primary,
+                errorMessage ?: getString(R.string.tap_error_message_general)
+            )
+        }
+        else {
+            tap_custom_snackbar?.show(
+                TapCustomSnackbarView.Companion.Type.ERROR,
+                R.drawable.tap_ic_wifi_off_red,
+                R.string.tap_error_check_your_network
+            )
+        }
+    }
+
+    /**=============================================================================================
+     * WhatsApp Verification
+    ==============================================================================================*/
+
     private fun requestWhatsAppVerification() {
+        if (vm != null &&
+            vm!!.nextWhatsAppRequestTimestamp > System.currentTimeMillis() &&
+            vm?.lastRequestWhatsAppPhoneNumber == vm?.phoneNumber
+        ) {
+            val waitSeconds = ((vm!!.nextWhatsAppRequestTimestamp - System.currentTimeMillis()) / 1000).toInt()
+            showErrorSnackbar(String.format(getString(R.string.tap_d_format_error_verification_wait), waitSeconds))
+            return
+        }
         TAPDataManager.getInstance(instanceKey).requestWhatsAppVerification(
             vm?.selectedCountryID ?: 0,
             vm?.phoneNumber ?: "",
@@ -752,6 +871,8 @@ class TAPLoginActivity : TAPBaseActivity() {
                 override fun onSuccess(response: TAPOTPResponse?) {
                     vm?.verification = response?.verification
                     if (response?.isSuccess == true) {
+                        vm?.nextWhatsAppRequestTimestamp = (response.nextRequestSeconds * 1000).toLong() + System.currentTimeMillis()
+                        vm?.lastRequestWhatsAppPhoneNumber = vm?.phoneNumber ?: ""
                         tv_verification_phone_number?.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
                         showVerificationView()
                     }
@@ -766,16 +887,18 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                 override fun onError(errorMessage: String?) {
                     endLoading()
-                    TapTalkDialog.Builder(this@TAPLoginActivity)
-                        .setDialogType(ERROR_DIALOG)
-                        .setTitle(getString(R.string.tap_error))
-                        .setMessage(errorMessage ?: getString(R.string.tap_error_message_general))
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .setCancelable(true)
-                        .show()
+                    showErrorSnackbar(errorMessage)
                 }
             }
         )
+    }
+
+    private val openWhatsAppClickListener = OnClickListener {
+        openWhatsAppLink()
+    }
+
+    private val checkVerificationClickListener = OnClickListener {
+        checkWhatsAppVerification(true)
     }
 
     private fun openWhatsAppLink() {
@@ -805,29 +928,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             vm?.verification?.id,
             object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
                 override fun onSuccess(response: TAPLoginOTPVerifyResponse?) {
-                    if (response?.isRegistered == true && !response.ticket.isNullOrEmpty()) {
-                        // Login
-                        TapTalk.authenticateWithAuthTicket(
-                            instanceKey,
-                            response.ticket,
-                            true,
-                            object : TapCommonListener() {
-                                override fun onSuccess(successMessage: String?) {
-                                    showVerificationSuccess()
-                                    ll_button_continue_to_home?.setOnClickListener { continueToHome() }
-                                }
-
-                                override fun onError(errorCode: String?, errorMessage: String?) {
-                                    showVerificationError()
-                                }
-                            }
-                        )
-                    }
-                    else {
-                        // Register
-                        showVerificationSuccess()
-                        ll_button_continue_to_home?.setOnClickListener { continueToRegister() }
-                    }
+                    onVerificationSuccess(response)
                 }
 
                 override fun onError(error: TAPErrorModel?) {
@@ -855,6 +956,371 @@ class TAPLoginActivity : TAPBaseActivity() {
         )
     }
 
+    /**=============================================================================================
+     * OTP Verification
+    ==============================================================================================*/
+
+    private fun setupOtpView() {
+        runOnUiThread {
+            clearOtpEditText()
+            setupTimer()
+            Handler(Looper.getMainLooper()).postDelayed({
+                et_otp_code?.requestFocus()
+                TAPUtils.showKeyboard(this, et_otp_code)
+            }, animationDuration)
+        }
+    }
+
+    private fun clearOtpEditText() {
+        runOnUiThread {
+            v_pointer_1.visibility = View.VISIBLE
+            v_pointer_2.visibility = View.VISIBLE
+            v_pointer_3.visibility = View.VISIBLE
+            v_pointer_4.visibility = View.VISIBLE
+            v_pointer_5.visibility = View.VISIBLE
+            v_pointer_6.visibility = View.VISIBLE
+            tv_otp_filled_1.text = ""
+            tv_otp_filled_2.text = ""
+            tv_otp_filled_3.text = ""
+            tv_otp_filled_4.text = ""
+            tv_otp_filled_5.text = ""
+            tv_otp_filled_6.text = ""
+            et_otp_code.setText("")
+        }
+    }
+
+    private fun showVerifyOtpFailed() {
+        runOnUiThread {
+            et_otp_code.setText("")
+            tv_did_not_receive_otp.text = resources.getText(R.string.tap_error_invalid_otp)
+            tv_did_not_receive_otp.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+
+            et_otp_code?.requestFocus()
+            TAPUtils.showKeyboard(this, et_otp_code)
+        }
+    }
+
+    private val otpTextWatcher = object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            when (s?.length) {
+                1 -> {
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+
+                    tv_otp_filled_1.text = String.format("%s", s[0])
+                    tv_otp_filled_2.text = ""
+                    tv_otp_filled_3.text = ""
+                    tv_otp_filled_4.text = ""
+                    tv_otp_filled_5.text = ""
+                    tv_otp_filled_6.text = ""
+                }
+                2 -> {
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+
+                    tv_otp_filled_2.text = String.format("%s", s[1])
+                    tv_otp_filled_3.text = ""
+                    tv_otp_filled_4.text = ""
+                    tv_otp_filled_5.text = ""
+                    tv_otp_filled_6.text = ""
+                }
+                3 -> {
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+
+                    tv_otp_filled_3.text = String.format("%s", s[2])
+                    tv_otp_filled_4.text = ""
+                    tv_otp_filled_5.text = ""
+                    tv_otp_filled_6.text = ""
+                }
+                4 -> {
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+
+                    tv_otp_filled_4.text = String.format("%s", s[3])
+                    tv_otp_filled_5.text = ""
+                    tv_otp_filled_6.text = ""
+                }
+                5 -> {
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+
+                    tv_otp_filled_5.text = String.format("%s", s[4])
+                    tv_otp_filled_6.text = ""
+                }
+                6 -> {
+                    tv_otp_filled_6.text = String.format("%s", s[5])
+                    verifyOtp()
+                }
+                else -> {
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+
+                    tv_otp_filled_1.text = ""
+                    tv_otp_filled_2.text = ""
+                    tv_otp_filled_3.text = ""
+                    tv_otp_filled_4.text = ""
+                    tv_otp_filled_5.text = ""
+                    tv_otp_filled_6.text = ""
+                }
+            }
+        }
+    }
+
+    private val otpEditorListener = OnEditorActionListener { textView, i, keyEvent ->
+        if (textView.text.length >= 6) {
+            verifyOtp()
+        }
+        true
+    }
+
+    private fun showOtpTimer() {
+        runOnUiThread {
+            tv_otp_timer?.visibility = View.VISIBLE
+            ll_request_otp_again?.visibility = View.GONE
+            ll_loading_otp?.visibility = View.GONE
+            ll_otp_sent?.visibility = View.GONE
+        }
+    }
+
+    private fun showRequestOtpAgain() {
+        runOnUiThread {
+            ll_request_otp_again?.visibility = View.VISIBLE
+            tv_otp_timer?.visibility = View.GONE
+            ll_loading_otp?.visibility = View.GONE
+            ll_otp_sent?.visibility = View.GONE
+        }
+    }
+
+    private fun showResendOtpLoading() {
+        runOnUiThread {
+            ll_request_otp_again?.visibility = View.GONE
+            tv_otp_timer?.visibility = View.GONE
+            ll_loading_otp?.visibility = View.VISIBLE
+            ll_otp_sent?.visibility = View.GONE
+        }
+    }
+
+    private fun setupTimer() {
+        showOtpTimer()
+        setAndStartTimer()
+    }
+
+    private fun setAndStartTimer() {
+        if (vm == null || vm!!.nextOtpRequestTimestamp < System.currentTimeMillis()) {
+            return
+        }
+        tv_did_not_receive_otp?.text = resources.getText(R.string.tap_didnt_receive_the_6_digit_otp)
+        tv_did_not_receive_otp?.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextDark))
+
+        cancelTimer()
+        vm?.otpTimer = object : CountDownTimer(vm!!.nextOtpRequestTimestamp - System.currentTimeMillis(), 1000) {
+            override fun onFinish() {
+                showRequestOtpAgain()
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onTick(millisUntilFinished: Long) {
+                val timeLeft = millisUntilFinished / 1000
+                val minuteLeft = timeLeft / 60
+                val secondLeft = timeLeft - (60 * (timeLeft / 60))
+                when (minuteLeft) {
+                    0L -> {
+                        try {
+                            if (10 > secondLeft) {
+                                tv_otp_timer.text = "Wait 0:0$secondLeft"
+                            }
+                            else {
+                                tv_otp_timer.text = "Wait 0:$secondLeft"
+                            }
+                        }
+                        catch (e: Exception) {
+                            cancelTimer()
+                            e.printStackTrace()
+                        }
+                    }
+                    else -> {
+                        try {
+                            if (10 > secondLeft) {
+                                tv_otp_timer.text = "Wait $minuteLeft:0$secondLeft"
+                            }
+                            else {
+                                tv_otp_timer.text = "Wait $minuteLeft:$secondLeft"
+                            }
+                        }
+                        catch (e: Exception) {
+                            cancelTimer()
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            }
+        }.start()
+    }
+
+    private fun cancelTimer() {
+        vm?.otpTimer?.cancel()
+    }
+
+    private fun requestOtp(isResend: Boolean = false) {
+        if (vm != null &&
+            vm!!.nextOtpRequestTimestamp > System.currentTimeMillis() &&
+            vm?.lastRequestOtpPhoneNumber == vm?.phoneNumber
+        ) {
+            val waitSeconds = ((vm!!.nextOtpRequestTimestamp - System.currentTimeMillis()) / 1000).toInt()
+            showErrorSnackbar(String.format(getString(R.string.tap_d_format_error_otp_wait), waitSeconds))
+            return
+        }
+        TAPDataManager.getInstance(instanceKey).requestOTPLogin(
+            vm?.selectedCountryID ?: 0,
+            vm?.phoneNumber ?: "",
+            "",
+            object : TAPDefaultDataView<TAPOTPResponse>() {
+                override fun startLoading() {
+                    et_otp_code.isEnabled = false
+                    showPhoneNumberInputLoading(true)
+                    showResendOtpLoading()
+                }
+
+                override fun endLoading() {
+                    et_otp_code.isEnabled = true
+                    hidePhoneNumberInputLoading()
+                }
+
+                override fun onSuccess(response: TAPOTPResponse?) {
+                    vm?.verification = response?.verification
+                    vm?.otpID = response?.otpID ?: 0L
+                    vm?.otpKey = response?.otpKey
+                    if (response?.isSuccess == true) {
+                        if (response.channel == "whatsapp") {
+                            tv_otp_description.text = getString(R.string.tap_otp_verification_whatsapp_description)
+                            iv_otp_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, R.drawable.tap_ic_whatsapp))
+                        }
+                        else {
+                            tv_otp_description.text = getString(R.string.tap_otp_verification_sms_description)
+                            iv_otp_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, R.drawable.tap_ic_sms_circle))
+                        }
+                        tv_otp_phone_number?.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
+                        vm?.nextOtpRequestTimestamp = (response.nextRequestSeconds * 1000).toLong() + System.currentTimeMillis()
+                        vm?.lastRequestOtpPhoneNumber = vm?.phoneNumber ?: ""
+                        showOtpView()
+                        setupOtpView()
+                        Handler(Looper.getMainLooper()).postDelayed({ showOtpTimer() }, 2000)
+
+                        if (isResend) {
+                            clearOtpEditText()
+                            ll_request_otp_again.visibility = View.GONE
+                            ll_loading_otp.visibility = View.GONE
+                            tv_otp_timer.visibility = View.GONE
+                            ll_otp_sent.visibility = View.VISIBLE
+                            tap_custom_snackbar?.show(
+                                TapCustomSnackbarView.Companion.Type.DEFAULT,
+                                R.drawable.tap_ic_rounded_check,
+                                R.string.tap_otp_successfully_sent
+                            )
+                        }
+                    }
+                    else {
+                        onError(response?.message ?: response?.whatsAppFailureReason)
+                    }
+                }
+
+                override fun onError(error: TAPErrorModel?) {
+                    onError(error?.message)
+                }
+
+                override fun onError(errorMessage: String?) {
+                    endLoading()
+                    showErrorSnackbar(errorMessage)
+                    showRequestOtpAgain()
+                }
+            }
+        )
+    }
+
+    private fun verifyOtp() {
+        if (vm == null || vm!!.otpID <= 0L || vm?.otpKey.isNullOrEmpty()) {
+            return
+        }
+        TAPDataManager.getInstance(instanceKey).verifyOTPLogin(
+            vm!!.otpID,
+            vm!!.otpKey,
+            et_otp_code.text.toString(),
+            object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
+                override fun startLoading() {
+                    vm?.loadingDialog = TapLoadingDialog.Builder(this@TAPLoginActivity).show()
+                    et_otp_code.isEnabled = false
+                }
+
+                override fun endLoading() {
+                    vm?.loadingDialog?.dismiss()
+                    vm?.loadingDialog = null
+                    et_otp_code.isEnabled = true
+                }
+
+                override fun onSuccess(response: TAPLoginOTPVerifyResponse?) {
+                    onVerificationSuccess(response)
+                }
+
+                override fun onError(error: TAPErrorModel?) {
+                    onError(error?.message ?: getString(R.string.tap_error_message_general))
+                }
+
+                override fun onError(errorMessage: String) {
+                    endLoading()
+                    if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this@TAPLoginActivity)) {
+                        showVerifyOtpFailed()
+                    }
+                    else {
+                        showErrorSnackbar(errorMessage)
+                    }
+                }
+            })
+
+    }
+
+    /**=============================================================================================
+     * Authentication
+    ==============================================================================================*/
+
     private fun continueToHome() {
         TAPApiManager.getInstance(instanceKey).isLoggedOut = false
         if (BuildConfig.DEBUG) {
@@ -874,6 +1340,40 @@ class TAPLoginActivity : TAPBaseActivity() {
             vm?.countryCallingID ?: "",
             vm?.countryFlagUrl ?: "",
             vm?.phoneNumber ?: ""
+        )
+    }
+
+    private fun onVerificationSuccess(response: TAPLoginOTPVerifyResponse?) {
+        if (response?.isRegistered == true && !response.ticket.isNullOrEmpty()) {
+            // Login
+            authenticateTapTalk(response.ticket)
+        }
+        else {
+            // Register
+            showVerificationSuccess()
+            ll_button_continue_to_home?.setOnClickListener { continueToRegister() }
+        }
+    }
+
+    private fun authenticateTapTalk(ticket: String?) {
+        if (ticket.isNullOrEmpty()) {
+            showVerificationError()
+            return
+        }
+        TapTalk.authenticateWithAuthTicket(
+            instanceKey,
+            ticket,
+            true,
+            object : TapCommonListener() {
+                override fun onSuccess(successMessage: String?) {
+                    showVerificationSuccess()
+                    ll_button_continue_to_home?.setOnClickListener { continueToHome() }
+                }
+
+                override fun onError(errorCode: String?, errorMessage: String?) {
+                    showVerificationError()
+                }
+            }
         )
     }
 }
