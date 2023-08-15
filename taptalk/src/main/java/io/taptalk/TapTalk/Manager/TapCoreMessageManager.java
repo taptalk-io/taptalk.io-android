@@ -18,10 +18,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SITE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
@@ -444,6 +446,11 @@ public class TapCoreMessageManager {
                         messageData = new HashMap<>();
                     }
                     messageData.put(FILE_URL, imageUrl);
+                    String mediaType = TAPUtils.getMimeTypeFromUrl(imageUrl);
+                    if (mediaType == null || mediaType.isEmpty()) {
+                        mediaType = IMAGE_JPEG;
+                    }
+                    messageData.put(MEDIA_TYPE, mediaType);
                     // Create thumbnail
                     HashMap<String, Object> finalMessageData = messageData;
                     TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(resource, THUMB_MAX_DIMENSION, new TAPFileUploadManager.BitmapInterface() {
@@ -507,6 +514,46 @@ public class TapCoreMessageManager {
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
         sendVideoMessage(videoUri, caption, room, listener);
+    }
+
+    public void sendVideoMessage(String videoUrl, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).createVideoMessageModel(videoUrl, caption, room, new TapCoreSendMessageListener() {
+            @Override
+            public void onStart(TAPMessageModel message) {
+                if (message == null) {
+                    return;
+                }
+                HashMap<String, Object> messageData = message.getData();
+                if (messageData == null) {
+                    messageData = new HashMap<>();
+                }
+                messageData.put(FILE_URL, videoUrl);
+                message.setData(messageData);
+                sendCustomMessage(message, listener);
+            }
+
+            @Override
+            public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
+                listener.onError(message, errorCode, errorMessage);
+            }
+        });
+    }
+
+    public void sendVideoMessage(String videoUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
+        sendVideoMessage(videoUrl, caption, room, listener);
     }
 
     public void sendFileMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
