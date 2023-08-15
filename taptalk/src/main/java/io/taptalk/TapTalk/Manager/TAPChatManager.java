@@ -1525,7 +1525,7 @@ public class TAPChatManager {
         return messageModel;
     }
 
-    private TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption, TAPRoomModel roomModel) {
+    public TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption, TAPRoomModel roomModel) {
         int imageWidth = bitmap.getWidth();
         int imageHeight = bitmap.getHeight();
         long size = bitmap.getByteCount();

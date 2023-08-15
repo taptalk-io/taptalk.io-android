@@ -19,9 +19,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SITE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
@@ -29,6 +31,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
@@ -38,14 +41,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,6 +69,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
@@ -335,6 +345,9 @@ public class TapCoreMessageManager {
 
     public void sendTextMessage(String messageBody, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendTextMessageWithRoomModel(messageBody, room, listener);
@@ -342,14 +355,20 @@ public class TapCoreMessageManager {
 
     public void sendTextMessage(String messageBody, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendTextMessageWithRoomModel(messageBody, room, listener);
+        sendTextMessage(messageBody, room, listener);
     }
 
     public void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendLocationMessage(address, latitude, longitude, room, listener);
@@ -357,14 +376,20 @@ public class TapCoreMessageManager {
 
     public void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendLocationMessage(address, latitude, longitude, room, listener);
+        sendLocationMessage(latitude, longitude, address, room, listener);
     }
 
     public void sendImageMessage(Uri imageUri, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendImageMessage(TapTalk.appContext, room, imageUri, caption, listener);
@@ -372,14 +397,20 @@ public class TapCoreMessageManager {
 
     public void sendImageMessage(Uri imageUri, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendImageMessage(TapTalk.appContext, room, imageUri, caption, listener);
+        sendImageMessage(imageUri, caption, room, listener);
     }
 
     public void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendImageMessage(TapTalk.appContext, room, image, caption, listener);
@@ -387,14 +418,81 @@ public class TapCoreMessageManager {
 
     public void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendImageMessage(TapTalk.appContext, room, image, caption, listener);
+        sendImageMessage(image, caption, room, listener);
+    }
+
+    public void sendImageMessage(String imageUrl, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        Glide.with(TapTalk.appContext).asBitmap().load(imageUrl).into(new CustomTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                TAPMessageModel message = TAPChatManager.getInstance(instanceKey).createImageMessageModel(resource, caption, room);
+                try {
+                    HashMap<String, Object> messageData = message.getData();
+                    if (messageData == null) {
+                        messageData = new HashMap<>();
+                    }
+                    messageData.put(FILE_URL, imageUrl);
+                    // Create thumbnail
+                    HashMap<String, Object> finalMessageData = messageData;
+                    TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(resource, THUMB_MAX_DIMENSION, new TAPFileUploadManager.BitmapInterface() {
+                        @Override
+                        public void onBitmapReady(Bitmap thumbBitmap) {
+                            String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
+                            finalMessageData.put(THUMBNAIL, thumbBase64);
+                            message.setData(finalMessageData);
+                            sendCustomMessage(message, listener);
+                        }
+
+                        @Override
+                        public void onBitmapError() {
+                            message.setData(finalMessageData);
+                            sendCustomMessage(message, listener);
+                        }
+                    });
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    if (listener != null) {
+                        listener.onError(message, ERROR_CODE_OTHERS, e.getLocalizedMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+
+            }
+        });
+    }
+
+    public void sendImageMessage(String imageUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
+        sendImageMessage(imageUrl, caption, room, listener);
     }
 
     public void sendVideoMessage(Uri videoUri, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendVideoMessage(TapTalk.appContext, room, videoUri, caption, listener);
@@ -402,14 +500,20 @@ public class TapCoreMessageManager {
 
     public void sendVideoMessage(Uri videoUri, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendVideoMessage(TapTalk.appContext, room, videoUri, caption, listener);
+        sendVideoMessage(videoUri, caption, room, listener);
     }
 
     public void sendFileMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, file, listener);
@@ -417,14 +521,20 @@ public class TapCoreMessageManager {
 
     public void sendFileMessage(File file, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, file, listener);
+        sendFileMessage(file, room, listener);
     }
 
     public void sendFileMessage(Uri uri, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, uri, listener);
@@ -432,14 +542,20 @@ public class TapCoreMessageManager {
 
     public void sendFileMessage(Uri uri, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, uri, listener);
+        sendFileMessage(uri, room, listener);
     }
 
     public void sendFileMessage(File file, TAPRoomModel room, String caption, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, file, caption, listener);
@@ -447,14 +563,20 @@ public class TapCoreMessageManager {
 
     public void sendFileMessage(File file, TAPRoomModel room, TAPMessageModel quotedMessage, String caption, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, file, caption, listener);
+        sendFileMessage(file, room, caption, listener);
     }
 
     public void sendFileMessage(Uri uri, TAPRoomModel room, String caption, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, uri, caption, listener);
@@ -462,14 +584,20 @@ public class TapCoreMessageManager {
 
     public void sendFileMessage(Uri uri, TAPRoomModel room, TAPMessageModel quotedMessage, String caption, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, uri, caption, listener);
+        sendFileMessage(uri, room, caption, listener);
     }
 
     public void sendVoiceMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, file, listener);
@@ -477,14 +605,20 @@ public class TapCoreMessageManager {
 
     public void sendVoiceMessage(File file, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, file, listener);
+        sendVoiceMessage(file, room, listener);
     }
 
     public void sendVoiceMessage(Uri uri, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, uri, listener);
@@ -492,14 +626,20 @@ public class TapCoreMessageManager {
 
     public void sendVoiceMessage(Uri uri, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, uri, listener);
+        sendVoiceMessage(uri, room, listener);
     }
 
     public void sendLinkMessage(String messageBody, TAPRoomModel room, List<String> urls, @Nullable String title, @Nullable String description, @Nullable String image, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         HashMap<String, Object> data = new HashMap<>();
@@ -519,6 +659,9 @@ public class TapCoreMessageManager {
 
     public void sendLinkMessage(String messageBody, TAPRoomModel room, List<String> urls, @Nullable String title, @Nullable String description, @Nullable String image, @Nullable String siteName, @Nullable String type,  TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         HashMap<String, Object> data = new HashMap<>();
@@ -544,6 +687,9 @@ public class TapCoreMessageManager {
 
     public void sendLinkMessage(String messageBody, TAPRoomModel room, TAPMessageModel quotedMessage, List<String> urls, @Nullable String title, @Nullable String description, @Nullable String image, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
@@ -552,6 +698,9 @@ public class TapCoreMessageManager {
 
     public void sendLinkMessage(String messageBody, TAPRoomModel room, TAPMessageModel quotedMessage, List<String> urls, @Nullable String title, @Nullable String description, @Nullable String image, @Nullable String siteName, @Nullable String type, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
@@ -560,6 +709,9 @@ public class TapCoreMessageManager {
 
     public void sendForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(messageToForward, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         ArrayList<TAPMessageModel> messagesToForward = new ArrayList<>();
@@ -570,6 +722,9 @@ public class TapCoreMessageManager {
 
     public void sendForwardedMessages(List<TAPMessageModel> messagesToForward, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         ArrayList<TAPMessageModel> messages = new ArrayList<>(messagesToForward);
@@ -579,6 +734,9 @@ public class TapCoreMessageManager {
 
     public void sendForwardedMessageToMultipleRooms(TAPMessageModel messageToForward, List<TAPRoomModel> rooms, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(messageToForward, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         ArrayList<TAPMessageModel> messagesToForward = new ArrayList<>();
@@ -591,6 +749,9 @@ public class TapCoreMessageManager {
 
     public void sendForwardedMessagesToMultipleRooms(List<TAPMessageModel> messagesToForward, List<TAPRoomModel> rooms, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         ArrayList<TAPMessageModel> messages = new ArrayList<>(messagesToForward);
