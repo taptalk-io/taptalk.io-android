@@ -36,6 +36,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.R;
@@ -537,6 +539,42 @@ public class TAPFileUtils {
             }
         }
         return result;
+    }
+
+    public static @Nullable String getFileNameFromURL(String url) {
+        if (url == null || url.isEmpty()) {
+            return "";
+        }
+        try {
+            URL resource = new URL(url);
+            String host = resource.getHost();
+            if (host.length() > 0 && url.endsWith(host)) {
+                // handle ...example.com
+                return "";
+            }
+        }
+        catch (MalformedURLException e) {
+            return "";
+        }
+
+        int startIndex = url.lastIndexOf('/') + 1;
+        int length = url.length();
+
+        // find end index for ?
+        int lastQMPos = url.lastIndexOf('?');
+        if (lastQMPos == -1) {
+            lastQMPos = length;
+        }
+
+        // find end index for #
+        int lastHashPos = url.lastIndexOf('#');
+        if (lastHashPos == -1) {
+            lastHashPos = length;
+        }
+
+        // calculate the end index
+        int endIndex = Math.min(lastQMPos, lastHashPos);
+        return url.substring(startIndex, endIndex);
     }
 
     public static File renameDuplicateFile(File file) {

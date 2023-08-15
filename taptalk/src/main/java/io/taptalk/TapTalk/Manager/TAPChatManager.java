@@ -35,6 +35,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
@@ -1194,6 +1195,73 @@ public class TAPChatManager {
         }
     }
 
+    // Create file message with remote url
+    public void createFileMessageModel(String fileUrl, TAPRoomModel roomModel, String caption, TapSendMessageInterface listener) {
+        new Thread(() -> {
+            try {
+                String fileName = TAPFileUtils.getFileNameFromURL(fileUrl);
+                if (fileName == null || fileName.isEmpty()) {
+                    fileName = TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+                }
+
+                String fileMimeType = TAPUtils.getMimeTypeFromUrl(fileUrl);
+                if (fileMimeType == null || fileMimeType.isEmpty()) {
+                    fileMimeType = "application/octet-stream";
+                }
+
+                URL url = new URL(fileUrl);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                Number size = connection.getContentLength();
+
+                // Build message model
+                TAPMessageModel messageModel;
+                HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, size).toHashMap();
+                data.put(FILE_URL, fileUrl);
+                if (caption != null && !caption.isEmpty()) {
+                    data.put(CAPTION, caption);
+                }
+                data.remove(FILE_URI);
+                if (null == getQuotedMessage(roomModel.getRoomID())) {
+                    messageModel = TAPMessageModel.Builder(
+                            generateFileMessageBody(fileName),
+                            roomModel,
+                            TYPE_FILE,
+                            System.currentTimeMillis(),
+                            activeUser,
+                            TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                            data);
+                }
+                else {
+                    if (null != getUserInfo(roomModel.getRoomID())) {
+                        data.put(USER_INFO, getUserInfo(roomModel.getRoomID()));
+                    }
+                    messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                            generateFileMessageBody(fileName),
+                            roomModel,
+                            TYPE_FILE,
+                            System.currentTimeMillis(),
+                            activeUser,
+                            TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                            data,
+                            getQuotedMessage(roomModel.getRoomID()),
+                            instanceKey);
+                    setQuotedMessage(roomModel.getRoomID(), null, 0);
+                }
+                // Save file Uri
+                if (null != listener) {
+                    listener.onStart(messageModel);
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                if (null != listener) {
+                    listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve file data.");
+                }
+            }
+        }).start();
+    }
+
     private void addFileMessageToUploadQueue(Context context, TAPMessageModel messageModel, TAPRoomModel roomModel, TapSendMessageInterface listener) {
         addFileMessageToUploadQueue(context, messageModel, roomModel, listener, 0L);
     }
@@ -1672,9 +1740,11 @@ public class TAPChatManager {
                 // Build message model
                 TAPMessageModel messageModel;
                 HashMap<String, Object> data = new TAPDataImageModel(width, height, size, caption, null, "").toHashMap();
+                data.put(FILE_URL, fileUrl);
                 data.put(DURATION, duration);
                 data.put(MEDIA_TYPE, mediaType);
                 data.put(THUMBNAIL, thumbBase64);
+                data.remove(FILE_URI);
                 if (null == getQuotedMessage(room.getRoomID())) {
                     messageModel = TAPMessageModel.Builder(
                             generateVideoCaption(caption),
@@ -1708,7 +1778,7 @@ public class TAPChatManager {
             catch (Exception e) {
                 e.printStackTrace();
                 if (null != listener) {
-                    listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data from provided Uri.");
+                    listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data.");
                 }
             }
         }).start();

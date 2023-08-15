@@ -5,6 +5,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_PRODUCT_EMPTY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_URI_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_DOWNLOAD_CANCELLED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
@@ -20,6 +21,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
@@ -55,7 +57,11 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 
 import java.io.File;
@@ -436,7 +442,20 @@ public class TapCoreMessageManager {
             }
             return;
         }
-        Glide.with(TapTalk.appContext).asBitmap().load(imageUrl).into(new CustomTarget<Bitmap>() {
+        Glide.with(TapTalk.appContext).asBitmap().load(imageUrl).listener(new RequestListener<Bitmap>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                if (listener != null) {
+                    listener.onError(null, ERROR_CODE_OTHERS, e != null ? e.getLocalizedMessage() : "Unable to retrieve image data.");
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                return false;
+            }
+        }).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 TAPMessageModel message = TAPChatManager.getInstance(instanceKey).createImageMessageModel(resource, caption, room);
@@ -451,6 +470,8 @@ public class TapCoreMessageManager {
                         mediaType = IMAGE_JPEG;
                     }
                     messageData.put(MEDIA_TYPE, mediaType);
+                    messageData.remove(FILE_URI);
+
                     // Create thumbnail
                     HashMap<String, Object> finalMessageData = messageData;
                     TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(resource, THUMB_MAX_DIMENSION, new TAPFileUploadManager.BitmapInterface() {
@@ -526,16 +547,9 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance(instanceKey).createVideoMessageModel(videoUrl, caption, room, new TapCoreSendMessageListener() {
             @Override
             public void onStart(TAPMessageModel message) {
-                if (message == null) {
-                    return;
+                if (message != null) {
+                    sendCustomMessage(message, listener);
                 }
-                HashMap<String, Object> messageData = message.getData();
-                if (messageData == null) {
-                    messageData = new HashMap<>();
-                }
-                messageData.put(FILE_URL, videoUrl);
-                message.setData(messageData);
-                sendCustomMessage(message, listener);
             }
 
             @Override
@@ -638,6 +652,28 @@ public class TapCoreMessageManager {
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
         sendFileMessage(uri, room, caption, listener);
+    }
+
+    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPChatManager.getInstance(instanceKey).createFileMessageModel(fileUrl, room, caption, new TapCoreSendMessageListener() {
+            @Override
+            public void onStart(TAPMessageModel message) {
+                if (message != null) {
+                    sendCustomMessage(message, listener);
+                }
+            }
+
+            @Override
+            public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
+                listener.onError(message, errorCode, errorMessage);
+            }
+        });
     }
 
     public void sendVoiceMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
