@@ -2107,12 +2107,13 @@ public class TAPChatManager {
         if (null == messageToForward) {
             return null;
         }
-        if ((messageToForward.getType() == TYPE_VIDEO || messageToForward.getType() == TYPE_FILE || messageToForward.getType() == TYPE_VOICE) && null != messageToForward.getData()) {
-            // Copy file message Uri to destination room
-            String key = TAPUtils.getUriKeyFromMessage(messageToForward);
-            Uri uri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(messageToForward);
-            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(room.getRoomID(), key, uri);
-        }
+        // File message Uri no longer room ID restricted
+//        if ((messageToForward.getType() == TYPE_VIDEO || messageToForward.getType() == TYPE_FILE || messageToForward.getType() == TYPE_VOICE) && null != messageToForward.getData()) {
+//            // Copy file message Uri to destination room
+//            String key = TAPUtils.getUriKeyFromMessage(messageToForward);
+//            Uri uri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(messageToForward);
+//            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(room.getRoomID(), key, uri);
+//        }
         return TAPMessageModel.BuilderForwardedMessage(
                 messageToForward,
                 room,
