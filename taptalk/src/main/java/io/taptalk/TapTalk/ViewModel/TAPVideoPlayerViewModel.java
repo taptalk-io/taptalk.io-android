@@ -14,11 +14,12 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 public class TAPVideoPlayerViewModel extends AndroidViewModel {
     private TAPMessageModel message;
     private Uri videoUri;
+    private String videoPath;
     private MediaPlayer mediaPlayer;
     private Timer durationTimer, hidePauseButtonTimer;
     private int duration, pausedPosition;
     private float mediaVolume = 1f;
-    private boolean isVideoPlaying, isSeeking, isFirstLoadFinished;
+    private boolean isVideoPlaying, isVideoLoading, isSeeking, isFirstLoadFinished;
 
     public TAPVideoPlayerViewModel(@NonNull Application application) {
         super(application);
@@ -38,6 +39,14 @@ public class TAPVideoPlayerViewModel extends AndroidViewModel {
 
     public void setVideoUri(Uri videoUri) {
         this.videoUri = videoUri;
+    }
+
+    public String getVideoPath() {
+        return videoPath;
+    }
+
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
     }
 
     public MediaPlayer getMediaPlayer() {
@@ -94,6 +103,14 @@ public class TAPVideoPlayerViewModel extends AndroidViewModel {
 
     public void setVideoPlaying(boolean videoPlaying) {
         isVideoPlaying = videoPlaying;
+    }
+
+    public boolean isVideoLoading() {
+        return isVideoLoading;
+    }
+
+    public void setVideoLoading(boolean videoLoading) {
+        isVideoLoading = videoLoading;
     }
 
     public boolean isSeeking() {

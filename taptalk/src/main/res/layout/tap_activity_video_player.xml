@@ -155,6 +155,18 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <ProgressBar
+        android:id="@+id/pb_video_loading"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:indeterminateTint="@color/tapWhite"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:targetApi="lollipop" />
+
     <include layout="@layout/tap_layout_popup_loading_screen" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,8 @@ package io.taptalk.TapTalk.View.Activity;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.VIDEO_MP4;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
 
 import android.app.Activity;
@@ -15,10 +17,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,9 +36,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
@@ -53,6 +59,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     private VideoView videoView;
     private TextView tvCurrentTime, tvCurrentTimeDummy, tvDuration, tvDurationDummy, tvLoadingText;
     private ImageView ivButtonClose, ivButtonSave, ivButtonMute, ivButtonPlayPause, ivSaving;
+    private ProgressBar pbVideoLoading;
     private SeekBar seekBar; // TODO: 21 November 2019 STYLE SEEK BAR FOR API BELOW 21
 
     private TAPVideoPlayerViewModel vm;
@@ -62,7 +69,15 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         String instanceKey,
         Uri uri
     ) {
-        start(context, instanceKey, uri, null);
+        start(context, instanceKey, uri, null, null);
+    }
+
+    public static void start(
+        Context context,
+        String instanceKey,
+        String url
+    ) {
+        start(context, instanceKey, null, url, null);
     }
 
     public static void start(
@@ -71,9 +86,33 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         Uri uri,
         @Nullable TAPMessageModel message
     ) {
+        start(context, instanceKey, uri, null, message);
+    }
+
+    public static void start(
+        Context context,
+        String instanceKey,
+        String url,
+        @Nullable TAPMessageModel message
+    ) {
+        start(context, instanceKey, null, url, message);
+    }
+
+    public static void start(
+        Context context,
+        String instanceKey,
+        Uri uri,
+        String url,
+        @Nullable TAPMessageModel message
+    ) {
         Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
-        intent.putExtra(URI, uri.toString());
+        if (null != uri) {
+            intent.putExtra(URI, uri.toString());
+        }
+        if (null != url && !url.isEmpty()) {
+            intent.putExtra(URL_MESSAGE, url);
+        }
         if (null != message) {
             intent.putExtra(MESSAGE, message);
         }
@@ -135,11 +174,23 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     private void initViewModel() {
         vm = new ViewModelProvider(this).get(TAPVideoPlayerViewModel.class);
         String uriString = getIntent().getStringExtra(URI);
+        String urlPath = getIntent().getStringExtra(URL_MESSAGE);
         vm.setMessage(getIntent().getParcelableExtra(MESSAGE));
         if (null != uriString) {
-//            Uri parsedUri = TAPFileUtils.parseFileUri(Uri.parse(uriString));
-//            vm.setVideoUri(parsedUri);
             vm.setVideoUri(Uri.parse(uriString));
+        }
+        else if (null != urlPath && !urlPath.isEmpty()) {
+            vm.setVideoPath(urlPath);
+            new Thread(() -> {
+                File videoFile = TAPFileUtils.createTemporaryCachedFile(this, urlPath, VIDEO_MP4);
+                if (videoFile != null && videoFile.length() > 0L) {
+                    Uri uri = Uri.fromFile(videoFile);
+                    vm.setVideoUri(uri);
+                    hideVideoLoading();
+                    updateVideoViewParams();
+                    loadVideo();
+                }
+            }).start();
         }
         else {
             onBackPressed();
@@ -161,6 +212,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         ivButtonMute = findViewById(R.id.iv_button_mute);
         ivButtonPlayPause = findViewById(R.id.iv_button_play_pause);
         ivSaving = findViewById(R.id.iv_loading_image);
+        pbVideoLoading = findViewById(R.id.pb_video_loading);
         seekBar = findViewById(R.id.seek_bar);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
@@ -176,6 +228,10 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
 
         seekBar.setOnSeekBarChangeListener(seekBarListener);
 
+        if (null == vm.getVideoUri() && null != vm.getVideoPath() && !vm.getVideoPath().isEmpty()) {
+            showVideoLoading();
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ivButtonClose.setBackground(AppCompatResources.getDrawable(this, R.drawable.tap_bg_video_player_button_ripple));
             ivButtonSave.setBackground(AppCompatResources.getDrawable(this, R.drawable.tap_bg_video_player_button_ripple));
@@ -184,10 +240,15 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void updateVideoViewParams() {
+        if (vm.getVideoUri() == null) {
+            return;
+        }
         try {
             // Get video data
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(TAPVideoPlayerActivity.this, vm.getVideoUri());
+            if (vm.getVideoUri() != null) {
+                retriever.setDataSource(TAPVideoPlayerActivity.this, vm.getVideoUri());
+            }
             String rotation = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
@@ -223,16 +284,23 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void loadVideo() {
-        try {
-            videoView.setVideoURI(vm.getVideoUri());
-            videoView.setOnPreparedListener(onPreparedListener);
-            videoView.setOnCompletionListener(onCompletionListener);
-            videoView.setOnErrorListener(onErrorListener);
+        if (vm.getVideoUri() == null) {
+            return;
         }
-        catch (Exception e) {
-            e.printStackTrace();
-            finishActivity();
-        }
+        runOnUiThread(() -> {
+            try {
+                if (vm.getVideoUri() != null) {
+                    videoView.setVideoURI(vm.getVideoUri());
+                }
+                videoView.setOnPreparedListener(onPreparedListener);
+                videoView.setOnCompletionListener(onCompletionListener);
+                videoView.setOnErrorListener(onErrorListener);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                finishActivity();
+            }
+        });
     }
 
     private void startProgressTimer() {
@@ -292,7 +360,9 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             showLayout(clFooter, 1f);
             showLayout(ivButtonClose, 0.7f);
             showLayout(ivButtonMute, 0.7f);
-            showLayout(ivButtonPlayPause, 1f);
+            if (!vm.isVideoLoading()) {
+                showLayout(ivButtonPlayPause, 1f);
+            }
             if (null != vm.getMessage()) {
                 showLayout(ivButtonSave, 0.7f);
             }
@@ -382,12 +452,30 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             ActivityCompat.requestPermissions(this, TAPUtils.getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
         }
         else {
-            showLoading();
+            showSaveVideoLoading();
             TAPFileDownloadManager.getInstance(instanceKey).writeFileToDisk(this, vm.getMessage(), saveVideoListener);
         }
     }
 
-    private void showLoading() {
+    private void showVideoLoading() {
+        runOnUiThread(() -> {
+            vm.setVideoLoading(true);
+            videoView.setVisibility(View.GONE);
+            pbVideoLoading.setVisibility(View.VISIBLE);
+            hideLayout(ivButtonPlayPause);
+        });
+    }
+
+    private void hideVideoLoading() {
+        runOnUiThread(() -> {
+            videoView.setVisibility(View.VISIBLE);
+            pbVideoLoading.setVisibility(View.GONE);
+            showLayout(ivButtonPlayPause, 1f);
+            vm.setVideoLoading(false);
+        });
+    }
+
+    private void showSaveVideoLoading() {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             TAPUtils.rotateAnimateInfinitely(this, ivSaving);
@@ -397,18 +485,18 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         });
     }
 
-    private void endLoading() {
+    private void endSaveVideoLoading() {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
             tvLoadingText.setText(getString(R.string.tap_video_saved));
-            flLoading.setOnClickListener(v -> hideLoading());
+            flLoading.setOnClickListener(v -> hideSaveVideoLoading());
 
-            new Handler().postDelayed(this::hideLoading, 1000L);
+            new Handler().postDelayed(this::hideSaveVideoLoading, 1000L);
         });
     }
 
-    private void hideLoading() {
+    private void hideSaveVideoLoading() {
         runOnUiThread(() -> {
             flLoading.setVisibility(View.GONE);
             ivButtonSave.setOnClickListener(saveButtonListener);
@@ -515,13 +603,13 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     private final TapTalkActionInterface saveVideoListener = new TapTalkActionInterface() {
         @Override
         public void onSuccess(String message) {
-            endLoading();
+            endSaveVideoLoading();
         }
 
         @Override
         public void onError(String errorMessage) {
             runOnUiThread(() -> {
-                hideLoading();
+                hideSaveVideoLoading();
                 Toast.makeText(TAPVideoPlayerActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             });
         }
