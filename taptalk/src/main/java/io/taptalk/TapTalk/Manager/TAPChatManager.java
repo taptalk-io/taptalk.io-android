@@ -31,6 +31,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.AUDIO_MP3;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.VIDEO_MP4;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
@@ -1707,14 +1709,20 @@ public class TAPChatManager {
     }
 
     // Create video message with remote url
-    public void createVideoMessageModel(String fileUrl, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
+    public void createVideoMessageModel(Context context, String fileUrl, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
         new Thread(() -> {
             try {
                 // Get video data
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                retriever.setDataSource(fileUrl);
+                Uri savedUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(TAPUtils.getUriKeyFromUrl(fileUrl));
+                if (savedUri != null) {
+                    retriever.setDataSource(context, savedUri);
+                }
+                else {
+                    retriever.setDataSource(fileUrl);
+                }
                 String rotation = null;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                     rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
                 }
                 int width, height;
@@ -1747,28 +1755,30 @@ public class TAPChatManager {
                 data.remove(FILE_URI);
                 if (null == getQuotedMessage(room.getRoomID())) {
                     messageModel = TAPMessageModel.Builder(
-                            generateVideoCaption(caption),
-                            room,
-                            TYPE_VIDEO,
-                            System.currentTimeMillis(),
-                            activeUser,
-                            TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                            data);
+                        generateVideoCaption(caption),
+                        room,
+                        TYPE_VIDEO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                        data
+                    );
                 }
                 else {
                     if (null != getUserInfo(room.getRoomID())) {
                         data.put(USER_INFO, getUserInfo(room.getRoomID()));
                     }
                     messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                            generateVideoCaption(caption),
-                            room,
-                            TYPE_VIDEO,
-                            System.currentTimeMillis(),
-                            activeUser,
-                            TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                            data,
-                            getQuotedMessage(room.getRoomID()),
-                            instanceKey);
+                        generateVideoCaption(caption),
+                        room,
+                        TYPE_VIDEO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                        data,
+                        getQuotedMessage(room.getRoomID()),
+                        instanceKey
+                    );
                     setQuotedMessage(room.getRoomID(), null, 0);
                 }
                 if (null != listener) {
@@ -1776,10 +1786,53 @@ public class TAPChatManager {
                 }
             }
             catch (Exception e) {
+                Log.e(">>>>>>>>>>>>", "createVideoMessageModel exception: " + e.getMessage());
                 e.printStackTrace();
-                if (null != listener) {
-                    listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data.");
+                // Fallback message model
+                TAPMessageModel messageModel;
+                HashMap<String, Object> data = new HashMap<>();
+                String mediaType = TAPUtils.getMimeTypeFromUrl(fileUrl);
+                if (mediaType == null || mediaType.isEmpty()) {
+                    mediaType = VIDEO_MP4;
                 }
+                data.put(FILE_URL, fileUrl);
+                data.put(CAPTION, caption);
+                data.put(MEDIA_TYPE, mediaType);
+                data.remove(FILE_URI);
+                if (null == getQuotedMessage(room.getRoomID())) {
+                    messageModel = TAPMessageModel.Builder(
+                        generateVideoCaption(caption),
+                        room,
+                        TYPE_VIDEO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                        data
+                    );
+                }
+                else {
+                    if (null != getUserInfo(room.getRoomID())) {
+                        data.put(USER_INFO, getUserInfo(room.getRoomID()));
+                    }
+                    messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                        generateVideoCaption(caption),
+                        room,
+                        TYPE_VIDEO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                        data,
+                        getQuotedMessage(room.getRoomID()),
+                        instanceKey
+                    );
+                    setQuotedMessage(room.getRoomID(), null, 0);
+                }
+                if (null != listener) {
+                    listener.onStart(messageModel);
+                }
+//                if (null != listener) {
+//                    listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data.");
+//                }
             }
         }).start();
     }

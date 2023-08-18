@@ -792,10 +792,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 case SEND_MEDIA_FROM_PREVIEW:
                     ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);
                     if (null != medias && 0 < medias.size()) {
+                        TapCoreSendMessageListener listener = new TapCoreSendMessageListener() {};
                         for (TAPMediaPreviewModel media : medias) {
                             if (media.getType() == TYPE_IMAGE) {
                                 if (media.getUrl() != null && !media.getUrl().isEmpty()) {
-                                    TapCoreMessageManager.getInstance(instanceKey).sendImageMessage(media.getUrl(), media.getCaption(), vm.getRoom(), null);
+                                    TapCoreMessageManager.getInstance(instanceKey).sendImageMessage(media.getUrl(), media.getCaption(), vm.getRoom(), listener);
                                 }
                                 else {
                                     TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
@@ -803,7 +804,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             }
                             else if (media.getType() == TYPE_VIDEO) {
                                 if (media.getUrl() != null && !media.getUrl().isEmpty()) {
-                                    TapCoreMessageManager.getInstance(instanceKey).sendVideoMessage(media.getUrl(), media.getCaption(), vm.getRoom(), null);
+                                    TapCoreMessageManager.getInstance(instanceKey).sendVideoMessage(TapUIChatActivity.this, media.getUrl(), media.getCaption(), vm.getRoom(), listener);
                                 }
                                 else {
                                     TAPChatManager.getInstance(instanceKey).createVideoMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());

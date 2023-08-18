@@ -32,6 +32,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
@@ -116,6 +118,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
+import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -445,9 +448,46 @@ public class TapCoreMessageManager {
         Glide.with(TapTalk.appContext).asBitmap().load(imageUrl).listener(new RequestListener<Bitmap>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                if (listener != null) {
-                    listener.onError(null, ERROR_CODE_OTHERS, e != null ? e.getLocalizedMessage() : "Unable to retrieve image data.");
+                // Create fallback message
+                HashMap<String, Object> messageData = new HashMap<>();
+                messageData.put(FILE_URL, imageUrl);
+                String mediaType = TAPUtils.getMimeTypeFromUrl(imageUrl);
+                if (mediaType == null || mediaType.isEmpty()) {
+                    mediaType = IMAGE_JPEG;
                 }
+                messageData.put(MEDIA_TYPE, mediaType);
+                messageData.remove(FILE_URI);
+                TAPMessageModel message;
+                if (null == TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID())) {
+                    message = TAPMessageModel.Builder(
+                        TAPChatManager.getInstance(instanceKey).generateImageCaption(caption),
+                        room,
+                        TYPE_IMAGE,
+                        System.currentTimeMillis(),
+                        TAPChatManager.getInstance(instanceKey).getActiveUser(),
+                        TYPE_PERSONAL == room.getType() ? TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                        messageData
+                    );
+                } else {
+                    if (null != TAPChatManager.getInstance(instanceKey).getUserInfo(room.getRoomID())) {
+                        messageData.put(USER_INFO, TAPChatManager.getInstance(instanceKey).getUserInfo(room.getRoomID()));
+                    }
+                    message = TAPMessageModel.BuilderWithQuotedMessage(
+                            TAPChatManager.getInstance(instanceKey).generateImageCaption(caption),
+                            room,
+                            TYPE_IMAGE,
+                            System.currentTimeMillis(),
+                            TAPChatManager.getInstance(instanceKey).getActiveUser(),
+                            TYPE_PERSONAL == room.getType() ? TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                            messageData,
+                            TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID()),
+                            instanceKey);
+                    TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
+                }
+                sendCustomMessage(message, listener);
+//                if (listener != null) {
+//                    listener.onError(null, ERROR_CODE_OTHERS, e != null ? e.getLocalizedMessage() : "Unable to retrieve image data.");
+//                }
                 return false;
             }
 
@@ -537,14 +577,14 @@ public class TapCoreMessageManager {
         sendVideoMessage(videoUri, caption, room, listener);
     }
 
-    public void sendVideoMessage(String videoUrl, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
+    public void sendVideoMessage(Context context, String videoUrl, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
             return;
         }
-        TAPChatManager.getInstance(instanceKey).createVideoMessageModel(videoUrl, caption, room, new TapCoreSendMessageListener() {
+        TAPChatManager.getInstance(instanceKey).createVideoMessageModel(context, videoUrl, caption, room, new TapCoreSendMessageListener() {
             @Override
             public void onStart(TAPMessageModel message) {
                 if (message != null) {
@@ -559,7 +599,7 @@ public class TapCoreMessageManager {
         });
     }
 
-    public void sendVideoMessage(String videoUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+    public void sendVideoMessage(Context context, String videoUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
@@ -567,7 +607,7 @@ public class TapCoreMessageManager {
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        sendVideoMessage(videoUrl, caption, room, listener);
+        sendVideoMessage(context, videoUrl, caption, room, listener);
     }
 
     public void sendFileMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
