@@ -140,6 +140,10 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
         }
 
         if (null != caption && !mediaPreview.isLoading()) {
+            if (TapTalk.getMaxCaptionLength(instanceKey) < caption.length()) {
+                caption = caption.substring(0, TapTalk.getMaxCaptionLength(instanceKey));
+                mediaPreview.setCaption(caption);
+            }
             etCaption.setText(caption);
             etCaption.setSelection(caption.length());
             tvTypingIndicator.setVisibility(View.VISIBLE);
