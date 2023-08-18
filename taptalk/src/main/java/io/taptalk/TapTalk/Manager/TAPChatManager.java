@@ -1755,28 +1755,30 @@ public class TAPChatManager {
                 data.remove(FILE_URI);
                 if (null == getQuotedMessage(room.getRoomID())) {
                     messageModel = TAPMessageModel.Builder(
-                            generateVideoCaption(caption),
-                            room,
-                            TYPE_VIDEO,
-                            System.currentTimeMillis(),
-                            activeUser,
-                            TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                            data);
+                        generateVideoCaption(caption),
+                        room,
+                        TYPE_VIDEO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                        data
+                    );
                 }
                 else {
                     if (null != getUserInfo(room.getRoomID())) {
                         data.put(USER_INFO, getUserInfo(room.getRoomID()));
                     }
                     messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                            generateVideoCaption(caption),
-                            room,
-                            TYPE_VIDEO,
-                            System.currentTimeMillis(),
-                            activeUser,
-                            TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                            data,
-                            getQuotedMessage(room.getRoomID()),
-                            instanceKey);
+                        generateVideoCaption(caption),
+                        room,
+                        TYPE_VIDEO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                        data,
+                        getQuotedMessage(room.getRoomID()),
+                        instanceKey
+                    );
                     setQuotedMessage(room.getRoomID(), null, 0);
                 }
                 if (null != listener) {
@@ -1789,37 +1791,40 @@ public class TAPChatManager {
                 // Fallback message model
                 TAPMessageModel messageModel;
                 HashMap<String, Object> data = new HashMap<>();
-                data.put(FILE_URL, fileUrl);
-                data.put(CAPTION, caption);
-                data.remove(FILE_URI);
                 String mediaType = TAPUtils.getMimeTypeFromUrl(fileUrl);
                 if (mediaType == null || mediaType.isEmpty()) {
                     mediaType = VIDEO_MP4;
                 }
+                data.put(FILE_URL, fileUrl);
+                data.put(CAPTION, caption);
+                data.put(MEDIA_TYPE, mediaType);
+                data.remove(FILE_URI);
                 if (null == getQuotedMessage(room.getRoomID())) {
                     messageModel = TAPMessageModel.Builder(
-                            generateVideoCaption(caption),
-                            room,
-                            TYPE_VIDEO,
-                            System.currentTimeMillis(),
-                            activeUser,
-                            TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                            data);
+                        generateVideoCaption(caption),
+                        room,
+                        TYPE_VIDEO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                        data
+                    );
                 }
                 else {
                     if (null != getUserInfo(room.getRoomID())) {
                         data.put(USER_INFO, getUserInfo(room.getRoomID()));
                     }
                     messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                            generateVideoCaption(caption),
-                            room,
-                            TYPE_VIDEO,
-                            System.currentTimeMillis(),
-                            activeUser,
-                            TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                            data,
-                            getQuotedMessage(room.getRoomID()),
-                            instanceKey);
+                        generateVideoCaption(caption),
+                        room,
+                        TYPE_VIDEO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                        data,
+                        getQuotedMessage(room.getRoomID()),
+                        instanceKey
+                    );
                     setQuotedMessage(room.getRoomID(), null, 0);
                 }
                 if (null != listener) {
