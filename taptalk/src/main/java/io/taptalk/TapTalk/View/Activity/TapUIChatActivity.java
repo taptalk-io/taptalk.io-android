@@ -794,10 +794,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (null != medias && 0 < medias.size()) {
                         for (TAPMediaPreviewModel media : medias) {
                             if (media.getType() == TYPE_IMAGE) {
-                                TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
+                                if (media.getUrl() != null && !media.getUrl().isEmpty()) {
+                                    TapCoreMessageManager.getInstance(instanceKey).sendImageMessage(media.getUrl(), media.getCaption(), vm.getRoom(), null);
+                                }
+                                else {
+                                    TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
+                                }
                             }
                             else if (media.getType() == TYPE_VIDEO) {
-                                TAPChatManager.getInstance(instanceKey).createVideoMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
+                                if (media.getUrl() != null && !media.getUrl().isEmpty()) {
+                                    TapCoreMessageManager.getInstance(instanceKey).sendVideoMessage(media.getUrl(), media.getCaption(), vm.getRoom(), null);
+                                }
+                                else {
+                                    TAPChatManager.getInstance(instanceKey).createVideoMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
+                                }
                             }
                         }
                     }
