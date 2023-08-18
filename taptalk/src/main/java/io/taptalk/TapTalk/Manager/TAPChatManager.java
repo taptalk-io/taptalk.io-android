@@ -1,5 +1,70 @@
 package io.taptalk.TapTalk.Manager;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_URI_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketBlockUser;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketClearChat;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMarkAsReadRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMarkAsUnreadRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMuteRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketPinRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketScheduleMessageRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnblockUser;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnmuteRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnpinRoom;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.AUDIO_MP3;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LINK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
+import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,6 +83,8 @@ import androidx.core.content.FileProvider;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -65,70 +132,6 @@ import io.taptalk.TapTalk.Model.TapLongPressMenuItem;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_URI_NOT_FOUND;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketBlockUser;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketClearChat;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMarkAsReadRoom;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMarkAsUnreadRoom;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketMuteRoom;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketPinRoom;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketScheduleMessageRoom;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnblockUser;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnmuteRoom;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUnpinRoom;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.AUDIO_MP3;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LINK;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
-import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
 
 public class TAPChatManager {
 
@@ -1192,6 +1195,73 @@ public class TAPChatManager {
         }
     }
 
+    // Create file message with remote url
+    public void createFileMessageModel(String fileUrl, TAPRoomModel roomModel, String caption, TapSendMessageInterface listener) {
+        new Thread(() -> {
+            try {
+                String fileName = TAPFileUtils.getFileNameFromURL(fileUrl);
+                if (fileName == null || fileName.isEmpty()) {
+                    fileName = TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+                }
+
+                String fileMimeType = TAPUtils.getMimeTypeFromUrl(fileUrl);
+                if (fileMimeType == null || fileMimeType.isEmpty()) {
+                    fileMimeType = "application/octet-stream";
+                }
+
+                URL url = new URL(fileUrl);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                Number size = connection.getContentLength();
+
+                // Build message model
+                TAPMessageModel messageModel;
+                HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, size).toHashMap();
+                data.put(FILE_URL, fileUrl);
+                if (caption != null && !caption.isEmpty()) {
+                    data.put(CAPTION, caption);
+                }
+                data.remove(FILE_URI);
+                if (null == getQuotedMessage(roomModel.getRoomID())) {
+                    messageModel = TAPMessageModel.Builder(
+                            generateFileMessageBody(fileName),
+                            roomModel,
+                            TYPE_FILE,
+                            System.currentTimeMillis(),
+                            activeUser,
+                            TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                            data);
+                }
+                else {
+                    if (null != getUserInfo(roomModel.getRoomID())) {
+                        data.put(USER_INFO, getUserInfo(roomModel.getRoomID()));
+                    }
+                    messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                            generateFileMessageBody(fileName),
+                            roomModel,
+                            TYPE_FILE,
+                            System.currentTimeMillis(),
+                            activeUser,
+                            TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                            data,
+                            getQuotedMessage(roomModel.getRoomID()),
+                            instanceKey);
+                    setQuotedMessage(roomModel.getRoomID(), null, 0);
+                }
+                // Save file Uri
+                if (null != listener) {
+                    listener.onStart(messageModel);
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                if (null != listener) {
+                    listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve file data.");
+                }
+            }
+        }).start();
+    }
+
     private void addFileMessageToUploadQueue(Context context, TAPMessageModel messageModel, TAPRoomModel roomModel, TapSendMessageInterface listener) {
         addFileMessageToUploadQueue(context, messageModel, roomModel, listener, 0L);
     }
@@ -1525,7 +1595,7 @@ public class TAPChatManager {
         return messageModel;
     }
 
-    private TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption, TAPRoomModel roomModel) {
+    public TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption, TAPRoomModel roomModel) {
         int imageWidth = bitmap.getWidth();
         int imageHeight = bitmap.getHeight();
         long size = bitmap.getByteCount();
@@ -1581,13 +1651,14 @@ public class TAPChatManager {
             int width, height;
             if (null != rotation && (rotation.equals("90") || rotation.equals("270"))) {
                 // Swap width and height when video is rotated
-                width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-                height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-            } else {
-                width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-                height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
             }
-            int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+            else {
+                width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            }
+            int duration = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
             String thumbBase64 = TAPFileUtils.encodeToBase64(TAPFileUploadManager.getInstance(instanceKey).resizeBitmap(retriever.getFrameAtTime(), THUMB_MAX_DIMENSION));
             retriever.release();
             long size = null == videoPath ? 0L : new File(videoPath).length();
@@ -1606,7 +1677,8 @@ public class TAPChatManager {
                         activeUser,
                         TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                         data);
-            } else {
+            }
+            else {
                 if (null != getUserInfo(room.getRoomID())) {
                     data.put(USER_INFO, getUserInfo(room.getRoomID()));
                 }
@@ -1624,13 +1696,92 @@ public class TAPChatManager {
             }
 //        TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), videoPath);
             return messageModel;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             if (null != listener) {
                 listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data from provided Uri.");
             }
             return null;
         }
+    }
+
+    // Create video message with remote url
+    public void createVideoMessageModel(String fileUrl, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
+        new Thread(() -> {
+            try {
+                // Get video data
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                retriever.setDataSource(fileUrl);
+                String rotation = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+                }
+                int width, height;
+                if (null != rotation && (rotation.equals("90") || rotation.equals("270"))) {
+                    // Swap width and height when video is rotated
+                    width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                    height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                }
+                else {
+                    width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                    height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                }
+                int duration = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                String mediaType = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
+                String thumbBase64 = TAPFileUtils.encodeToBase64(TAPFileUploadManager.getInstance(instanceKey).resizeBitmap(retriever.getFrameAtTime(), THUMB_MAX_DIMENSION));
+                retriever.release();
+
+                URL url = new URL(fileUrl);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                long size = connection.getContentLength();
+
+                // Build message model
+                TAPMessageModel messageModel;
+                HashMap<String, Object> data = new TAPDataImageModel(width, height, size, caption, null, "").toHashMap();
+                data.put(FILE_URL, fileUrl);
+                data.put(DURATION, duration);
+                data.put(MEDIA_TYPE, mediaType);
+                data.put(THUMBNAIL, thumbBase64);
+                data.remove(FILE_URI);
+                if (null == getQuotedMessage(room.getRoomID())) {
+                    messageModel = TAPMessageModel.Builder(
+                            generateVideoCaption(caption),
+                            room,
+                            TYPE_VIDEO,
+                            System.currentTimeMillis(),
+                            activeUser,
+                            TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                            data);
+                }
+                else {
+                    if (null != getUserInfo(room.getRoomID())) {
+                        data.put(USER_INFO, getUserInfo(room.getRoomID()));
+                    }
+                    messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                            generateVideoCaption(caption),
+                            room,
+                            TYPE_VIDEO,
+                            System.currentTimeMillis(),
+                            activeUser,
+                            TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                            data,
+                            getQuotedMessage(room.getRoomID()),
+                            instanceKey);
+                    setQuotedMessage(room.getRoomID(), null, 0);
+                }
+                if (null != listener) {
+                    listener.onStart(messageModel);
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                if (null != listener) {
+                    listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data.");
+                }
+            }
+        }).start();
     }
 
     public String generateVideoCaption(String caption) {
