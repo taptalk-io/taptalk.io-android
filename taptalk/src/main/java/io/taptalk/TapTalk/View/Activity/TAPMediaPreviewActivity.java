@@ -249,9 +249,9 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             checkCount = 0;
             for (TAPMediaPreviewModel media : medias) {
                 // Check if video size exceeds limit
-                if (null == media.isSizeExceedsLimit() && media.getType() == TYPE_VIDEO) {
+                if (null != media.getUri() && null == media.isSizeExceedsLimit() && media.getType() == TYPE_VIDEO) {
                     Uri uri = media.getUri();
-                    if (TAPFileUtils.isGoogleDriveUri(media.getUri())) {
+                    if (TAPFileUtils.isGoogleDriveUri(uri)) {
                         // Requires download to get file size from Google Drive
                         media.setLoading(true);
                         runOnUiThread(() -> {

@@ -36,8 +36,8 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
 
     class ImagePreviewVH extends TAPBaseViewHolder<TAPMediaPreviewModel> {
 
-        private ImageView ivImagePreview, ivRemove, ivWarning, ivLoading;
-        private FrameLayout flImagePreview, flRemove;
+        private final ImageView ivImagePreview, ivRemove, ivWarning, ivLoading;
+        private final FrameLayout flImagePreview, flRemove;
 
         ImagePreviewVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -52,7 +52,10 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
         @Override
         protected void onBind(TAPMediaPreviewModel item, int position) {
             ivImagePreview.setImageDrawable(null);
-            if (item.getUri() != null) {
+            if (item.getUrl() != null && !item.getUrl().isEmpty()) {
+                Glide.with(itemView.getContext()).load(item.getUrl()).into(ivImagePreview);
+            }
+            else if (item.getUri() != null) {
                 Glide.with(itemView.getContext()).load(item.getUri()).into(ivImagePreview);
             }
 

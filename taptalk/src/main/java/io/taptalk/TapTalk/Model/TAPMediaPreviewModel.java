@@ -12,6 +12,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPMediaPreviewModel implements Parcelable {
     private Uri uri;
+    private String url;
     private String caption;
     private Boolean sizeExceedsLimit;
     private int type;
@@ -24,8 +25,19 @@ public class TAPMediaPreviewModel implements Parcelable {
         this.caption = "";
     }
 
+    public TAPMediaPreviewModel(String url, int type, boolean isSelected) {
+        this.url = url;
+        this.type = type;
+        this.isSelected = isSelected;
+        this.caption = "";
+    }
+
     public static TAPMediaPreviewModel Builder(Uri uri, int type, boolean isSelected) {
         return new TAPMediaPreviewModel(uri, type, isSelected);
+    }
+
+    public static TAPMediaPreviewModel Builder(String url, int type, boolean isSelected) {
+        return new TAPMediaPreviewModel(url, type, isSelected);
     }
 
     public static TAPMediaPreviewModel fromHashMap(HashMap<String, Object> hashMap) {
@@ -47,6 +59,14 @@ public class TAPMediaPreviewModel implements Parcelable {
 
     public void setUri(Uri uri) {
         this.uri = uri;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getCaption() {
@@ -97,6 +117,7 @@ public class TAPMediaPreviewModel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.uri, flags);
+        dest.writeString(this.url);
         dest.writeString(this.caption);
         dest.writeValue(this.sizeExceedsLimit);
         dest.writeInt(this.type);
@@ -104,8 +125,19 @@ public class TAPMediaPreviewModel implements Parcelable {
         dest.writeByte(this.isLoading ? (byte) 1 : (byte) 0);
     }
 
+    public void readFromParcel(Parcel source) {
+        this.uri = source.readParcelable(Uri.class.getClassLoader());
+        this.url = source.readString();
+        this.caption = source.readString();
+        this.sizeExceedsLimit = (Boolean) source.readValue(Boolean.class.getClassLoader());
+        this.type = source.readInt();
+        this.isSelected = source.readByte() != 0;
+        this.isLoading = source.readByte() != 0;
+    }
+
     protected TAPMediaPreviewModel(Parcel in) {
         this.uri = in.readParcelable(Uri.class.getClassLoader());
+        this.url = in.readString();
         this.caption = in.readString();
         this.sizeExceedsLimit = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.type = in.readInt();

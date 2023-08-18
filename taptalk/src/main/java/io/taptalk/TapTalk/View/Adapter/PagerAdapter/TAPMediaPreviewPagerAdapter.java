@@ -78,7 +78,12 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
         EditText etCaption = layout.findViewById(R.id.et_caption);
         View vSeparator = layout.findViewById(R.id.v_separator);
 
-        Glide.with(context).load(mediaPreview.getUri()).into(ivImagePreview);
+        if (mediaPreview.getUrl() != null && !mediaPreview.getUrl().isEmpty()) {
+            Glide.with(context).load(mediaPreview.getUrl()).into(ivImagePreview);
+        }
+        else if (mediaPreview.getUri() != null) {
+            Glide.with(context).load(mediaPreview.getUri()).into(ivImagePreview);
+        }
 
         String caption = mediaPreview.getCaption();
         etCaption.setFilters(new InputFilter[] { new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey)) });
