@@ -794,7 +794,23 @@ public class TAPFileDownloadManager {
     public void getFileMessageUriFromPreference() {
         HashMap<String, HashMap<String, String>> fileUriMap = TAPDataManager.getInstance(instanceKey).getFileMessageUriMap();
         if (null != fileUriMap) {
-            getFileMessageUriMap().putAll(fileUriMap);
+            // Migration to merge roomID maps to single map
+            HashMap<String, HashMap<String, String>> fileUriMapCopy = new HashMap<>(fileUriMap);
+            HashMap<String, String> emptyKeyMap = fileUriMapCopy.get("");
+            if (emptyKeyMap == null) {
+                emptyKeyMap = new HashMap<>();
+            }
+            for (String key : fileUriMap.keySet()) {
+                HashMap<String, String> keyMap = fileUriMap.get(key);
+                if (!key.equals("") && keyMap != null) {
+                    emptyKeyMap.putAll(keyMap);
+                    fileUriMapCopy.remove(key);
+                }
+            }
+            fileUriMapCopy.put("", emptyKeyMap);
+            getFileMessageUriMap().putAll(fileUriMapCopy);
+
+            //getFileMessageUriMap().putAll(fileUriMap);
         }
     }
 
@@ -802,11 +818,18 @@ public class TAPFileDownloadManager {
         TAPDataManager.getInstance(instanceKey).saveFileMessageUriMap(getFileMessageUriMap());
     }
 
+    public Uri getFileMessageUri(String url) {
+        return getFileMessageUri("", url);
+    }
+
     public Uri getFileMessageUri(String roomID, String url) {
         if (null == url || url.isEmpty()) {
             return null;
         }
-        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get("");
+        if (null == roomUriMap) {
+            roomUriMap = getFileMessageUriMap().get(roomID);
+        }
         if (null == roomUriMap) {
             return null;
         }
@@ -817,9 +840,9 @@ public class TAPFileDownloadManager {
         if (null == message.getData()) {
             return null;
         }
-        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(message.getRoom().getRoomID());
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get("");
         if (null == roomUriMap) {
-            roomUriMap = getFileMessageUriMap().get("");
+            roomUriMap = getFileMessageUriMap().get(message.getRoom().getRoomID());
         }
         if (null == roomUriMap) {
             return null;
@@ -836,6 +859,10 @@ public class TAPFileDownloadManager {
         return null;
     }
 
+    public void saveFileMessageUri(String fileID, Uri fileUri) {
+        saveFileMessageUri("", fileID, fileUri);
+    }
+
     public void saveFileMessageUri(String roomID, String fileID, Uri fileUri) {
         if (null == fileUri) {
             return;
@@ -843,17 +870,23 @@ public class TAPFileDownloadManager {
         saveFileMessageUri(roomID, fileID, fileUri.toString());
     }
 
+    public void saveFileMessageUri(String fileID, String filePath) {
+        saveFileMessageUri("", fileID, filePath);
+    }
+
     public void saveFileMessageUri(String roomID, String fileID, String filePath) {
         if (null == fileID || fileID.isEmpty() || null == filePath || filePath.isEmpty()) {
             return;
         }
-        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        //HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get("");
         if (null != roomUriMap) {
             roomUriMap.put(fileID, filePath);
         } else {
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put(fileID, filePath);
-            getFileMessageUriMap().put(roomID, hashMap);
+            //getFileMessageUriMap().put(roomID, hashMap);
+            getFileMessageUriMap().put("", hashMap);
         }
     }
 
