@@ -36,6 +36,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.R;
@@ -539,6 +542,42 @@ public class TAPFileUtils {
         return result;
     }
 
+    public static @Nullable String getFileNameFromURL(String url) {
+        if (url == null || url.isEmpty()) {
+            return "";
+        }
+        try {
+            URL resource = new URL(url);
+            String host = resource.getHost();
+            if (host.length() > 0 && url.endsWith(host)) {
+                // handle ...example.com
+                return "";
+            }
+        }
+        catch (MalformedURLException e) {
+            return "";
+        }
+
+        int startIndex = url.lastIndexOf('/') + 1;
+        int length = url.length();
+
+        // find end index for ?
+        int lastQMPos = url.lastIndexOf('?');
+        if (lastQMPos == -1) {
+            lastQMPos = length;
+        }
+
+        // find end index for #
+        int lastHashPos = url.lastIndexOf('#');
+        if (lastHashPos == -1) {
+            lastHashPos = length;
+        }
+
+        // calculate the end index
+        int endIndex = Math.min(lastQMPos, lastHashPos);
+        return url.substring(startIndex, endIndex);
+    }
+
     public static File renameDuplicateFile(File file) {
         while (file.exists() && !file.isDirectory()) {
             String path = file.getAbsolutePath();
@@ -609,6 +648,59 @@ public class TAPFileUtils {
             output.close();
             parcelFileDescriptor.close();
             return tempFile;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static @Nullable File saveFileFromUrl(Context context, String fileUrl, String defaultExtension) {
+        try {
+            URL url = new URL(fileUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                // Expect HTTP 200 OK
+                return null;
+            }
+
+            InputStream input = connection.getInputStream();
+            String filename = getFileNameFromURL(fileUrl);
+            String mimeType = TAPUtils.getMimeTypeFromUrl(fileUrl);
+            String extension = "";
+            if (filename != null && filename.contains(".")) {
+                extension = filename.substring(filename.lastIndexOf("."));
+            }
+            if (extension.isEmpty()) {
+                if (mimeType != null && !mimeType.isEmpty()) {
+                    extension = String.format(".%s", mimeType.substring(mimeType.lastIndexOf("/") + 1));
+                }
+                if (extension.isEmpty() && defaultExtension != null && defaultExtension.contains(".")) {
+                    extension = defaultExtension;
+                }
+            }
+            else {
+                extension = "";
+            }
+            String child;
+            if (filename != null && !filename.isEmpty()) {
+                child = String.format("%s%s", filename, extension);
+            }
+            else {
+                child = String.format("%s.%s", TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS"), extension);
+            }
+            File storageFile = new File(context.getFilesDir(), child);
+            FileOutputStream output = new FileOutputStream(storageFile);
+            byte[] data = new byte[4096];
+            int count;
+            while ((count = input.read(data)) != -1) {
+                output.write(data, 0, count);
+            }
+            output.flush();
+            output.close();
+            return storageFile;
         }
         catch (Exception e) {
             e.printStackTrace();
