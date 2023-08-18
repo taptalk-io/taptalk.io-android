@@ -833,7 +833,11 @@ public class TAPFileDownloadManager {
         if (null == roomUriMap) {
             return null;
         }
-        return Uri.parse(roomUriMap.get(TAPUtils.getUriKeyFromUrl(url)));
+        String uriString = roomUriMap.get(TAPUtils.getUriKeyFromUrl(url));
+        if (uriString == null || uriString.isEmpty()) {
+            return null;
+        }
+        return Uri.parse(uriString);
     }
 
     public Uri getFileMessageUri(TAPMessageModel message) {

@@ -181,16 +181,13 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         }
         else if (null != urlPath && !urlPath.isEmpty()) {
             vm.setVideoPath(urlPath);
-            new Thread(() -> {
-                File videoFile = TAPFileUtils.createTemporaryCachedFile(this, urlPath, VIDEO_MP4);
-                if (videoFile != null && videoFile.length() > 0L) {
-                    Uri uri = Uri.fromFile(videoFile);
-                    vm.setVideoUri(uri);
-                    hideVideoLoading();
-                    updateVideoViewParams();
-                    loadVideo();
-                }
-            }).start();
+            Uri savedUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(TAPUtils.getUriKeyFromUrl(urlPath));
+            if (savedUri != null) {
+                vm.setVideoUri(savedUri);
+            }
+            else {
+                loadVideoFromUrl();
+            }
         }
         else {
             onBackPressed();
@@ -301,6 +298,20 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
                 finishActivity();
             }
         });
+    }
+
+    private void loadVideoFromUrl() {
+        new Thread(() -> {
+            File videoFile = TAPFileUtils.saveFileFromUrl(this, vm.getVideoPath(), VIDEO_MP4);
+            if (videoFile != null && videoFile.length() > 0L) {
+                Uri uri = Uri.fromFile(videoFile);
+                TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(TAPUtils.getUriKeyFromUrl(vm.getVideoPath()), uri);
+                vm.setVideoUri(uri);
+                hideVideoLoading();
+                updateVideoViewParams();
+                loadVideo();
+            }
+        }).start();
     }
 
     private void startProgressTimer() {

@@ -655,7 +655,7 @@ public class TAPFileUtils {
         }
     }
 
-    public static @Nullable File createTemporaryCachedFile(Context context, String fileUrl, String defaultExtension) {
+    public static @Nullable File saveFileFromUrl(Context context, String fileUrl, String defaultExtension) {
         try {
             URL url = new URL(fileUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -691,8 +691,8 @@ public class TAPFileUtils {
             else {
                 child = String.format("%s.%s", TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS"), extension);
             }
-            File tempFile = new File(context.getCacheDir(), child);
-            FileOutputStream output = new FileOutputStream(tempFile);
+            File storageFile = new File(context.getFilesDir(), child);
+            FileOutputStream output = new FileOutputStream(storageFile);
             byte[] data = new byte[4096];
             int count;
             while ((count = input.read(data)) != -1) {
@@ -700,7 +700,7 @@ public class TAPFileUtils {
             }
             output.flush();
             output.close();
-            return tempFile;
+            return storageFile;
         }
         catch (Exception e) {
             e.printStackTrace();
