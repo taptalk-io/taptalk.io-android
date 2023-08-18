@@ -215,6 +215,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 RequestCode.SEND_MEDIA_FROM_PREVIEW -> {
                     val medias = data?.getParcelableArrayListExtra<TAPMediaPreviewModel>(Extras.MEDIA_PREVIEWS)
                     if (null != medias && 0 < medias.size) {
+                        val listener: TapCoreSendMessageListener = object : TapCoreSendMessageListener() {}
                         val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
                             override fun onClick(position: Int, item: Long?) {
                                 for (media in medias) {
