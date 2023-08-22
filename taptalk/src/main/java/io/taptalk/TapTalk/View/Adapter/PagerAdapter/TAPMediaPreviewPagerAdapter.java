@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter.PagerAdapter;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
@@ -31,11 +33,9 @@ import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
 
@@ -96,20 +96,28 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                 tvTypingIndicator.setVisibility(View.GONE);
                 vSeparator.setVisibility(View.GONE);
                 clErrorMessage.setVisibility(View.GONE);
-                ivImagePreview.setOnClickListener(null);
+                ivImagePreview.setOnClickListener(v -> {
+                    if (context != null && context instanceof Activity) {
+                        TAPUtils.dismissKeyboard((Activity) context, etCaption);
+                    }
+                });
                 TAPUtils.rotateAnimateInfinitely(context, ivLoading);
             } else {
                 ivVideoIcon.setVisibility(View.VISIBLE);
                 ivLoading.clearAnimation();
                 ivLoading.setVisibility(View.GONE);
-                ivImagePreview.setOnClickListener(v ->
+                ivImagePreview.setOnClickListener(v -> {
+                        if (context != null && context instanceof Activity) {
+                            TAPUtils.dismissKeyboard((Activity) context, etCaption);
+                        }
                         TAPVideoPlayerActivity.start(
                             context,
                             instanceKey,
                             mediaPreview.getUri(),
                             mediaPreview.getUrl(),
                             null
-                        )
+                        );
+                    }
                 );
                 if (null != mediaPreview.isSizeExceedsLimit() && mediaPreview.isSizeExceedsLimit()) {
                     etCaption.setVisibility(View.GONE);
@@ -136,7 +144,11 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
             tvTypingIndicator.setVisibility(View.VISIBLE);
             vSeparator.setVisibility(View.VISIBLE);
             clErrorMessage.setVisibility(View.GONE);
-            ivImagePreview.setOnClickListener(null);
+            ivImagePreview.setOnClickListener(v -> {
+                if (context != null && context instanceof Activity) {
+                    TAPUtils.dismissKeyboard((Activity) context, etCaption);
+                }
+            });
         }
 
         if (null != caption && !mediaPreview.isLoading()) {
@@ -145,7 +157,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                 mediaPreview.setCaption(caption);
             }
             etCaption.setText(caption);
-            etCaption.setSelection(caption.length());
+//            etCaption.setSelection(caption.length());
             tvTypingIndicator.setVisibility(View.VISIBLE);
             tvTypingIndicator.setText(String.format(context.getString(R.string.tap_format_dd_letter_count), caption.length(), TapTalk.getMaxCaptionLength(instanceKey)));
         }

@@ -29,7 +29,7 @@ android {
         }
         staging {
             minifyEnabled true
-            debuggable false
+            debuggable true
             buildConfigField 'String', 'VERSION_NAME', "\"${defaultConfig.versionName}-STAGING\""
         }
         stagingUpload {
@@ -39,7 +39,7 @@ android {
         }
         dev {
             minifyEnabled true
-            debuggable false
+            debuggable true
             buildConfigField 'String', 'VERSION_NAME', "\"${defaultConfig.versionName}-DEV\""
         }
         devUpload {
