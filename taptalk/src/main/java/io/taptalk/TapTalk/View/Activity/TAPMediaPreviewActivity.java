@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -42,6 +43,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     private static final String TAG = TAPMediaPreviewActivity.class.getSimpleName();
 
     // View
+    private ConstraintLayout clMediaPreviewContainer;
     private ViewPager vpImagePreview;
     private TextView tvCancelBtn, tvMultipleImageIndicator, tvSendBtn;
     private RecyclerView rvImageThumbnail;
@@ -88,6 +90,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     }
 
     private void initView() {
+        clMediaPreviewContainer = findViewById(R.id.cl_media_preview_container);
         vpImagePreview = findViewById(R.id.vp_image_preview);
         tvCancelBtn = findViewById(R.id.tv_cancel_btn);
         tvMultipleImageIndicator = findViewById(R.id.tv_multiple_image_indicator);
@@ -115,8 +118,14 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
         checkMediasForErrors();
 
+        clMediaPreviewContainer.setOnClickListener(v -> TAPUtils.dismissKeyboard(TAPMediaPreviewActivity.this));
         tvCancelBtn.setOnClickListener(v -> onBackPressed());
-        ivAddMoreImage.setOnClickListener(v -> TAPUtils.pickMediaFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
+        ivAddMoreImage.setOnClickListener(v -> {
+            TAPUtils.dismissKeyboard(TAPMediaPreviewActivity.this);
+            TAPUtils.pickMediaFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true);
+        });
+
+        clMediaPreviewContainer.post(() -> TAPUtils.dismissKeyboard(TAPMediaPreviewActivity.this));
     }
 
     public interface ImageThumbnailPreviewInterface {
