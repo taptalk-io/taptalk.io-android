@@ -290,7 +290,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     vm!!.userDataFromManager.phoneWithCode,
                     TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
                     g_mobile_number,
-                    tv_mobile_number_view
+                    tv_mobile_number_view,
+                    true
                 )
                 setBasicInfo(
                     vm!!.userDataFromManager.email,
@@ -351,7 +352,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     vm!!.groupMemberUser.phoneWithCode,
                     TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
                     g_mobile_number,
-                    tv_mobile_number_view
+                    tv_mobile_number_view,
+                    true
                 )
                 setBasicInfo(
                     vm!!.groupMemberUser.email,
@@ -419,11 +421,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         }
     }
 
-    private fun setBasicInfo(infoValue: String?, isVisible: Boolean, group: View, textView: TextView) {
+    private fun setBasicInfo(infoValue: String?, isVisible: Boolean, group: View, textView: TextView, isPhone: Boolean = false) {
         if (!infoValue.isNullOrEmpty() && isVisible) {
             group.visibility = View.VISIBLE
-            textView.text = infoValue
-        } else {
+            if (isPhone) {
+                textView.text = TAPUtils.beautifyPhoneNumber(infoValue, true)
+            }
+            else {
+                textView.text = infoValue
+            }
+        }
+        else {
             group.visibility = View.GONE
         }
     }

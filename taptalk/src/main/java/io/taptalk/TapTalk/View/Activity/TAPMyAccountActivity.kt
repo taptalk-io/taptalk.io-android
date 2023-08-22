@@ -217,8 +217,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
         et_full_name.setText(vm.myUserModel.fullname)
         et_username.setText(vm.myUserModel.username)
-        tv_country_code.text = "+" + vm.myUserModel.countryCallingCode
-        et_mobile_number.setText(vm.myUserModel.phone)
+        tv_country_code.text = String.format("+%s", vm.myUserModel.countryCallingCode)
+        et_mobile_number.setText(TAPUtils.beautifyPhoneNumber(vm.myUserModel.phone, false))
         et_email_address.setText(vm.myUserModel.email)
         showViewState()
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
@@ -234,7 +234,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             g_mobile_number.visibility = View.GONE
         } else {
             g_mobile_number.visibility = View.VISIBLE
-            tv_mobile_number_view.text = "+" + vm.myUserModel.countryCallingCode + " " + vm.myUserModel.phone
+            tv_mobile_number_view.text = TAPUtils.beautifyPhoneNumber(String.format("%s %s", vm.myUserModel.countryCallingCode, vm.myUserModel.phone), true)
         }
         if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
             btn_blocked_contacts.visibility = View.VISIBLE
