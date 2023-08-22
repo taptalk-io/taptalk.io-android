@@ -131,8 +131,9 @@
                 android:layout_height="wrap_content"
                 android:background="@color/tapTransparentWhite"
                 android:hint="@string/tap_hint_phone_number_x"
-                android:imeOptions="actionSend"
-                android:inputType="numberSigned"
+                android:imeOptions="actionDone"
+                android:inputType="phone"
+                android:letterSpacing="0.03"
                 android:maxLength="15"
                 android:maxLines="1"
                 android:paddingStart="2dp"
@@ -141,12 +142,34 @@
                 android:paddingEnd="16dp"
                 android:paddingRight="16dp"
                 android:paddingBottom="12dp"
+                android:textColor="@color/tapTransparentWhite"
+                android:textColorHint="@color/tapTransparentWhite"
                 android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tv_country_code"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="TextFields" />
+
+            <TextView
+                android:id="@+id/tv_phone_number"
+                style="@style/tapFormTextFieldStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:hint="@string/tap_hint_phone_number_x"
+                android:maxLines="1"
+                android:paddingStart="2dp"
+                android:paddingLeft="2dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="12dp"
+                app:layout_constraintBottom_toBottomOf="@id/et_phone_number"
+                app:layout_constraintEnd_toEndOf="@id/et_phone_number"
+                app:layout_constraintStart_toStartOf="@id/et_phone_number"
+                app:layout_constraintTop_toTopOf="@id/et_phone_number" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
