@@ -38,6 +38,9 @@ class TapMessageInfoAdapter (
 ) :
     TAPBaseAdapter<TapMessageRecipientModel, TAPBaseViewHolder<TapMessageRecipientModel>>() {
 
+    var messageBubbleRecyclerView: RecyclerView? = null
+    var messageAdapter: TAPMessageAdapter? = null
+
     init {
         items = users
     }
@@ -70,24 +73,23 @@ class TapMessageInfoAdapter (
 
     internal inner class MessageBubbleViewHolder(parent: ViewGroup, viewType: Int) : TAPBaseViewHolder<TapMessageRecipientModel>(parent, viewType) {
 
-        val recyclerView: RecyclerView = itemView.findViewById(R.id.recyclerView)
-
         override fun onBind(item: TapMessageRecipientModel?, position: Int) {
+            messageBubbleRecyclerView = itemView.findViewById(R.id.recyclerView)
             val activity = itemView.context as Activity ?: return
             val application = activity.application ?: return
             val chatViewModel = TAPChatViewModel(application, instanceKey)
             chatViewModel.room = message.room
-            val messageAdapter = TAPMessageAdapter(instanceKey, Glide.with(itemView.context), chatViewModel)
-            messageAdapter.setMessages(listOf(message))
+            messageAdapter = TAPMessageAdapter(instanceKey, Glide.with(itemView.context), chatViewModel)
+            messageAdapter?.setMessages(listOf(message))
             if (TAPDataManager.getInstance(instanceKey).getStarredMessageIds(message.room.roomID).contains(message.messageID)) {
-                messageAdapter.setStarredMessageIds(mutableListOf(message.messageID))
+                messageAdapter?.setStarredMessageIds(mutableListOf(message.messageID))
             }
             if (TAPDataManager.getInstance(instanceKey).getPinnedMessageIds(message.room.roomID).contains(message.messageID)) {
-                messageAdapter.setPinnedMessageIds(mutableListOf(message.messageID))
+                messageAdapter?.setPinnedMessageIds(mutableListOf(message.messageID))
             }
-            recyclerView.adapter = messageAdapter
-            recyclerView.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.VERTICAL, false)
-            recyclerView.setHasFixedSize(true)
+            messageBubbleRecyclerView?.adapter = messageAdapter
+            messageBubbleRecyclerView?.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.VERTICAL, false)
+            messageBubbleRecyclerView?.setHasFixedSize(true)
         }
     }
 
