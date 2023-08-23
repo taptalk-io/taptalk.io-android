@@ -8,6 +8,10 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 @Keep
 public abstract class TapCoreSendMessageListener implements TapSendMessageInterface {
+    @Override
+    public void onTemporaryMessageCreated(TAPMessageModel tapMessageModel) {
+
+    }
 
     @Override
     public void onStart(TAPMessageModel message) {

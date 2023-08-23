@@ -33,7 +33,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
@@ -445,46 +447,22 @@ public class TapCoreMessageManager {
             }
             return;
         }
+        TAPMessageModel temporaryMessage = TAPChatManager.getInstance(instanceKey).createTemporaryMediaMessageWithUrl(
+            TYPE_IMAGE,
+            imageUrl,
+            caption,
+            room,
+            TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID())
+        );
+        if (listener != null) {
+            listener.onTemporaryMessageCreated(temporaryMessage);
+        }
         Glide.with(TapTalk.appContext).asBitmap().load(imageUrl).listener(new RequestListener<Bitmap>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                // Create fallback message
-                HashMap<String, Object> messageData = new HashMap<>();
-                messageData.put(FILE_URL, imageUrl);
-                String mediaType = TAPUtils.getMimeTypeFromUrl(imageUrl);
-                if (mediaType == null || mediaType.isEmpty()) {
-                    mediaType = IMAGE_JPEG;
-                }
-                messageData.put(MEDIA_TYPE, mediaType);
-                messageData.remove(FILE_URI);
-                TAPMessageModel message;
-                if (null == TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID())) {
-                    message = TAPMessageModel.Builder(
-                        TAPChatManager.getInstance(instanceKey).generateImageCaption(caption),
-                        room,
-                        TYPE_IMAGE,
-                        System.currentTimeMillis(),
-                        TAPChatManager.getInstance(instanceKey).getActiveUser(),
-                        TYPE_PERSONAL == room.getType() ? TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                        messageData
-                    );
-                } else {
-                    if (null != TAPChatManager.getInstance(instanceKey).getUserInfo(room.getRoomID())) {
-                        messageData.put(USER_INFO, TAPChatManager.getInstance(instanceKey).getUserInfo(room.getRoomID()));
-                    }
-                    message = TAPMessageModel.BuilderWithQuotedMessage(
-                            TAPChatManager.getInstance(instanceKey).generateImageCaption(caption),
-                            room,
-                            TYPE_IMAGE,
-                            System.currentTimeMillis(),
-                            TAPChatManager.getInstance(instanceKey).getActiveUser(),
-                            TYPE_PERSONAL == room.getType() ? TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                            messageData,
-                            TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID()),
-                            instanceKey);
-                    TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
-                }
-                sendCustomMessage(message, listener);
+                // Send message without metadata
+                TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
+                sendCustomMessage(temporaryMessage, listener);
 //                if (listener != null) {
 //                    listener.onError(null, ERROR_CODE_OTHERS, e != null ? e.getLocalizedMessage() : "Unable to retrieve image data.");
 //                }
@@ -499,6 +477,7 @@ public class TapCoreMessageManager {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 TAPMessageModel message = TAPChatManager.getInstance(instanceKey).createImageMessageModel(resource, caption, room);
+                message.setLocalID(temporaryMessage.getLocalID());
                 try {
                     HashMap<String, Object> messageData = message.getData();
                     if (messageData == null) {
@@ -584,17 +563,33 @@ public class TapCoreMessageManager {
             }
             return;
         }
+        TAPMessageModel temporaryMessage = TAPChatManager.getInstance(instanceKey).createTemporaryMediaMessageWithUrl(
+            TYPE_VIDEO,
+            videoUrl,
+            caption,
+            room,
+            TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID())
+        );
+        if (listener != null) {
+            listener.onTemporaryMessageCreated(temporaryMessage);
+        }
         TAPChatManager.getInstance(instanceKey).createVideoMessageModel(context, videoUrl, caption, room, new TapCoreSendMessageListener() {
             @Override
             public void onStart(TAPMessageModel message) {
                 if (message != null) {
+                    message.setLocalID(temporaryMessage.getLocalID());
                     sendCustomMessage(message, listener);
                 }
             }
 
             @Override
             public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
-                listener.onError(message, errorCode, errorMessage);
+                // Send message without metadata
+                TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
+                sendCustomMessage(temporaryMessage, listener);
+//                if (listener != null) {
+//                    listener.onError(message, errorCode, errorMessage);
+//                }
             }
         });
     }
@@ -701,19 +696,40 @@ public class TapCoreMessageManager {
             }
             return;
         }
+        TAPMessageModel temporaryMessage = TAPChatManager.getInstance(instanceKey).createTemporaryMediaMessageWithUrl(
+            TYPE_FILE,
+            fileUrl,
+            caption,
+            room,
+            TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID())
+        );
+        if (listener != null) {
+            listener.onTemporaryMessageCreated(temporaryMessage);
+        }
         TAPChatManager.getInstance(instanceKey).createFileMessageModel(fileUrl, room, caption, new TapCoreSendMessageListener() {
             @Override
             public void onStart(TAPMessageModel message) {
                 if (message != null) {
+                    message.setLocalID(temporaryMessage.getLocalID());
                     sendCustomMessage(message, listener);
                 }
             }
 
             @Override
             public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
-                listener.onError(message, errorCode, errorMessage);
+                // Send message without metadata
+                TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
+                sendCustomMessage(temporaryMessage, listener);
+//                if (listener != null) {
+//                    listener.onError(message, errorCode, errorMessage);
+//                }
             }
         });
+    }
+
+    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
+        sendFileMessage(fileUrl, caption, room, listener);
     }
 
     public void sendVoiceMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {

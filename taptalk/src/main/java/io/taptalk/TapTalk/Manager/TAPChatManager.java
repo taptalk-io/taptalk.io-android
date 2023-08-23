@@ -101,6 +101,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
@@ -1346,6 +1347,70 @@ public class TAPChatManager {
         addFileMessageToUploadQueue(context, messageModel, roomModel, listener);
     }
 
+    public TAPMessageModel createTemporaryMediaMessageWithUrl(int type, String url, String caption, TAPRoomModel room, TAPMessageModel quotedMessage) {
+        String body;
+        if (type == TYPE_IMAGE) {
+            body = generateImageCaption(caption);
+        }
+        else if (type == TYPE_VIDEO) {
+            body = generateVideoCaption(caption);
+        }
+        else if (type == TYPE_FILE) {
+            body = generateFileMessageBody(caption);
+        }
+        else if (type == TYPE_VOICE) {
+            body = generateVoiceNoteMessageBody(caption);
+        }
+        else {
+            body = "";
+        }
+        HashMap<String, Object> data = new HashMap<>();
+        data.put(URL, url);
+        String mediaType = TAPUtils.getMimeTypeFromUrl(url);
+        if (mediaType == null || mediaType.isEmpty()) {
+            if (type == TYPE_IMAGE) {
+                mediaType = IMAGE_JPEG;
+            }
+            else if (type == TYPE_VIDEO) {
+                mediaType = VIDEO_MP4;
+            }
+            else if (type == TYPE_VOICE) {
+                mediaType = AUDIO_MP3;
+            }
+            else {
+                mediaType = "application/octet-stream";
+            }
+        }
+        data.put(MEDIA_TYPE, mediaType);
+        if (null != getUserInfo(room.getRoomID())) {
+            data.put(USER_INFO, getUserInfo(room.getRoomID()));
+        }
+        if (quotedMessage != null) {
+            return TAPMessageModel.BuilderWithQuotedMessage(
+                body,
+                room,
+                type,
+                System.currentTimeMillis(),
+                getActiveUser(),
+                "",
+                data,
+                quotedMessage,
+                instanceKey
+            );
+        }
+        else {
+            return TAPMessageModel.Builder(
+                body,
+                room,
+                type,
+                System.currentTimeMillis(),
+                getActiveUser(),
+                "",
+                data
+            );
+        }
+    }
+
     public void sendFileMessage(Context context, TAPRoomModel roomModel, Uri uri, TapSendMessageInterface listener) {
         /*new Thread(() -> */createFileMessageModelAndAddToUploadQueue(context, roomModel, uri, "", listener)/*).start()*/;
     }
@@ -1378,6 +1443,9 @@ public class TAPChatManager {
     }
 
     private String generateFileMessageBody(String fileName) {
+        if (fileName == null) {
+            fileName = "";
+        }
         return TapTalk.appContext.getString(R.string.tap_emoji_file) + " " + (fileName.isEmpty() ? TapTalk.appContext.getString(R.string.tap_file) : fileName);
     }
 
@@ -1539,7 +1607,14 @@ public class TAPChatManager {
     }
 
     private String generateVoiceNoteMessageBody() {
-        return TapTalk.appContext.getString(R.string.tap_emoji_voice_note) + " " + TapTalk.appContext.getString(R.string.tap_voice);
+        return generateVoiceNoteMessageBody("");
+    }
+
+    private String generateVoiceNoteMessageBody(String caption) {
+        if (caption == null) {
+            caption = "";
+        }
+        return TapTalk.appContext.getString(R.string.tap_emoji_voice_note) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_voice) : caption);
     }
 
     /**
@@ -1634,6 +1709,9 @@ public class TAPChatManager {
     }
 
     public String generateImageCaption(String caption) {
+        if (caption == null) {
+            caption = "";
+        }
         return TapTalk.appContext.getString(R.string.tap_emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_photo) : caption);
     }
 
@@ -1786,58 +1864,21 @@ public class TAPChatManager {
                 }
             }
             catch (Exception e) {
-                Log.e(">>>>>>>>>>>>", "createVideoMessageModel exception: " + e.getMessage());
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, "createVideoMessageModel exception: " + e.getMessage());
+                }
                 e.printStackTrace();
-                // Fallback message model
-                TAPMessageModel messageModel;
-                HashMap<String, Object> data = new HashMap<>();
-                String mediaType = TAPUtils.getMimeTypeFromUrl(fileUrl);
-                if (mediaType == null || mediaType.isEmpty()) {
-                    mediaType = VIDEO_MP4;
-                }
-                data.put(FILE_URL, fileUrl);
-                data.put(CAPTION, caption);
-                data.put(MEDIA_TYPE, mediaType);
-                data.remove(FILE_URI);
-                if (null == getQuotedMessage(room.getRoomID())) {
-                    messageModel = TAPMessageModel.Builder(
-                        generateVideoCaption(caption),
-                        room,
-                        TYPE_VIDEO,
-                        System.currentTimeMillis(),
-                        activeUser,
-                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                        data
-                    );
-                }
-                else {
-                    if (null != getUserInfo(room.getRoomID())) {
-                        data.put(USER_INFO, getUserInfo(room.getRoomID()));
-                    }
-                    messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                        generateVideoCaption(caption),
-                        room,
-                        TYPE_VIDEO,
-                        System.currentTimeMillis(),
-                        activeUser,
-                        TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
-                        data,
-                        getQuotedMessage(room.getRoomID()),
-                        instanceKey
-                    );
-                    setQuotedMessage(room.getRoomID(), null, 0);
-                }
                 if (null != listener) {
-                    listener.onStart(messageModel);
+                    listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data.");
                 }
-//                if (null != listener) {
-//                    listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data.");
-//                }
             }
         }).start();
     }
 
     public String generateVideoCaption(String caption) {
+        if (caption == null) {
+            caption = "";
+        }
         return TapTalk.appContext.getString(R.string.tap_emoji_video) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_video) : caption);
     }
 

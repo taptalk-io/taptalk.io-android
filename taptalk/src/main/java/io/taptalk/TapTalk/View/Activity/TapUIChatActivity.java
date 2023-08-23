@@ -792,7 +792,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 case SEND_MEDIA_FROM_PREVIEW:
                     ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);
                     if (null != medias && 0 < medias.size()) {
-                        TapCoreSendMessageListener listener = new TapCoreSendMessageListener() {};
+                        TapCoreSendMessageListener listener = new TapCoreSendMessageListener() {
+                            @Override
+                            public void onTemporaryMessageCreated(TAPMessageModel tapMessageModel) {
+                                updateMessage(tapMessageModel);
+                                hideQuoteLayout();
+                                hideUnreadButton();
+                            }
+                        };
                         for (TAPMediaPreviewModel media : medias) {
                             if (media.getType() == TYPE_IMAGE) {
                                 if (media.getUrl() != null && !media.getUrl().isEmpty()) {
@@ -1715,7 +1722,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 return;
             }
             TAPChatManager.getInstance(instanceKey).triggerActiveUserSendMessage(TapUIChatActivity.this, message, vm.getRoom());
-            addNewMessage(message);
+            //addNewMessage(message);
+            updateMessage(message);
             hideQuoteLayout();
             hideUnreadButton();
         }

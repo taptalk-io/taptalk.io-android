@@ -6,6 +6,8 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 
 public interface TapSendMessageInterface {
+    void onTemporaryMessageCreated(TAPMessageModel tapMessageModel);
+
     void onStart(TAPMessageModel tapMessageModel);
 
     void onSuccess(TAPMessageModel tapMessageModel);
