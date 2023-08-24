@@ -478,6 +478,9 @@ public class TapCoreMessageManager {
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 TAPMessageModel message = TAPChatManager.getInstance(instanceKey).createImageMessageModel(resource, caption, room);
                 message.setLocalID(temporaryMessage.getLocalID());
+                if (temporaryMessage.getQuote() != null && message.getQuote() == null) {
+                    message.setQuote(temporaryMessage.getQuote());
+                }
                 try {
                     HashMap<String, Object> messageData = message.getData();
                     if (messageData == null) {
@@ -578,6 +581,9 @@ public class TapCoreMessageManager {
             public void onStart(TAPMessageModel message) {
                 if (message != null) {
                     message.setLocalID(temporaryMessage.getLocalID());
+                    if (temporaryMessage.getQuote() != null && message.getQuote() == null) {
+                        message.setQuote(temporaryMessage.getQuote());
+                    }
                     sendCustomMessage(message, listener);
                 }
             }
@@ -721,6 +727,9 @@ public class TapCoreMessageManager {
                 public void onStart(TAPMessageModel message) {
                     if (message != null) {
                         message.setLocalID(temporaryMessage.getLocalID());
+                        if (temporaryMessage.getQuote() != null && message.getQuote() == null) {
+                            message.setQuote(temporaryMessage.getQuote());
+                        }
                         sendCustomMessage(message, listener);
                     }
                 }

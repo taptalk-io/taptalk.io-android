@@ -28,6 +28,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -51,6 +52,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LinkedHashMap<String, Integer> messageReadCountMap;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages, pinnedMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
+    private List<TAPMediaPreviewModel> pendingSendMedias;
     private ArrayList<String> starredMessageIds;
     private ArrayList<String> pinnedMessageIds;
     private ArrayList<TAPMessageModel> selectedMessages, forwardedMessages;
@@ -259,6 +261,14 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setCustomKeyboardItems(List<TAPCustomKeyboardItemModel> customKeyboardItems) {
         this.customKeyboardItems = customKeyboardItems;
+    }
+
+    public List<TAPMediaPreviewModel> getPendingSendMedias() {
+        return null == pendingSendMedias ? pendingSendMedias = new ArrayList<>() : pendingSendMedias;
+    }
+
+    public void setPendingSendMedias(List<TAPMediaPreviewModel> pendingSendMedias) {
+        this.pendingSendMedias = pendingSendMedias;
     }
 
     public TAPUserModel getMyUserModel() {

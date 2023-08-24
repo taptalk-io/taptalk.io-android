@@ -1383,6 +1383,9 @@ public class TAPChatManager {
         }
         HashMap<String, Object> data = new HashMap<>();
         data.put(URL, url);
+        if (caption != null && !caption.isEmpty()) {
+            data.put(CAPTION, caption);
+        }
         if (fileName != null && !fileName.isEmpty()) {
             data.put(FILE_NAME, fileName);
         }
@@ -1764,7 +1767,11 @@ public class TAPChatManager {
                 height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
             }
             int duration = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            String thumbBase64 = TAPFileUtils.encodeToBase64(TAPFileUploadManager.getInstance(instanceKey).resizeBitmap(retriever.getFrameAtTime(), THUMB_MAX_DIMENSION));
+            Bitmap thumbnail = retriever.getFrameAtTime();
+            String thumbBase64 = "";
+            if (thumbnail != null) {
+                thumbBase64 = TAPFileUtils.encodeToBase64(TAPFileUploadManager.getInstance(instanceKey).resizeBitmap(thumbnail, THUMB_MAX_DIMENSION));
+            }
             retriever.release();
             long size = null == videoPath ? 0L : new File(videoPath).length();
 
@@ -1772,7 +1779,9 @@ public class TAPChatManager {
             TAPMessageModel messageModel;
             HashMap<String, Object> data = new TAPDataImageModel(width, height, size, caption, null, videoPath).toHashMap();
             data.put(DURATION, duration);
-            data.put(THUMBNAIL, thumbBase64);
+            if (thumbBase64 != null && !thumbBase64.isEmpty()) {
+                data.put(THUMBNAIL, thumbBase64);
+            }
             if (null == getQuotedMessage(room.getRoomID())) {
                 messageModel = TAPMessageModel.Builder(
                         generateVideoCaption(caption),
@@ -1840,7 +1849,11 @@ public class TAPChatManager {
                 }
                 int duration = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
                 String mediaType = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
-                String thumbBase64 = TAPFileUtils.encodeToBase64(TAPFileUploadManager.getInstance(instanceKey).resizeBitmap(retriever.getFrameAtTime(), THUMB_MAX_DIMENSION));
+                Bitmap thumbnail = retriever.getFrameAtTime();
+                String thumbBase64 = "";
+                if (thumbnail != null) {
+                    thumbBase64 = TAPFileUtils.encodeToBase64(TAPFileUploadManager.getInstance(instanceKey).resizeBitmap(thumbnail, THUMB_MAX_DIMENSION));
+                }
                 retriever.release();
 
                 URL url = new URL(fileUrl);
@@ -1854,7 +1867,9 @@ public class TAPChatManager {
                 data.put(FILE_URL, fileUrl);
                 data.put(DURATION, duration);
                 data.put(MEDIA_TYPE, mediaType);
-                data.put(THUMBNAIL, thumbBase64);
+                if (thumbBase64 != null && !thumbBase64.isEmpty()) {
+                    data.put(THUMBNAIL, thumbBase64);
+                }
                 data.remove(FILE_URI);
                 if (null == getQuotedMessage(room.getRoomID())) {
                     messageModel = TAPMessageModel.Builder(
