@@ -341,7 +341,7 @@ class TAPLoginActivity : TAPBaseActivity() {
     private val devPhoneNumberLongClickListener = OnLongClickListener {
         if (validatePhoneNumber()) {
             val phoneNumber = checkAndEditPhoneNumber()
-            showPhoneNumberInputLoading()
+            showPhoneNumberInputLoading(true)
             TAPDataManager.getInstance(instanceKey).requestOTPLogin(
                 vm?.selectedCountryID ?: defaultCountryID,
                 phoneNumber,

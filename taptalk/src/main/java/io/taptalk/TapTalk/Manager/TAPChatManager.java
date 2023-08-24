@@ -36,6 +36,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.VIDEO_MP4;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
@@ -1199,17 +1200,29 @@ public class TAPChatManager {
     }
 
     // Create file message with remote url
-    public void createFileMessageModel(String fileUrl, TAPRoomModel roomModel, String caption, TapSendMessageInterface listener) {
+    public void createFileMessageModel(String fileUrl, TAPRoomModel roomModel, String caption, String fileName, String mimeType, TapSendMessageInterface listener) {
         new Thread(() -> {
             try {
-                String fileName = TAPFileUtils.getFileNameFromURL(fileUrl);
-                if (fileName == null || fileName.isEmpty()) {
-                    fileName = TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+                String dataFileName;
+                if (fileName != null && !fileName.isEmpty()) {
+                    dataFileName = fileName;
+                }
+                else {
+                    dataFileName = TAPFileUtils.getFileNameFromURL(fileUrl);
+                    if (dataFileName == null || dataFileName.isEmpty()) {
+                        dataFileName = TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+                    }
                 }
 
-                String fileMimeType = TAPUtils.getMimeTypeFromUrl(fileUrl);
-                if (fileMimeType == null || fileMimeType.isEmpty()) {
-                    fileMimeType = "application/octet-stream";
+                String fileMimeType;
+                if (mimeType != null && !mimeType.isEmpty()) {
+                    fileMimeType = mimeType;
+                }
+                else {
+                    fileMimeType = TAPUtils.getMimeTypeFromUrl(fileUrl);
+                    if (fileMimeType == null || fileMimeType.isEmpty()) {
+                        fileMimeType = "application/octet-stream";
+                    }
                 }
 
                 URL url = new URL(fileUrl);
@@ -1219,7 +1232,7 @@ public class TAPChatManager {
 
                 // Build message model
                 TAPMessageModel messageModel;
-                HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, size).toHashMap();
+                HashMap<String, Object> data = new TAPDataFileModel(dataFileName, fileMimeType, size).toHashMap();
                 data.put(FILE_URL, fileUrl);
                 if (caption != null && !caption.isEmpty()) {
                     data.put(CAPTION, caption);
@@ -1227,7 +1240,7 @@ public class TAPChatManager {
                 data.remove(FILE_URI);
                 if (null == getQuotedMessage(roomModel.getRoomID())) {
                     messageModel = TAPMessageModel.Builder(
-                            generateFileMessageBody(fileName),
+                            generateFileMessageBody(dataFileName),
                             roomModel,
                             TYPE_FILE,
                             System.currentTimeMillis(),
@@ -1240,7 +1253,7 @@ public class TAPChatManager {
                         data.put(USER_INFO, getUserInfo(roomModel.getRoomID()));
                     }
                     messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                            generateFileMessageBody(fileName),
+                            generateFileMessageBody(dataFileName),
                             roomModel,
                             TYPE_FILE,
                             System.currentTimeMillis(),
@@ -1348,6 +1361,10 @@ public class TAPChatManager {
     }
 
     public TAPMessageModel createTemporaryMediaMessageWithUrl(int type, String url, String caption, TAPRoomModel room, TAPMessageModel quotedMessage) {
+        return createTemporaryMediaMessageWithUrl(type, url, caption, "", "", room, quotedMessage);
+    }
+
+    public TAPMessageModel createTemporaryMediaMessageWithUrl(int type, String url, String caption, String fileName, String mimeType, TAPRoomModel room, TAPMessageModel quotedMessage) {
         String body;
         if (type == TYPE_IMAGE) {
             body = generateImageCaption(caption);
@@ -1366,22 +1383,30 @@ public class TAPChatManager {
         }
         HashMap<String, Object> data = new HashMap<>();
         data.put(URL, url);
-        String mediaType = TAPUtils.getMimeTypeFromUrl(url);
-        if (mediaType == null || mediaType.isEmpty()) {
-            if (type == TYPE_IMAGE) {
-                mediaType = IMAGE_JPEG;
-            }
-            else if (type == TYPE_VIDEO) {
-                mediaType = VIDEO_MP4;
-            }
-            else if (type == TYPE_VOICE) {
-                mediaType = AUDIO_MP3;
-            }
-            else {
-                mediaType = "application/octet-stream";
-            }
+        if (fileName != null && !fileName.isEmpty()) {
+            data.put(FILE_NAME, fileName);
         }
-        data.put(MEDIA_TYPE, mediaType);
+        if (mimeType != null && !mimeType.isEmpty()) {
+            data.put(MEDIA_TYPE, mimeType);
+        }
+        else {
+            String mediaType = TAPUtils.getMimeTypeFromUrl(url);
+            if (mediaType == null || mediaType.isEmpty()) {
+                if (type == TYPE_IMAGE) {
+                    mediaType = IMAGE_JPEG;
+                }
+                else if (type == TYPE_VIDEO) {
+                    mediaType = VIDEO_MP4;
+                }
+                else if (type == TYPE_VOICE) {
+                    mediaType = AUDIO_MP3;
+                }
+                else {
+                    mediaType = "application/octet-stream";
+                }
+            }
+            data.put(MEDIA_TYPE, mediaType);
+        }
         if (null != getUserInfo(room.getRoomID())) {
             data.put(USER_INFO, getUserInfo(room.getRoomID()));
         }

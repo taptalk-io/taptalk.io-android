@@ -690,6 +690,10 @@ public class TapCoreMessageManager {
     }
 
     public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        sendFileMessage(fileUrl, caption, room, "", "", listener);
+    }
+
+    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, String fileName, String mimeType, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
@@ -706,30 +710,41 @@ public class TapCoreMessageManager {
         if (listener != null) {
             listener.onTemporaryMessageCreated(temporaryMessage);
         }
-        TAPChatManager.getInstance(instanceKey).createFileMessageModel(fileUrl, room, caption, new TapCoreSendMessageListener() {
-            @Override
-            public void onStart(TAPMessageModel message) {
-                if (message != null) {
-                    message.setLocalID(temporaryMessage.getLocalID());
-                    sendCustomMessage(message, listener);
+        TAPChatManager.getInstance(instanceKey).createFileMessageModel(
+            fileUrl,
+            room,
+            caption,
+            fileName,
+            mimeType,
+            new TapCoreSendMessageListener() {
+                @Override
+                public void onStart(TAPMessageModel message) {
+                    if (message != null) {
+                        message.setLocalID(temporaryMessage.getLocalID());
+                        sendCustomMessage(message, listener);
+                    }
+                }
+
+                @Override
+                public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
+                    // Send message without metadata
+                    TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
+                    sendCustomMessage(temporaryMessage, listener);
+//                    if (listener != null) {
+//                        listener.onError(message, errorCode, errorMessage);
+//                    }
                 }
             }
-
-            @Override
-            public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
-                // Send message without metadata
-                TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
-                sendCustomMessage(temporaryMessage, listener);
-//                if (listener != null) {
-//                    listener.onError(message, errorCode, errorMessage);
-//                }
-            }
-        });
+        );
     }
 
     public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+        sendFileMessage(fileUrl, caption, room, quotedMessage, "", "", listener);
+    }
+
+    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, String fileName, String mimeType, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        sendFileMessage(fileUrl, caption, room, listener);
+        sendFileMessage(fileUrl, caption, room, fileName, mimeType, listener);
     }
 
     public void sendVoiceMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
