@@ -3996,6 +3996,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private boolean isBubbleTapOnly() {
-        return roomType == RoomType.STARRED || roomType == RoomType.PINNED || roomType == RoomType.DETAIL;
+        return roomType == RoomType.STARRED || roomType == RoomType.PINNED/* || roomType == RoomType.DETAIL*/;
     }
 }

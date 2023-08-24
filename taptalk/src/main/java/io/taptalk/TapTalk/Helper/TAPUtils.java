@@ -67,6 +67,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
@@ -1617,5 +1619,80 @@ public class TAPUtils {
             url = "http://" + url;
         }
         return url;
+    }
+
+    public static String beautifyPhoneNumber(String phoneNumber, boolean insertPlus) {
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            return "";
+        }
+        try {
+            String plus = insertPlus ? "+" : "";
+            boolean hasIDCountryCodePrefix;
+            String phoneWithoutCode;
+
+            // Obtain trimmed phone without code
+            if (phoneNumber.startsWith("+62")) {
+                phoneWithoutCode = phoneNumber.substring(3).trim();
+                hasIDCountryCodePrefix = true;
+            }
+            else if (phoneNumber.startsWith("62")) {
+                phoneWithoutCode = phoneNumber.substring(2).trim();
+                hasIDCountryCodePrefix = true;
+            }
+            else {
+                phoneWithoutCode = phoneNumber.trim();
+                hasIDCountryCodePrefix = false;
+            }
+
+            Pattern notNumberPattern = Pattern.compile("[^0-9]");
+            Matcher notNumberMatcher = notNumberPattern.matcher(phoneWithoutCode);
+            if (notNumberMatcher.find()) {
+                // Return original string if not number
+                return phoneNumber;
+            }
+
+            if (phoneWithoutCode.length() < 6) {
+                // Skip beautification if length < 6
+                if (hasIDCountryCodePrefix) {
+                    return String.format("%s62 %s", plus, phoneWithoutCode);
+                }
+                return String.format("%s%s", plus, phoneNumber);
+            }
+
+            // Calculate three digit segment amount (0 to 3)
+            int threeDigitSegments = phoneWithoutCode.length() % 4;
+            if (threeDigitSegments <= 0) {
+                threeDigitSegments = 0;
+            }
+            else {
+                threeDigitSegments = 4 - threeDigitSegments;
+            }
+
+            // Insert spaces
+            StringBuilder beautifiedPhoneNumber = new StringBuilder(phoneWithoutCode);
+            int insertIndex = phoneWithoutCode.length();
+            while (insertIndex > 0) {
+                if (threeDigitSegments > 0) {
+                    insertIndex -= 3;
+                }
+                else {
+                    insertIndex -= 4;
+                }
+                if (insertIndex > 0) {
+                    beautifiedPhoneNumber.insert(insertIndex, " ");
+                }
+                threeDigitSegments--;
+            }
+
+            // Return beautified number
+            if (hasIDCountryCodePrefix) {
+                return String.format("%s62 %s", plus, beautifiedPhoneNumber);
+            }
+            return String.format("%s%s", plus, beautifiedPhoneNumber);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return phoneNumber;
+        }
     }
 }

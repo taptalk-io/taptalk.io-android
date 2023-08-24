@@ -158,6 +158,12 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
             }
             etCaption.setText(caption);
 //            etCaption.setSelection(caption.length());
+            etCaption.post(() -> {
+                etCaption.clearFocus();
+                if (context != null && context instanceof Activity) {
+                    TAPUtils.dismissKeyboard((Activity) context, etCaption);
+                }
+            });
             tvTypingIndicator.setVisibility(View.VISIBLE);
             tvTypingIndicator.setText(String.format(context.getString(R.string.tap_format_dd_letter_count), caption.length(), TapTalk.getMaxCaptionLength(instanceKey)));
         }

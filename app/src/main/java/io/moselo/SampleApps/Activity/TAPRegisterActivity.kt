@@ -198,7 +198,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         // Set mobile number & disable editing
         tv_country_code.text = "+" + vm.countryCallingCode
         et_mobile_number.isEnabled = false
-        et_mobile_number.setText(intent.getStringExtra(MOBILE_NUMBER))
+        et_mobile_number.setText(TAPUtils.beautifyPhoneNumber(intent.getStringExtra(MOBILE_NUMBER), false))
         tv_country_code.setTextColor(vm.textFieldFontColorHint)
         et_mobile_number.setTextColor(vm.textFieldFontColorHint)
         if (et_mobile_number.text.isNotEmpty()) {
@@ -492,7 +492,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                 et_full_name.text.toString(),
                 et_username.text.toString(),
                 vm.countryID,
-                et_mobile_number.text.toString(),
+                et_mobile_number.text.toString().replace(" ", ""),
                 et_email_address.text.toString(),
                 et_password.text.toString(),
                 registerView

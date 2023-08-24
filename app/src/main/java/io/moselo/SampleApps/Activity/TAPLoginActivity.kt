@@ -225,11 +225,13 @@ class TAPLoginActivity : TAPBaseActivity() {
             tv_country_code?.text = "+$callingCode"
             tv_country_code?.hint = ""
             et_phone_number?.visibility = View.VISIBLE
+            tv_phone_number?.visibility = View.VISIBLE
         }
         else {
             tv_country_code?.text = ""
             tv_country_code?.hint = getString(R.string.tap_hint_select_country)
             et_phone_number?.visibility = View.GONE
+            tv_phone_number?.visibility = View.GONE
         }
         vm?.selectedCountryID = countryID
         vm?.countryCallingID = callingCode
@@ -278,6 +280,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_country_chevron?.alpha = 0.4f
             tv_country_code?.alpha = 0.4f
             et_phone_number?.alpha = 0.4f
+            tv_phone_number?.alpha = 0.4f
             cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
             ll_button_whatsapp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
             ll_button_otp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_border_inactive)
@@ -300,6 +303,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_country_chevron?.alpha = 1f
             tv_country_code?.alpha = 1f
             et_phone_number?.alpha = 1f
+            tv_phone_number?.alpha = 1f
             cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
             ll_button_whatsapp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
             ll_button_otp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_border_ripple)
@@ -337,7 +341,7 @@ class TAPLoginActivity : TAPBaseActivity() {
     private val devPhoneNumberLongClickListener = OnLongClickListener {
         if (validatePhoneNumber()) {
             val phoneNumber = checkAndEditPhoneNumber()
-            showPhoneNumberInputLoading()
+            showPhoneNumberInputLoading(true)
             TAPDataManager.getInstance(instanceKey).requestOTPLogin(
                 vm?.selectedCountryID ?: defaultCountryID,
                 phoneNumber,
@@ -403,6 +407,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            tv_phone_number.text = TAPUtils.beautifyPhoneNumber(s.toString(), false)
             if (ll_input_error_info?.visibility == View.VISIBLE) {
                 et_phone_number?.removeTextChangedListener(this)
                 validatePhoneNumber()
@@ -498,6 +503,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             override fun startLoading() {
                 runOnUiThread {
                     et_phone_number?.visibility = View.GONE
+                    tv_phone_number?.visibility = View.GONE
                     cv_country_flag?.visibility = View.GONE
                     pb_loading_progress_country?.visibility = View.VISIBLE
                 }
@@ -536,6 +542,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     runOnUiThread {
                         searchCountry("")
                         et_phone_number?.visibility = View.VISIBLE
+                        tv_phone_number?.visibility = View.VISIBLE
                         cv_country_flag?.visibility = View.VISIBLE
                         pb_loading_progress_country?.visibility = View.GONE
                         ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
@@ -554,6 +561,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             override fun onError(errorMessage: String?) {
                 runOnUiThread {
                     et_phone_number?.visibility = View.VISIBLE
+                    tv_phone_number?.visibility = View.VISIBLE
                     cv_country_flag?.visibility = View.VISIBLE
                     pb_loading_progress_country?.visibility = View.GONE
                     setCountry(0, "", "")
@@ -873,7 +881,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     if (response?.isSuccess == true) {
                         vm?.nextWhatsAppRequestTimestamp = (response.nextRequestSeconds * 1000).toLong() + System.currentTimeMillis()
                         vm?.lastRequestWhatsAppPhoneNumber = vm?.phoneNumber ?: ""
-                        tv_verification_phone_number?.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
+                        tv_verification_phone_number?.text = TAPUtils.beautifyPhoneNumber(String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber), true)
                         showVerificationView()
                     }
                     else {
