@@ -477,9 +477,13 @@ public class TapCoreMessageManager {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 TAPMessageModel message = TAPChatManager.getInstance(instanceKey).createImageMessageModel(resource, caption, room);
+                // Set local ID, quote, reply
                 message.setLocalID(temporaryMessage.getLocalID());
                 if (temporaryMessage.getQuote() != null && message.getQuote() == null) {
                     message.setQuote(temporaryMessage.getQuote());
+                }
+                if (temporaryMessage.getReplyTo() != null && message.getReplyTo() == null) {
+                    message.setReplyTo(temporaryMessage.getReplyTo());
                 }
                 try {
                     HashMap<String, Object> messageData = message.getData();
@@ -580,9 +584,13 @@ public class TapCoreMessageManager {
             @Override
             public void onStart(TAPMessageModel message) {
                 if (message != null) {
+                    // Set local ID, quote, reply, and send message
                     message.setLocalID(temporaryMessage.getLocalID());
                     if (temporaryMessage.getQuote() != null && message.getQuote() == null) {
                         message.setQuote(temporaryMessage.getQuote());
+                    }
+                    if (temporaryMessage.getReplyTo() != null && message.getReplyTo() == null) {
+                        message.setReplyTo(temporaryMessage.getReplyTo());
                     }
                     sendCustomMessage(message, listener);
                 }
@@ -710,6 +718,8 @@ public class TapCoreMessageManager {
             TYPE_FILE,
             fileUrl,
             caption,
+            fileName,
+            mimeType,
             room,
             TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID())
         );
@@ -726,9 +736,13 @@ public class TapCoreMessageManager {
                 @Override
                 public void onStart(TAPMessageModel message) {
                     if (message != null) {
+                        // Set local ID, quote, reply, and send message
                         message.setLocalID(temporaryMessage.getLocalID());
                         if (temporaryMessage.getQuote() != null && message.getQuote() == null) {
                             message.setQuote(temporaryMessage.getQuote());
+                        }
+                        if (temporaryMessage.getReplyTo() != null && message.getReplyTo() == null) {
+                            message.setReplyTo(temporaryMessage.getReplyTo());
                         }
                         sendCustomMessage(message, listener);
                     }
