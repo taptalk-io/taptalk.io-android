@@ -792,32 +792,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 case SEND_MEDIA_FROM_PREVIEW:
                     ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);
                     if (null != medias && 0 < medias.size()) {
-                        TapCoreSendMessageListener listener = new TapCoreSendMessageListener() {
-                            @Override
-                            public void onTemporaryMessageCreated(TAPMessageModel tapMessageModel) {
-                                updateMessage(tapMessageModel);
-                                hideQuoteLayout();
-                                hideUnreadButton();
-                            }
-                        };
-                        for (TAPMediaPreviewModel media : medias) {
-                            if (media.getType() == TYPE_IMAGE) {
-                                if (media.getUrl() != null && !media.getUrl().isEmpty()) {
-                                    TapCoreMessageManager.getInstance(instanceKey).sendImageMessage(media.getUrl(), media.getCaption(), vm.getRoom(), listener);
-                                }
-                                else {
-                                    TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
-                                }
-                            }
-                            else if (media.getType() == TYPE_VIDEO) {
-                                if (media.getUrl() != null && !media.getUrl().isEmpty()) {
-                                    TapCoreMessageManager.getInstance(instanceKey).sendVideoMessage(TapUIChatActivity.this, media.getUrl(), media.getCaption(), vm.getRoom(), listener);
-                                }
-                                else {
-                                    TAPChatManager.getInstance(instanceKey).createVideoMessageModelAndAddToUploadQueue(TapUIChatActivity.this, vm.getRoom(), media.getUri(), media.getCaption());
-                                }
-                            }
-                        }
+                        sendMediasFromPreview(medias);
                     }
                     break;
                 case FORWARD_MESSAGE:
@@ -3571,6 +3546,91 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void openMediaPreviewPage(ArrayList<TAPMediaPreviewModel> mediaPreviews) {
         TAPMediaPreviewActivity.start(TapUIChatActivity.this, instanceKey, mediaPreviews, new ArrayList<>(vm.getRoomParticipantsByUsername().values()));
+    }
+
+    private void sendMediasFromPreview(List<TAPMediaPreviewModel> medias) {
+        TapCoreSendMessageListener listener = new TapCoreSendMessageListener() {
+            @Override
+            public void onTemporaryMessageCreated(TAPMessageModel message) {
+                updateMessageAdapter(message);
+            }
+
+            @Override
+            public void onStart(TAPMessageModel message) {
+                updateMessageAdapter(message);
+            }
+
+            @Override
+            public void onSuccess(TAPMessageModel message) {
+                checkAndSendRemainingMedias();
+            }
+
+            @Override
+            public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
+                checkAndSendRemainingMedias();
+            }
+
+            private void updateMessageAdapter(TAPMessageModel message) {
+                updateMessage(message);
+                hideQuoteLayout();
+                hideUnreadButton();
+            }
+
+            private void checkAndSendRemainingMedias() {
+                if (!vm.getPendingSendMedias().isEmpty()) {
+                    sendMediasFromPreview(vm.getPendingSendMedias());
+                }
+            }
+        };
+        for (TAPMediaPreviewModel media : medias) {
+            if (media.getType() == TYPE_IMAGE) {
+                if (media.getUrl() != null && !media.getUrl().isEmpty()) {
+                    TapCoreMessageManager.getInstance(instanceKey).sendImageMessage(
+                        media.getUrl(),
+                        media.getCaption(),
+                        vm.getRoom(),
+                        vm.getQuotedMessage(),
+                        listener
+                    );
+                    int index = medias.indexOf(media);
+                    ArrayList<TAPMediaPreviewModel> pendingMedias = new ArrayList<>(medias.subList(index + 1, medias.size()));
+                    vm.setPendingSendMedias(pendingMedias);
+                    break;
+                }
+                else {
+                    TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(
+                        this,
+                        vm.getRoom(),
+                        media.getUri(),
+                        media.getCaption()
+                    );
+                }
+            }
+            else if (media.getType() == TYPE_VIDEO) {
+                if (media.getUrl() != null && !media.getUrl().isEmpty()) {
+                    TapCoreMessageManager.getInstance(instanceKey).sendVideoMessage(
+                        this,
+                        media.getUrl(),
+                        media.getCaption(),
+                        vm.getRoom(),
+                        vm.getQuotedMessage(),
+                        listener
+                    );
+                    int index = medias.indexOf(media);
+                    ArrayList<TAPMediaPreviewModel> pendingMedias = new ArrayList<>(medias.subList(index + 1, medias.size()));
+                    vm.setPendingSendMedias(pendingMedias);
+                    break;
+                }
+                else {
+                    TAPChatManager.getInstance(instanceKey).createVideoMessageModelAndAddToUploadQueue(
+                        this,
+                        vm.getRoom(),
+                        media.getUri(),
+                        media.getCaption()
+                    );
+                }
+            }
+        }
     }
 
     // Previously callApiGetGroupData
