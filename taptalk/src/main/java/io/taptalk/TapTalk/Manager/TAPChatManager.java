@@ -1420,7 +1420,7 @@ public class TAPChatManager {
                 type,
                 System.currentTimeMillis(),
                 getActiveUser(),
-                "",
+                TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                 data,
                 quotedMessage,
                 instanceKey
@@ -1433,7 +1433,7 @@ public class TAPChatManager {
                 type,
                 System.currentTimeMillis(),
                 getActiveUser(),
-                "",
+                TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                 data
             );
         }
