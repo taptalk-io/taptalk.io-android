@@ -3590,6 +3590,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         media.getCaption(),
                         vm.getRoom(),
                         vm.getQuotedMessage(),
+                        true,
                         listener
                     );
                     int index = medias.indexOf(media);
@@ -3614,6 +3615,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         media.getCaption(),
                         vm.getRoom(),
                         vm.getQuotedMessage(),
+                        true,
                         listener
                     );
                     int index = medias.indexOf(media);

@@ -3679,14 +3679,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         rcivImageBody.measure(measureSpec, measureSpec);
         llTimestampIconImage.measure(measureSpec, measureSpec);
 
-        if (((null != item.getQuote() &&
-                null != item.getQuote().getTitle() &&
-                !item.getQuote().getTitle().isEmpty()) ||
-                (null != item.getForwardFrom() &&
-                        null != item.getForwardFrom().getFullname() &&
-                        !item.getForwardFrom().getFullname().isEmpty())) &&
-                null != widthDimension &&
-                null != heightDimension
+        boolean hasQuoteOrForwarded =
+            (null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
+            (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty());
+
+        if (hasQuoteOrForwarded &&
+            null != widthDimension &&
+            null != heightDimension
         ) {
             // Fix layout when quote/forward exists
             float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
@@ -3703,30 +3702,37 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.getLayoutParams().height = (int) (rcivImageBody.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
             }
             rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            clForwardedQuote.setVisibility(View.VISIBLE);
         } else if (rcivImageBody.getMeasuredWidth() < (llTimestampIconImage.getMeasuredWidth() + TAPUtils.dpToPx(12))) {
             // Thumbnail width may not be smaller than timestamp width (no caption)
             rcivImageBody.getLayoutParams().width = llTimestampIconImage.getMeasuredWidth() + TAPUtils.dpToPx(12);
             rcivImageBody.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
             rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            clForwardedQuote.setVisibility(View.GONE);
         } else if (isMessageFromMySelf(item) && rcivImageBody.getMeasuredWidth() < (tvMessageTimestamp.getMeasuredWidth() + ivMessageStatus.getMeasuredWidth() + TAPUtils.dpToPx(22))) {
             // Thumbnail width may not be smaller than timestamp width (with caption, right bubble)
             rcivImageBody.getLayoutParams().width = tvMessageTimestamp.getMeasuredWidth() + ivMessageStatus.getMeasuredWidth() + TAPUtils.dpToPx(22);
             rcivImageBody.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
             rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            clForwardedQuote.setVisibility(View.GONE);
         } else if (!isMessageFromMySelf(item) && rcivImageBody.getMeasuredWidth() < (tvMessageTimestamp.getMeasuredWidth() + TAPUtils.dpToPx(20))) {
             // Thumbnail width may not be smaller than timestamp width (with caption, left bubble)
             rcivImageBody.getLayoutParams().width = tvMessageTimestamp.getMeasuredWidth() + tvMessageTimestamp.getMeasuredWidth() + TAPUtils.dpToPx(20);
             rcivImageBody.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
             rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            clForwardedQuote.setVisibility(View.GONE);
-        } else {
+        } else if (null != widthDimension && null != heightDimension && widthDimension.intValue() > 0 && heightDimension.intValue() > 0) {
             // Set default image size
             rcivImageBody.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
             rcivImageBody.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
             rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            clForwardedQuote.setVisibility(View.GONE);
+        } else {
+            // Set container to square if dimension is not present
+            rcivImageBody.getLayoutParams().width = rcivImageBody.getMaxWidth();
+            rcivImageBody.getLayoutParams().height = rcivImageBody.getMaxWidth();
+            rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            clForwardedQuote.setVisibility(View.GONE);
+        }
+        if (hasQuoteOrForwarded) {
+            clForwardedQuote.setVisibility(View.VISIBLE);
+        } else {
             clForwardedQuote.setVisibility(View.GONE);
         }
     }

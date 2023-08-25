@@ -440,7 +440,7 @@ public class TapCoreMessageManager {
         sendImageMessage(image, caption, room, listener);
     }
 
-    public void sendImageMessage(String imageUrl, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
+    public void sendImageMessage(String imageUrl, String caption, TAPRoomModel room, boolean fetchMetadata, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
@@ -454,6 +454,12 @@ public class TapCoreMessageManager {
             room,
             TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID())
         );
+        if (!fetchMetadata) {
+            // Send message without metadata
+            TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
+            sendCustomMessage(temporaryMessage, listener);
+            return;
+        }
         if (listener != null) {
             listener.onTemporaryMessageCreated(temporaryMessage);
         }
@@ -531,7 +537,7 @@ public class TapCoreMessageManager {
         });
     }
 
-    public void sendImageMessage(String imageUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+    public void sendImageMessage(String imageUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, boolean fetchMetadata, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
@@ -539,7 +545,7 @@ public class TapCoreMessageManager {
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        sendImageMessage(imageUrl, caption, room, listener);
+        sendImageMessage(imageUrl, caption, room, fetchMetadata, listener);
     }
 
     public void sendVideoMessage(Uri videoUri, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
@@ -563,7 +569,7 @@ public class TapCoreMessageManager {
         sendVideoMessage(videoUri, caption, room, listener);
     }
 
-    public void sendVideoMessage(Context context, String videoUrl, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
+    public void sendVideoMessage(Context context, String videoUrl, String caption, TAPRoomModel room, boolean fetchMetadata, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
@@ -577,6 +583,12 @@ public class TapCoreMessageManager {
             room,
             TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID())
         );
+        if (!fetchMetadata) {
+            // Send message without metadata
+            TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
+            sendCustomMessage(temporaryMessage, listener);
+            return;
+        }
         if (listener != null) {
             listener.onTemporaryMessageCreated(temporaryMessage);
         }
@@ -608,7 +620,7 @@ public class TapCoreMessageManager {
         });
     }
 
-    public void sendVideoMessage(Context context, String videoUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+    public void sendVideoMessage(Context context, String videoUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, boolean fetchMetadata, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
@@ -616,7 +628,7 @@ public class TapCoreMessageManager {
             return;
         }
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        sendVideoMessage(context, videoUrl, caption, room, listener);
+        sendVideoMessage(context, videoUrl, caption, room, fetchMetadata, listener);
     }
 
     public void sendFileMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
@@ -703,11 +715,11 @@ public class TapCoreMessageManager {
         sendFileMessage(uri, room, caption, listener);
     }
 
-    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
-        sendFileMessage(fileUrl, caption, room, "", "", listener);
+    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, boolean fetchMetadata, TapCoreSendMessageListener listener) {
+        sendFileMessage(fileUrl, caption, room, "", "", fetchMetadata, listener);
     }
 
-    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, String fileName, String mimeType, TapCoreSendMessageListener listener) {
+    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, String fileName, String mimeType, boolean fetchMetadata, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
@@ -723,6 +735,12 @@ public class TapCoreMessageManager {
             room,
             TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID())
         );
+        if (!fetchMetadata) {
+            // Send message without metadata
+            TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), null, 0);
+            sendCustomMessage(temporaryMessage, listener);
+            return;
+        }
         if (listener != null) {
             listener.onTemporaryMessageCreated(temporaryMessage);
         }
@@ -761,13 +779,13 @@ public class TapCoreMessageManager {
         );
     }
 
-    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
-        sendFileMessage(fileUrl, caption, room, quotedMessage, "", "", listener);
+    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, boolean fetchMetadata, TapCoreSendMessageListener listener) {
+        sendFileMessage(fileUrl, caption, room, quotedMessage, "", "", fetchMetadata, listener);
     }
 
-    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, String fileName, String mimeType, TapCoreSendMessageListener listener) {
+    public void sendFileMessage(String fileUrl, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, String fileName, String mimeType, boolean fetchMetadata, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
-        sendFileMessage(fileUrl, caption, room, fileName, mimeType, listener);
+        sendFileMessage(fileUrl, caption, room, fileName, mimeType, fetchMetadata, listener);
     }
 
     public void sendVoiceMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
