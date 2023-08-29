@@ -614,6 +614,9 @@ class TAPLoginActivity : TAPBaseActivity() {
             et_phone_number?.setText("")
         }
         showPhoneNumberInputView()
+
+        ll_input_error_info?.visibility = View.GONE
+        cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
     }
 
     /**=============================================================================================
