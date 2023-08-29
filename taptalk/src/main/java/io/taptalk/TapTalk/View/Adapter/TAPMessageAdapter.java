@@ -803,7 +803,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void setImageData(TAPMessageModel item, int position) {
-            rcivImageBody.setImageDrawable(null);
+//            rcivImageBody.setImageDrawable(null);
 
             if (null == item.getData()) {
                 return;
@@ -1245,7 +1245,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void setVideoProgress(TAPMessageModel item, int position) {
-            rcivVideoThumbnail.setImageDrawable(null);
+//            rcivVideoThumbnail.setImageDrawable(null);
 
             if (null == item.getData()) {
                 return;
