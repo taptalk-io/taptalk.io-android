@@ -1206,6 +1206,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
         rvMessageList.setupSwipeHelper(this, position -> {
             showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
         });
+        rvMessageList.setupSwipeInfoHelper(this, position -> {
+            if (position >= 0 && vm.getMessageModels().size() > position) {
+                TAPMessageModel message = vm.getMessageModels().get(position);
+                TapMessageInfoActivity.Companion.start(
+                    TapUIChatActivity.this,
+                    instanceKey,
+                    message,
+                    vm.getRoom(),
+                    vm.getStarredMessageIds().contains(message.getMessageID()),
+                    vm.getPinnedMessageIds().contains(message.getMessageID()),
+                    true
+                );
+            }
+        });
         // FIXME: 9 November 2018 IMAGES/VIDEOS CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0);

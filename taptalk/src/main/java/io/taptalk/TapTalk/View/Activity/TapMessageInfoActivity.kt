@@ -78,6 +78,18 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             isStarred: Boolean,
             isPinned: Boolean
         ) {
+            start(context, instanceKey, message, room, isStarred, isPinned, false)
+        }
+
+        fun start(
+            context: Context,
+            instanceKey: String?,
+            message: TAPMessageModel,
+            room: TAPRoomModel,
+            isStarred: Boolean,
+            isPinned: Boolean,
+            animate: Boolean
+        ) {
             if (context is Activity) {
                 val intent = Intent(context, TapMessageInfoActivity::class.java)
                 intent.putExtra(INSTANCE_KEY, instanceKey)
@@ -86,6 +98,9 @@ class TapMessageInfoActivity : TAPBaseActivity() {
                 intent.putExtra(IS_STARRED, isStarred)
                 intent.putExtra(IS_PINNED, isPinned)
                 context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER)
+                if (animate) {
+                    context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
+                }
             }
         }
     }
