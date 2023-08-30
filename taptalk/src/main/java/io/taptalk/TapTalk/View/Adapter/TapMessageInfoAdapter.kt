@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -73,6 +74,8 @@ class TapMessageInfoAdapter (
 
     internal inner class MessageBubbleViewHolder(parent: ViewGroup, viewType: Int) : TAPBaseViewHolder<TapMessageRecipientModel>(parent, viewType) {
 
+        private var transitionStarted = false
+
         override fun onBind(item: TapMessageRecipientModel?, position: Int) {
             messageBubbleRecyclerView = itemView.findViewById(R.id.recyclerView)
             val activity = itemView.context as Activity ?: return
@@ -90,6 +93,13 @@ class TapMessageInfoAdapter (
             messageBubbleRecyclerView?.adapter = messageAdapter
             messageBubbleRecyclerView?.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.VERTICAL, false)
             messageBubbleRecyclerView?.setHasFixedSize(true)
+
+            if (!transitionStarted && activity is FragmentActivity) {
+                messageBubbleRecyclerView?.post {
+                    activity.supportStartPostponedEnterTransition()
+                    transitionStarted = true
+                }
+            }
         }
     }
 

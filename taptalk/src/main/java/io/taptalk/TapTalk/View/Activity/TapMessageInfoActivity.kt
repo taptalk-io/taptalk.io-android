@@ -14,6 +14,7 @@ import android.os.Parcelable
 import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -76,7 +77,8 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             message: TAPMessageModel,
             room: TAPRoomModel,
             isStarred: Boolean,
-            isPinned: Boolean
+            isPinned: Boolean,
+            transitionView: View?
         ) {
             if (context is Activity) {
                 val intent = Intent(context, TapMessageInfoActivity::class.java)
@@ -85,7 +87,15 @@ class TapMessageInfoActivity : TAPBaseActivity() {
                 intent.putExtra(ROOM, room)
                 intent.putExtra(IS_STARRED, isStarred)
                 intent.putExtra(IS_PINNED, isPinned)
-                context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER)
+                val options = transitionView?.let {
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        context,
+                        it,
+                        context.getString(R.string.tap_transition_view_message)
+                    )
+                }
+                context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.OPEN_REPORT_USER, options?.toBundle())
+                context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
             }
         }
     }
@@ -120,6 +130,8 @@ class TapMessageInfoActivity : TAPBaseActivity() {
 
         iv_button_back.setOnClickListener { onBackPressed() }
 
+        supportPostponeEnterTransition()
+
         TAPBroadcastManager.register(
             this@TapMessageInfoActivity,
             broadcastReceiver,
@@ -135,6 +147,10 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             CancelDownload,
             PlayPauseVoiceNote
         )
+    }
+
+    override fun onBackPressed() {
+        supportFinishAfterTransition()
     }
 
     override fun onResume() {

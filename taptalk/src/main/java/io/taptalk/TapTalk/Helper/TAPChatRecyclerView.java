@@ -16,7 +16,9 @@ public class TAPChatRecyclerView extends RecyclerView {
     public String instanceKey;
 
     private ItemTouchHelper swipeHelper;
+    private ItemTouchHelper swipeInfoHelper;
     private TAPSwipeReplyCallback swipeReplyCallback;
+    private TapSwipeInfoCallback swipeInfoCallback;
     private int oldHeight;
 
     public TAPChatRecyclerView(Context context) {
@@ -49,6 +51,9 @@ public class TAPChatRecyclerView extends RecyclerView {
         if (null != swipeHelper) {
             swipeHelper.onDraw(c, this, null);
         }
+        if (null != swipeInfoHelper) {
+            swipeInfoHelper.onDraw(c, this, null);
+        }
         super.onDraw(c);
     }
 
@@ -58,12 +63,20 @@ public class TAPChatRecyclerView extends RecyclerView {
         swipeHelper.attachToRecyclerView(this);
     }
 
+    public void setupSwipeInfoHelper(Context context, TapSwipeInfoCallback.SwipeReplyInterface swipeReplyInterface) {
+        swipeInfoCallback = new TapSwipeInfoCallback(instanceKey, context, swipeReplyInterface);
+        swipeInfoHelper = new ItemTouchHelper(swipeInfoCallback);
+        swipeInfoHelper.attachToRecyclerView(this);
+    }
+
     public void disableSwipe() {
         swipeReplyCallback.setSwipeEnabled(false);
+        swipeInfoCallback.setSwipeEnabled(false);
     }
 
     public void enableSwipe() {
         swipeReplyCallback.setSwipeEnabled(true);
+        swipeInfoCallback.setSwipeEnabled(true);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -74,6 +87,13 @@ public class TAPChatRecyclerView extends RecyclerView {
             post(() -> {
                 swipeHelper.attachToRecyclerView(new RecyclerView(getContext()));
                 post(() -> swipeHelper.attachToRecyclerView(this));
+            });
+        }
+        if (e.getAction() == ACTION_UP && null != swipeInfoHelper) {
+            // Re-attach swipe helper on when user lifts touch
+            post(() -> {
+                swipeInfoHelper.attachToRecyclerView(new RecyclerView(getContext()));
+                post(() -> swipeInfoHelper.attachToRecyclerView(this));
             });
         }
         return super.onTouchEvent(e);
