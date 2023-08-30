@@ -404,7 +404,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clContainer;
         private ConstraintLayout clForwarded;
         private ConstraintLayout clQuote;
-        private FrameLayout flBubble;
+        public FrameLayout flBubble;
         private CircleImageView civAvatar;
         private ImageView ivMessageStatus;
         //private ImageView ivReply;
@@ -620,7 +620,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clQuote;
         private ConstraintLayout clForwarded;
         private LinearLayout llTimestampIconImage;
-        private FrameLayout flBubble;
+        public FrameLayout flBubble;
         private FrameLayout flProgress;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivImageBody;
@@ -1099,7 +1099,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clQuote;
         private ConstraintLayout clForwarded;
         private LinearLayout llTimestampIconImage;
-        private FrameLayout flBubble;
+        public FrameLayout flBubble;
         private FrameLayout flProgress;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivVideoThumbnail;
@@ -1600,7 +1600,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clContainer;
         private ConstraintLayout clForwarded;
         private ConstraintLayout clQuote;
-        private FrameLayout flBubble;
+        public FrameLayout flBubble;
         private FrameLayout flFileIcon;
         private CircleImageView civAvatar;
         private ImageView ivFileIcon;
@@ -1923,7 +1923,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clContainer;
         private ConstraintLayout clForwarded;
         private ConstraintLayout clQuote;
-        private FrameLayout flBubble;
+        public FrameLayout flBubble;
         private FrameLayout flVoiceIcon;
         private CircleImageView civAvatar;
         private ImageView ivVoiceIcon;
@@ -2220,7 +2220,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clForwardedQuote;
         private ConstraintLayout clQuote;
         private ConstraintLayout clForwarded;
-        private FrameLayout flBubble;
+        public FrameLayout flBubble;
         private FrameLayout flMapViewContainer;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivQuoteImage;
@@ -2683,7 +2683,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clContainer;
         private ConstraintLayout clForwarded;
         private ConstraintLayout clQuote;
-        private FrameLayout flBubble;
+        public FrameLayout flBubble;
         private CircleImageView civAvatar;
         private ImageView ivMessageStatus;
         private ImageView ivSending;

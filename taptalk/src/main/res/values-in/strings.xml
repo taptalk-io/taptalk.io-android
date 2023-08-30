@@ -275,6 +275,7 @@
     <string name="tap_unable_to_load_shared_media">Tidak dapat memuat media</string>
     <string name="tap_try_again">Coba Lagi?</string>
     <string name="tap_transition_view_image">tap_view_image</string>
+    <string name="tap_transition_view_message">tap_view_message</string>
     <string name="tap_format_dd_media_count">%d dari %d</string>
     <string name="tap_format_dd_letter_count">%d/%d</string>
     <string name="tap_format_s_maximum_file_size">Ukuran file maksimum %s.</string>

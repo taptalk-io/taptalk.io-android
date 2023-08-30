@@ -277,6 +277,7 @@
     <string name="tap_unable_to_load_shared_media">Unable to load shared media</string>
     <string name="tap_try_again">Try Again?</string>
     <string name="tap_transition_view_image">tap_view_image</string>
+    <string name="tap_transition_view_message">tap_view_message</string>
     <string name="tap_format_dd_media_count">%d of %d</string>
     <string name="tap_format_dd_letter_count">%d/%d</string>
     <string name="tap_format_s_maximum_file_size">Maximum file size is %s.</string>
