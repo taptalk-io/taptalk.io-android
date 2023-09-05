@@ -590,6 +590,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         rcivLinkImage.setVisibility(View.GONE);
                     } else {
                         rcivLinkImage.setVisibility(View.VISIBLE);
+                        glide.clear(rcivLinkImage);
                         glide.load(image).fitCenter().into(rcivLinkImage);
                     }
                     clLink.setOnClickListener(view -> {
@@ -926,6 +927,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (null != cachedImage) {
                     // Load image from cache
                     activity.runOnUiThread(() -> {
+                        glide.clear(rcivImageBody);
                         glide.load(cachedImage)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
                                 .apply(new RequestOptions()
@@ -939,6 +941,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     // Load image from URL
                     String finalImageUrl = imageUrl;
                     activity.runOnUiThread(() -> {
+                        glide.clear(rcivImageBody);
                         glide.load(finalImageUrl)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
                                 .apply(new RequestOptions()
@@ -986,6 +989,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                        } else {
 //                            flBubble.setForeground(bubbleOverlayLeft);
 //                        }
+                        glide.clear(rcivImageBody);
                         glide.load(imageUri)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
                                 .apply(new RequestOptions()
@@ -1350,6 +1354,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                    flBubble.setForeground(bubbleOverlayLeft);
                     rcivVideoThumbnail.setOnClickListener(v -> downloadVideo(item));
                 }
+                glide.clear(rcivVideoThumbnail);
                 glide.load(videoUri)
                         .transition(DrawableTransitionOptions.withCrossFade(100))
                         .apply(new RequestOptions()
@@ -1406,6 +1411,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     if (null != videoThumbnail) {
                         BitmapDrawable finalVideoThumbnail = videoThumbnail;
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            glide.clear(rcivVideoThumbnail);
                             glide.load(finalVideoThumbnail)
                                     .transition(DrawableTransitionOptions.withCrossFade(100))
                                     .apply(new RequestOptions()
@@ -3321,6 +3327,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setVisibility(View.VISIBLE);
             } else if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
                 // Get quote image from URL
+                glide.clear(rcivQuoteImage);
                 glide.load(quoteImageURL).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
