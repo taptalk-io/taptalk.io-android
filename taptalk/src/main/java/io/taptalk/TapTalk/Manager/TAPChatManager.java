@@ -455,6 +455,10 @@ public class TAPChatManager {
         return !waitingResponses.isEmpty() || !pendingMessages.isEmpty();
     }
 
+    public HashMap<String, TapSendMessageInterface> getSendMessageListeners() {
+        return null == sendMessageListeners ? sendMessageListeners = new HashMap<>() : sendMessageListeners;
+    }
+
     /**
      * generate room ID
      */
