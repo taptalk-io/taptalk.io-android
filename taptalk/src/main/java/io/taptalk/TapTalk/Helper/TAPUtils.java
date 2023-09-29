@@ -699,7 +699,7 @@ public class TAPUtils {
     public static String getFileDisplayName(TAPMessageModel message) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {
-            return "";
+            return getDefaultFileName();
         }
 
         String fileName = (String) data.get(FILE_NAME);
@@ -718,7 +718,14 @@ public class TAPUtils {
             }
         }
 
-        return "";
+        return getDefaultFileName();
+    }
+
+    private static String getDefaultFileName() {
+        if (TapTalk.appContext != null) {
+            return TapTalk.appContext.getString(R.string.tap_document);
+        }
+        return "Document";
     }
 
     public static String getFileDisplayInfo(TAPMessageModel message) {
