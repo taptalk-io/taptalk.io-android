@@ -701,15 +701,24 @@ public class TAPUtils {
         if (null == data) {
             return "";
         }
-        String fileName = (String) data.get(FILE_NAME);
 
+        String fileName = (String) data.get(FILE_NAME);
         if (null != fileName && fileName.contains(".")) {
             return fileName.substring(0, fileName.lastIndexOf('.'));
-        } else if (null != fileName) {
-            return fileName;
-        } else {
-            return "";
         }
+        else if (null != fileName && !fileName.isEmpty()) {
+            return fileName;
+        }
+
+        String url = (String) data.get(FILE_URL);
+        if (url != null && !url.isEmpty()) {
+            String nameFromUrl = TAPFileUtils.getFileNameFromURL(url);
+            if (nameFromUrl != null) {
+                return nameFromUrl;
+            }
+        }
+
+        return "";
     }
 
     public static String getFileDisplayInfo(TAPMessageModel message) {
@@ -725,21 +734,27 @@ public class TAPUtils {
         if (null != size && size.longValue() > 0L) {
             displaySize = getStringSizeLengthFile(size.longValue());
         }
-        if (null != fileName && fileName.contains(".") && null != size) {
+
+        if (null != fileName && fileName.contains(".")) {
             displayExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
-        } else if (null != fileName && null != mediaType && mediaType.contains("/")) {
+        }
+        else if (null != mediaType && mediaType.contains("/")) {
             displayExtension = mediaType.substring(mediaType.lastIndexOf('/') + 1);
-        } else if (null != mediaType) {
+        }
+        else if (null != mediaType) {
             displayExtension = mediaType;
         }
 
         if (!displaySize.isEmpty() && !displayExtension.isEmpty()) {
             return String.format("%s %s", displaySize, displayExtension).toUpperCase();
-        } else if (!displayExtension.isEmpty()) {
+        }
+        else if (!displayExtension.isEmpty()) {
             return displayExtension.toUpperCase();
-        } else if (!displaySize.isEmpty()) {
+        }
+        else if (!displaySize.isEmpty()) {
             return displaySize;
         }
+
         return "";
     }
 

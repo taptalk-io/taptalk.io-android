@@ -1080,14 +1080,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onMessageDelivered(TAPMessageModel message) {
-            boolean noCaption = true;
-            if (null != message.getData() && null != message.getData().get(CAPTION)) {
-                String caption = (String) message.getData().get(CAPTION);
-                if (null != caption && !caption.isEmpty()) {
-                    noCaption = false;
-                }
-            }
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending, noCaption);
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
 
         @Override
@@ -1585,14 +1578,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onMessageDelivered(TAPMessageModel message) {
-            boolean noCaption = true;
-            if (null != message.getData() && null != message.getData().get(CAPTION)) {
-                String caption = (String) message.getData().get(CAPTION);
-                if (null != caption && !caption.isEmpty()) {
-                    noCaption = false;
-                }
-            }
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending, noCaption);
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
 
         @Override
@@ -2873,7 +2859,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                         TextView tvMessageStatus,
                                         @Nullable ImageView ivMessageStatus,
                                         @Nullable ImageView ivSending) {
-        showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, null, ivSending, false);
+        showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, null, ivSending);
     }
 
     private void showMessageAsDelivered(View itemView,
@@ -2881,8 +2867,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                         TextView tvMessageStatus,
                                         @Nullable ImageView ivMessageStatus,
                                         @Nullable ImageView ivMessageStatusImage,
-                                        @Nullable ImageView ivSending,
-                                        boolean isImageWithoutCaption) {
+                                        @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
             ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageDelivered)));
@@ -2890,8 +2875,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
         if (null != ivMessageStatusImage) {
             ivMessageStatusImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-            int iconColor = isImageWithoutCaption ? R.color.tapIconChatRoomMessageDeliveredImage : R.color.tapIconChatRoomMessageDelivered;
-            ImageViewCompat.setImageTintList(ivMessageStatusImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), iconColor)));
+            ImageViewCompat.setImageTintList(ivMessageStatusImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageDeliveredImage)));
             ivMessageStatusImage.setVisibility(View.VISIBLE);
         }
         tvMessageStatus.setVisibility(View.GONE);
@@ -2916,7 +2900,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                    @Nullable ImageView ivMessageStatusImage,
                                    @Nullable ImageView ivSending) {
         if (TapUI.getInstance(instanceKey).isReadStatusHidden()) {
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
             return;
         }
         if (null != ivMessageStatus) {
