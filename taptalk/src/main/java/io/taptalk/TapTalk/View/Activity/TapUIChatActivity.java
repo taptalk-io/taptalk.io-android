@@ -138,6 +138,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.Html;
 import android.text.InputFilter;
@@ -3608,16 +3609,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void onStart(TAPMessageModel message) {
                 updateMessageAdapter(message);
-            }
-
-            @Override
-            public void onSuccess(TAPMessageModel message) {
-                checkAndSendRemainingMedias();
-            }
-
-            @Override
-            public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
-                checkAndSendRemainingMedias();
+                new Handler(Looper.getMainLooper()).postDelayed(this::checkAndSendRemainingMedias, 50L);
             }
 
             private void updateMessageAdapter(TAPMessageModel message) {
@@ -4662,10 +4654,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 hideDateIndicatorTimer.start();
             } else if (newState == SCROLL_STATE_DRAGGING) {
                 // Show date indicator
-                hideDateIndicatorTimer.cancel();
-                tvDateIndicator.setText(TAPTimeFormatter.dateStampString(TapUIChatActivity.this,
-                        messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition()).getCreated()));
-                tvDateIndicator.setVisibility(View.VISIBLE);
+                TAPMessageModel firstVisibleMessage = messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition());
+                if (firstVisibleMessage != null) {
+                    hideDateIndicatorTimer.cancel();
+                    tvDateIndicator.setText(TAPTimeFormatter.dateStampString(TapUIChatActivity.this, firstVisibleMessage.getCreated()));
+                    tvDateIndicator.setVisibility(View.VISIBLE);
+                }
             }
         }
 
@@ -5330,9 +5324,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (message != null && message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
                         fileUri = intent.getParcelableExtra(FILE_URI);
                         vm.setOpenedFileMessage(message);
-                        if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
-                            if (!TAPUtils.openFile(instanceKey, TapUIChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
-                                showDownloadFileDialog();
+                        if (null != fileUri) {
+                            String mimeType = TAPFileUtils.getMimeTypeFromUri(TapUIChatActivity.this, fileUri);
+                            if ((mimeType == null || mimeType.isEmpty() || mimeType.contains("octet-stream")) && message.getData() != null && message.getData().containsKey(FILE_URL)) {
+                                String url = (String) message.getData().get(FILE_URL);
+                                mimeType = TAPUtils.getMimeTypeFromUrl(url);
+                            }
+                            if ((mimeType == null || mimeType.isEmpty() || mimeType.contains("octet-stream")) && message.getData() != null && message.getData().containsKey(MEDIA_TYPE)) {
+                                mimeType = (String) message.getData().get(MEDIA_TYPE);
+                            }
+                            if (mimeType != null && !mimeType.isEmpty()) {
+                                if (!TAPUtils.openFile(instanceKey, TapUIChatActivity.this, fileUri, mimeType)) {
+                                    showDownloadFileDialog();
+                                }
                             }
                         } else {
                             showDownloadFileDialog();

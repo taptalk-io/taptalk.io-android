@@ -30,6 +30,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_GIF;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.VIDEO_MP4;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
@@ -590,6 +591,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         rcivLinkImage.setVisibility(View.GONE);
                     } else {
                         rcivLinkImage.setVisibility(View.VISIBLE);
+                        glide.clear(rcivLinkImage);
                         glide.load(image).fitCenter().into(rcivLinkImage);
                     }
                     clLink.setOnClickListener(view -> {
@@ -767,14 +769,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return;
             }
             String mediaType = (String) messageData.get(MEDIA_TYPE);
-            if (mediaType != null && !mediaType.contains("image")) {
+            if (mediaType == null || !mediaType.contains("image")) {
                 mediaType = IMAGE_JPEG;
                 TAPMessageModel messageCopy = message.copyMessageModel();
                 messageData.put(MEDIA_TYPE, mediaType);
                 messageCopy.setData(messageData);
                 TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, messageCopy, rcivImageBody);
             }
-            else {
+            else if (!mediaType.equals(IMAGE_GIF)) {
+                // FIXME: PREVIEW GIF CRASHES (Cannot cast GifDrawable to BitmapDrawable)
                 TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, message, rcivImageBody);
             }
         }
@@ -926,6 +929,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (null != cachedImage) {
                     // Load image from cache
                     activity.runOnUiThread(() -> {
+                        glide.clear(rcivImageBody);
                         glide.load(cachedImage)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
                                 .apply(new RequestOptions()
@@ -939,6 +943,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     // Load image from URL
                     String finalImageUrl = imageUrl;
                     activity.runOnUiThread(() -> {
+                        glide.clear(rcivImageBody);
                         glide.load(finalImageUrl)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
                                 .apply(new RequestOptions()
@@ -986,6 +991,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                        } else {
 //                            flBubble.setForeground(bubbleOverlayLeft);
 //                        }
+                        glide.clear(rcivImageBody);
                         glide.load(imageUri)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
                                 .apply(new RequestOptions()
@@ -1076,14 +1082,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onMessageDelivered(TAPMessageModel message) {
-            boolean noCaption = true;
-            if (null != message.getData() && null != message.getData().get(CAPTION)) {
-                String caption = (String) message.getData().get(CAPTION);
-                if (null != caption && !caption.isEmpty()) {
-                    noCaption = false;
-                }
-            }
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending, noCaption);
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
 
         @Override
@@ -1350,6 +1349,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                    flBubble.setForeground(bubbleOverlayLeft);
                     rcivVideoThumbnail.setOnClickListener(v -> downloadVideo(item));
                 }
+                glide.clear(rcivVideoThumbnail);
                 glide.load(videoUri)
                         .transition(DrawableTransitionOptions.withCrossFade(100))
                         .apply(new RequestOptions()
@@ -1406,6 +1406,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     if (null != videoThumbnail) {
                         BitmapDrawable finalVideoThumbnail = videoThumbnail;
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            glide.clear(rcivVideoThumbnail);
                             glide.load(finalVideoThumbnail)
                                     .transition(DrawableTransitionOptions.withCrossFade(100))
                                     .apply(new RequestOptions()
@@ -1579,14 +1580,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onMessageDelivered(TAPMessageModel message) {
-            boolean noCaption = true;
-            if (null != message.getData() && null != message.getData().get(CAPTION)) {
-                String caption = (String) message.getData().get(CAPTION);
-                if (null != caption && !caption.isEmpty()) {
-                    noCaption = false;
-                }
-            }
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending, noCaption);
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
 
         @Override
@@ -2867,7 +2861,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                         TextView tvMessageStatus,
                                         @Nullable ImageView ivMessageStatus,
                                         @Nullable ImageView ivSending) {
-        showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, null, ivSending, false);
+        showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, null, ivSending);
     }
 
     private void showMessageAsDelivered(View itemView,
@@ -2875,8 +2869,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                         TextView tvMessageStatus,
                                         @Nullable ImageView ivMessageStatus,
                                         @Nullable ImageView ivMessageStatusImage,
-                                        @Nullable ImageView ivSending,
-                                        boolean isImageWithoutCaption) {
+                                        @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
             ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageDelivered)));
@@ -2884,8 +2877,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
         if (null != ivMessageStatusImage) {
             ivMessageStatusImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-            int iconColor = isImageWithoutCaption ? R.color.tapIconChatRoomMessageDeliveredImage : R.color.tapIconChatRoomMessageDelivered;
-            ImageViewCompat.setImageTintList(ivMessageStatusImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), iconColor)));
+            ImageViewCompat.setImageTintList(ivMessageStatusImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageDeliveredImage)));
             ivMessageStatusImage.setVisibility(View.VISIBLE);
         }
         tvMessageStatus.setVisibility(View.GONE);
@@ -2910,7 +2902,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                    @Nullable ImageView ivMessageStatusImage,
                                    @Nullable ImageView ivSending) {
         if (TapUI.getInstance(instanceKey).isReadStatusHidden()) {
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
             return;
         }
         if (null != ivMessageStatus) {
@@ -3321,6 +3313,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setVisibility(View.VISIBLE);
             } else if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
                 // Get quote image from URL
+                glide.clear(rcivQuoteImage);
                 glide.load(quoteImageURL).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
