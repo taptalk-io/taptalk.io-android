@@ -4654,10 +4654,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 hideDateIndicatorTimer.start();
             } else if (newState == SCROLL_STATE_DRAGGING) {
                 // Show date indicator
-                hideDateIndicatorTimer.cancel();
-                tvDateIndicator.setText(TAPTimeFormatter.dateStampString(TapUIChatActivity.this,
-                        messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition()).getCreated()));
-                tvDateIndicator.setVisibility(View.VISIBLE);
+                TAPMessageModel firstVisibleMessage = messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition());
+                if (firstVisibleMessage != null) {
+                    hideDateIndicatorTimer.cancel();
+                    tvDateIndicator.setText(TAPTimeFormatter.dateStampString(TapUIChatActivity.this, firstVisibleMessage.getCreated()));
+                    tvDateIndicator.setVisibility(View.VISIBLE);
+                }
             }
         }
 

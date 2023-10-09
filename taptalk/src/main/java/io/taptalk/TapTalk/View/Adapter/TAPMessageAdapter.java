@@ -30,6 +30,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_GIF;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.VIDEO_MP4;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
@@ -768,14 +769,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return;
             }
             String mediaType = (String) messageData.get(MEDIA_TYPE);
-            if (mediaType != null && !mediaType.contains("image")) {
+            if (mediaType == null || !mediaType.contains("image")) {
                 mediaType = IMAGE_JPEG;
                 TAPMessageModel messageCopy = message.copyMessageModel();
                 messageData.put(MEDIA_TYPE, mediaType);
                 messageCopy.setData(messageData);
                 TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, messageCopy, rcivImageBody);
             }
-            else {
+            else if (!mediaType.equals(IMAGE_GIF)) {
+                // FIXME: PREVIEW GIF CRASHES (Cannot cast GifDrawable to BitmapDrawable)
                 TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, message, rcivImageBody);
             }
         }
