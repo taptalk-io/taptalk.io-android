@@ -14,6 +14,7 @@ import android.text.TextWatcher
 import android.text.style.URLSpan
 import android.util.Patterns
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
@@ -167,6 +168,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun initView() {
         window?.setBackgroundDrawable(null)
 
+        et_full_name.imeOptions = EditorInfo.IME_ACTION_NEXT
+        et_full_name.setRawInputType(InputType.TYPE_CLASS_TEXT)
+
         et_full_name.onFocusChangeListener = fullNameFocusListener
         et_username.onFocusChangeListener = usernameFocusListener
         et_email_address.onFocusChangeListener = emailAddressFocusListener
@@ -289,8 +293,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
     }
 
-    private fun validateFullName(): Boolean {
-        if (et_full_name.text.isEmpty()) {
+    private fun validateFullName(checkMinLength: Boolean = true): Boolean {
+        if (checkMinLength && et_full_name.text.isEmpty()) {
             // Full name empty
             setFullNameError(getString(R.string.tap_this_field_is_required))
             return false
@@ -310,8 +314,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
         return true
     }
 
-    private fun validateUsername(checkLength: Boolean = true): Boolean {
-        if (checkLength && et_username.text.isEmpty()) {
+    private fun validateUsername(checkMinLength: Boolean = true): Boolean {
+        if (checkMinLength && et_username.text.isEmpty()) {
             // Username empty
             setUsernameError(getString(R.string.tap_this_field_is_required))
             return false
@@ -322,7 +326,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             setUsernameError(getString(R.string.tap_error_register_username_start))
             return false
         }
-        if (checkLength && et_username.text.length !in 4..32) {
+        if ((checkMinLength && et_username.text.length < 4) || et_username.text.length > 32) {
             // Invalid username length
             setUsernameError(getString(R.string.tap_error_register_username_length))
             return false
@@ -438,9 +442,15 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun checkPrivacyPolicy() {
         if (cb_privacy_policy.isChecked) {
             cb_privacy_policy.animate().alpha(1f).setDuration(200L).start()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                cb_privacy_policy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimary))
+            }
             tv_label_privacy_policy_error.visibility = View.GONE
         } else {
             cb_privacy_policy.animate().alpha(0.4f).setDuration(200L).start()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                cb_privacy_policy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapBlack19))
+            }
             tv_label_privacy_policy_error.visibility = View.GONE
         }
     }
@@ -521,6 +531,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (!validateForm()) {
             if (!cb_privacy_policy.isChecked) {
                 showErrorSnackbar(getString(R.string.tap_error_register_privacy_policy))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    cb_privacy_policy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorError))
+                    cb_privacy_policy.animate().alpha(1f).setDuration(200L).start()
+                }
             }
             return
         }
@@ -710,9 +724,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (!et_full_name?.text.isNullOrEmpty() || ll_full_name_error?.visibility == View.VISIBLE) {
-                validateFullName()
-            }
+            validateFullName(ll_full_name_error?.visibility == View.VISIBLE)
         }
     }
 

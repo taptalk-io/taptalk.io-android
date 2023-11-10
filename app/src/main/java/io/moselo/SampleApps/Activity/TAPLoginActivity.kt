@@ -102,6 +102,18 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (application != null && application is SampleApplication) {
             (application as SampleApplication).loginActivityExists = true
         }
+
+
+
+        // TODO: TEST
+        TAPRegisterActivity.start(
+            this,
+            instanceKey,
+            vm?.selectedCountryID ?: 1,
+            vm?.countryCallingID ?: "62",
+            vm?.countryFlagUrl ?: "",
+            vm?.phoneNumber ?: "85437638463"
+        )
     }
 
     override fun onResume() {
