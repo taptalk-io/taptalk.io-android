@@ -39,4 +39,12 @@
     <string name="tap_d_format_error_otp_wait">Harap tunggu %d detik sebelum meminta OTP baru</string>
     <string name="tap_d_format_error_verification_wait">Harap tunggu %d detik sebelum meminta verifikasi baru</string>
     <string name="tap_register_description">Sepertinya ini pertama kalinya Anda menggunakan TapTalk.io, silakan isi informasi yang dibutuhkan di bawah ini.</string>
+    <string name="tap_error_register_full_name_max">Panjang maksimal 200 karakter</string>
+    <string name="tap_error_register_username_start">Tidak boleh dimulai dengan angka, garis bawah (_) dan titik (.)</string>
+    <string name="tap_error_register_username_length">Panjang harus 4–32 karakter</string>
+    <string name="tap_error_register_username_symbol">Hanya a–z, 0–9, garis bawah (_) dan titik (.) yang diperbolehkan</string>
+    <string name="tap_error_register_username_consecutive_symbols">Tidak boleh mengandung garis bawah atau titik berurutan</string>
+    <string name="tap_error_register_username_end">Tidak boleh diakhiri dengan garis bawah (_) dan titik (.)</string>
+    <string name="tap_error_register_username_taken">Username telah digunakan</string>
+    <string name="tap_error_register_privacy_policy">Anda harus menerima kebijakan privasi terlebih dahulu untuk melanjutkan</string>
 </resources>
