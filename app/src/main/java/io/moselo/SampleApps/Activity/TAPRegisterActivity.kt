@@ -112,12 +112,16 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
         }
-        if (et_full_name.text.isNotEmpty() || et_username.text.isNotEmpty() || et_email_address.text.isNotEmpty() ) {
+        if (tv_phone_number.text.isNotEmpty() ||
+            et_full_name.text.isNotEmpty() ||
+            et_username.text.isNotEmpty() ||
+            et_email_address.text.isNotEmpty()
+        ) {
             showPopupDiscardChanges()
             return
         }
         super.onBackPressed()
-        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -573,7 +577,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         finish()
     }
 
-    private fun showPopupDiscardChanges(){
+    private fun showPopupDiscardChanges() {
         TapTalkDialog.Builder(this)
                 .setTitle(String.format("%s?",getString(R.string.tap_discard_changes)))
                 .setMessage(getString(R.string.tap_unsaved_progress_description))
@@ -581,7 +585,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                 .setPrimaryButtonTitle(getString(R.string.tap_discard_changes))
                 .setPrimaryButtonListener {
                     finish()
-                    overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+                    overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
                 }
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
