@@ -30,6 +30,8 @@
     <string name="tap_verification_success">Verification Success</string>
     <string name="tap_verification_success_description">Your number has been successfully verified</string>
     <string name="tap_continue_to_home">Continue to Home</string>
+    <string name="tap_format_redirect_seconds">You will be redirected in %d seconds…</string>
+    <string name="tap_redirect_click">If not redirected, click here</string>
     <string name="tap_continue_to_register">Continue to Register</string>
     <string name="tap_verification_error">There’s something wrong</string>
     <string name="tap_verification_error_description">Your number has not been verified.</string>

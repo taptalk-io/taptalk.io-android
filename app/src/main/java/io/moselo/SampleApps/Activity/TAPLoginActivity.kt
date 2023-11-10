@@ -759,6 +759,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_loading?.visibility = View.VISIBLE
             iv_verification_status_image?.visibility = View.GONE
             v_verification_status_background?.visibility = View.GONE
+            tv_verification_status_redirect_timer?.visibility = View.GONE
             ll_button_continue_to_home?.visibility = View.GONE
             ll_button_retry_verification?.visibility = View.GONE
             tv_verification_status_title?.text = getString(R.string.tap_loading_dots)
@@ -773,6 +774,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_loading?.visibility = View.GONE
             iv_verification_status_image?.visibility = View.VISIBLE
             v_verification_status_background?.visibility = View.VISIBLE
+            tv_verification_status_redirect_timer?.visibility = View.VISIBLE
             ll_button_continue_to_home?.visibility = View.VISIBLE
             ll_button_retry_verification?.visibility = View.GONE
             tv_verification_status_title?.text = getString(R.string.tap_verification_success)
@@ -781,6 +783,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_image?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_success)
             iv_verification_status_image?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_rounded_check_green))
             showVerificationStatusView()
+            startRedirectTimer()
         }
     }
 
@@ -790,6 +793,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_loading?.visibility = View.GONE
             iv_verification_status_image?.visibility = View.VISIBLE
             v_verification_status_background?.visibility = View.VISIBLE
+            tv_verification_status_redirect_timer?.visibility = View.GONE
             ll_button_continue_to_home?.visibility = View.GONE
             ll_button_retry_verification?.visibility = View.VISIBLE
             tv_verification_status_title?.text = getString(R.string.tap_verification_error)
@@ -807,11 +811,25 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_loading?.visibility = View.GONE
             iv_verification_status_image?.visibility = View.GONE
             v_verification_status_background?.visibility = View.GONE
+            tv_verification_status_redirect_timer?.visibility = View.GONE
             ll_button_continue_to_home?.visibility = View.GONE
             ll_button_retry_verification?.visibility = View.GONE
             tv_verification_status_title?.text = ""
             tv_verification_status_description?.text = ""
         }
+    }
+
+    private fun startRedirectTimer() {
+        val redirectTimer = object : CountDownTimer(3000L, 1000L) {
+            override fun onTick(millisUntilFinished: Long) {
+                tv_verification_status_redirect_timer.text = String.format(getString(R.string.tap_format_redirect_seconds), (millisUntilFinished / 1000L).toInt() + 1)
+            }
+
+            override fun onFinish() {
+                ll_button_continue_to_home.callOnClick()
+            }
+        }
+        redirectTimer.start()
     }
 
     private fun validatePhoneNumber(): Boolean {

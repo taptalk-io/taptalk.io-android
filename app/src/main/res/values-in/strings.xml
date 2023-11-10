@@ -30,6 +30,8 @@
     <string name="tap_verification_success">Verifikasi Berhasil</string>
     <string name="tap_verification_success_description">Nomor Anda telah berhasil diverifikasi</string>
     <string name="tap_continue_to_home">Lanjut ke Beranda</string>
+    <string name="tap_format_redirect_seconds">Anda akan diarahkan dalam %d detik…</string>
+    <string name="tap_redirect_click">Klik di sini untuk melanjutkan</string>
     <string name="tap_continue_to_register">Lanjut ke Pendaftaran</string>
     <string name="tap_verification_error">Ada sesuatu yang salah</string>
     <string name="tap_verification_error_description">Nomor Anda belum berhasil diverifikasi.</string>
