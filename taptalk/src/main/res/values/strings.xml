@@ -269,6 +269,7 @@
     <string name="tap_add_a_caption">Add a caption</string>
     <string name="tap_save_to_gallery">Save to Gallery</string>
     <string name="tap_save_to_downloads">Save to Downloads</string>
+    <string name="tap_upload_image">Upload Image</string>
     <string name="tap_uploading">Uploading…</string>
     <string name="tap_downloading">Downloading…</string>
     <string name="tap_image_saved">Image Saved</string>

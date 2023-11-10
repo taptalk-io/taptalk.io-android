@@ -80,6 +80,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             intent.putExtra(COUNTRY_FLAG_URL, countryFlagUrl)
             intent.putExtra(MOBILE_NUMBER, phoneNumber)
             context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.REGISTER)
+            context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
         }
     }
 
@@ -267,15 +268,22 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun reloadProfilePicture(showErrorMessage: Boolean) {
         if (null == vm.profilePictureUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
+            iv_profile_picture_placeholder.visibility = View.VISIBLE
+            civ_profile_picture.visibility = View.INVISIBLE
             glide.load(R.drawable.tap_img_default_avatar).into(civ_profile_picture)
-            fl_remove_profile_picture.visibility = View.GONE
+            tv_label_change_profile_picture.text = getString(R.string.tap_upload_image)
+//            fl_remove_profile_picture.visibility = View.GONE
             if (showErrorMessage) {
                 Toast.makeText(this@TAPRegisterActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
             }
-        } else {
+        }
+        else {
             vm.formCheck[indexProfilePicture] = stateValid
+            iv_profile_picture_placeholder.visibility = View.INVISIBLE
+            civ_profile_picture.visibility = View.VISIBLE
             glide.load(vm.profilePictureUri).into(civ_profile_picture)
-            fl_remove_profile_picture.visibility = View.VISIBLE
+            tv_label_change_profile_picture.text = getString(R.string.tap_change)
+//            fl_remove_profile_picture.visibility = View.VISIBLE
         }
     }
 

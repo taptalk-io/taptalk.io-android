@@ -267,6 +267,7 @@
     <string name="tap_add_a_caption">Tambahkan keterangan</string>
     <string name="tap_save_to_gallery">Simpan ke Galeri</string>
     <string name="tap_save_to_downloads">Simpan ke Downloads</string>
+    <string name="tap_upload_image">Unggah Gambar</string>
     <string name="tap_uploading">Mengunggah…</string>
     <string name="tap_downloading">Mengunduh…</string>
     <string name="tap_image_saved">Gambar Tersimpan</string>
