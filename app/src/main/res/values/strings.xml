@@ -38,4 +38,5 @@
     <string name="tap_retry_verification">Retry Verification</string>
     <string name="tap_d_format_error_otp_wait">Please wait %d seconds before requesting OTP</string>
     <string name="tap_d_format_error_verification_wait">Please wait %d seconds before requesting verification</string>
+    <string name="tap_register_description">It seems that this is your first time using TapTalk.io, please fill out the information needed below.</string>
 </resources>

@@ -314,6 +314,7 @@
     <string name="tap_email_address">Email Address</string>
     <string name="tap_full_name">Full Name</string>
     <string name="tap_mobile_number">Mobile Number</string>
+    <string name="tap_phone_number">Phone Number</string>
     <string name="tap_username">Username</string>
     <string name="tap_password">Password</string>
     <string name="tap_log_out">Log Out</string>
@@ -327,8 +328,8 @@
     <string name="tap_retype_password">Retype Password</string>
     <string name="tap_search_for_country">Search for country</string>
     <string name="tap_select_country">Select Country</string>
-    <string name="tap_hint_fullname">e.g Bernama</string>
-    <string name="tap_hint_username">e.g user1234</string>
+    <string name="tap_hint_fullname">E.g. Anthony Georgie</string>
+    <string name="tap_hint_username">E.g. ThonyG_123</string>
     <string name="tap_hint_calling_code">+62</string>
     <string name="tap_hint_phone_number">12345678910</string>
     <string name="tap_hint_phone_number_x">8XXX XXXX XXX</string>
@@ -357,7 +358,7 @@
     <string name="tap_ok">OK</string>
     <string name="tap_oops">Oops…</string>
     <string name="tap_optional">Optional</string>
-    <string name="tap_optional_brackets">(optional)</string>
+    <string name="tap_optional_brackets">(Optional)</string>
     <string name="tap_reply">Reply</string>
     <string name="tap_retry">Retry</string>
     <string name="tap_saving">Saving…</string>

@@ -38,4 +38,5 @@
     <string name="tap_retry_verification">Coba Verifikasi Ulang</string>
     <string name="tap_d_format_error_otp_wait">Harap tunggu %d detik sebelum meminta OTP baru</string>
     <string name="tap_d_format_error_verification_wait">Harap tunggu %d detik sebelum meminta verifikasi baru</string>
+    <string name="tap_register_description">Sepertinya ini pertama kalinya Anda menggunakan TapTalk.io, silakan isi informasi yang dibutuhkan di bawah ini.</string>
 </resources>

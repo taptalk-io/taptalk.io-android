@@ -312,6 +312,7 @@
     <string name="tap_email_address">Alamat Email</string>
     <string name="tap_full_name">Nama Lengkap</string>
     <string name="tap_mobile_number">Nomor Telepon</string>
+    <string name="tap_phone_number">Nomor Telepon</string>
     <string name="tap_username">Username</string>
     <string name="tap_password">Kata Sandi</string>
     <string name="tap_log_out">Keluar</string>
@@ -325,8 +326,8 @@
     <string name="tap_retype_password">Ketik Ulang Sandi</string>
     <string name="tap_search_for_country">Cari negara</string>
     <string name="tap_select_country">Pilih negara</string>
-    <string name="tap_hint_fullname">misal Bernama</string>
-    <string name="tap_hint_username">misal user_1234</string>
+    <string name="tap_hint_fullname">E.g. Anthony Georgie</string>
+    <string name="tap_hint_username">E.g. ThonyG_123</string>
     <string name="tap_hint_calling_code">+62</string>
     <string name="tap_hint_phone_number">12345678910</string>
     <string name="tap_hint_phone_number_x">8XXX XXXX XXX</string>
