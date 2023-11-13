@@ -238,7 +238,9 @@ class TAPLoginActivity : TAPBaseActivity() {
         vm?.countryCallingID = callingCode
         vm?.countryFlagUrl = flagIconUrl ?: ""
 
-        et_phone_number?.filters = et_phone_number.filters + InputFilter.LengthFilter(15 - callingCode.length)
+        // Re-add max length filter
+        val filters = et_phone_number.filters.toList().filter { it.javaClass != InputFilter.LengthFilter::class.java }
+        et_phone_number?.filters = filters.toTypedArray() + InputFilter.LengthFilter(15 - callingCode.length)
 
         if ("" != flagIconUrl) {
             Glide.with(this).load(flagIconUrl).into(iv_country_flag)
