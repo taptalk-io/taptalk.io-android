@@ -4232,19 +4232,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Add new message
                     runOnUiThread(() -> messageAdapter.addMessage(newMessage));
                     vm.addMessagePointer(newMessage);
-                    if (vm.isOnBottom() && !ownMessage) {
+                    if (vm.isOnBottom()/* && !ownMessage*/) {
                         // Scroll recycler to bottom if recycler is already on bottom
                         vm.setScrollFromKeyboard(true);
                         scrollToBottom();
-                    } else if (ownMessage && !(PIN_MESSAGE.equals(newMessage.getAction()) || UNPIN_MESSAGE.equals(newMessage.getAction()))) {
-                        // Scroll recycler to bottom if own message
-                        scrollToBottom();
-                    } else {
+                    }
+//                    else if (ownMessage && !(PIN_MESSAGE.equals(newMessage.getAction()) || UNPIN_MESSAGE.equals(newMessage.getAction()))) {
+//                        // Scroll recycler to bottom if own message
+//                        scrollToBottom();
+//                    }
+                    else if (!ownMessage && (newMessage.getAction() == null || !UNPIN_MESSAGE.equals(newMessage.getAction()))) {
                         // Message from other people is received when recycler is scrolled up
-                        if (newMessage.getAction() == null || !UNPIN_MESSAGE.equals(newMessage.getAction())) {
-                            vm.addUnreadMessage(newMessage);
-                            updateUnreadCount();
-                        }
+                        vm.addUnreadMessage(newMessage);
+                        updateUnreadCount();
                         updateMentionCount();
                     }
                 }
