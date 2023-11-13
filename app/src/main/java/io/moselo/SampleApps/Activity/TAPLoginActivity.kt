@@ -66,6 +66,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private var vm: TAPLoginViewModel? = null
     private lateinit var countryListAdapter: TAPCountryListAdapter
+    private lateinit var redirectTimer: CountDownTimer
 
     private val defaultCallingCode = "62"
     private val defaultCountryID = 1
@@ -102,18 +103,6 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (application != null && application is SampleApplication) {
             (application as SampleApplication).loginActivityExists = true
         }
-
-
-
-        // TODO: TEST
-        TAPRegisterActivity.start(
-            this,
-            instanceKey,
-            vm?.selectedCountryID ?: 1,
-            vm?.countryCallingID ?: "62",
-            vm?.countryFlagUrl ?: "",
-            vm?.phoneNumber ?: "85437638463"
-        )
     }
 
     override fun onResume() {
@@ -832,7 +821,10 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun startRedirectTimer() {
-        val redirectTimer = object : CountDownTimer(3000L, 1000L) {
+        if (this::redirectTimer.isInitialized) {
+            redirectTimer.cancel()
+        }
+        redirectTimer = object : CountDownTimer(3000L, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
                 tv_verification_status_redirect_timer.text = String.format(getString(R.string.tap_format_redirect_seconds), (millisUntilFinished / 1000L).toInt() + 1)
             }
@@ -1279,7 +1271,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                             tv_otp_description.text = getString(R.string.tap_otp_verification_sms_description)
                             iv_otp_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, R.drawable.tap_ic_sms_circle))
                         }
-                        tv_otp_phone_number?.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
+                        tv_otp_phone_number?.text = TAPUtils.beautifyPhoneNumber(String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber), true)
                         vm?.nextOtpRequestTimestamp = (response.nextRequestSeconds * 1000).toLong() + System.currentTimeMillis()
                         vm?.lastRequestOtpPhoneNumber = vm?.phoneNumber ?: ""
                         showOtpView()
@@ -1363,6 +1355,9 @@ class TAPLoginActivity : TAPBaseActivity() {
     ==============================================================================================*/
 
     private fun continueToHome() {
+        if (this::redirectTimer.isInitialized) {
+            redirectTimer.cancel()
+        }
         TAPApiManager.getInstance(instanceKey).isLoggedOut = false
         if (BuildConfig.DEBUG) {
             TapDevLandingActivity.start(this, instanceKey)
@@ -1374,6 +1369,9 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun continueToRegister() {
+        if (this::redirectTimer.isInitialized) {
+            redirectTimer.cancel()
+        }
         TAPRegisterActivity.start(
             this,
             instanceKey,
@@ -1382,6 +1380,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             vm?.countryFlagUrl ?: "",
             vm?.phoneNumber ?: ""
         )
+        finish()
     }
 
     private fun onVerificationSuccess(response: TAPLoginOTPVerifyResponse?) {

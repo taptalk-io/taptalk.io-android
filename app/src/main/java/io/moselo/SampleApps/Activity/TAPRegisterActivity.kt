@@ -39,6 +39,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
 import io.taptalk.TapTalkSample.R
@@ -659,7 +660,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun finishRegisterAndOpenRoomList() {
-        setResult(RESULT_OK)
+        TapUIRoomListActivity.start(this, instanceKey)
         finish()
     }
 
