@@ -82,6 +82,7 @@ import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -118,6 +119,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -125,7 +127,9 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapView;
@@ -191,6 +195,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private int duration, pausedPosition;
     public String lastLocalId = "";
     private SeekBar playingSeekbar;
+    private HashMap<String, BitmapDrawable> linkPreviewImages;
 
     private TAPChatViewModel vm;
 
@@ -568,7 +573,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (!TapUI.getInstance(instanceKey).isLinkPreviewInMessageEnabled() || item.getData() == null) {
                 clLink.setVisibility(View.GONE);
                 clLink.setOnLongClickListener(null);
-            } else {
+            }
+            else {
                 String title = (String) item.getData().get(TITLE);
                 if (title != null) {
                     String description = (String) item.getData().get(DESCRIPTION);
@@ -578,21 +584,27 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     if (!title.isEmpty()) {
                         tvLinkTitle.setText(title);
                         tvLinkTitle.setVisibility(View.VISIBLE);
-                    } else {
+                    }
+                    else {
                         tvLinkTitle.setVisibility(View.GONE);
                     }
+
                     if (description == null || description.isEmpty()) {
                         tvLinkContent.setVisibility(View.GONE);
-                    } else {
+                    }
+                    else {
                         tvLinkContent.setVisibility(View.VISIBLE);
                         tvLinkContent.setText(description);
                     }
+
                     if (image == null || image.isEmpty()) {
+                        rcivLinkImage.setImageDrawable(null);
                         rcivLinkImage.setVisibility(View.GONE);
-                    } else {
-                        rcivLinkImage.setVisibility(View.VISIBLE);
-                        glide.clear(rcivLinkImage);
-                        glide.load(image).fitCenter().into(rcivLinkImage);
+                    }
+                    else {
+//                        rcivLinkImage.setVisibility(View.VISIBLE);
+//                        glide.load(image).fitCenter().into(rcivLinkImage);
+                        loadLinkPreviewImage(rcivLinkImage, image);
                     }
                     clLink.setOnClickListener(view -> {
                         if (itemView.getContext() != null && itemView.getContext() instanceof Activity) {
@@ -607,10 +619,60 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(intent);
                         return true;
                     });
-                } else {
+                }
+                else {
                     clLink.setVisibility(View.GONE);
                     clLink.setOnLongClickListener(null);
                 }
+            }
+        }
+
+        private void loadLinkPreviewImage(ImageView imageView, String url) {
+            String key = TAPUtils.getUriKeyFromUrl(url);
+            if (linkPreviewImages == null) {
+                linkPreviewImages = new HashMap<>();
+            }
+            BitmapDrawable image = linkPreviewImages.get(key);
+            if (image == null) {
+                Glide.with(TapTalk.appContext).asBitmap().load(url).listener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        // Put empty image to map
+                        linkPreviewImages.put(key, new BitmapDrawable());
+                        imageView.setImageDrawable(null);
+                        imageView.setVisibility(View.GONE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                }).into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
+                        // Image loaded
+                        BitmapDrawable image = new BitmapDrawable(appContext.getResources(), bitmap);
+                        linkPreviewImages.put(key, image);
+                        imageView.setImageDrawable(image);
+                        imageView.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+            }
+            else if (image.getBitmap() != null && image.getBitmap().getByteCount() > 0) {
+                // Image already saved
+                imageView.setImageDrawable(image);
+                imageView.setVisibility(View.VISIBLE);
+            }
+            else {
+                // Hide image
+                imageView.setImageDrawable(null);
+                imageView.setVisibility(View.GONE);
             }
         }
     }
