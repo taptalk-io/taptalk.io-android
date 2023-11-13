@@ -1287,6 +1287,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
             tvRoomStatus.setText(String.format("%d Members", vm.getRoom().getParticipants().size()));
+            clRoomOnlineStatus.setVisibility(View.VISIBLE);
             new Thread(() -> {
                 for (TAPUserModel user : vm.getRoom().getParticipants()) {
                     vm.addRoomParticipantByUsername(user);
@@ -1295,6 +1296,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
+            clRoomOnlineStatus.setVisibility(View.GONE);
         }
 
         // Load items from database for the first time
@@ -1555,11 +1557,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void onSocketConnected() {
                 if (!vm.isInitialAPICallFinished()) {
-                    // Call Message List API
-                    if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getType()) {
-                        getRoomDataFromApi();
-                    } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType())
+                    // Call get room details API
+                    if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
                         callApiGetUserByUserID();
+                    }
+                    else {
+                        getRoomDataFromApi();
+                    }
                 }
                 // Updated 2020-05-15
                 if (vm.getMessageModels().size() > 0) {
@@ -3498,13 +3502,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
             Long lastActive = vm.getOnlineStatus().getLastActive();
             if (lastActive == 0) {
                 runOnUiThread(() -> {
-                    vStatusBadge.setVisibility(View.VISIBLE);
+                    clRoomOnlineStatus.setVisibility(View.GONE);
                     vStatusBadge.setBackground(null);
                     tvRoomStatus.setText("");
                 });
             } else {
                 runOnUiThread(() -> {
                     //vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
+                    clRoomOnlineStatus.setVisibility(View.VISIBLE);
                     vStatusBadge.setVisibility(View.GONE);
                     tvRoomStatus.setText(TAPTimeFormatter.getLastActivityString(TapUIChatActivity.this, lastActive));
                 });
@@ -3698,6 +3703,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (vm.getRoom().getType() == TYPE_GROUP && null != vm.getRoom().getParticipants()) {
                     // Show number of participants for group room
                     tvRoomStatus.setText(String.format(getString(R.string.tap_format_d_group_member_count), vm.getRoom().getParticipants().size()));
+                    clRoomOnlineStatus.setVisibility(View.VISIBLE);
                 }
                 if (null != vm.getRoom().getParticipants()) {
                     new Thread(() -> {
