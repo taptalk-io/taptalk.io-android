@@ -347,6 +347,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             return false
         }
         ll_username_error.visibility = View.GONE
+        iv_username_status_icon.visibility = View.GONE
         updateEditTextBackground(et_username, et_username.hasFocus())
         return true
     }
@@ -366,7 +367,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         val isFullNameValid = validateFullName()
         val isEmailValid = validateEmailAddress()
         if (!vm.isUsernameValid) {
-            validateUsername()
+            validateUsername(true)
         }
 
         return isFullNameValid && vm.isUsernameValid && isEmailValid && cb_privacy_policy.isChecked
@@ -381,6 +382,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun setUsernameError(errorMessage: String) {
         ll_username_error.visibility = View.VISIBLE
         tv_label_username_error.text = errorMessage
+        if (errorMessage != getString(R.string.tap_this_field_is_required)) {
+            iv_username_status_icon.visibility = View.VISIBLE
+            iv_username_status_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_circle_red))
+        }
+        else {
+            iv_username_status_icon.visibility = View.GONE
+        }
         et_username.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
     }
 
@@ -734,10 +742,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            vm.isUsernameValid = false
             checkUsernameTimer.cancel()
             TAPDataManager.getInstance(instanceKey).cancelCheckUsernameApiCall()
             if (validateUsername(ll_username_error?.visibility == View.VISIBLE)) {
-                checkUsernameTimer.start()
+                if (et_username.text.length >= 4) {
+                    checkUsernameTimer.start()
+                }
             }
         }
     }
@@ -779,39 +790,32 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onFinish() {
-            // TODO: CHECK API
-        }
-    }
+            val username = et_username.text.toString()
+            TAPDataManager.getInstance(instanceKey).checkUsernameExists(et_username.text.toString(), object : TAPDefaultDataView<TAPCheckUsernameResponse>() {
+                override fun onSuccess(response: TAPCheckUsernameResponse?) {
+                    if (username != et_username.text.toString()) {
+                        return
+                    }
+                    if (response?.exists == false) {
+                        vm.isUsernameValid = true
+                        ll_username_error.visibility = View.GONE
+                        iv_username_status_icon.visibility = View.VISIBLE
+                        iv_username_status_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPRegisterActivity, R.drawable.tap_ic_check_circle_green))
+                        updateEditTextBackground(et_username, et_username.hasFocus())
+                    }
+                    else {
+                        setUsernameError(getString(R.string.tap_error_register_username_taken))
+                    }
+                }
 
-    private val checkUsernameView = object : TAPDefaultDataView<TAPCheckUsernameResponse>() {
-        override fun onSuccess(response: TAPCheckUsernameResponse?) {
-            if (response?.exists == false) {
-                vm.formCheck[indexUsername] = stateValid
-                ll_username_error.visibility = View.GONE
-                updateEditTextBackground(et_username, et_username.hasFocus())
-            } else {
-                setErrorResult(getString(R.string.tap_error_username_exists))
-            }
-        }
+                override fun onError(error: TAPErrorModel?) {
+                    setUsernameError(error?.message ?: getString(R.string.tap_error_unable_to_verify_username))
+                }
 
-        override fun onError(error: TAPErrorModel?) {
-            setErrorResult(error?.message
-                    ?: getString(R.string.tap_error_unable_to_verify_username))
-        }
-
-        override fun onError(throwable: Throwable?) {
-            setErrorResult(getString(R.string.tap_error_unable_to_verify_username))
-        }
-
-//        override fun endLoading() {
-//            checkContinueButtonAvailability()
-//        }
-
-        private fun setErrorResult(message: String) {
-            vm.formCheck[indexUsername] = stateInvalid
-            tv_label_username_error.text = message
-            ll_username_error.visibility = View.VISIBLE
-            et_username.background = ContextCompat.getDrawable(this@TAPRegisterActivity, R.drawable.tap_bg_text_field_error)
+                override fun onError(throwable: Throwable?) {
+                    setUsernameError(getString(R.string.tap_error_unable_to_verify_username))
+                }
+            })
         }
     }
 
