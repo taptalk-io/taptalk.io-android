@@ -60,6 +60,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val stateValid = 1
     private val stateInvalid = -1
 
+    private val FULL_NAME_MAX_LENGTH = 200
+    private val USERNAME_MIN_LENGTH = 4
+    private val USERNAME_MAX_LENGTH = 32
+
     private lateinit var vm: TAPRegisterViewModel
 
     private lateinit var glide: RequestManager
@@ -300,12 +304,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
             setFullNameError(getString(R.string.tap_this_field_is_required))
             return false
         }
-        if (et_full_name.text.length > 200) {
+        if (et_full_name.text.length > FULL_NAME_MAX_LENGTH) {
             // Exceeds max length
-            setFullNameError(getString(R.string.tap_error_register_full_name_max))
+            setFullNameError(String.format(getString(R.string.tap_error_register_full_name_max), FULL_NAME_MAX_LENGTH))
             return false
         }
-        if (!et_full_name.text.matches(Regex("[A-Za-z ]*"))) {
+        if (et_full_name.text.isNotEmpty() && !et_full_name.text.matches(Regex("[A-Za-z ]*"))) {
             // Invalid full name
             setFullNameError(getString(R.string.tap_error_invalid_full_name))
             return false
@@ -327,25 +331,27 @@ class TAPRegisterActivity : TAPBaseActivity() {
             setUsernameError(getString(R.string.tap_error_register_username_start))
             return false
         }
-        if ((checkMinLength && et_username.text.length < 4) || et_username.text.length > 32) {
+        if ((checkMinLength && et_username.text.length < USERNAME_MIN_LENGTH) || et_username.text.length > USERNAME_MAX_LENGTH) {
             // Invalid username length
-            setUsernameError(getString(R.string.tap_error_register_username_length))
+            setUsernameError(String.format(getString(R.string.tap_error_register_username_length), USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH))
             return false
         }
-        if (!et_username.text.matches(Regex("[a-z0-9._]*"))) {
-            // Invalid symbol
-            setUsernameError(getString(R.string.tap_error_register_username_symbol))
-            return false
-        }
-        if (et_username.text.contains("..") || et_username.text.contains("__") || et_username.text.contains("._") || et_username.text.contains("_.")) {
-            // Consecutive symbols
-            setUsernameError(getString(R.string.tap_error_register_username_consecutive_symbols))
-            return false
-        }
-        if (et_username.text.endsWith('.') || et_username.text.endsWith('-')) {
-            // Ends with symbol
-            setUsernameError(getString(R.string.tap_error_register_username_end))
-            return false
+        if (et_username.text.isNotEmpty()) {
+            if (!et_username.text.matches(Regex("[a-z0-9._]*"))) {
+                // Invalid symbol
+                setUsernameError(getString(R.string.tap_error_register_username_symbol))
+                return false
+            }
+            if (et_username.text.contains("..") || et_username.text.contains("__") || et_username.text.contains("._") || et_username.text.contains("_.")) {
+                // Consecutive symbols
+                setUsernameError(getString(R.string.tap_error_register_username_consecutive_symbols))
+                return false
+            }
+            if (et_username.text.endsWith('.') || et_username.text.endsWith('-')) {
+                // Ends with symbol
+                setUsernameError(getString(R.string.tap_error_register_username_end))
+                return false
+            }
         }
         ll_username_error.visibility = View.GONE
         iv_username_status_icon.visibility = View.GONE
@@ -771,7 +777,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            validateFullName(ll_full_name_error?.visibility == View.VISIBLE)
+            validateFullName(
+                (ll_full_name_error?.visibility == View.VISIBLE && et_full_name.text.isNotEmpty()) ||
+                et_full_name.text.length > FULL_NAME_MAX_LENGTH
+            )
         }
     }
 
@@ -784,8 +793,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
             vm.isUsernameValid = false
             checkUsernameTimer.cancel()
             TAPDataManager.getInstance(instanceKey).cancelCheckUsernameApiCall()
-            if (validateUsername(ll_username_error?.visibility == View.VISIBLE)) {
-                if (et_username.text.length >= 4) {
+            if (validateUsername(
+                    (ll_username_error?.visibility == View.VISIBLE && et_username.text.length >= USERNAME_MIN_LENGTH) ||
+                    et_username.text.length >= USERNAME_MAX_LENGTH
+                )
+            ) {
+                if (et_username.text.length >= USERNAME_MIN_LENGTH) {
                     checkUsernameTimer.start()
                 }
             }
