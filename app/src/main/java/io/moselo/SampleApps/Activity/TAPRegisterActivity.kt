@@ -777,10 +777,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            validateFullName(
-                (ll_full_name_error?.visibility == View.VISIBLE && et_full_name.text.isNotEmpty()) ||
-                et_full_name.text.length > FULL_NAME_MAX_LENGTH
-            )
+            validateFullName(ll_full_name_error?.visibility == View.VISIBLE && et_full_name.text.isNotEmpty())
         }
     }
 
@@ -793,11 +790,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             vm.isUsernameValid = false
             checkUsernameTimer.cancel()
             TAPDataManager.getInstance(instanceKey).cancelCheckUsernameApiCall()
-            if (validateUsername(
-                    (ll_username_error?.visibility == View.VISIBLE && et_username.text.length >= USERNAME_MIN_LENGTH) ||
-                    et_username.text.length >= USERNAME_MAX_LENGTH
-                )
-            ) {
+            if (validateUsername(ll_username_error?.visibility == View.VISIBLE && et_username.text.length >= USERNAME_MIN_LENGTH)) {
                 if (et_username.text.length >= USERNAME_MIN_LENGTH) {
                     checkUsernameTimer.start()
                 }
