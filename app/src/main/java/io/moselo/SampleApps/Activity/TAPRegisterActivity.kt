@@ -244,7 +244,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         enableContinueButton()
 
-        // TODO TEMPORARILY REMOVED PASSWORD
+        // Temporarily removed password
         tv_label_password.visibility = View.GONE
         tv_label_password_optional.visibility = View.GONE
         cl_password.visibility = View.GONE
@@ -453,13 +453,14 @@ class TAPRegisterActivity : TAPBaseActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 cb_privacy_policy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimary))
             }
-            tv_label_privacy_policy_error.visibility = View.GONE
-        } else {
+            //tv_label_privacy_policy_error.visibility = View.GONE
+        }
+        else {
             cb_privacy_policy.animate().alpha(0.4f).setDuration(200L).start()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 cb_privacy_policy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapBlack19))
             }
-            tv_label_privacy_policy_error.visibility = View.GONE
+            //tv_label_privacy_policy_error.visibility = View.GONE
         }
     }
 
@@ -502,19 +503,25 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun enableContinueButton() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cl_button_continue.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
-        } else {
+            cl_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
+        }
+        else {
             cl_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active)
         }
+        iv_button_icon.visibility = View.VISIBLE
+        pb_button_loading.visibility = View.INVISIBLE
         cl_button_continue.setOnClickListener { register() }
     }
 
     private fun disableContinueButton() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cl_button_continue.background = getDrawable(R.drawable.tap_bg_button_inactive)
-        } else {
             cl_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
         }
+        else {
+            cl_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+        }
+        iv_button_icon.visibility = View.INVISIBLE
+        pb_button_loading.visibility = View.VISIBLE
         cl_button_continue.setOnClickListener(null)
     }
 
@@ -571,15 +578,29 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun disableEditing() {
+        TAPUtils.dismissKeyboard(this)
+
         ll_change_profile_picture.setOnClickListener(null)
         fl_remove_profile_picture.setOnClickListener(null)
-        cl_button_continue.setOnClickListener(null)
+        disableContinueButton()
 
         et_full_name.isEnabled = false
         et_username.isEnabled = false
         et_email_address.isEnabled = false
         et_password.isEnabled = false
         et_retype_password.isEnabled = false
+        cb_privacy_policy.isEnabled = false
+
+        tv_label_change_profile_picture.setTextColor(vm.textFieldFontColorHint)
+        ImageViewCompat.setImageTintList(iv_edit_profile_picture_icon, ColorStateList.valueOf(vm.textFieldFontColorHint))
+
+        tv_label_full_name.setTextColor(vm.textFieldFontColorHint)
+        tv_label_username.setTextColor(vm.textFieldFontColorHint)
+        tv_label_mobile_number.setTextColor(vm.textFieldFontColorHint)
+        tv_label_email_address.setTextColor(vm.textFieldFontColorHint)
+        tv_label_privacy_policy.setTextColor(vm.textFieldFontColorHint)
+        tv_label_privacy_policy.setLinkTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1960))
+        tv_button_continue.setTextColor(vm.textFieldFontColorHint)
 
         et_full_name.setTextColor(vm.textFieldFontColorHint)
         et_username.setTextColor(vm.textFieldFontColorHint)
@@ -587,21 +608,37 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.setTextColor(vm.textFieldFontColorHint)
         et_retype_password.setTextColor(vm.textFieldFontColorHint)
 
-        tv_button_continue.visibility = View.GONE
-        iv_button_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
-        TAPUtils.rotateAnimateInfinitely(this, iv_button_icon)
+        iv_username_status_icon.alpha = 0.4f
+        ImageViewCompat.setImageTintList(iv_username_status_icon, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapBlack19)))
+
+        cb_privacy_policy.alpha = 0.4f
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cb_privacy_policy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapBlack19))
+        }
     }
 
     private fun enableEditing() {
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
-        cl_button_continue.setOnClickListener { register() }
+        enableContinueButton()
 
         et_full_name.isEnabled = true
         et_username.isEnabled = true
         et_email_address.isEnabled = true
         et_password.isEnabled = true
         et_retype_password.isEnabled = true
+        cb_privacy_policy.isEnabled = true
+
+        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
+        ImageViewCompat.setImageTintList(iv_edit_profile_picture_icon, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapIconChangePicture)))
+
+        tv_label_full_name.setTextColor(vm.textFieldFontColor)
+        tv_label_username.setTextColor(vm.textFieldFontColor)
+        tv_label_mobile_number.setTextColor(vm.textFieldFontColor)
+        tv_label_email_address.setTextColor(vm.textFieldFontColor)
+        tv_label_privacy_policy.setTextColor(vm.textFieldFontColor)
+        tv_label_privacy_policy.setLinkTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
+        tv_button_continue.setTextColor(ContextCompat.getColor(this, R.color.tapButtonLabelColor))
 
         et_full_name.setTextColor(vm.textFieldFontColor)
         et_username.setTextColor(vm.textFieldFontColor)
@@ -609,9 +646,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.setTextColor(vm.textFieldFontColor)
         et_retype_password.setTextColor(vm.textFieldFontColor)
 
-        tv_button_continue.visibility = View.VISIBLE
-        iv_button_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_arrow_left_orange))
-        iv_button_icon.clearAnimation()
+        iv_username_status_icon.alpha = 1f
+        ImageViewCompat.setImageTintList(iv_username_status_icon, null)
+
+        checkPrivacyPolicy()
     }
 
     private fun uploadProfilePicture() {

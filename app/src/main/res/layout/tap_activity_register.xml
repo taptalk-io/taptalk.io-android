@@ -791,6 +791,22 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:tint="@color/tapIconLoadingProgressWhite" />
 
+                    <ProgressBar
+                        android:id="@+id/pb_button_loading"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginLeft="4dp"
+                        android:alpha="0.4"
+                        android:indeterminateTint="@color/tapBlack19"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="@id/iv_button_icon"
+                        app:layout_constraintEnd_toEndOf="@id/iv_button_icon"
+                        app:layout_constraintStart_toStartOf="@id/iv_button_icon"
+                        app:layout_constraintTop_toTopOf="@id/iv_button_icon"
+                        app:tint="@color/tapIconLoadingProgressWhite"
+                        tools:targetApi="lollipop" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
