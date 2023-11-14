@@ -210,9 +210,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
         tv_phone_number.text = TAPUtils.beautifyPhoneNumber(intent.getStringExtra(MOBILE_NUMBER), false)
         tv_country_code.setTextColor(vm.textFieldFontColorHint)
         tv_phone_number.setTextColor(vm.textFieldFontColorHint)
-        if (tv_phone_number.text.isNotEmpty()) {
-            vm.formCheck[indexMobileNumber] = stateValid
-        }
 
         // Set url span for privacy policy label
         val spannableString = SpannableString(tv_label_privacy_policy.text)
@@ -278,7 +275,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun reloadProfilePicture(showErrorMessage: Boolean) {
         if (null == vm.profilePictureUri) {
-            vm.formCheck[indexProfilePicture] = stateEmpty
             iv_profile_picture_placeholder.visibility = View.VISIBLE
             civ_profile_picture.visibility = View.INVISIBLE
             glide.load(R.drawable.tap_img_default_avatar).into(civ_profile_picture)
@@ -289,7 +285,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
             }
         }
         else {
-            vm.formCheck[indexProfilePicture] = stateValid
             iv_profile_picture_placeholder.visibility = View.INVISIBLE
             civ_profile_picture.visibility = View.VISIBLE
             glide.load(vm.profilePictureUri).into(civ_profile_picture)
@@ -316,6 +311,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
         ll_full_name_error.visibility = View.GONE
         updateEditTextBackground(et_full_name, et_full_name.hasFocus())
+        vm.formCheck[indexFullName] = stateValid
         return true
     }
 
@@ -337,7 +333,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             return false
         }
         if (et_username.text.isNotEmpty()) {
-            if (!et_username.text.matches(Regex("[a-z0-9._]*"))) {
+            if (!et_username.text.matches(Regex("[a-zA-Z0-9._]*"))) {
                 // Invalid symbol
                 setUsernameError(getString(R.string.tap_error_register_username_symbol))
                 return false
@@ -347,7 +343,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                 setUsernameError(getString(R.string.tap_error_register_username_consecutive_symbols))
                 return false
             }
-            if (et_username.text.endsWith('.') || et_username.text.endsWith('-')) {
+            if (et_username.text.endsWith('.') || et_username.text.endsWith('_')) {
                 // Ends with symbol
                 setUsernameError(getString(R.string.tap_error_register_username_end))
                 return false
@@ -367,6 +363,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
         ll_email_address_error.visibility = View.GONE
         updateEditTextBackground(et_email_address, et_email_address.hasFocus())
+        vm.formCheck[indexEmail] = stateValid
         return true
     }
 
@@ -384,11 +381,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
         ll_full_name_error.visibility = View.VISIBLE
         tv_label_full_name_error.text = errorMessage
         et_full_name.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
+        vm.formCheck[indexFullName] = stateInvalid
     }
 
     private fun setUsernameError(errorMessage: String) {
         ll_username_error.visibility = View.VISIBLE
         tv_label_username_error.text = errorMessage
+        et_username.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
         if (errorMessage != getString(R.string.tap_this_field_is_required)) {
             iv_username_status_icon.visibility = View.VISIBLE
             iv_username_status_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_circle_red))
@@ -396,13 +395,14 @@ class TAPRegisterActivity : TAPBaseActivity() {
         else {
             iv_username_status_icon.visibility = View.GONE
         }
-        et_username.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
+        vm.formCheck[indexUsername] = stateInvalid
     }
 
     private fun setEmailAddressError(errorMessage: String) {
         ll_email_address_error.visibility = View.VISIBLE
         tv_label_email_address_error.text = errorMessage
         et_email_address.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
+        vm.formCheck[indexEmail] = stateInvalid
     }
 
 //    private fun checkPassword(hasFocus: Boolean) {
@@ -463,7 +463,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             //tv_label_privacy_policy_error.visibility = View.GONE
         }
         else {
-            cb_privacy_policy.animate().alpha(0.4f).setDuration(200L).start()
+            cb_privacy_policy.animate().alpha(0.2f).setDuration(200L).start()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 cb_privacy_policy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapBlack19))
             }
@@ -585,7 +585,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun disableEditing() {
-        TAPUtils.dismissKeyboard(this)
+        TAPUtils.dismissKeyboard(this, et_full_name)
+        TAPUtils.dismissKeyboard(this, et_username)
+        TAPUtils.dismissKeyboard(this, et_email_address)
 
         ll_change_profile_picture.setOnClickListener(null)
         fl_remove_profile_picture.setOnClickListener(null)
@@ -614,6 +616,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_email_address.setTextColor(vm.textFieldFontColorHint)
         et_password.setTextColor(vm.textFieldFontColorHint)
         et_retype_password.setTextColor(vm.textFieldFontColorHint)
+
+        et_full_name.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_disabled)
+        et_username.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_disabled)
+        et_email_address.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_disabled)
+        et_password.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_disabled)
+        et_retype_password.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_disabled)
 
         iv_username_status_icon.alpha = 0.4f
         ImageViewCompat.setImageTintList(iv_username_status_icon, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapBlack19)))
@@ -652,6 +660,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_email_address.setTextColor(vm.textFieldFontColor)
         et_password.setTextColor(vm.textFieldFontColor)
         et_retype_password.setTextColor(vm.textFieldFontColor)
+
+        updateEditTextBackground(et_full_name, et_full_name.hasFocus())
+        updateEditTextBackground(et_username, et_username.hasFocus())
+        updateEditTextBackground(et_email_address, et_email_address.hasFocus())
+        updateEditTextBackground(et_password, et_password.hasFocus())
+        updateEditTextBackground(et_retype_password, et_retype_password.hasFocus())
 
         iv_username_status_icon.alpha = 1f
         ImageViewCompat.setImageTintList(iv_username_status_icon, null)
@@ -698,38 +712,20 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private val fullNameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
-        if (hasFocus) {
-            if (vm.formCheck[indexFullName] != stateInvalid) {
-                view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
-            }
-        } else {
-            if (vm.formCheck[indexFullName] != stateInvalid) {
-                updateEditTextBackground(et_full_name, hasFocus)
-            }
+        if (vm.formCheck[indexFullName] != stateInvalid) {
+            updateEditTextBackground(view, hasFocus)
         }
     }
 
     private val usernameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
-        if (hasFocus) {
-            if (vm.formCheck[indexUsername] != stateInvalid) {
-                view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
-            }
-        } else {
-            if (vm.formCheck[indexUsername] != stateInvalid) {
-                updateEditTextBackground(et_username, hasFocus)
-            }
+        if (vm.formCheck[indexUsername] != stateInvalid) {
+            updateEditTextBackground(view, hasFocus)
         }
     }
 
     private val emailAddressFocusListener = View.OnFocusChangeListener { view, hasFocus ->
-        if (hasFocus) {
-            if (vm.formCheck[indexEmail] != stateInvalid) {
-                view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
-            }
-        } else {
-            if (vm.formCheck[indexEmail] != stateInvalid) {
-                updateEditTextBackground(et_email_address, hasFocus)
-            }
+        if (vm.formCheck[indexEmail] != stateInvalid) {
+            updateEditTextBackground(view, hasFocus)
         }
     }
 
@@ -847,6 +843,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                         iv_username_status_icon.visibility = View.VISIBLE
                         iv_username_status_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPRegisterActivity, R.drawable.tap_ic_check_circle_green))
                         updateEditTextBackground(et_username, et_username.hasFocus())
+                        vm.formCheck[indexUsername] = stateValid
                     }
                     else {
                         setUsernameError(getString(R.string.tap_error_register_username_taken))
@@ -906,15 +903,16 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         override fun onError(error: TAPErrorModel?) {
 //            AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Register Failed", error?.code, error?.message)
-            showErrorDialog(error?.message ?: getString(R.string.tap_error_message_general))
+            onError(error?.message ?: getString(R.string.tap_error_message_general))
         }
 
-        override fun onError(throwable: Throwable?) {
+        override fun onError(errorMessage: String?) {
+            vm.isUpdatingProfile = false
+            enableEditing()
             if (TAPNetworkStateManager.getInstance("").hasNetworkConnection(this@TAPRegisterActivity)) {
-                showErrorDialog(throwable?.message ?: getString(R.string.tap_error_message_general))
-            } else {
-                vm.isUpdatingProfile = false
-                enableEditing()
+                showErrorDialog(errorMessage ?: getString(R.string.tap_error_message_general))
+            }
+            else {
                 TAPUtils.showNoInternetErrorDialog(this@TAPRegisterActivity)
             }
         }

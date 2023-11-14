@@ -40,11 +40,11 @@
     <string name="tap_d_format_error_verification_wait">Please wait %d seconds before requesting verification</string>
     <string name="tap_register_description">It seems that this is your first time using TapTalk.io, please fill out the information needed below.</string>
     <string name="tap_error_register_full_name_max">Maximum %d characters</string>
-    <string name="tap_error_register_username_start">Cant start with numeric, underscore (_) and period (.)</string>
+    <string name="tap_error_register_username_start">Can\'t start with numeric, underscore (_) and period (.)</string>
     <string name="tap_error_register_username_length">Must be between %d-%d characters</string>
-    <string name="tap_error_register_username_symbol">Only a-z, 0-9, underscore (_) and period (.) allowed</string>
+    <string name="tap_error_register_username_symbol">Only a–z, 0–9, underscore (_) and period (.) allowed</string>
     <string name="tap_error_register_username_consecutive_symbols">Can\'t contain consecutive underscores, consecutive dot, underscore followed with dot, and otherwise</string>
-    <string name="tap_error_register_username_end">Can’t end with underscore (_) and period (.)</string>
+    <string name="tap_error_register_username_end">Can\’t end with underscore (_) and period (.)</string>
     <string name="tap_error_register_username_taken">Username has been taken</string>
     <string name="tap_error_register_privacy_policy">You need to accept privacy policy first to continue</string>
 </resources>
