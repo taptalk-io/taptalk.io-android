@@ -65,8 +65,8 @@ class TapMessageInfoAdapter (
         val user = item.userID
         return if (
             user.isNullOrEmpty() &&
-            (item.readTime == null || item.readTime <= 0L) &&
-            (item.deliveredTime == null || item.deliveredTime <= 0L)
+            item.readTime == null &&
+            item.deliveredTime == null
         ) MESSAGE_BUBBLE
         else if (user.isNullOrEmpty()) SECTION
         else MESSAGE_INFO
