@@ -154,7 +154,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
                         reloadProfilePicture(true)
                     }
                     PICK_PROFILE_IMAGE_GALLERY -> {
-                        vm.profilePictureUri = intent?.data
+                        val uri = intent?.data
+                        if (uri == null || !TAPFileUtils.getMimeTypeFromUri(this, uri).contains("image")) {
+                            showErrorSnackbar(getString(R.string.tap_error_invalid_file_format))
+                            return
+                        }
+                        vm.profilePictureUri = uri
                         reloadProfilePicture(true)
                     }
                 }

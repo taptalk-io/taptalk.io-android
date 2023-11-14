@@ -231,6 +231,7 @@
     <string name="tap_currently_unavailable">Currently unavailable</string>
     <string name="tap_error_unable_to_edit_message">Unable to Edit Message</string>
     <string name="tap_error_unable_to_play_video">Unable to play this video.</string>
+    <string name="tap_error_invalid_file_format">Invalid file format selected.</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>

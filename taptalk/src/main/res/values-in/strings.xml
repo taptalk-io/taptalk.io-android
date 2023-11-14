@@ -229,6 +229,7 @@
     <string name="tap_currently_unavailable">Sedang tidak tersedia</string>
     <string name="tap_error_unable_to_edit_message">Gagal Mengubah Pesan</string>
     <string name="tap_error_unable_to_play_video">Tidak dapat memutar video ini.</string>
+    <string name="tap_error_invalid_file_format">Format file yang dipilih tidak valid.</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
