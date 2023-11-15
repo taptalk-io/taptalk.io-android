@@ -238,7 +238,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         tv_label_privacy_policy.text = spannableString
         tv_label_privacy_policy.movementMethod = movementMethod
 
-        TAPUtils.showKeyboard(this, et_full_name)
+//        TAPUtils.showKeyboard(this, et_full_name)
 
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
@@ -357,6 +357,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         ll_username_error.visibility = View.GONE
         iv_username_status_icon.visibility = View.GONE
         updateEditTextBackground(et_username, et_username.hasFocus())
+        vm.formCheck[indexUsername] = stateValid
         return true
     }
 
@@ -538,8 +539,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun clearAllFocus() {
-        TAPUtils.dismissKeyboard(this)
-        fl_container.clearFocus()
+        TAPUtils.dismissKeyboard(this, et_full_name)
+        TAPUtils.dismissKeyboard(this, et_username)
+        TAPUtils.dismissKeyboard(this, et_email_address)
+        TAPUtils.dismissKeyboard(this, et_password)
+        TAPUtils.dismissKeyboard(this, et_retype_password)
     }
 
     private fun togglePasswordVisibility(editText: EditText, button: ImageView) {
@@ -590,9 +594,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun disableEditing() {
-        TAPUtils.dismissKeyboard(this, et_full_name)
-        TAPUtils.dismissKeyboard(this, et_username)
-        TAPUtils.dismissKeyboard(this, et_email_address)
+        clearAllFocus()
 
         ll_change_profile_picture.setOnClickListener(null)
         fl_remove_profile_picture.setOnClickListener(null)
