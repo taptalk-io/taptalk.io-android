@@ -38,6 +38,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAG
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_GALLERY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.*
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
+import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -163,9 +164,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             Activity.RESULT_OK -> {
                 when (requestCode) {
                     PICK_PROFILE_IMAGE_CAMERA, PICK_PROFILE_IMAGE_GALLERY -> {
-                        if (null != intent?.data) {
-                            vm.profilePictureUri = intent.data
+                        val uri = intent?.data
+                        if (uri == null || !TAPFileUtils.getMimeTypeFromUri(this, uri).contains("image")) {
+                            Toast.makeText(this, getString(R.string.tap_error_invalid_file_format), Toast.LENGTH_SHORT).show()
+                            return
                         }
+                        vm.profilePictureUri = intent.data
                         reloadProfilePicture(vm.profilePictureUri)
                     }
                 }

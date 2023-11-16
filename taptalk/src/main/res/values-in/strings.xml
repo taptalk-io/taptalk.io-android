@@ -229,6 +229,7 @@
     <string name="tap_currently_unavailable">Sedang tidak tersedia</string>
     <string name="tap_error_unable_to_edit_message">Gagal Mengubah Pesan</string>
     <string name="tap_error_unable_to_play_video">Tidak dapat memutar video ini.</string>
+    <string name="tap_error_invalid_file_format">Format file yang dipilih tidak valid.</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
@@ -267,6 +268,7 @@
     <string name="tap_add_a_caption">Tambahkan keterangan</string>
     <string name="tap_save_to_gallery">Simpan ke Galeri</string>
     <string name="tap_save_to_downloads">Simpan ke Downloads</string>
+    <string name="tap_upload_image">Unggah Gambar</string>
     <string name="tap_uploading">Mengunggah…</string>
     <string name="tap_downloading">Mengunduh…</string>
     <string name="tap_image_saved">Gambar Tersimpan</string>
@@ -312,6 +314,7 @@
     <string name="tap_email_address">Alamat Email</string>
     <string name="tap_full_name">Nama Lengkap</string>
     <string name="tap_mobile_number">Nomor Telepon</string>
+    <string name="tap_phone_number">Nomor Telepon</string>
     <string name="tap_username">Username</string>
     <string name="tap_password">Kata Sandi</string>
     <string name="tap_log_out">Keluar</string>
@@ -325,13 +328,13 @@
     <string name="tap_retype_password">Ketik Ulang Sandi</string>
     <string name="tap_search_for_country">Cari negara</string>
     <string name="tap_select_country">Pilih negara</string>
-    <string name="tap_hint_fullname">misal Bernama</string>
-    <string name="tap_hint_username">misal user_1234</string>
+    <string name="tap_hint_fullname">E.g. Anthony Georgie</string>
+    <string name="tap_hint_username">E.g. ThonyG_123</string>
     <string name="tap_hint_calling_code">+62</string>
     <string name="tap_hint_phone_number">12345678910</string>
     <string name="tap_hint_phone_number_x">8XXX XXXX XXX</string>
-    <string name="tap_hint_select_country">Select country first</string>
-    <string name="tap_hint_email_address">misal example@work.com</string>
+    <string name="tap_hint_select_country">Pilih negara terlebih dahulu</string>
+    <string name="tap_hint_email_address">name@email.com</string>
     <string name="tap_hint_insert_password">Masukkan Kata Sandi</string>
     <string name="tap_hint_insert_name">Masukkan Nama</string>
     <string name="tap_login_confirmation">Sistem kami akan mengirimkan SMS verifikasi ke nomor %s. SMS tersebut berisi 6 digit kode untuk masuk ke aplikasi TapTalk.</string>

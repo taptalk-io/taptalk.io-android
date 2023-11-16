@@ -81,15 +81,28 @@
         app:layout_constraintTop_toBottomOf="@id/tv_verification_status_title"
         tools:text="@string/tap_verification_loading_description" />
 
+    <TextView
+        android:id="@+id/tv_verification_status_redirect_timer"
+        style="@style/tapLoginDescriptionStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:textSize="14sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_verification_status_description"
+        tools:text="@string/tap_format_redirect_seconds" />
+
     <LinearLayout
         android:id="@+id/ll_button_continue_to_home"
         android:layout_width="match_parent"
         android:layout_height="26dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="4dp"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tv_verification_status_description"
+        app:layout_constraintTop_toBottomOf="@id/tv_verification_status_redirect_timer"
         tools:visibility="visible">
 
         <TextView

@@ -82,7 +82,7 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
 
         @Override
         protected void onBind(TAPCountryRecycleItem item, int position) {
-            tvCountryName.setText(item.getCountryListItem().getCommonName());
+            tvCountryName.setText(String.format("%s (+%s)", item.getCountryListItem().getCommonName(), item.getCountryListItem().getCallingCode()));
 
             Glide.with(itemView).load(item.getCountryListItem().getFlagIconUrl()).into(ivCountryFlag);
 

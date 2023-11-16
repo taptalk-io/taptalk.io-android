@@ -66,6 +66,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private var vm: TAPLoginViewModel? = null
     private lateinit var countryListAdapter: TAPCountryListAdapter
+    private lateinit var redirectTimer: CountDownTimer
 
     private val defaultCallingCode = "62"
     private val defaultCountryID = 1
@@ -237,7 +238,9 @@ class TAPLoginActivity : TAPBaseActivity() {
         vm?.countryCallingID = callingCode
         vm?.countryFlagUrl = flagIconUrl ?: ""
 
-        et_phone_number?.filters = et_phone_number.filters + InputFilter.LengthFilter(15 - callingCode.length)
+        // Re-add max length filter
+        val filters = et_phone_number.filters.toList().filter { it.javaClass != InputFilter.LengthFilter::class.java }
+        et_phone_number?.filters = filters.toTypedArray() + InputFilter.LengthFilter(15 - callingCode.length)
 
         if ("" != flagIconUrl) {
             Glide.with(this).load(flagIconUrl).into(iv_country_flag)
@@ -759,6 +762,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_loading?.visibility = View.VISIBLE
             iv_verification_status_image?.visibility = View.GONE
             v_verification_status_background?.visibility = View.GONE
+            tv_verification_status_redirect_timer?.visibility = View.GONE
             ll_button_continue_to_home?.visibility = View.GONE
             ll_button_retry_verification?.visibility = View.GONE
             tv_verification_status_title?.text = getString(R.string.tap_loading_dots)
@@ -773,6 +777,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_loading?.visibility = View.GONE
             iv_verification_status_image?.visibility = View.VISIBLE
             v_verification_status_background?.visibility = View.VISIBLE
+            tv_verification_status_redirect_timer?.visibility = View.VISIBLE
             ll_button_continue_to_home?.visibility = View.VISIBLE
             ll_button_retry_verification?.visibility = View.GONE
             tv_verification_status_title?.text = getString(R.string.tap_verification_success)
@@ -781,6 +786,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_image?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_success)
             iv_verification_status_image?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_rounded_check_green))
             showVerificationStatusView()
+            startRedirectTimer()
         }
     }
 
@@ -790,6 +796,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_loading?.visibility = View.GONE
             iv_verification_status_image?.visibility = View.VISIBLE
             v_verification_status_background?.visibility = View.VISIBLE
+            tv_verification_status_redirect_timer?.visibility = View.GONE
             ll_button_continue_to_home?.visibility = View.GONE
             ll_button_retry_verification?.visibility = View.VISIBLE
             tv_verification_status_title?.text = getString(R.string.tap_verification_error)
@@ -807,11 +814,28 @@ class TAPLoginActivity : TAPBaseActivity() {
             iv_verification_status_loading?.visibility = View.GONE
             iv_verification_status_image?.visibility = View.GONE
             v_verification_status_background?.visibility = View.GONE
+            tv_verification_status_redirect_timer?.visibility = View.GONE
             ll_button_continue_to_home?.visibility = View.GONE
             ll_button_retry_verification?.visibility = View.GONE
             tv_verification_status_title?.text = ""
             tv_verification_status_description?.text = ""
         }
+    }
+
+    private fun startRedirectTimer() {
+        if (this::redirectTimer.isInitialized) {
+            redirectTimer.cancel()
+        }
+        redirectTimer = object : CountDownTimer(3000L, 1000L) {
+            override fun onTick(millisUntilFinished: Long) {
+                tv_verification_status_redirect_timer.text = String.format(getString(R.string.tap_format_redirect_seconds), (millisUntilFinished / 1000L).toInt() + 1)
+            }
+
+            override fun onFinish() {
+                ll_button_continue_to_home.callOnClick()
+            }
+        }
+        redirectTimer.start()
     }
 
     private fun validatePhoneNumber(): Boolean {
@@ -1249,7 +1273,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                             tv_otp_description.text = getString(R.string.tap_otp_verification_sms_description)
                             iv_otp_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, R.drawable.tap_ic_sms_circle))
                         }
-                        tv_otp_phone_number?.text = String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber)
+                        tv_otp_phone_number?.text = TAPUtils.beautifyPhoneNumber(String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber), true)
                         vm?.nextOtpRequestTimestamp = (response.nextRequestSeconds * 1000).toLong() + System.currentTimeMillis()
                         vm?.lastRequestOtpPhoneNumber = vm?.phoneNumber ?: ""
                         showOtpView()
@@ -1333,6 +1357,9 @@ class TAPLoginActivity : TAPBaseActivity() {
     ==============================================================================================*/
 
     private fun continueToHome() {
+        if (this::redirectTimer.isInitialized) {
+            redirectTimer.cancel()
+        }
         TAPApiManager.getInstance(instanceKey).isLoggedOut = false
         if (BuildConfig.DEBUG) {
             TapDevLandingActivity.start(this, instanceKey)
@@ -1344,6 +1371,9 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun continueToRegister() {
+        if (this::redirectTimer.isInitialized) {
+            redirectTimer.cancel()
+        }
         TAPRegisterActivity.start(
             this,
             instanceKey,
@@ -1352,6 +1382,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             vm?.countryFlagUrl ?: "",
             vm?.phoneNumber ?: ""
         )
+        finish()
     }
 
     private fun onVerificationSuccess(response: TAPLoginOTPVerifyResponse?) {
