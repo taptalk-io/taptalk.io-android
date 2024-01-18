@@ -106,7 +106,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.OPEN_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.SELECT_PICTURE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.AUDIO_MP3;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.VIDEO_MP4;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
@@ -117,6 +119,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LINK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_POST_NOTIFICATIONS;
@@ -1270,6 +1273,9 @@ public class TAPUtils {
 
     public static String getMimeTypeFromUrl(String url) {
         try {
+            if (url == null || url.isEmpty()) {
+                return "";
+            }
             String type = null;
             String extension = url.substring(url.lastIndexOf(".") + 1);
             if (extension != null) {
@@ -1716,5 +1722,31 @@ public class TAPUtils {
             e.printStackTrace();
             return phoneNumber;
         }
+    }
+
+    public static String getMimeTypeFromMessage(TAPMessageModel message) {
+        if (message.getData() == null) {
+            return "";
+        }
+        String mimeType = (String) message.getData().get(MEDIA_TYPE);
+        if (mimeType == null || mimeType.isEmpty()) {
+            String url = (String) message.getData().get(FILE_URL);
+            mimeType = TAPUtils.getMimeTypeFromUrl(url);
+            if (mimeType == null || mimeType.isEmpty()) {
+                if (message.getType() == TYPE_IMAGE) {
+                    mimeType = IMAGE_JPEG;
+                }
+                else if (message.getType() == TYPE_VIDEO) {
+                    mimeType = VIDEO_MP4;
+                }
+                else if (message.getType() == TYPE_VOICE) {
+                    mimeType = AUDIO_MP3;
+                }
+                else {
+                    mimeType = "application/octet-stream";
+                }
+            }
+        }
+        return mimeType;
     }
 }
