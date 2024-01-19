@@ -1462,7 +1462,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.getStoragePermissions(false),
                         PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE
                     )
-                } else if (null != message.data && null != message.data!![MessageData.MEDIA_TYPE]) {
+                } else if (null != message.data) {
                     Thread {
                         vm.pendingDownloadMessage = null
                         var bitmap: Bitmap? = TAPCacheManager.getInstance(this@TapScheduledMessageActivity).getBitmapDrawable(message)?.bitmap
@@ -1510,7 +1510,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                                 .writeImageFileToDisk(this@TapScheduledMessageActivity,
                                     System.currentTimeMillis(),
                                     bitmap,
-                                    message.data!![MessageData.MEDIA_TYPE] as String?,
+                                    TAPUtils.getMimeTypeFromMessage(message),
                                     object : TapTalkActionInterface {
                                         override fun onSuccess(message: String) {
                                             runOnUiThread {
@@ -1553,10 +1553,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 } else if (null != message.data) {
                     val fileID = message.data!![MessageData.FILE_ID] as String?
                     val fileUrl = message.data!![FILE_URL] as String?
-                    if ((null != fileID && fileID.isNotEmpty() ||
-                                null != fileUrl && fileUrl.isNotEmpty()) &&
-                        null != message.data!![MessageData.MEDIA_TYPE]
-                    ) {
+                    if ((!fileID.isNullOrEmpty() || !fileUrl.isNullOrEmpty())) {
                         vm.pendingDownloadMessage = null
                         writeFileToDisk(message)
                     }
@@ -1567,10 +1564,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 if (null != message.data) {
                     val fileID = message.data!![MessageData.FILE_ID] as String?
                     val fileUrl = message.data!![FILE_URL] as String?
-                    if ((null != fileID && fileID.isNotEmpty() ||
-                                null != fileUrl && fileUrl.isNotEmpty()) &&
-                        null != message.data!![MessageData.MEDIA_TYPE]
-                    ) {
+                    if ((!fileID.isNullOrEmpty() || !fileUrl.isNullOrEmpty())) {
                         writeFileToDisk(message)
                     }
                 }
@@ -2664,12 +2658,12 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     val message = intent.getParcelableExtra<TAPMessageModel>(MESSAGE)
                     fileUri = intent.getParcelableExtra(MessageData.FILE_URI)
                     vm.setOpenedFileMessage(message)
-                    if (null != fileUri && null != message!!.data && null != message.data!![MessageData.MEDIA_TYPE]) {
+                    if (null != fileUri && null != message!!.data) {
                         if (!TAPUtils.openFile(
                                 instanceKey,
                                 this@TapScheduledMessageActivity,
                                 fileUri,
-                                message.data!![MessageData.MEDIA_TYPE] as String?
+                                TAPUtils.getMimeTypeFromMessage(message)
                             )
                         ) {
                             showDownloadFileDialog()

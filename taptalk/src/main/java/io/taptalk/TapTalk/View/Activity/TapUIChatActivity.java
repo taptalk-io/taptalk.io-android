@@ -3224,7 +3224,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Request storage permission
                 vm.setPendingDownloadMessage(message);
                 ActivityCompat.requestPermissions(TapUIChatActivity.this, TAPUtils.getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
-            } else if (null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
+            } else if (null != message.getData()) {
                 new Thread(() -> {
                     vm.setPendingDownloadMessage(null);
                     BitmapDrawable bitmapDrawable = TAPCacheManager.getInstance(TapUIChatActivity.this).getBitmapDrawable(message);
@@ -3263,9 +3263,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //                    }
 
                     if (null != bitmap) {
-                        TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(TapUIChatActivity.this,
-                                System.currentTimeMillis(), bitmap,
-                                (String) message.getData().get(MEDIA_TYPE), new TapTalkActionInterface() {
+                        TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(
+                                TapUIChatActivity.this,
+                                System.currentTimeMillis(),
+                                bitmap,
+                                TAPUtils.getMimeTypeFromMessage(message),
+                                new TapTalkActionInterface() {
                                     @Override
                                     public void onSuccess(String message) {
                                         runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, message, Toast.LENGTH_SHORT).show());
@@ -3290,10 +3293,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else if (null != message.getData()) {
                 String fileID = (String) message.getData().get(FILE_ID);
                 String fileUrl = (String) message.getData().get(FILE_URL);
-                if (((null != fileID && !fileID.isEmpty()) ||
-                        (null != fileUrl && !fileUrl.isEmpty())) &&
-                        null != message.getData().get(MEDIA_TYPE)
-                ) {
+                if (((null != fileID && !fileID.isEmpty()) || (null != fileUrl && !fileUrl.isEmpty()))) {
                     vm.setPendingDownloadMessage(null);
                     writeFileToDisk(message);
                 }
@@ -3305,10 +3305,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null != message.getData()) {
                 String fileID = (String) message.getData().get(FILE_ID);
                 String fileUrl = (String) message.getData().get(FILE_URL);
-                if (((null != fileID && !fileID.isEmpty()) ||
-                        (null != fileUrl && !fileUrl.isEmpty())) &&
-                        null != message.getData().get(MEDIA_TYPE)
-                ) {
+                if (((null != fileID && !fileID.isEmpty()) || (null != fileUrl && !fileUrl.isEmpty()))) {
                     writeFileToDisk(message);
                 }
             }
@@ -5337,7 +5334,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                 mimeType = TAPUtils.getMimeTypeFromUrl(url);
                             }
                             if ((mimeType == null || mimeType.isEmpty() || mimeType.contains("octet-stream")) && message.getData() != null && message.getData().containsKey(MEDIA_TYPE)) {
-                                mimeType = (String) message.getData().get(MEDIA_TYPE);
+                                mimeType = TAPUtils.getMimeTypeFromMessage(message);
                             }
                             if (mimeType != null && !mimeType.isEmpty()) {
                                 if (!TAPUtils.openFile(instanceKey, TapUIChatActivity.this, fileUri, mimeType)) {

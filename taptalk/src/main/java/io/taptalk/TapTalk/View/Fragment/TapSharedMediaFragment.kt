@@ -474,8 +474,8 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                     val message: TAPMessageModel? = intent.getParcelableExtra(MESSAGE)
                     val fileUri: Uri? = intent.getParcelableExtra(FILE_URI)
                     vm.openedFileMessage = message
-                    if (null != fileUri && null != message?.data && null != message.data?.get(MEDIA_TYPE)) {
-                        if (!TAPUtils.openFile(instanceKey, context, fileUri, message.data?.get(MEDIA_TYPE) as String)) {
+                    if (null != fileUri && null != message?.data) {
+                        if (!TAPUtils.openFile(instanceKey, context, fileUri, TAPUtils.getMimeTypeFromMessage(message))) {
                             showDownloadFileDialog()
                         }
                     } else {

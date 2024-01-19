@@ -737,7 +737,7 @@ public class TAPUtils {
             return "";
         }
         String fileName = (String) data.get(FILE_NAME);
-        String mediaType = (String) data.get(MEDIA_TYPE);
+        String mediaType = getMimeTypeFromMessage(message);
         Number size = (Number) data.get(SIZE);
 
         String displaySize = "", displayExtension = "";
