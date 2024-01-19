@@ -1075,6 +1075,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                 fixImageOrVideoViewSize(obtainedItem, rcivImageBody, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
+                clContainer.requestLayout();
                 return false;
             }
         };
@@ -3790,6 +3791,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         } else {
             clForwardedQuote.setVisibility(View.GONE);
         }
+        rcivImageBody.requestLayout();
     }
 
     private void setStarredIcon(String id, ImageView imageView) {
