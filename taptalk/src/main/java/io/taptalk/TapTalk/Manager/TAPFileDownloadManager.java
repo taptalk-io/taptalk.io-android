@@ -165,11 +165,11 @@ public class TAPFileDownloadManager {
     }
 
     private String getFileNameFromMessage(TAPMessageModel message) {
-        if (message == null) {
+        if (message == null || message.getData() == null) {
             return "";
         }
-        String filename;
-        if (null != message.getData() && null != message.getData().get(FILE_NAME)) {
+        String filename = (String) message.getData().get(FILE_NAME);
+        if (filename != null && !filename.isEmpty()) {
             filename = (String) message.getData().get(FILE_NAME);
         }
         else {
