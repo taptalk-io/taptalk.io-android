@@ -830,7 +830,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (messageData == null) {
                 return;
             }
-            String mediaType = (String) messageData.get(MEDIA_TYPE);
+            String mediaType = TAPUtils.getMimeTypeFromMessage(message);
             if (mediaType == null || !mediaType.contains("image")) {
                 mediaType = IMAGE_JPEG;
                 TAPMessageModel messageCopy = message.copyMessageModel();
@@ -1075,6 +1075,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                 fixImageOrVideoViewSize(obtainedItem, rcivImageBody, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
+                clContainer.requestLayout();
                 return false;
             }
         };
@@ -1602,7 +1603,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     // Open video
                     HashMap<String, Object> messageData = message.getData();
-                    String mediaType = (String) messageData.get(MEDIA_TYPE);
+                    String mediaType = TAPUtils.getMimeTypeFromMessage(message);
                     if (mediaType != null && !mediaType.contains("video")) {
                         mediaType = VIDEO_MP4;
                         TAPMessageModel messageCopy = message.copyMessageModel();
@@ -3790,6 +3791,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         } else {
             clForwardedQuote.setVisibility(View.GONE);
         }
+        rcivImageBody.requestLayout();
     }
 
     private void setStarredIcon(String id, ImageView imageView) {

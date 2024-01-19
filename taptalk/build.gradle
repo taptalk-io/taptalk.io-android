@@ -9,7 +9,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        minSdk 16
+        minSdk 21
         targetSdk 33
         versionCode taptalk_version_code
         versionName taptalk_version_name
@@ -118,8 +118,8 @@ dependencies {
     implementation "com.orhanobut:hawk:2.0.1"
 
     // Firebase
-    implementation 'com.google.firebase:firebase-core:19.0.0'
-    implementation 'com.google.firebase:firebase-messaging:22.0.0'
+    implementation 'com.google.firebase:firebase-core:21.1.1'
+    implementation 'com.google.firebase:firebase-messaging:23.4.0'
 
     // Chrome Custom Tab
     implementation 'androidx.browser:browser:1.4.0'

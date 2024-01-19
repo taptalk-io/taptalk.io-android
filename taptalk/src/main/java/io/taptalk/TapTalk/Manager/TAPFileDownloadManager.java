@@ -56,8 +56,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.AUDIO_MP3;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.VIDEO_MP4;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
@@ -65,6 +67,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
@@ -162,22 +165,28 @@ public class TAPFileDownloadManager {
     }
 
     private String getFileNameFromMessage(TAPMessageModel message) {
+        if (message == null) {
+            return "";
+        }
         String filename;
         if (null != message.getData() && null != message.getData().get(FILE_NAME)) {
             filename = (String) message.getData().get(FILE_NAME);
-        } else if (null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
-            String mimeType = (String) message.getData().get(MEDIA_TYPE);
-            String extension = null == mimeType ? "" : mimeType.substring(mimeType.lastIndexOf("/") + 1);
-            filename = TAPTimeFormatter.formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS") + "." + extension;
-        } else {
-            filename = TAPTimeFormatter.formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
+        }
+        else {
+            String mimeType = TAPUtils.getMimeTypeFromMessage(message);
+            if (null != mimeType && !mimeType.isEmpty()) {
+                String extension = mimeType.substring(mimeType.lastIndexOf("/") + 1);
+                filename = TAPTimeFormatter.formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS") + "." + extension;
+            } else {
+                filename = TAPTimeFormatter.formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
+            }
         }
         return filename;
     }
 
     public void downloadMessageFile(TAPMessageModel message) {
         // Return if message data is null
-        if (null == message.getData()) {
+        if (null == message || null == message.getData()) {
             return;
         }
 
@@ -374,7 +383,7 @@ public class TAPFileDownloadManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (message.getType() == TYPE_FILE) {
                 // Save to Downloads directory if type is file
-                String mimeType = (String) message.getData().get(MEDIA_TYPE);
+                String mimeType = TAPUtils.getMimeTypeFromMessage(message);
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
                 contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
@@ -434,7 +443,7 @@ public class TAPFileDownloadManager {
             public void onSuccess(ResponseBody response) {
                 new Thread(() -> {
                     try {
-                        String mimeType = (String) message.getData().get(MEDIA_TYPE);
+                        String mimeType = TAPUtils.getMimeTypeFromMessage(message);
                         //Log.e(TAG, "mimeType: " + mimeType);
                         Bitmap bitmap = getBitmapFromResponse(response, null == mimeType ? IMAGE_JPEG : mimeType);
                         saveImageToCacheAndSendBroadcast(context, localID, fileID, bitmap);
@@ -509,7 +518,7 @@ public class TAPFileDownloadManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (message.getType() == TYPE_FILE) {
                 // Save to Downloads directory if type is file
-                String mimeType = (String) message.getData().get(MEDIA_TYPE);
+                String mimeType = TAPUtils.getMimeTypeFromMessage(message);
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
                 contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
@@ -679,7 +688,7 @@ public class TAPFileDownloadManager {
                 String filename = getFileNameFromMessage(message);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    String mimeType = (String) message.getData().get(MEDIA_TYPE);
+                    String mimeType = TAPUtils.getMimeTypeFromMessage(message);
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
                     contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);

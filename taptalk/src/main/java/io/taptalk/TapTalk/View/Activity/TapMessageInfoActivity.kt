@@ -398,12 +398,13 @@ class TapMessageInfoActivity : TAPBaseActivity() {
                     if (broadcastMessage != null && broadcastMessage.room.roomID == vm.message?.room?.roomID) {
                         fileUri = intent.getParcelableExtra(MessageData.FILE_URI)
                         vm.openedFileMessage = broadcastMessage
-                        if (null != fileUri && null != broadcastMessage.data && null != broadcastMessage.data!![MessageData.MEDIA_TYPE]) {
+                        val mimeType = TAPUtils.getMimeTypeFromMessage(broadcastMessage)
+                        if (null != fileUri && null != broadcastMessage.data && null != mimeType) {
                             if (!TAPUtils.openFile(
                                     instanceKey,
                                     this@TapMessageInfoActivity,
                                     fileUri,
-                                    broadcastMessage.data!![MessageData.MEDIA_TYPE] as String?
+                                    mimeType
                                 )
                             ) {
                                 showDownloadFileDialog()
