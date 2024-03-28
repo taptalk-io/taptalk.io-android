@@ -99,7 +99,7 @@ android {
         }
         staging {
             signingConfig signingConfigs.debug
-            debuggable false
+            debuggable true
             minifyEnabled false
             applicationIdSuffix '.staging'
             versionNameSuffix '-STAGING'
@@ -163,7 +163,7 @@ android {
         }
         dev {
             signingConfig signingConfigs.debug
-            debuggable false
+            debuggable true
             minifyEnabled false
             applicationIdSuffix '.dev'
             versionNameSuffix '-DEV'
