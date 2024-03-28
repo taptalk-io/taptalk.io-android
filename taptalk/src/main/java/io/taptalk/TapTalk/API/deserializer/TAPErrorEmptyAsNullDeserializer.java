@@ -27,6 +27,7 @@ public class TAPErrorEmptyAsNullDeserializer extends JsonDeserializer<TAPErrorMo
         TAPErrorModel error = new TAPErrorModel();
         error.setCode(node.get("code").asText());
         error.setMessage(node.get("message").asText());
+        error.setField(node.get("field").asText());
         return error;
     }
 }

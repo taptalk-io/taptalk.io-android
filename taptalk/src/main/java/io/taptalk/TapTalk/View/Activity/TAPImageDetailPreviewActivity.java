@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -29,8 +30,10 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
@@ -65,7 +68,8 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
 
     private String fileUrl, fileID, title, messageStatus, caption, mimeType;
     private GestureDetector gestureDetector;
-    private BitmapDrawable image;
+//    private BitmapDrawable image;
+    private Drawable image;
 
     public static void start(
             Context context,
@@ -107,8 +111,10 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
             } else {
                 // Load image from URL
                 runOnUiThread(() -> {
-                    tivImageDetail.post(() -> Glide.with(TAPImageDetailPreviewActivity.this)
-                            .load(fileUrl)
+                    tivImageDetail.post(() -> {
+                        RequestManager glide = Glide.with(TAPImageDetailPreviewActivity.this);
+                        glide.clear(tivImageDetail);
+                        glide.load(fileUrl)
                             .listener(new RequestListener<Drawable>() {
                                 @Override
                                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -118,12 +124,13 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
 
                                 @Override
                                 public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                    image = (BitmapDrawable) resource;
+                                    image = resource;
                                     supportStartPostponedEnterTransition();
                                     return false;
                                 }
                             })
-                            .into(tivImageDetail));
+                            .into(tivImageDetail);
+                    });
                 });
             }
         }
@@ -243,12 +250,16 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
         if (null == image) {
             return;
         }
+        Bitmap bitmap = TAPUtils.drawableToBitmap(image);
+        if (null == bitmap) {
+            return;
+        }
         if (!TAPUtils.hasPermissions(this, TAPUtils.getStoragePermissions(false))) {
             // Request storage permission
             ActivityCompat.requestPermissions(this, TAPUtils.getStoragePermissions(false), PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
         } else {
             showLoading();
-            TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(this, System.currentTimeMillis(), image.getBitmap(), mimeType, saveImageListener);
+            TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(this, System.currentTimeMillis(), bitmap, mimeType, saveImageListener);
         }
     }
 
