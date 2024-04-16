@@ -107,6 +107,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Helper.TapTalk.getTapTalkListeners;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
@@ -735,8 +736,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 new Thread(() -> TAPChatManager.getInstance(instanceKey).putUnsentMessageToList()).start();
                 if (isTaskRoot()) {
                     // Trigger listener callback if no other activity is open
-                    for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
-                        listener.onTaskRootChatRoomClosed(this);
+                    List<TapListener> listeners = getTapTalkListeners(instanceKey);
+                    if (listeners != null && !listeners.isEmpty()) {
+                        for (TapListener listener : listeners) {
+                            listener.onTaskRootChatRoomClosed(this);
+                        }
                     }
                 }
                 setResult(RESULT_OK);

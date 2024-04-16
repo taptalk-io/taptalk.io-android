@@ -15,6 +15,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
+import static io.taptalk.TapTalk.Helper.TapTalk.getTapTalkListeners;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -640,8 +641,11 @@ public class TapUIRoomListFragment extends Fragment {
             // Clear data when refresh token is expired
 //            AnalyticsManager.getInstance(instanceKey).trackEvent("View Loaded Sequence Failed");
             TapTalk.clearAllTapTalkData(instanceKey);
-            for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
-                listener.onTapTalkRefreshTokenExpired();
+            List<TapListener> listeners = getTapTalkListeners(instanceKey);
+            if (listeners != null && !listeners.isEmpty()) {
+                for (TapListener listener : listeners) {
+                    listener.onTapTalkRefreshTokenExpired();
+                }
             }
         } else if (null == TAPChatManager.getInstance(instanceKey).getActiveUser()) {
             // Show setup failed if active user is null
@@ -1310,9 +1314,18 @@ public class TapUIRoomListFragment extends Fragment {
                     messageModels.add(roomModel);
                 }
                 vm.addRoomPointer(roomModel);
-                if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
-                    vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
-                    vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMentions(mentionMap.get(entity.getRoomID()));
+                TAPRoomListModel roomList = vm.getRoomPointer().get(entity.getRoomID());
+                if (null != roomList && null != unreadMap) {
+                    Integer unreadCount = unreadMap.get(entity.getRoomID());
+                    if (null != unreadCount) {
+                        roomList.setNumberOfUnreadMessages(unreadCount);
+                    }
+                }
+                if (null != roomList && null != mentionMap) {
+                    Integer mentionCount = mentionMap.get(entity.getRoomID());
+                    if (null != mentionCount) {
+                        roomList.setNumberOfUnreadMentions(mentionCount);
+                    }
                 }
                 if (++count % limit == 0) {
                     vm.setRoomList(messageModels);
@@ -1726,19 +1739,22 @@ public class TapUIRoomListFragment extends Fragment {
     private void calculateBadgeCount() {
         vm.setRoomBadgeCount(0);
         try {
-            for (Map.Entry<String, TAPRoomListModel> entry : vm.getRoomPointer().entrySet()) {
+            for (Map.Entry<String, TAPRoomListModel> entry : new HashMap<>(vm.getRoomPointer()).entrySet()) {
                 if (entry.getValue().getNumberOfUnreadMessages() > 0) {
                     vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getNumberOfUnreadMessages());
                 } else if (entry.getValue().isMarkedAsUnread()) {
                     vm.setRoomBadgeCount(vm.getRoomBadgeCount() + 1);
                 }
             }
-        } catch (ConcurrentModificationException e) { // FIXME: 5 Dec 2019
+        } catch (ConcurrentModificationException e) {
             e.printStackTrace();
         }
         if (vm.getLastBadgeCount() != vm.getRoomBadgeCount()) {
-            for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
-                listener.onTapTalkUnreadChatRoomBadgeCountUpdated(vm.getRoomBadgeCount());
+            List<TapListener> listeners = getTapTalkListeners(instanceKey);
+            if (listeners != null && !listeners.isEmpty()) {
+                for (TapListener listener : listeners) {
+                    listener.onTapTalkUnreadChatRoomBadgeCountUpdated(vm.getRoomBadgeCount());
+                }
             }
             vm.setLastBadgeCount(vm.getRoomBadgeCount());
         }

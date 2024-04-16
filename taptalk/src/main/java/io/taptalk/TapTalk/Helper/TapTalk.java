@@ -511,8 +511,11 @@ public class TapTalk implements LifecycleObserver {
 
             private void finishLogout() {
                 clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners(instanceKey)) {
-                    listener.onUserLogout();
+                List<TapListener> listeners = getTapTalkListeners(instanceKey);
+                if (listeners != null && !listeners.isEmpty()) {
+                    for (TapListener listener : listeners) {
+                        listener.onUserLogout();
+                    }
                 }
                 Intent intent = new Intent(CLEAR_ROOM_LIST);
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
