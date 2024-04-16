@@ -1301,6 +1301,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
             clRoomOnlineStatus.setVisibility(View.GONE);
+        } else {
+            clRoomOnlineStatus.setVisibility(View.GONE);
         }
 
         // Load items from database for the first time
@@ -3473,7 +3475,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showUserOnline() {
         runOnUiThread(() -> {
             if (0 >= vm.getGroupTypingSize()) {
-                clRoomStatus.setVisibility(View.VISIBLE);
+//                clRoomStatus.setVisibility(View.VISIBLE);
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -3487,7 +3489,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showUserOffline() {
         runOnUiThread(() -> {
             if (0 >= vm.getGroupTypingSize()) {
-                clRoomStatus.setVisibility(View.VISIBLE);
+//                clRoomStatus.setVisibility(View.VISIBLE);
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -3540,7 +3542,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         typingIndicatorTimeoutTimer.cancel();
         typingIndicatorTimeoutTimer.start();
         runOnUiThread(() -> {
-            clRoomStatus.setVisibility(View.VISIBLE);
+//            clRoomStatus.setVisibility(View.VISIBLE);
             clRoomTypingStatus.setVisibility(View.VISIBLE);
             clRoomOnlineStatus.setVisibility(View.GONE);
 
@@ -3562,7 +3564,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         typingIndicatorTimeoutTimer.cancel();
         runOnUiThread(() -> {
             vm.getGroupTyping().clear();
-            clRoomStatus.setVisibility(View.VISIBLE);
+//            clRoomStatus.setVisibility(View.VISIBLE);
             clRoomTypingStatus.setVisibility(View.GONE);
             clRoomOnlineStatus.setVisibility(View.VISIBLE);
         });
@@ -3705,6 +3707,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Show number of participants for group room
                     tvRoomStatus.setText(String.format(getString(R.string.tap_format_d_group_member_count), vm.getRoom().getParticipants().size()));
                     clRoomOnlineStatus.setVisibility(View.VISIBLE);
+                }
+                else {
+                    clRoomOnlineStatus.setVisibility(View.GONE);
                 }
                 if (null != vm.getRoom().getParticipants()) {
                     new Thread(() -> {
