@@ -2723,6 +2723,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clSwipeVoiceNote.setVisibility(View.GONE);
         seekBar.setVisibility(View.GONE);
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_stop_orange));
+        ivVoiceNoteControl.setTranslationX(TAPUtils.dpToPx(getResources(), -2f));
+        ivVoiceNoteControl.setTranslationY(TAPUtils.dpToPx(getResources(), 2f));
     }
 
     private void setFinishedRecordingState() {
@@ -2730,16 +2732,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
         recordingState = RECORDING_STATE.FINISH;
         seekBar.setEnabled(false);
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
+        ivVoiceNoteControl.setTranslationX(0f);
+        ivVoiceNoteControl.setTranslationY(0f);
     }
 
     private void setPlayingState() {
         recordingState = RECORDING_STATE.PLAY;
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_pause_orange));
+        ivVoiceNoteControl.setTranslationX(TAPUtils.dpToPx(getResources(), -2f));
+        ivVoiceNoteControl.setTranslationY(TAPUtils.dpToPx(getResources(), 2f));
     }
 
     private void setPausedState() {
         recordingState = RECORDING_STATE.PAUSE;
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
+        ivVoiceNoteControl.setTranslationX(0f);
+        ivVoiceNoteControl.setTranslationY(0f);
     }
 
     private void hideChatField() {

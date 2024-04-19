@@ -1142,6 +1142,8 @@
                 android:elevation="8dp"
                 android:padding="6dp"
                 android:src="@drawable/tap_ic_stop_orange"
+                android:translationX="-2dp"
+                android:translationY="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
