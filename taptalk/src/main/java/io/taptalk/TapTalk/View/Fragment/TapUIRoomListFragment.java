@@ -830,21 +830,28 @@ public class TapUIRoomListFragment extends Fragment {
                     // Update room details
                     activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomList)));
                 }
-                updateProfilePictureFromSystemMessage(message);
+//                updateProfilePictureFromSystemMessage(message);
                 calculateBadgeCount();
             });
         });
     }
 
     private void updateProfilePictureFromSystemMessage(TAPMessageModel message) {
+        TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        String activeUserID = activeUser.getUserID();
         if (message.getType() == TYPE_SYSTEM_MESSAGE &&
-                null != message.getAction() &&
-                message.getAction().equals(UPDATE_USER) &&
-                message.getRoom().getRoomID().equals(TAPChatManager.getInstance(instanceKey).arrangeRoomId(
-                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
-                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) &&
-                civMyAvatarImage.getVisibility() == View.VISIBLE) {
+            null != message.getAction() &&
+            message.getAction().equals(UPDATE_USER) &&
+            null != message.getUser() &&
+            null != message.getUser().getUpdated() &&
+            null != activeUser.getUpdated() &&
+            message.getUser().getUpdated() > activeUser.getUpdated() &&
+            message.getUser().getUserID().equals(activeUserID) &&
+            civMyAvatarImage.getVisibility() == View.VISIBLE
+        ) {
             // Update user avatar
+            activeUser.updateValue(message.getUser());
+            TAPDataManager.getInstance(instanceKey).saveActiveUser(activeUser);
             reloadProfilePicture();
         }
     }

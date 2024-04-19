@@ -44,6 +44,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -129,11 +130,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
 
 public class TAPUtils {
 
@@ -1508,6 +1511,8 @@ public class TAPUtils {
         if (message.getType() != TYPE_SYSTEM_MESSAGE) {
             return;
         }
+        TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        String activeUserID = activeUser.getUserID();
         if (message.getAction() != null && message.getAction().equals(DELETE_USER)) {
             // Save user data
             TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
@@ -1545,6 +1550,20 @@ public class TAPUtils {
                     });
                 }
             });
+        }
+        else if (message.getType() == TYPE_SYSTEM_MESSAGE &&
+                null != message.getAction() &&
+                message.getAction().equals(UPDATE_USER) &&
+                null != message.getUser() &&
+                null != message.getUser().getUpdated() &&
+                null != activeUser.getUpdated() &&
+                message.getUser().getUpdated() > activeUser.getUpdated() &&
+                message.getUser().getUserID().equals(activeUserID)
+        ) {
+            // Update user avatar
+            activeUser.updateValue(message.getUser());
+            TAPDataManager.getInstance(instanceKey).saveActiveUser(activeUser);
+            LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(new Intent(RELOAD_PROFILE_PICTURE));
         }
     }
 
