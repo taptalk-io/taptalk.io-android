@@ -72,6 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
+                android:animateLayoutChanges="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/tv_room_name"
                 app:layout_constraintStart_toStartOf="@id/tv_room_name"
@@ -1141,6 +1142,8 @@
                 android:elevation="8dp"
                 android:padding="6dp"
                 android:src="@drawable/tap_ic_stop_orange"
+                android:translationX="-2dp"
+                android:translationY="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

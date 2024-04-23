@@ -297,9 +297,13 @@ public class TAPNotificationManager {
                         .setOnClickAction(TapUIChatActivity.class)
                         .show();
             }
-        } else {
-            for (TapListener listener : getTapTalkListeners(instanceKey)) {
-                listener.onNotificationReceived(newMessageModel);
+        }
+        else {
+            List<TapListener> listeners = getTapTalkListeners(instanceKey);
+            if (listeners != null && !listeners.isEmpty()) {
+                for (TapListener listener : listeners) {
+                    listener.onNotificationReceived(newMessageModel);
+                }
             }
         }
     }
@@ -322,9 +326,13 @@ public class TAPNotificationManager {
                         .setOnClickAction(destinationClass)
                         .show();
             }
-        } else {
-            for (TapListener listener : getTapTalkListeners(instanceKey)) {
-                listener.onNotificationReceived(newMessageModel);
+        }
+        else {
+            List<TapListener> listeners = getTapTalkListeners(instanceKey);
+            if (listeners != null && !listeners.isEmpty()) {
+                for (TapListener listener : listeners) {
+                    listener.onNotificationReceived(newMessageModel);
+                }
             }
         }
     }
@@ -360,8 +368,9 @@ public class TAPNotificationManager {
         new Thread(() -> TAPDataManager.getInstance(instanceKey).getUnreadCount(new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onCountedUnreadCount(int unreadCount) {
-                if (null != getTapTalkListeners(instanceKey) && !getTapTalkListeners(instanceKey).isEmpty()) {
-                    for (TapListener listener : getTapTalkListeners(instanceKey)) {
+                List<TapListener> listeners = getTapTalkListeners(instanceKey);
+                if (listeners != null && !listeners.isEmpty()) {
+                    for (TapListener listener : listeners) {
                         listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
                     }
                 }

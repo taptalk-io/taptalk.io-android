@@ -545,8 +545,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TapTalk.clearAllTapTalkData(instanceKey)
         hideLoading()
 //        AnalyticsManager.getInstance(instanceKey).identifyUser()
-        for (listener in TapTalk.getTapTalkListeners(instanceKey)) {
-            listener.onUserLogout()
+        val listeners = TapTalk.getTapTalkListeners(instanceKey);
+        if (!listeners.isNullOrEmpty()) {
+            for (listener in listeners) {
+                listener.onUserLogout()
+            }
         }
         val intent = Intent(CLEAR_ROOM_LIST)
         LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent)

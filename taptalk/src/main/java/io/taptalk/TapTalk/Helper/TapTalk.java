@@ -287,7 +287,7 @@ public class TapTalk implements LifecycleObserver {
 
         if (sdkVersion.isEmpty()) {
             // Use hard-coded string
-            String version = "2.15.4";
+            String version = "2.15.5";
             sdkVersion = String.format("%s-%s", version, BuildConfig.BUILD_TYPE);
         }
     }
@@ -511,8 +511,11 @@ public class TapTalk implements LifecycleObserver {
 
             private void finishLogout() {
                 clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners(instanceKey)) {
-                    listener.onUserLogout();
+                List<TapListener> listeners = getTapTalkListeners(instanceKey);
+                if (listeners != null && !listeners.isEmpty()) {
+                    for (TapListener listener : listeners) {
+                        listener.onUserLogout();
+                    }
                 }
                 Intent intent = new Intent(CLEAR_ROOM_LIST);
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);

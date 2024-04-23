@@ -107,6 +107,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Helper.TapTalk.getTapTalkListeners;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
@@ -735,8 +736,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 new Thread(() -> TAPChatManager.getInstance(instanceKey).putUnsentMessageToList()).start();
                 if (isTaskRoot()) {
                     // Trigger listener callback if no other activity is open
-                    for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
-                        listener.onTaskRootChatRoomClosed(this);
+                    List<TapListener> listeners = getTapTalkListeners(instanceKey);
+                    if (listeners != null && !listeners.isEmpty()) {
+                        for (TapListener listener : listeners) {
+                            listener.onTaskRootChatRoomClosed(this);
+                        }
                     }
                 }
                 setResult(RESULT_OK);
@@ -1296,6 +1300,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
+            clRoomOnlineStatus.setVisibility(View.GONE);
+        } else {
             clRoomOnlineStatus.setVisibility(View.GONE);
         }
 
@@ -2717,6 +2723,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clSwipeVoiceNote.setVisibility(View.GONE);
         seekBar.setVisibility(View.GONE);
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_stop_orange));
+        ivVoiceNoteControl.setTranslationX(TAPUtils.dpToPx(getResources(), -2f));
+        ivVoiceNoteControl.setTranslationY(TAPUtils.dpToPx(getResources(), 2f));
     }
 
     private void setFinishedRecordingState() {
@@ -2724,16 +2732,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
         recordingState = RECORDING_STATE.FINISH;
         seekBar.setEnabled(false);
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
+        ivVoiceNoteControl.setTranslationX(0f);
+        ivVoiceNoteControl.setTranslationY(0f);
     }
 
     private void setPlayingState() {
         recordingState = RECORDING_STATE.PLAY;
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_pause_orange));
+        ivVoiceNoteControl.setTranslationX(TAPUtils.dpToPx(getResources(), -2f));
+        ivVoiceNoteControl.setTranslationY(TAPUtils.dpToPx(getResources(), 2f));
     }
 
     private void setPausedState() {
         recordingState = RECORDING_STATE.PAUSE;
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
+        ivVoiceNoteControl.setTranslationX(0f);
+        ivVoiceNoteControl.setTranslationY(0f);
     }
 
     private void hideChatField() {
@@ -3469,7 +3483,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showUserOnline() {
         runOnUiThread(() -> {
             if (0 >= vm.getGroupTypingSize()) {
-                clRoomStatus.setVisibility(View.VISIBLE);
+//                clRoomStatus.setVisibility(View.VISIBLE);
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -3483,7 +3497,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showUserOffline() {
         runOnUiThread(() -> {
             if (0 >= vm.getGroupTypingSize()) {
-                clRoomStatus.setVisibility(View.VISIBLE);
+//                clRoomStatus.setVisibility(View.VISIBLE);
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -3536,7 +3550,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         typingIndicatorTimeoutTimer.cancel();
         typingIndicatorTimeoutTimer.start();
         runOnUiThread(() -> {
-            clRoomStatus.setVisibility(View.VISIBLE);
+//            clRoomStatus.setVisibility(View.VISIBLE);
             clRoomTypingStatus.setVisibility(View.VISIBLE);
             clRoomOnlineStatus.setVisibility(View.GONE);
 
@@ -3558,7 +3572,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         typingIndicatorTimeoutTimer.cancel();
         runOnUiThread(() -> {
             vm.getGroupTyping().clear();
-            clRoomStatus.setVisibility(View.VISIBLE);
+//            clRoomStatus.setVisibility(View.VISIBLE);
             clRoomTypingStatus.setVisibility(View.GONE);
             clRoomOnlineStatus.setVisibility(View.VISIBLE);
         });
@@ -3701,6 +3715,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Show number of participants for group room
                     tvRoomStatus.setText(String.format(getString(R.string.tap_format_d_group_member_count), vm.getRoom().getParticipants().size()));
                     clRoomOnlineStatus.setVisibility(View.VISIBLE);
+                }
+                else {
+                    clRoomOnlineStatus.setVisibility(View.GONE);
                 }
                 if (null != vm.getRoom().getParticipants()) {
                     new Thread(() -> {
