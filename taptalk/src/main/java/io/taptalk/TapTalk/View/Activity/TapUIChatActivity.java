@@ -12,6 +12,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.LinkPreviewImageLoaded;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
@@ -1600,7 +1601,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 LongPressEmail,
                 LongPressLink,
                 LongPressPhone,
-                LongPressMention
+                LongPressMention,
+                LinkPreviewImageLoaded
         );
     }
 
@@ -5457,6 +5459,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         );
                         mentionBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                    }
+                    break;
+                case LinkPreviewImageLoaded:
+                    if (vm.isOnBottom()) {
+                        // Scroll recycler to bottom
+                        rvMessageList.scrollToPosition(0);
                     }
                     break;
             }
