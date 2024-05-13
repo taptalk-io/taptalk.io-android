@@ -5462,7 +5462,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LinkPreviewImageLoaded:
-                    if (vm.isOnBottom()) {
+                    if (vm.isOnBottom() && rvMessageList.getScrollState() == SCROLL_STATE_IDLE) {
                         // Scroll recycler to bottom
                         rvMessageList.scrollToPosition(0);
                     }
