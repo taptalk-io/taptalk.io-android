@@ -79,6 +79,7 @@ public class TAPNetworkStateManager {
     }
 
     public boolean hasNetworkConnection(Context context) {
+        // FIXME: USE THREAD
         ConnectivityManager connectivityManager = getConnectivityManager(context);
         if (null != connectivityManager &&
                 null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) &&
