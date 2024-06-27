@@ -1173,37 +1173,39 @@ public class TapUIRoomListFragment extends Fragment {
                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                        TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
-                        tempMessage.add(entity);
+                        if (message != null) {
+                            TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
+                            tempMessage.add(entity);
 
-                        // Save undelivered messages to list
-                        if (null == message.getIsDelivered() || (null != message.getIsDelivered() && !message.getIsDelivered())) {
-                            deliveredMessages.add(message);
+                            // Save undelivered messages to list
+                            if (null == message.getIsDelivered() || (null != message.getIsDelivered() && !message.getIsDelivered())) {
+                                deliveredMessages.add(message);
+                            }
+
+                            // Update Contact
+                            if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+                                // User is self, get other user data from API
+                                userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
+                            } else {
+                                // Save user data to contact manager
+                                userModels.add(message.getUser());
+                            }
+
+                            if (null != message.getIsDeleted() && message.getIsDeleted()) {
+                                TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
+                            }
+
+                            if (message.getType() == TYPE_SYSTEM_MESSAGE &&
+                                    null != message.getAction() &&
+                                    message.getAction().equals(UPDATE_USER) &&
+                                    (null == updateProfileSystemMessage ||
+                                            updateProfileSystemMessage.getCreated() < message.getCreated())) {
+                                // Store update profile system message
+                                updateProfileSystemMessage = message;
+                            }
+
+                            TAPUtils.handleReceivedSystemMessage(instanceKey, message);
                         }
-
-                        // Update Contact
-                        if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
-                            // User is self, get other user data from API
-                            userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
-                        } else {
-                            // Save user data to contact manager
-                            userModels.add(message.getUser());
-                        }
-
-                        if (null != message.getIsDeleted() && message.getIsDeleted()) {
-                            TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
-                        }
-
-                        if (message.getType() == TYPE_SYSTEM_MESSAGE &&
-                                null != message.getAction() &&
-                                message.getAction().equals(UPDATE_USER) &&
-                                (null == updateProfileSystemMessage ||
-                                        updateProfileSystemMessage.getCreated() < message.getCreated())) {
-                            // Store update profile system message
-                            updateProfileSystemMessage = message;
-                        }
-
-                        TAPUtils.handleReceivedSystemMessage(instanceKey, message);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

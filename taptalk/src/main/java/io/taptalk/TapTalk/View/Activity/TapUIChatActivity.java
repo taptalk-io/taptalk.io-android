@@ -5773,83 +5773,85 @@ public class TapUIChatActivity extends TAPBaseActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    String newID = message.getLocalID();
-                    if (vm.getMessagePointer().containsKey(newID)) {
-                        // Update existing message
-                        vm.updateMessagePointer(message);
-                        runOnUiThread(() -> {
-                            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-                        });
-                    } else if (!vm.getMessagePointer().containsKey(newID)) {
-                        // Insert new message to list and HashMap
-                        messageAfterModels.add(message);
-                        vm.addMessagePointer(message);
+                    if (message != null) {
+                        String newID = message.getLocalID();
+                        if (vm.getMessagePointer().containsKey(newID)) {
+                            // Update existing message
+                            vm.updateMessagePointer(message);
+                            runOnUiThread(() -> {
+                                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                            });
+                        } else if (!vm.getMessagePointer().containsKey(newID)) {
+                            // Insert new message to list and HashMap
+                            messageAfterModels.add(message);
+                            vm.addMessagePointer(message);
 
-                        if ("".equals(vm.getLastUnreadMessageLocalID())
-                                && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
-                                && (null != message.getIsRead() && !message.getIsRead())
-                                && null == vm.getUnreadIndicator()) {
-                            // Update first unread message index
-                            unreadMessageIndex = messageAfterModels.indexOf(message);
-                            smallestUnreadCreated = message.getCreated();
+                            if ("".equals(vm.getLastUnreadMessageLocalID())
+                                    && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
+                                    && (null != message.getIsRead() && !message.getIsRead())
+                                    && null == vm.getUnreadIndicator()) {
+                                // Update first unread message index
+                                unreadMessageIndex = messageAfterModels.indexOf(message);
+                                smallestUnreadCreated = message.getCreated();
+                            }
+
+                            if (allMessagesHidden && (null == message.getIsHidden() || !message.getIsHidden())) {
+                                allMessagesHidden = false;
+                            }
+
+                            updateMessageMentionIndexes(message);
+
+                            if ((null == message.getIsRead() || !message.getIsRead()) &&
+                                    TAPUtils.isActiveUserMentioned(message, vm.getMyUserModel())) {
+                                // Add unread mention
+                                vm.addUnreadMention(message);
+                            }
+
+                            if (message.getType() == TYPE_SYSTEM_MESSAGE &&
+                                    null != message.getAction() &&
+                                    (message.getAction().equals(UPDATE_ROOM) ||
+                                            message.getAction().equals(UPDATE_USER)) &&
+                                    (null == updateRoomDetailSystemMessage ||
+                                            updateRoomDetailSystemMessage.getCreated() < message.getCreated())) {
+                                // Store update room system message
+                                updateRoomDetailSystemMessage = message;
+                            }
                         }
 
-                        if (allMessagesHidden && (null == message.getIsHidden() || !message.getIsHidden())) {
-                            allMessagesHidden = false;
+                        if (null == message.getIsRead() || !message.getIsRead()) {
+    //                        TAPMessageModel messageFromPointer = vm.getMessagePointer().get(message.getLocalID());
+    //                        if (null != messageFromPointer) {
+    //                            messageFromPointer = messageFromPointer.copyMessageModel();
+    //                        }
+                            if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID()) &&
+    //                                (null == message.getHidden() || !message.getHidden()) &&
+    //                                (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
+    //                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
+                                    !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(message.getMessageID()) &&
+                                    !TAPMessageStatusManager.getInstance(instanceKey).getMessagesMarkedAsRead().contains(message.getMessageID())
+                            ) {
+                                // Add message ID to pending list if new message has not been read or not in mark read queue
+                                unreadMessageIds.add(message.getMessageID());
+                            }
+
+                            if (allUnreadHidden != -1 && null != message.getIsHidden() && message.getIsHidden()) {
+                                allUnreadHidden = 1;
+                            } else {
+                                // Set allUnreadHidden to false
+                                allUnreadHidden = -1;
+                            }
                         }
 
-                        updateMessageMentionIndexes(message);
-
-                        if ((null == message.getIsRead() || !message.getIsRead()) &&
-                                TAPUtils.isActiveUserMentioned(message, vm.getMyUserModel())) {
-                            // Add unread mention
-                            vm.addUnreadMention(message);
-                        }
-
-                        if (message.getType() == TYPE_SYSTEM_MESSAGE &&
-                                null != message.getAction() &&
-                                (message.getAction().equals(UPDATE_ROOM) ||
-                                        message.getAction().equals(UPDATE_USER)) &&
-                                (null == updateRoomDetailSystemMessage ||
-                                        updateRoomDetailSystemMessage.getCreated() < message.getCreated())) {
-                            // Store update room system message
-                            updateRoomDetailSystemMessage = message;
-                        }
+                        responseMessages.add(TAPMessageEntity.fromMessageModel(message));
+                        new Thread(() -> {
+                            // Update last updated timestamp in preference (new thread to prevent stutter when scrolling)
+                            if (null != message.getUpdated() &&
+                                    TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()
+                            ) {
+                                TAPDataManager.getInstance(instanceKey).saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
+                            }
+                        }).start();
                     }
-
-                    if (null == message.getIsRead() || !message.getIsRead()) {
-//                        TAPMessageModel messageFromPointer = vm.getMessagePointer().get(message.getLocalID());
-//                        if (null != messageFromPointer) {
-//                            messageFromPointer = messageFromPointer.copyMessageModel();
-//                        }
-                        if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID()) &&
-//                                (null == message.getHidden() || !message.getHidden()) &&
-//                                (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
-//                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
-                                !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(message.getMessageID()) &&
-                                !TAPMessageStatusManager.getInstance(instanceKey).getMessagesMarkedAsRead().contains(message.getMessageID())
-                        ) {
-                            // Add message ID to pending list if new message has not been read or not in mark read queue
-                            unreadMessageIds.add(message.getMessageID());
-                        }
-
-                        if (allUnreadHidden != -1 && null != message.getIsHidden() && message.getIsHidden()) {
-                            allUnreadHidden = 1;
-                        } else {
-                            // Set allUnreadHidden to false
-                            allUnreadHidden = -1;
-                        }
-                    }
-
-                    responseMessages.add(TAPMessageEntity.fromMessageModel(message));
-                    new Thread(() -> {
-                        // Update last updated timestamp in preference (new thread to prevent stutter when scrolling)
-                        if (null != message.getUpdated() &&
-                                TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()
-                        ) {
-                            TAPDataManager.getInstance(instanceKey).saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
-                        }
-                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -6068,12 +6070,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    messageBeforeModels.addAll(addBeforeTextMessage(message));
-                    responseMessages.add(TAPMessageEntity.fromMessageModel(message));
-                    updateMessageMentionIndexes(message);
+                    if (message != null) {
+                        messageBeforeModels.addAll(addBeforeTextMessage(message));
+                        responseMessages.add(TAPMessageEntity.fromMessageModel(message));
+                        updateMessageMentionIndexes(message);
 
-                    if (message.getIsHidden() == null || !message.getIsHidden()) {
-                        visibleCount++;
+                        if (message.getIsHidden() == null || !message.getIsHidden()) {
+                            visibleCount++;
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

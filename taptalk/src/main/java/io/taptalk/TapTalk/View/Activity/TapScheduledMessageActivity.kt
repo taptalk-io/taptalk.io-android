@@ -736,23 +736,25 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 for (scheduledMessage in response.items) {
                     if (scheduledMessage.message != null) {
                         val message = TAPEncryptorManager.getInstance().decryptMessage(scheduledMessage.message)
-                        // hide sending icon for scheduled message page only
-                        message.isSending = false
-                        message.messageID = scheduledMessage.id.toString()
-                        // update status text
-                        if (scheduledMessage.scheduledTime != null) {
-                            message.messageStatusText = TAPTimeFormatter.formatClock(scheduledMessage.scheduledTime)
-                            message.created = scheduledMessage.scheduledTime
+                        if (message != null) {
+                            // hide sending icon for scheduled message page only
+                            message.isSending = false
+                            message.messageID = scheduledMessage.id.toString()
+                            // update status text
+                            if (scheduledMessage.scheduledTime != null) {
+                                message.messageStatusText = TAPTimeFormatter.formatClock(scheduledMessage.scheduledTime)
+                                message.created = scheduledMessage.scheduledTime
+                            }
+                            // add date separator
+                            if (previousModel == null || TAPTimeFormatter.formatDate(previousModel.scheduledTime!!) != TAPTimeFormatter.formatDate(scheduledMessage.scheduledTime!!)) {
+                                val dateSeparator = generateDateSeparator(scheduledMessage.scheduledTime)
+                                vm.dateSeparators[dateSeparator.body] = dateSeparator
+                                vm.dateSeparatorIndexes[dateSeparator.body] = messageAdapter.items.indexOf(previousModel?.message)
+                                messageAdapter.addMessage(dateSeparator)
+                            }
+                            messageAdapter.addMessage(message)
+                            previousModel = TapScheduledMessageModel(scheduledMessage)
                         }
-                        // add date separator
-                        if (previousModel == null || TAPTimeFormatter.formatDate(previousModel.scheduledTime!!) != TAPTimeFormatter.formatDate(scheduledMessage.scheduledTime!!)) {
-                            val dateSeparator = generateDateSeparator(scheduledMessage.scheduledTime)
-                            vm.dateSeparators[dateSeparator.body] = dateSeparator
-                            vm.dateSeparatorIndexes[dateSeparator.body] = messageAdapter.items.indexOf(previousModel?.message)
-                            messageAdapter.addMessage(dateSeparator)
-                        }
-                        messageAdapter.addMessage(message)
-                        previousModel = TapScheduledMessageModel(scheduledMessage)
                     }
                 }
                 if (TAPChatManager.getInstance(instanceKey).pendingScheduledMessages.isNotEmpty()) {
