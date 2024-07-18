@@ -1,14 +1,12 @@
 package io.taptalk.TapTalk.ViewModel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 
-class TAPGroupMemberViewModel(application: Application, var instanceKey: String) : AndroidViewModel(application) {
+class TAPGroupMemberViewModel: ViewModel() {
+    var instanceKey: String = ""
     var isSearchActive: Boolean = false
     var isSelectionMode: Boolean = false
     var isUpdateMember: Boolean = false
@@ -23,14 +21,6 @@ class TAPGroupMemberViewModel(application: Application, var instanceKey: String)
 
     enum class AdminButtonShowed {
         PROMOTE, DEMOTE, NOT_SHOWED
-    }
-
-    companion object {
-        class TAPGroupMemberViewModelFactory(private val application: Application, private val instanceKey: String) : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return TAPGroupMemberViewModel(application, instanceKey) as T
-            }
-        }
     }
 
     fun setGroupDataAndCheckAdmin(groupData: TAPRoomModel?) {

@@ -1,11 +1,13 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
+//    id 'kotlin-android-extensions'
     id 'maven-publish'
 }
 
 android {
+    namespace = "io.taptalk.TapTalk"
     compileSdk 33
 
     defaultConfig {
@@ -49,9 +51,14 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding true
+        buildConfig = true
+    }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
@@ -132,7 +139,8 @@ dependencies {
 }
 
 task androidSourcesJar(type: Jar) {
-    classifier 'sources'
+//    classifier 'sources'
+    archiveClassifier.set("sources")
     from android.sourceSets.main.java.srcDirs
 }
 

@@ -27,12 +27,11 @@ import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.ViewModel.TapDeleteAccountViewModel
 import io.taptalk.TapTalkSample.R
-import kotlinx.android.synthetic.main.tap_activity_delete_account.*
-import kotlinx.android.synthetic.main.tap_activity_delete_account.cl_action_bar
-import kotlinx.android.synthetic.main.tap_activity_delete_account.iv_button_back
-import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
+import io.taptalk.TapTalkSample.databinding.TapActivityDeleteAccountBinding
 
 class TapDeleteAccountActivity : TAPBaseActivity() {
+
+    private lateinit var binding: TapActivityDeleteAccountBinding
 
     val vm : TapDeleteAccountViewModel by lazy {
         ViewModelProvider(this)[TapDeleteAccountViewModel::class.java]
@@ -55,31 +54,32 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_delete_account)
+        binding = TapActivityDeleteAccountBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val spannable = SpannableString(tv_subtitle.text)
+        val spannable = SpannableString(binding.tvSubtitle.text)
         spannable.setSpan(
             TypefaceSpan("sans-serif"),
             35,
-            tv_subtitle.text.length,
+            binding.tvSubtitle.text.length,
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
         spannable.setSpan(
-            ForegroundColorSpan(ContextCompat.getColor(this, R.color.tapActionSheetDestructiveLabelColor)),
+            ForegroundColorSpan(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapActionSheetDestructiveLabelColor)),
             35,
-            tv_subtitle.text.length,
+            binding.tvSubtitle.text.length,
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
         spannable.setSpan(
             RelativeSizeSpan(0.8f),
             35,
-            tv_subtitle.text.length,
+            binding.tvSubtitle.text.length,
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
-        tv_subtitle.text = spannable
+        binding.tvSubtitle.text = spannable
 
-        et_note.setOnTouchListener { v: View, event: MotionEvent ->
-            if (et_note.hasFocus()) {
+        binding.etNote.setOnTouchListener { v: View, event: MotionEvent ->
+            if (binding.etNote.hasFocus()) {
                 v.parent.requestDisallowInterceptTouchEvent(true)
                 if (event.action and MotionEvent.ACTION_MASK == MotionEvent.ACTION_SCROLL) {
                     v.parent.requestDisallowInterceptTouchEvent(false)
@@ -89,15 +89,15 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
             false
         }
 
-        cb_agree.setOnCheckedChangeListener { _, isChecked ->
-            btn_delete.isEnabled = isChecked
+        binding.cbAgree.setOnCheckedChangeListener { _, isChecked ->
+            binding.btnDelete.isEnabled = isChecked
         }
 
-        btn_delete.setOnClickListener {
+        binding.btnDelete.setOnClickListener {
             TAPDataManager.getInstance(instanceKey).checkDeleteAccountState(checkDeleteAccountStateView)
         }
 
-        iv_button_back.setOnClickListener {
+        binding.ivButtonBack.setOnClickListener {
             onBackPressed()
         }
     }
@@ -121,24 +121,24 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
     }
 
     private fun hideOTPVerification() {
-        cl_action_bar.visibility = View.VISIBLE
-        sv_delete_account.visibility = View.VISIBLE
-        fl_container.visibility = View.GONE
+        binding.clActionBar.visibility = View.VISIBLE
+        binding.svDeleteAccount.visibility = View.VISIBLE
+        binding.flContainer.visibility = View.GONE
         supportFragmentManager.popBackStack(VERIFICATION_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     private fun showLoading() {
         runOnUiThread {
-            iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_loading_progress_circle_white))
-            if (null == iv_loading_image.animation)
-                TAPUtils.rotateAnimateInfinitely(this, iv_loading_image)
-            tv_loading_text.text = getString(R.string.tap_loading)
-            fl_loading.visibility = View.VISIBLE
+            binding.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == binding.layoutPopupLoadingScreen.ivLoadingImage.animation)
+                TAPUtils.rotateAnimateInfinitely(this, binding.layoutPopupLoadingScreen.ivLoadingImage)
+            binding.layoutPopupLoadingScreen.tvLoadingText.text = getString(io.taptalk.TapTalk.R.string.tap_loading)
+            binding.layoutPopupLoadingScreen.flLoading.visibility = View.VISIBLE
         }
     }
 
     private fun hideLoading() {
-        fl_loading.visibility = View.GONE
+        binding.layoutPopupLoadingScreen.flLoading.visibility = View.GONE
     }
 
     private fun showErrorDialog(message: String?) {
@@ -167,22 +167,22 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
             super.onSuccess(response)
             if (response?.isCanDelete == true) {
                 TapTalkDialog.Builder(this@TapDeleteAccountActivity)
-                    .setTitle(getString(R.string.tap_delete_my_account))
-                    .setMessage(getString(R.string.tap_wording_delete_account))
+                    .setTitle(getString(io.taptalk.TapTalk.R.string.tap_delete_my_account))
+                    .setMessage(getString(io.taptalk.TapTalk.R.string.tap_wording_delete_account))
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setPrimaryButtonTitle(getString(R.string.tap_delete))
+                    .setPrimaryButtonTitle(getString(io.taptalk.TapTalk.R.string.tap_delete))
                     .setPrimaryButtonListener {
                         TAPDataManager.getInstance(instanceKey).requestDeleteAccountOtp("", requestOtpView)
                     }
-                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setSecondaryButtonTitle(getString(io.taptalk.TapTalk.R.string.tap_cancel))
                     .setSecondaryButtonListener {  }
                     .show()
             } else {
                 TapTalkDialog.Builder(this@TapDeleteAccountActivity)
-                    .setTitle(getString(R.string.tap_wording_oops_only_admin))
-                    .setMessage(getString(R.string.tap_wording_sign_to_another_member))
+                    .setTitle(getString(io.taptalk.TapTalk.R.string.tap_wording_oops_only_admin))
+                    .setMessage(getString(io.taptalk.TapTalk.R.string.tap_wording_sign_to_another_member))
                     .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .setPrimaryButtonTitle(getString(io.taptalk.TapTalk.R.string.tap_ok))
                     .setPrimaryButtonListener {  }
                     .show()
             }
@@ -216,19 +216,19 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
         override fun onSuccess(response: TAPOTPResponse?) {
             super.onSuccess(response)
             // show verify otp
-            cl_action_bar.visibility = View.GONE
-            sv_delete_account.visibility = View.GONE
-            fl_container.visibility = View.VISIBLE
+            binding.clActionBar.visibility = View.GONE
+            binding.svDeleteAccount.visibility = View.GONE
+            binding.flContainer.visibility = View.VISIBLE
             supportFragmentManager.beginTransaction()
                 .setCustomAnimations(
-                    R.animator.tap_slide_left_fragment,
-                    R.animator.tap_fade_out_fragment,
-                    R.animator.tap_fade_in_fragment,
-                    R.animator.tap_slide_right_fragment
+                    io.taptalk.TapTalk.R.animator.tap_slide_left_fragment,
+                    io.taptalk.TapTalk.R.animator.tap_fade_out_fragment,
+                    io.taptalk.TapTalk.R.animator.tap_fade_in_fragment,
+                    io.taptalk.TapTalk.R.animator.tap_slide_right_fragment
                 )
                 .replace(
                     R.id.fl_container,
-                    TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, response?.otpID ?: 0L, response?.otpKey, response?.nextRequestSeconds ?: 30, response?.channel, et_note.text.toString())
+                    TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, response?.otpID ?: 0L, response?.otpKey, response?.nextRequestSeconds ?: 30, response?.channel, binding.etNote.text.toString())
                 )
                 .addToBackStack(VERIFICATION_TAG)
                 .commit()

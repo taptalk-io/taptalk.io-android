@@ -52,7 +52,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
         intent.putExtra(COUNTRY_LIST, countryListItems);
         intent.putExtra(COUNTRY_ID, defaultCountryID);
         context.startActivityForResult(intent, COUNTRY_PICK);
-        context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        context.overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_slide_up, io.taptalk.TapTalk.R.anim.tap_stay);
     }
 
     public interface TAPCountryPickInterface {

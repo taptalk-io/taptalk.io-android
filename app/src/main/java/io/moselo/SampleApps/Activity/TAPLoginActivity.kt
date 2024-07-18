@@ -53,20 +53,16 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel
 import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
-import kotlinx.android.synthetic.main.tap_activity_login.*
-import kotlinx.android.synthetic.main.tap_layout_login_country_list.*
-import kotlinx.android.synthetic.main.tap_layout_login_input.*
-import kotlinx.android.synthetic.main.tap_layout_login_otp.*
-import kotlinx.android.synthetic.main.tap_layout_login_verification_status.*
-import kotlinx.android.synthetic.main.tap_layout_login_whatsapp_verification.*
+import io.taptalk.TapTalkSample.databinding.TapActivityLoginBinding
 import java.util.Timer
 import java.util.TimerTask
 
 class TAPLoginActivity : TAPBaseActivity() {
 
-    private var vm: TAPLoginViewModel? = null
+    private lateinit var binding: TapActivityLoginBinding
     private lateinit var countryListAdapter: TAPCountryListAdapter
     private lateinit var redirectTimer: CountDownTimer
+    private var vm: TAPLoginViewModel? = null
 
     private val defaultCallingCode = "62"
     private val defaultCountryID = 1
@@ -94,7 +90,8 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_login)
+        binding = TapActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initViewModel()
         initView()
         initCountryList()
@@ -119,22 +116,22 @@ class TAPLoginActivity : TAPBaseActivity() {
 //    }
 
     override fun onBackPressed() {
-        if (cl_country_list_container.visibility == View.VISIBLE ||
-            sv_whatsapp_verification.visibility == View.VISIBLE ||
-            sv_otp_verification.visibility == View.VISIBLE
+        if (binding.layoutLoginCountryList.clCountryListContainer.visibility == View.VISIBLE ||
+            binding.layoutLoginWhatsappVerification.svWhatsappVerification.visibility == View.VISIBLE ||
+            binding.layoutLoginOtp.svOtpVerification.visibility == View.VISIBLE
         ) {
-            if (iv_qr_code.visibility == View.VISIBLE) {
+            if (binding.layoutLoginWhatsappVerification.ivQrCode.visibility == View.VISIBLE) {
                 hideQR()
                 return
             }
             showPhoneNumberInputView()
             return
         }
-        if (ll_button_retry_verification.visibility == View.VISIBLE) {
+        if (binding.layoutLoginVerificationStatus.llButtonRetryVerification.visibility == View.VISIBLE) {
             showVerificationView()
             return
         }
-        if (iv_verification_status_loading?.visibility == View.VISIBLE) {
+        if (binding.layoutLoginVerificationStatus.ivVerificationStatusLoading?.visibility == View.VISIBLE) {
             return
         }
         super.onBackPressed()
@@ -171,14 +168,14 @@ class TAPLoginActivity : TAPBaseActivity() {
             val numberRegex = Regex("[^0-9]")
             return@InputFilter numberRegex.replace(source, "")
         }
-        et_phone_number?.filters = et_phone_number.filters + numberFilter
-        et_phone_number?.addTextChangedListener(phoneTextWatcher)
+        binding.layoutLoginInput.etPhoneNumber.filters = binding.layoutLoginInput.etPhoneNumber.filters + numberFilter
+        binding.layoutLoginInput.etPhoneNumber.addTextChangedListener(phoneTextWatcher)
 
         try {
             countryListAdapter = TAPCountryListAdapter(setupDataForRecycler(""), countryPickInterface)
-            rv_country_list?.adapter = countryListAdapter
-            rv_country_list?.setHasFixedSize(true)
-            rv_country_list?.layoutManager = LinearLayoutManager(
+            binding.layoutLoginCountryList.rvCountryList.adapter = countryListAdapter
+            binding.layoutLoginCountryList.rvCountryList.setHasFixedSize(true)
+            binding.layoutLoginCountryList.rvCountryList.layoutManager = LinearLayoutManager(
                 this,
                 LinearLayoutManager.VERTICAL,
                 false
@@ -188,27 +185,27 @@ class TAPLoginActivity : TAPBaseActivity() {
             e.printStackTrace()
         }
 
-        iv_button_close_country_list?.setOnClickListener(backButtonClickListener)
-        ll_button_change_number?.setOnClickListener(backButtonClickListener)
-        ll_button_change_number_otp?.setOnClickListener(backButtonClickListener)
-        ll_button_whatsapp?.setOnClickListener(loginViaWhatsAppClickListener)
-        ll_button_otp?.setOnClickListener(loginViaOTPClickListener)
-        ll_button_verify?.setOnClickListener(openWhatsAppClickListener)
-        ll_button_show_qr_code?.setOnClickListener { showQR() }
-        ll_request_otp_again.setOnClickListener { requestOtp(true) }
-        ll_button_retry_verification?.setOnClickListener { showVerificationView() }
-        cl_login_container?.setOnClickListener { TAPUtils.dismissKeyboard(this) }
-        cl_login_input_container?.setOnClickListener { TAPUtils.dismissKeyboard(this, et_phone_number) }
-        cl_otp_container?.setOnClickListener { TAPUtils.dismissKeyboard(this, et_otp_code) }
+        binding.layoutLoginCountryList.ivButtonCloseCountryList.setOnClickListener(backButtonClickListener)
+        binding.layoutLoginWhatsappVerification.llButtonChangeNumber.setOnClickListener(backButtonClickListener)
+        binding.layoutLoginOtp.llButtonChangeNumberOtp.setOnClickListener(backButtonClickListener)
+        binding.layoutLoginInput.llButtonWhatsapp.setOnClickListener(loginViaWhatsAppClickListener)
+        binding.layoutLoginInput.llButtonOtp.setOnClickListener(loginViaOTPClickListener)
+        binding.layoutLoginWhatsappVerification.llButtonVerify.setOnClickListener(openWhatsAppClickListener)
+        binding.layoutLoginWhatsappVerification.llButtonShowQrCode.setOnClickListener { showQR() }
+        binding.layoutLoginOtp.llRequestOtpAgain.setOnClickListener { requestOtp(true) }
+        binding.layoutLoginVerificationStatus.llButtonRetryVerification.setOnClickListener { showVerificationView() }
+        binding.clLoginContainer.setOnClickListener { TAPUtils.dismissKeyboard(this) }
+        binding.layoutLoginInput.clLoginInputContainer.setOnClickListener { TAPUtils.dismissKeyboard(this, binding.layoutLoginInput.etPhoneNumber) }
+        binding.layoutLoginOtp.clOtpContainer.setOnClickListener { TAPUtils.dismissKeyboard(this, binding.layoutLoginOtp.etOtpCode) }
 
-        et_search_country_list?.addTextChangedListener(searchTextWatcher)
-        et_otp_code?.addTextChangedListener(otpTextWatcher)
-        et_otp_code?.setOnEditorActionListener(otpEditorListener)
+        binding.layoutLoginCountryList.etSearchCountryList.addTextChangedListener(searchTextWatcher)
+        binding.layoutLoginOtp.etOtpCode.addTextChangedListener(otpTextWatcher)
+        binding.layoutLoginOtp.etOtpCode.setOnEditorActionListener(otpEditorListener)
 
         showPhoneNumberInputView()
 
         if (BuildConfig.BUILD_TYPE == "dev") {
-            ll_button_otp?.setOnLongClickListener(devPhoneNumberLongClickListener)
+            binding.layoutLoginInput.llButtonOtp.setOnLongClickListener(devPhoneNumberLongClickListener)
         }
     }
 
@@ -223,35 +220,35 @@ class TAPLoginActivity : TAPBaseActivity() {
     @SuppressLint("SetTextI18n")
     private fun setCountry(countryID: Int, callingCode: String, flagIconUrl: String?) {
         if (callingCode.isNotEmpty()) {
-            tv_country_code?.text = "+$callingCode"
-            tv_country_code?.hint = ""
-            et_phone_number?.visibility = View.VISIBLE
-            tv_phone_number?.visibility = View.VISIBLE
+            binding.layoutLoginInput.tvCountryCode.text = "+$callingCode"
+            binding.layoutLoginInput.tvCountryCode.hint = ""
+            binding.layoutLoginInput.etPhoneNumber.visibility = View.VISIBLE
+            binding.layoutLoginInput.tvPhoneNumber.visibility = View.VISIBLE
         }
         else {
-            tv_country_code?.text = ""
-            tv_country_code?.hint = getString(R.string.tap_hint_select_country)
-            et_phone_number?.visibility = View.GONE
-            tv_phone_number?.visibility = View.GONE
+            binding.layoutLoginInput.tvCountryCode.text = ""
+            binding.layoutLoginInput.tvCountryCode.hint = getString(io.taptalk.TapTalk.R.string.tap_hint_select_country)
+            binding.layoutLoginInput.etPhoneNumber.visibility = View.GONE
+            binding.layoutLoginInput.tvPhoneNumber.visibility = View.GONE
         }
         vm?.selectedCountryID = countryID
         vm?.countryCallingID = callingCode
         vm?.countryFlagUrl = flagIconUrl ?: ""
 
         // Re-add max length filter
-        val filters = et_phone_number.filters.toList().filter { it.javaClass != InputFilter.LengthFilter::class.java }
-        et_phone_number?.filters = filters.toTypedArray() + InputFilter.LengthFilter(15 - callingCode.length)
+        val filters = binding.layoutLoginInput.etPhoneNumber.filters.toList().filter { it.javaClass != InputFilter.LengthFilter::class.java }
+        binding.layoutLoginInput.etPhoneNumber.filters = filters.toTypedArray() + InputFilter.LengthFilter(15 - callingCode.length)
 
         if ("" != flagIconUrl) {
-            Glide.with(this).load(flagIconUrl).into(iv_country_flag)
+            Glide.with(this).load(flagIconUrl).into(binding.layoutLoginInput.ivCountryFlag)
         }
         else {
-            iv_country_flag?.setImageResource(R.drawable.tap_ic_default_flag)
+            binding.layoutLoginInput.ivCountryFlag.setImageResource(io.taptalk.TapTalk.R.drawable.tap_ic_default_flag)
         }
     }
 
     private fun checkAndEditPhoneNumber(): String {
-        var phoneNumber = et_phone_number.text.toString().replace("-", "").trim()
+        var phoneNumber = binding.layoutLoginInput.etPhoneNumber.text.toString().replace("-", "").trim()
         val callingCodeLength: Int = defaultCallingCode.length
         if (phoneNumber.isNotEmpty() && callingCodeLength < phoneNumber.length) {
             when {
@@ -269,54 +266,54 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun showPhoneNumberInputLoading(isLoadingOTP: Boolean = false) {
         runOnUiThread {
             if (isLoadingOTP) {
-                pb_button_whatsapp_loading?.visibility = View.GONE
-                pb_button_otp_loading?.visibility = View.VISIBLE
-                iv_button_whatsapp?.visibility = View.VISIBLE
-                iv_button_otp?.visibility = View.GONE
+                binding.layoutLoginInput.pbButtonWhatsappLoading.visibility = View.GONE
+                binding.layoutLoginInput.pbButtonOtpLoading.visibility = View.VISIBLE
+                binding.layoutLoginInput.ivButtonWhatsapp.visibility = View.VISIBLE
+                binding.layoutLoginInput.ivButtonOtp.visibility = View.GONE
             }
             else {
-                pb_button_whatsapp_loading?.visibility = View.VISIBLE
-                pb_button_otp_loading?.visibility = View.GONE
-                iv_button_whatsapp?.visibility = View.GONE
-                iv_button_otp?.visibility = View.VISIBLE
+                binding.layoutLoginInput.pbButtonWhatsappLoading.visibility = View.VISIBLE
+                binding.layoutLoginInput.pbButtonOtpLoading.visibility = View.GONE
+                binding.layoutLoginInput.ivButtonWhatsapp.visibility = View.GONE
+                binding.layoutLoginInput.ivButtonOtp.visibility = View.VISIBLE
             }
-            iv_country_chevron?.alpha = 0.4f
-            tv_country_code?.alpha = 0.4f
-            et_phone_number?.alpha = 0.4f
-            tv_phone_number?.alpha = 0.4f
-            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-            ll_button_whatsapp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-            ll_button_otp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_border_inactive)
-            ImageViewCompat.setImageTintList(iv_button_otp, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapTransparentBlack1920)))
-            tv_button_whatsapp?.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
-            tv_button_otp?.setTextColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
-            et_phone_number?.isEnabled = false
-            ll_country_picker_button?.setOnClickListener(null)
-            ll_button_whatsapp?.setOnClickListener(null)
-            ll_button_otp?.setOnClickListener(null)
+            binding.layoutLoginInput.ivCountryChevron.alpha = 0.4f
+            binding.layoutLoginInput.tvCountryCode.alpha = 0.4f
+            binding.layoutLoginInput.etPhoneNumber.alpha = 0.4f
+            binding.layoutLoginInput.tvPhoneNumber.alpha = 0.4f
+            binding.layoutLoginInput.clInputPhoneNumber.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_button_inactive)
+            binding.layoutLoginInput.llButtonWhatsapp.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_button_inactive)
+            binding.layoutLoginInput.llButtonOtp.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_button_border_inactive)
+            ImageViewCompat.setImageTintList(binding.layoutLoginInput.ivButtonOtp, ColorStateList.valueOf(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1920)))
+            binding.layoutLoginInput.tvButtonWhatsapp.setTextColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+            binding.layoutLoginInput.tvButtonOtp.setTextColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+            binding.layoutLoginInput.etPhoneNumber.isEnabled = false
+            binding.layoutLoginInput.llCountryPickerButton.setOnClickListener(null)
+            binding.layoutLoginInput.llButtonWhatsapp.setOnClickListener(null)
+            binding.layoutLoginInput.llButtonOtp.setOnClickListener(null)
         }
     }
 
     private fun hidePhoneNumberInputLoading() {
         runOnUiThread {
-            pb_button_whatsapp_loading?.visibility = View.GONE
-            pb_button_otp_loading?.visibility = View.GONE
-            iv_button_whatsapp?.visibility = View.VISIBLE
-            iv_button_otp?.visibility = View.VISIBLE
-            iv_country_chevron?.alpha = 1f
-            tv_country_code?.alpha = 1f
-            et_phone_number?.alpha = 1f
-            tv_phone_number?.alpha = 1f
-            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
-            ll_button_whatsapp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
-            ll_button_otp?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_border_ripple)
-            ImageViewCompat.setImageTintList(iv_button_otp, null)
-            tv_button_whatsapp?.setTextColor(ContextCompat.getColor(this, R.color.tapButtonLabelColor))
-            tv_button_otp?.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
-            et_phone_number?.isEnabled = true
-            ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
-            ll_button_whatsapp?.setOnClickListener(loginViaWhatsAppClickListener)
-            ll_button_otp?.setOnClickListener(loginViaOTPClickListener)
+            binding.layoutLoginInput.pbButtonWhatsappLoading.visibility = View.GONE
+            binding.layoutLoginInput.pbButtonOtpLoading.visibility = View.GONE
+            binding.layoutLoginInput.ivButtonWhatsapp.visibility = View.VISIBLE
+            binding.layoutLoginInput.ivButtonOtp.visibility = View.VISIBLE
+            binding.layoutLoginInput.ivCountryChevron.alpha = 1f
+            binding.layoutLoginInput.tvCountryCode.alpha = 1f
+            binding.layoutLoginInput.etPhoneNumber.alpha = 1f
+            binding.layoutLoginInput.tvPhoneNumber.alpha = 1f
+            binding.layoutLoginInput.clInputPhoneNumber.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_light)
+            binding.layoutLoginInput.llButtonWhatsapp.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_button_active_ripple)
+            binding.layoutLoginInput.llButtonOtp.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_button_border_ripple)
+            ImageViewCompat.setImageTintList(binding.layoutLoginInput.ivButtonOtp, null)
+            binding.layoutLoginInput.tvButtonWhatsapp.setTextColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapButtonLabelColor))
+            binding.layoutLoginInput.tvButtonOtp.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
+            binding.layoutLoginInput.etPhoneNumber.isEnabled = true
+            binding.layoutLoginInput.llCountryPickerButton.setOnClickListener(countryPickerClickListener)
+            binding.layoutLoginInput.llButtonWhatsapp.setOnClickListener(loginViaWhatsAppClickListener)
+            binding.layoutLoginInput.llButtonOtp.setOnClickListener(loginViaOTPClickListener)
         }
     }
 
@@ -410,11 +407,11 @@ class TAPLoginActivity : TAPBaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            tv_phone_number.text = TAPUtils.beautifyPhoneNumber(s.toString(), false)
-            if (ll_input_error_info?.visibility == View.VISIBLE) {
-                et_phone_number?.removeTextChangedListener(this)
+            binding.layoutLoginInput.tvPhoneNumber.text = TAPUtils.beautifyPhoneNumber(s.toString(), false)
+            if (binding.layoutLoginInput.llInputErrorInfo.visibility == View.VISIBLE) {
+                binding.layoutLoginInput.etPhoneNumber.removeTextChangedListener(this)
                 validatePhoneNumber()
-                et_phone_number?.addTextChangedListener(this)
+                binding.layoutLoginInput.etPhoneNumber.addTextChangedListener(this)
             }
         }
 
@@ -505,10 +502,10 @@ class TAPLoginActivity : TAPBaseActivity() {
         TAPDataManager.getInstance(instanceKey).getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
             override fun startLoading() {
                 runOnUiThread {
-                    et_phone_number?.visibility = View.GONE
-                    tv_phone_number?.visibility = View.GONE
-                    cv_country_flag?.visibility = View.GONE
-                    pb_loading_progress_country?.visibility = View.VISIBLE
+                    binding.layoutLoginInput.etPhoneNumber.visibility = View.GONE
+                    binding.layoutLoginInput.tvPhoneNumber.visibility = View.GONE
+                    binding.layoutLoginInput.cvCountryFlag.visibility = View.GONE
+                    binding.layoutLoginInput.pbLoadingProgressCountry.visibility = View.VISIBLE
                 }
             }
 
@@ -533,7 +530,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                         }
                     }
 
-                    if ("" == tv_country_code?.text) {
+                    if ("" == binding.layoutLoginInput.tvCountryCode.text) {
                         val callingCode: String = defaultCountry?.callingCode ?: ""
                         runOnUiThread {
                             setCountry(defaultCountry?.countryID ?: 0, callingCode, defaultCountry?.flagIconUrl ?: "")
@@ -544,11 +541,11 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                     runOnUiThread {
                         searchCountry("")
-                        et_phone_number?.visibility = View.VISIBLE
-                        tv_phone_number?.visibility = View.VISIBLE
-                        cv_country_flag?.visibility = View.VISIBLE
-                        pb_loading_progress_country?.visibility = View.GONE
-                        ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
+                        binding.layoutLoginInput.etPhoneNumber.visibility = View.VISIBLE
+                        binding.layoutLoginInput.tvPhoneNumber.visibility = View.VISIBLE
+                        binding.layoutLoginInput.cvCountryFlag.visibility = View.VISIBLE
+                        binding.layoutLoginInput.pbLoadingProgressCountry.visibility = View.GONE
+                        binding.layoutLoginInput.llCountryPickerButton.setOnClickListener(countryPickerClickListener)
 
                         if (openListOnSuccess) {
                             showCountryListView()
@@ -558,18 +555,18 @@ class TAPLoginActivity : TAPBaseActivity() {
             }
 
             override fun onError(error: TAPErrorModel?) {
-                onError(error?.message ?: getString(R.string.tap_error_message_general))
+                onError(error?.message ?: getString(io.taptalk.TapTalk.R.string.tap_error_message_general))
             }
 
             override fun onError(errorMessage: String?) {
                 runOnUiThread {
-                    et_phone_number?.visibility = View.VISIBLE
-                    tv_phone_number?.visibility = View.VISIBLE
-                    cv_country_flag?.visibility = View.VISIBLE
-                    pb_loading_progress_country?.visibility = View.GONE
+                    binding.layoutLoginInput.etPhoneNumber.visibility = View.VISIBLE
+                    binding.layoutLoginInput.tvPhoneNumber.visibility = View.VISIBLE
+                    binding.layoutLoginInput.cvCountryFlag.visibility = View.VISIBLE
+                    binding.layoutLoginInput.pbLoadingProgressCountry.visibility = View.GONE
                     setCountry(0, "", "")
-                    ll_country_picker_button?.setOnClickListener(countryPickerClickListener)
-                    Toast.makeText(this@TAPLoginActivity, getString(R.string.tap_no_countries_found), Toast.LENGTH_SHORT).show()
+                    binding.layoutLoginInput.llCountryPickerButton.setOnClickListener(countryPickerClickListener)
+                    Toast.makeText(this@TAPLoginActivity, getString(io.taptalk.TapTalk.R.string.tap_no_countries_found), Toast.LENGTH_SHORT).show()
                 }
             }
         })
@@ -587,15 +584,15 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showCountryListEmptyState() {
         runOnUiThread {
-            cl_country_list_empty_state?.visibility = View.VISIBLE
-            rv_country_list?.visibility = View.GONE
+            binding.layoutLoginCountryList.clCountryListEmptyState.visibility = View.VISIBLE
+            binding.layoutLoginCountryList.rvCountryList.visibility = View.GONE
         }
     }
 
     private fun hideCountryListEmptyState() {
         runOnUiThread {
-            cl_country_list_empty_state?.visibility = View.GONE
-            rv_country_list?.visibility = View.VISIBLE
+            binding.layoutLoginCountryList.clCountryListEmptyState.visibility = View.GONE
+            binding.layoutLoginCountryList.rvCountryList.visibility = View.VISIBLE
         }
     }
 
@@ -614,12 +611,12 @@ class TAPLoginActivity : TAPBaseActivity() {
         setCountry(it?.countryID ?: 0, callingCode, it?.flagIconUrl ?: "")
         val textCount = callingCode.length + checkAndEditPhoneNumber().length
         if (textCount > 15) {
-            et_phone_number?.setText("")
+            binding.layoutLoginInput.etPhoneNumber.setText("")
         }
         showPhoneNumberInputView()
 
-        ll_input_error_info?.visibility = View.GONE
-        cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
+        binding.layoutLoginInput.llInputErrorInfo.visibility = View.GONE
+        binding.layoutLoginInput.clInputPhoneNumber.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_light)
     }
 
     /**=============================================================================================
@@ -638,7 +635,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             ?.setDuration(animationDuration)
             ?.setInterpolator(DecelerateInterpolator())
             ?.withEndAction {
-                if (view != cl_verification_status_container) {
+                if (view != binding.layoutLoginVerificationStatus.clVerificationStatusContainer) {
                     resetVerificationStatus()
                 }
             }
@@ -659,8 +656,8 @@ class TAPLoginActivity : TAPBaseActivity() {
             ?.setInterpolator(AccelerateInterpolator())
             ?.withEndAction {
                 view.visibility = View.GONE
-                if (view == cl_country_list_container) {
-                    et_search_country_list.setText("")
+                if (view == binding.layoutLoginCountryList.clCountryListContainer) {
+                    binding.layoutLoginCountryList.etSearchCountryList.setText("")
                 }
             }
             ?.start()
@@ -668,51 +665,51 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showPhoneNumberInputView() {
         runOnUiThread {
-            showViewWithAnimation(sv_login_phone_number_input)
-            hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(sv_whatsapp_verification)
-            hideViewWithAnimation(sv_otp_verification)
-            hideViewWithAnimation(cl_verification_status_container)
+            showViewWithAnimation(binding.layoutLoginInput.svLoginPhoneNumberInput)
+            hideViewWithAnimation(binding.layoutLoginCountryList.clCountryListContainer)
+            hideViewWithAnimation(binding.layoutLoginWhatsappVerification.svWhatsappVerification)
+            hideViewWithAnimation(binding.layoutLoginOtp.svOtpVerification)
+            hideViewWithAnimation(binding.layoutLoginVerificationStatus.clVerificationStatusContainer)
         }
     }
 
     private fun showCountryListView() {
         runOnUiThread {
-            showViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
-            hideViewWithAnimation(sv_whatsapp_verification)
-            hideViewWithAnimation(sv_otp_verification)
-            hideViewWithAnimation(cl_verification_status_container)
+            showViewWithAnimation(binding.layoutLoginCountryList.clCountryListContainer)
+            hideViewWithAnimation(binding.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
+            hideViewWithAnimation(binding.layoutLoginWhatsappVerification.svWhatsappVerification)
+            hideViewWithAnimation(binding.layoutLoginOtp.svOtpVerification)
+            hideViewWithAnimation(binding.layoutLoginVerificationStatus.clVerificationStatusContainer)
         }
     }
 
     private fun showVerificationView() {
         runOnUiThread {
-            showViewWithAnimation(sv_whatsapp_verification)
-            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
-            hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(sv_otp_verification)
-            hideViewWithAnimation(cl_verification_status_container)
+            showViewWithAnimation(binding.layoutLoginWhatsappVerification.svWhatsappVerification)
+            hideViewWithAnimation(binding.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
+            hideViewWithAnimation(binding.layoutLoginCountryList.clCountryListContainer)
+            hideViewWithAnimation(binding.layoutLoginOtp.svOtpVerification)
+            hideViewWithAnimation(binding.layoutLoginVerificationStatus.clVerificationStatusContainer)
         }
     }
 
     private fun showOtpView() {
         runOnUiThread {
-            showViewWithAnimation(sv_otp_verification)
-            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
-            hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(sv_whatsapp_verification)
-            hideViewWithAnimation(cl_verification_status_container)
+            showViewWithAnimation(binding.layoutLoginOtp.svOtpVerification)
+            hideViewWithAnimation(binding.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
+            hideViewWithAnimation(binding.layoutLoginCountryList.clCountryListContainer)
+            hideViewWithAnimation(binding.layoutLoginWhatsappVerification.svWhatsappVerification)
+            hideViewWithAnimation(binding.layoutLoginVerificationStatus.clVerificationStatusContainer)
         }
     }
 
     private fun showVerificationStatusView() {
         runOnUiThread {
-            showViewWithAnimation(cl_verification_status_container)
-            hideViewWithAnimation(sv_login_phone_number_input, phoneInputHiddenTranslation)
-            hideViewWithAnimation(cl_country_list_container)
-            hideViewWithAnimation(sv_otp_verification)
-            hideViewWithAnimation(sv_whatsapp_verification)
+            showViewWithAnimation(binding.layoutLoginVerificationStatus.clVerificationStatusContainer)
+            hideViewWithAnimation(binding.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
+            hideViewWithAnimation(binding.layoutLoginCountryList.clCountryListContainer)
+            hideViewWithAnimation(binding.layoutLoginOtp.svOtpVerification)
+            hideViewWithAnimation(binding.layoutLoginWhatsappVerification.svWhatsappVerification)
         }
     }
 
@@ -726,13 +723,13 @@ class TAPLoginActivity : TAPBaseActivity() {
                 }
                 val qrCode = BitmapDrawable(resources, TAPFileUtils.decodeBase64(base64))
                 runOnUiThread {
-                    iv_qr_code.setImageDrawable(qrCode)
-                    iv_qr_code.visibility = View.VISIBLE
-                    ll_button_show_qr_code.visibility = View.GONE
-                    tv_button_verify?.text = getString(R.string.tap_i_have_sent_the_message)
-                    tv_verification_description?.text = getString(R.string.tap_whatsapp_verification_qr_description)
-                    tv_button_change_number?.text = getString(R.string.tap_back)
-                    ll_button_verify?.setOnClickListener(checkVerificationClickListener)
+                    binding.layoutLoginWhatsappVerification.ivQrCode.setImageDrawable(qrCode)
+                    binding.layoutLoginWhatsappVerification.ivQrCode.visibility = View.VISIBLE
+                    binding.layoutLoginWhatsappVerification.llButtonShowQrCode.visibility = View.GONE
+                    binding.layoutLoginWhatsappVerification.tvButtonVerify.text = getString(R.string.tap_i_have_sent_the_message)
+                    binding.layoutLoginWhatsappVerification.tvVerificationDescription.text = getString(R.string.tap_whatsapp_verification_qr_description)
+                    binding.layoutLoginWhatsappVerification.tvButtonChangeNumber.text = getString(io.taptalk.TapTalk.R.string.tap_back)
+                    binding.layoutLoginWhatsappVerification.llButtonVerify.setOnClickListener(checkVerificationClickListener)
                 }
             }
             catch (e: Exception) {
@@ -744,47 +741,47 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun hideQR() {
         runOnUiThread {
-            iv_qr_code.setImageDrawable(null)
-            iv_qr_code.visibility = View.GONE
-            ll_button_show_qr_code.visibility = View.VISIBLE
-            tv_button_verify?.text = getString(R.string.tap_open_whatsapp)
-            tv_verification_description?.text = getString(R.string.tap_whatsapp_verification_description)
-            tv_button_change_number?.text = getString(R.string.tap_change_phone_number)
-            ll_button_verify?.setOnClickListener(openWhatsAppClickListener)
+            binding.layoutLoginWhatsappVerification.ivQrCode.setImageDrawable(null)
+            binding.layoutLoginWhatsappVerification.ivQrCode.visibility = View.GONE
+            binding.layoutLoginWhatsappVerification.llButtonShowQrCode.visibility = View.VISIBLE
+            binding.layoutLoginWhatsappVerification.tvButtonVerify.text = getString(R.string.tap_open_whatsapp)
+            binding.layoutLoginWhatsappVerification.tvVerificationDescription.text = getString(R.string.tap_whatsapp_verification_description)
+            binding.layoutLoginWhatsappVerification.tvButtonChangeNumber.text = getString(R.string.tap_change_phone_number)
+            binding.layoutLoginWhatsappVerification.llButtonVerify.setOnClickListener(openWhatsAppClickListener)
         }
     }
 
     private fun showVerificationLoading() {
         runOnUiThread {
-            if (iv_verification_status_loading?.animation == null) {
-                TAPUtils.rotateAnimateInfinitely(this, iv_verification_status_loading)
+            if (binding.layoutLoginVerificationStatus.ivVerificationStatusLoading.animation == null) {
+                TAPUtils.rotateAnimateInfinitely(this, binding.layoutLoginVerificationStatus.ivVerificationStatusLoading)
             }
-            iv_verification_status_loading?.visibility = View.VISIBLE
-            iv_verification_status_image?.visibility = View.GONE
-            v_verification_status_background?.visibility = View.GONE
-            tv_verification_status_redirect_timer?.visibility = View.GONE
-            ll_button_continue_to_home?.visibility = View.GONE
-            ll_button_retry_verification?.visibility = View.GONE
-            tv_verification_status_title?.text = getString(R.string.tap_loading_dots)
-            tv_verification_status_description?.text = getString(R.string.tap_verification_loading_description)
+            binding.layoutLoginVerificationStatus.ivVerificationStatusLoading.visibility = View.VISIBLE
+            binding.layoutLoginVerificationStatus.ivVerificationStatusImage.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.vVerificationStatusBackground.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.tvVerificationStatusRedirectTimer.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.llButtonContinueToHome.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.llButtonRetryVerification.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.tvVerificationStatusTitle.text = getString(io.taptalk.TapTalk.R.string.tap_loading_dots)
+            binding.layoutLoginVerificationStatus.tvVerificationStatusDescription.text = getString(R.string.tap_verification_loading_description)
             showVerificationStatusView()
         }
     }
 
     private fun showVerificationSuccess() {
         runOnUiThread {
-            iv_verification_status_loading?.clearAnimation()
-            iv_verification_status_loading?.visibility = View.GONE
-            iv_verification_status_image?.visibility = View.VISIBLE
-            v_verification_status_background?.visibility = View.VISIBLE
-            tv_verification_status_redirect_timer?.visibility = View.VISIBLE
-            ll_button_continue_to_home?.visibility = View.VISIBLE
-            ll_button_retry_verification?.visibility = View.GONE
-            tv_verification_status_title?.text = getString(R.string.tap_verification_success)
-            tv_verification_status_description?.text = getString(R.string.tap_verification_success_description)
-            v_verification_status_background?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_success)
-            iv_verification_status_image?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_success)
-            iv_verification_status_image?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_rounded_check_green))
+            binding.layoutLoginVerificationStatus.ivVerificationStatusLoading.clearAnimation()
+            binding.layoutLoginVerificationStatus.ivVerificationStatusLoading.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.ivVerificationStatusImage.visibility = View.VISIBLE
+            binding.layoutLoginVerificationStatus.vVerificationStatusBackground.visibility = View.VISIBLE
+            binding.layoutLoginVerificationStatus.tvVerificationStatusRedirectTimer.visibility = View.VISIBLE
+            binding.layoutLoginVerificationStatus.llButtonContinueToHome.visibility = View.VISIBLE
+            binding.layoutLoginVerificationStatus.llButtonRetryVerification.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.tvVerificationStatusTitle.text = getString(R.string.tap_verification_success)
+            binding.layoutLoginVerificationStatus.tvVerificationStatusDescription.text = getString(R.string.tap_verification_success_description)
+            binding.layoutLoginVerificationStatus.vVerificationStatusBackground.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_success)
+            binding.layoutLoginVerificationStatus.ivVerificationStatusImage.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_success)
+            binding.layoutLoginVerificationStatus.ivVerificationStatusImage.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_rounded_check_green))
             showVerificationStatusView()
             startRedirectTimer()
         }
@@ -792,33 +789,33 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showVerificationError() {
         runOnUiThread {
-            iv_verification_status_loading?.clearAnimation()
-            iv_verification_status_loading?.visibility = View.GONE
-            iv_verification_status_image?.visibility = View.VISIBLE
-            v_verification_status_background?.visibility = View.VISIBLE
-            tv_verification_status_redirect_timer?.visibility = View.GONE
-            ll_button_continue_to_home?.visibility = View.GONE
-            ll_button_retry_verification?.visibility = View.VISIBLE
-            tv_verification_status_title?.text = getString(R.string.tap_verification_error)
-            tv_verification_status_description?.text = getString(R.string.tap_verification_error_description)
-            v_verification_status_background?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_error)
-            iv_verification_status_image?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_error)
-            iv_verification_status_image?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_cancel_white))
+            binding.layoutLoginVerificationStatus.ivVerificationStatusLoading.clearAnimation()
+            binding.layoutLoginVerificationStatus.ivVerificationStatusLoading.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.ivVerificationStatusImage.visibility = View.VISIBLE
+            binding.layoutLoginVerificationStatus.vVerificationStatusBackground.visibility = View.VISIBLE
+            binding.layoutLoginVerificationStatus.tvVerificationStatusRedirectTimer.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.llButtonContinueToHome.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.llButtonRetryVerification.visibility = View.VISIBLE
+            binding.layoutLoginVerificationStatus.tvVerificationStatusTitle.text = getString(R.string.tap_verification_error)
+            binding.layoutLoginVerificationStatus.tvVerificationStatusDescription.text = getString(R.string.tap_verification_error_description)
+            binding.layoutLoginVerificationStatus.vVerificationStatusBackground.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_error)
+            binding.layoutLoginVerificationStatus.ivVerificationStatusImage.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_error)
+            binding.layoutLoginVerificationStatus.ivVerificationStatusImage.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_cancel_white))
             showVerificationStatusView()
         }
     }
 
     private fun resetVerificationStatus() {
         runOnUiThread {
-            iv_verification_status_loading?.clearAnimation()
-            iv_verification_status_loading?.visibility = View.GONE
-            iv_verification_status_image?.visibility = View.GONE
-            v_verification_status_background?.visibility = View.GONE
-            tv_verification_status_redirect_timer?.visibility = View.GONE
-            ll_button_continue_to_home?.visibility = View.GONE
-            ll_button_retry_verification?.visibility = View.GONE
-            tv_verification_status_title?.text = ""
-            tv_verification_status_description?.text = ""
+            binding.layoutLoginVerificationStatus.ivVerificationStatusLoading.clearAnimation()
+            binding.layoutLoginVerificationStatus.ivVerificationStatusLoading.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.ivVerificationStatusImage.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.vVerificationStatusBackground.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.tvVerificationStatusRedirectTimer.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.llButtonContinueToHome.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.llButtonRetryVerification.visibility = View.GONE
+            binding.layoutLoginVerificationStatus.tvVerificationStatusTitle.text = ""
+            binding.layoutLoginVerificationStatus.tvVerificationStatusDescription.text = ""
         }
     }
 
@@ -828,11 +825,11 @@ class TAPLoginActivity : TAPBaseActivity() {
         }
         redirectTimer = object : CountDownTimer(3000L, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
-                tv_verification_status_redirect_timer.text = String.format(getString(R.string.tap_format_redirect_seconds), (millisUntilFinished / 1000L).toInt() + 1)
+                binding.layoutLoginVerificationStatus.tvVerificationStatusRedirectTimer.text = String.format(getString(R.string.tap_format_redirect_seconds), (millisUntilFinished / 1000L).toInt() + 1)
             }
 
             override fun onFinish() {
-                ll_button_continue_to_home.callOnClick()
+                binding.layoutLoginVerificationStatus.llButtonContinueToHome.callOnClick()
             }
         }
         redirectTimer.start()
@@ -841,39 +838,39 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun validatePhoneNumber(): Boolean {
         val phoneNumber = checkAndEditPhoneNumber()
         val phoneNumberWithCode = String.format("%s%s", vm?.countryCallingID ?: "", phoneNumber)
-        return if (et_phone_number.text.isEmpty()) {
-            tv_input_error_info?.text = getString(R.string.tap_this_field_is_required)
-            ll_input_error_info?.visibility = View.VISIBLE
-            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
+        return if (binding.layoutLoginInput.etPhoneNumber.text.isEmpty()) {
+            binding.layoutLoginInput.tvInputErrorInfo.text = getString(io.taptalk.TapTalk.R.string.tap_this_field_is_required)
+            binding.layoutLoginInput.llInputErrorInfo.visibility = View.VISIBLE
+            binding.layoutLoginInput.clInputPhoneNumber.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
             false
         }
         else if (!Patterns.PHONE.matcher(phoneNumber).matches() || phoneNumberWithCode.length !in 7..15) {
-            tv_input_error_info?.text = getString(R.string.tap_error_invalid_phone_number)
-            ll_input_error_info?.visibility = View.VISIBLE
-            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
+            binding.layoutLoginInput.tvInputErrorInfo.text = getString(io.taptalk.TapTalk.R.string.tap_error_invalid_phone_number)
+            binding.layoutLoginInput.llInputErrorInfo.visibility = View.VISIBLE
+            binding.layoutLoginInput.clInputPhoneNumber.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
             false
         }
         else {
-            ll_input_error_info?.visibility = View.GONE
+            binding.layoutLoginInput.llInputErrorInfo.visibility = View.GONE
             vm?.phoneNumber = phoneNumber
-            cl_input_phone_number?.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_light)
+            binding.layoutLoginInput.clInputPhoneNumber.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_light)
             true
         }
     }
 
     private fun showErrorSnackbar(errorMessage: String?) {
         if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this)) {
-            tap_custom_snackbar?.show(
+            binding.tapCustomSnackbar.show(
                 TapCustomSnackbarView.Companion.Type.ERROR,
-                R.drawable.tap_ic_info_outline_primary,
-                errorMessage ?: getString(R.string.tap_error_message_general)
+                io.taptalk.TapTalk.R.drawable.tap_ic_info_outline_primary,
+                errorMessage ?: getString(io.taptalk.TapTalk.R.string.tap_error_message_general)
             )
         }
         else {
-            tap_custom_snackbar?.show(
+            binding.tapCustomSnackbar.show(
                 TapCustomSnackbarView.Companion.Type.ERROR,
-                R.drawable.tap_ic_wifi_off_red,
-                R.string.tap_error_check_your_network
+                io.taptalk.TapTalk.R.drawable.tap_ic_wifi_off_red,
+                io.taptalk.TapTalk.R.string.tap_error_check_your_network
             )
         }
     }
@@ -908,7 +905,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     if (response?.isSuccess == true) {
                         vm?.nextWhatsAppRequestTimestamp = (response.nextRequestSeconds * 1000).toLong() + System.currentTimeMillis()
                         vm?.lastRequestWhatsAppPhoneNumber = vm?.phoneNumber ?: ""
-                        tv_verification_phone_number?.text = TAPUtils.beautifyPhoneNumber(String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber), true)
+                        binding.layoutLoginWhatsappVerification.tvVerificationPhoneNumber.text = TAPUtils.beautifyPhoneNumber(String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber), true)
                         showVerificationView()
                     }
                     else {
@@ -1000,44 +997,44 @@ class TAPLoginActivity : TAPBaseActivity() {
             clearOtpEditText()
             setupTimer()
             Handler(Looper.getMainLooper()).postDelayed({
-                et_otp_code?.requestFocus()
-                TAPUtils.showKeyboard(this, et_otp_code)
+                binding.layoutLoginOtp.etOtpCode.requestFocus()
+                TAPUtils.showKeyboard(this, binding.layoutLoginOtp.etOtpCode)
             }, animationDuration)
         }
     }
 
     private fun clearOtpEditText() {
         runOnUiThread {
-            v_pointer_1.visibility = View.VISIBLE
-            v_pointer_2.visibility = View.VISIBLE
-            v_pointer_3.visibility = View.VISIBLE
-            v_pointer_4.visibility = View.VISIBLE
-            v_pointer_5.visibility = View.VISIBLE
-            v_pointer_6.visibility = View.VISIBLE
-            tv_otp_filled_1.text = ""
-            tv_otp_filled_2.text = ""
-            tv_otp_filled_3.text = ""
-            tv_otp_filled_4.text = ""
-            tv_otp_filled_5.text = ""
-            tv_otp_filled_6.text = ""
-            et_otp_code.setText("")
+            binding.layoutLoginOtp.vPointer1.visibility = View.VISIBLE
+            binding.layoutLoginOtp.vPointer2.visibility = View.VISIBLE
+            binding.layoutLoginOtp.vPointer3.visibility = View.VISIBLE
+            binding.layoutLoginOtp.vPointer4.visibility = View.VISIBLE
+            binding.layoutLoginOtp.vPointer5.visibility = View.VISIBLE
+            binding.layoutLoginOtp.vPointer6.visibility = View.VISIBLE
+            binding.layoutLoginOtp.tvOtpFilled1.text = ""
+            binding.layoutLoginOtp.tvOtpFilled2.text = ""
+            binding.layoutLoginOtp.tvOtpFilled3.text = ""
+            binding.layoutLoginOtp.tvOtpFilled4.text = ""
+            binding.layoutLoginOtp.tvOtpFilled5.text = ""
+            binding.layoutLoginOtp.tvOtpFilled6.text = ""
+            binding.layoutLoginOtp.etOtpCode.setText("")
         }
     }
 
     private fun showVerifyOtpFailed() {
         runOnUiThread {
-            et_otp_code.setText("")
-            tv_did_not_receive_otp.text = resources.getText(R.string.tap_error_invalid_otp)
-            tv_did_not_receive_otp.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            binding.layoutLoginOtp.etOtpCode.setText("")
+            binding.layoutLoginOtp.tvDidNotReceiveOtp.text = resources.getText(io.taptalk.TapTalk.R.string.tap_error_invalid_otp)
+            binding.layoutLoginOtp.tvDidNotReceiveOtp.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            binding.layoutLoginOtp.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            binding.layoutLoginOtp.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            binding.layoutLoginOtp.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            binding.layoutLoginOtp.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            binding.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            binding.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
 
-            et_otp_code?.requestFocus()
-            TAPUtils.showKeyboard(this, et_otp_code)
+            binding.layoutLoginOtp.etOtpCode.requestFocus()
+            TAPUtils.showKeyboard(this, binding.layoutLoginOtp.etOtpCode)
         }
     }
 
@@ -1053,88 +1050,88 @@ class TAPLoginActivity : TAPBaseActivity() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             when (s?.length) {
                 1 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    binding.layoutLoginOtp.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_1.text = String.format("%s", s[0])
-                    tv_otp_filled_2.text = ""
-                    tv_otp_filled_3.text = ""
-                    tv_otp_filled_4.text = ""
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled1.text = String.format("%s", s[0])
+                    binding.layoutLoginOtp.tvOtpFilled2.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled3.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled4.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled5.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled6.text = ""
                 }
                 2 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    binding.layoutLoginOtp.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_2.text = String.format("%s", s[1])
-                    tv_otp_filled_3.text = ""
-                    tv_otp_filled_4.text = ""
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled2.text = String.format("%s", s[1])
+                    binding.layoutLoginOtp.tvOtpFilled3.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled4.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled5.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled6.text = ""
                 }
                 3 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    binding.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_3.text = String.format("%s", s[2])
-                    tv_otp_filled_4.text = ""
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled3.text = String.format("%s", s[2])
+                    binding.layoutLoginOtp.tvOtpFilled4.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled5.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled6.text = ""
                 }
                 4 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    binding.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_4.text = String.format("%s", s[3])
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled4.text = String.format("%s", s[3])
+                    binding.layoutLoginOtp.tvOtpFilled5.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled6.text = ""
                 }
                 5 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    binding.layoutLoginOtp.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
 
-                    tv_otp_filled_5.text = String.format("%s", s[4])
-                    tv_otp_filled_6.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled5.text = String.format("%s", s[4])
+                    binding.layoutLoginOtp.tvOtpFilled6.text = ""
                 }
                 6 -> {
-                    tv_otp_filled_6.text = String.format("%s", s[5])
+                    binding.layoutLoginOtp.tvOtpFilled6.text = String.format("%s", s[5])
                     verifyOtp()
                 }
                 else -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    binding.layoutLoginOtp.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    binding.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_1.text = ""
-                    tv_otp_filled_2.text = ""
-                    tv_otp_filled_3.text = ""
-                    tv_otp_filled_4.text = ""
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled1.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled2.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled3.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled4.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled5.text = ""
+                    binding.layoutLoginOtp.tvOtpFilled6.text = ""
                 }
             }
         }
@@ -1149,28 +1146,28 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showOtpTimer() {
         runOnUiThread {
-            tv_otp_timer?.visibility = View.VISIBLE
-            ll_request_otp_again?.visibility = View.GONE
-            ll_loading_otp?.visibility = View.GONE
-            ll_otp_sent?.visibility = View.GONE
+            binding.layoutLoginOtp.tvOtpTimer.visibility = View.VISIBLE
+            binding.layoutLoginOtp.llRequestOtpAgain.visibility = View.GONE
+            binding.layoutLoginOtp.llLoadingOtp.visibility = View.GONE
+            binding.layoutLoginOtp.llOtpSent.visibility = View.GONE
         }
     }
 
     private fun showRequestOtpAgain() {
         runOnUiThread {
-            ll_request_otp_again?.visibility = View.VISIBLE
-            tv_otp_timer?.visibility = View.GONE
-            ll_loading_otp?.visibility = View.GONE
-            ll_otp_sent?.visibility = View.GONE
+            binding.layoutLoginOtp.llRequestOtpAgain.visibility = View.VISIBLE
+            binding.layoutLoginOtp.tvOtpTimer.visibility = View.GONE
+            binding.layoutLoginOtp.llLoadingOtp.visibility = View.GONE
+            binding.layoutLoginOtp.llOtpSent.visibility = View.GONE
         }
     }
 
     private fun showResendOtpLoading() {
         runOnUiThread {
-            ll_request_otp_again?.visibility = View.GONE
-            tv_otp_timer?.visibility = View.GONE
-            ll_loading_otp?.visibility = View.VISIBLE
-            ll_otp_sent?.visibility = View.GONE
+            binding.layoutLoginOtp.llRequestOtpAgain.visibility = View.GONE
+            binding.layoutLoginOtp.tvOtpTimer.visibility = View.GONE
+            binding.layoutLoginOtp.llLoadingOtp.visibility = View.VISIBLE
+            binding.layoutLoginOtp.llOtpSent.visibility = View.GONE
         }
     }
 
@@ -1183,8 +1180,8 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (vm == null || vm!!.nextOtpRequestTimestamp < System.currentTimeMillis()) {
             return
         }
-        tv_did_not_receive_otp?.text = resources.getText(R.string.tap_didnt_receive_the_6_digit_otp)
-        tv_did_not_receive_otp?.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextDark))
+        binding.layoutLoginOtp.tvDidNotReceiveOtp.text = resources.getText(io.taptalk.TapTalk.R.string.tap_didnt_receive_the_6_digit_otp)
+        binding.layoutLoginOtp.tvDidNotReceiveOtp.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextDark))
 
         cancelTimer()
         vm?.otpTimer = object : CountDownTimer(vm!!.nextOtpRequestTimestamp - System.currentTimeMillis(), 1000) {
@@ -1201,10 +1198,10 @@ class TAPLoginActivity : TAPBaseActivity() {
                     0L -> {
                         try {
                             if (10 > secondLeft) {
-                                tv_otp_timer.text = "Wait 0:0$secondLeft"
+                                binding.layoutLoginOtp.tvOtpTimer.text = "Wait 0:0$secondLeft"
                             }
                             else {
-                                tv_otp_timer.text = "Wait 0:$secondLeft"
+                                binding.layoutLoginOtp.tvOtpTimer.text = "Wait 0:$secondLeft"
                             }
                         }
                         catch (e: Exception) {
@@ -1215,10 +1212,10 @@ class TAPLoginActivity : TAPBaseActivity() {
                     else -> {
                         try {
                             if (10 > secondLeft) {
-                                tv_otp_timer.text = "Wait $minuteLeft:0$secondLeft"
+                                binding.layoutLoginOtp.tvOtpTimer.text = "Wait $minuteLeft:0$secondLeft"
                             }
                             else {
-                                tv_otp_timer.text = "Wait $minuteLeft:$secondLeft"
+                                binding.layoutLoginOtp.tvOtpTimer.text = "Wait $minuteLeft:$secondLeft"
                             }
                         }
                         catch (e: Exception) {
@@ -1250,13 +1247,13 @@ class TAPLoginActivity : TAPBaseActivity() {
             "",
             object : TAPDefaultDataView<TAPOTPResponse>() {
                 override fun startLoading() {
-                    et_otp_code.isEnabled = false
+                    binding.layoutLoginOtp.etOtpCode.isEnabled = false
                     showPhoneNumberInputLoading(true)
                     showResendOtpLoading()
                 }
 
                 override fun endLoading() {
-                    et_otp_code.isEnabled = true
+                    binding.layoutLoginOtp.etOtpCode.isEnabled = true
                     hidePhoneNumberInputLoading()
                 }
 
@@ -1266,14 +1263,14 @@ class TAPLoginActivity : TAPBaseActivity() {
                     vm?.otpKey = response?.otpKey
                     if (response?.isSuccess == true) {
                         if (response.channel == "whatsapp") {
-                            tv_otp_description.text = getString(R.string.tap_otp_verification_whatsapp_description)
-                            iv_otp_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, R.drawable.tap_ic_whatsapp))
+                            binding.layoutLoginOtp.tvOtpDescription.text = getString(R.string.tap_otp_verification_whatsapp_description)
+                            binding.layoutLoginOtp.ivOtpIcon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, io.taptalk.TapTalk.R.drawable.tap_ic_whatsapp))
                         }
                         else {
-                            tv_otp_description.text = getString(R.string.tap_otp_verification_sms_description)
-                            iv_otp_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, R.drawable.tap_ic_sms_circle))
+                            binding.layoutLoginOtp.tvOtpDescription.text = getString(R.string.tap_otp_verification_sms_description)
+                            binding.layoutLoginOtp.ivOtpIcon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, R.drawable.tap_ic_sms_circle))
                         }
-                        tv_otp_phone_number?.text = TAPUtils.beautifyPhoneNumber(String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber), true)
+                        binding.layoutLoginOtp.tvOtpPhoneNumber.text = TAPUtils.beautifyPhoneNumber(String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber), true)
                         vm?.nextOtpRequestTimestamp = (response.nextRequestSeconds * 1000).toLong() + System.currentTimeMillis()
                         vm?.lastRequestOtpPhoneNumber = vm?.phoneNumber ?: ""
                         showOtpView()
@@ -1282,14 +1279,14 @@ class TAPLoginActivity : TAPBaseActivity() {
 
                         if (isResend) {
                             clearOtpEditText()
-                            ll_request_otp_again.visibility = View.GONE
-                            ll_loading_otp.visibility = View.GONE
-                            tv_otp_timer.visibility = View.GONE
-                            ll_otp_sent.visibility = View.VISIBLE
-                            tap_custom_snackbar?.show(
+                            binding.layoutLoginOtp.llRequestOtpAgain.visibility = View.GONE
+                            binding.layoutLoginOtp.llLoadingOtp.visibility = View.GONE
+                            binding.layoutLoginOtp.tvOtpTimer.visibility = View.GONE
+                            binding.layoutLoginOtp.llOtpSent.visibility = View.VISIBLE
+                            binding.tapCustomSnackbar.show(
                                 TapCustomSnackbarView.Companion.Type.DEFAULT,
-                                R.drawable.tap_ic_rounded_check,
-                                R.string.tap_otp_successfully_sent
+                                io.taptalk.TapTalk.R.drawable.tap_ic_rounded_check,
+                                io.taptalk.TapTalk.R.string.tap_otp_successfully_sent
                             )
                         }
                     }
@@ -1318,17 +1315,17 @@ class TAPLoginActivity : TAPBaseActivity() {
         TAPDataManager.getInstance(instanceKey).verifyOTPLogin(
             vm!!.otpID,
             vm!!.otpKey,
-            et_otp_code.text.toString(),
+            binding.layoutLoginOtp.etOtpCode.text.toString(),
             object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
                 override fun startLoading() {
                     vm?.loadingDialog = TapLoadingDialog.Builder(this@TAPLoginActivity).show()
-                    et_otp_code.isEnabled = false
+                    binding.layoutLoginOtp.etOtpCode.isEnabled = false
                 }
 
                 override fun endLoading() {
                     vm?.loadingDialog?.dismiss()
                     vm?.loadingDialog = null
-                    et_otp_code.isEnabled = true
+                    binding.layoutLoginOtp.etOtpCode.isEnabled = true
                 }
 
                 override fun onSuccess(response: TAPLoginOTPVerifyResponse?) {
@@ -1336,7 +1333,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                 }
 
                 override fun onError(error: TAPErrorModel?) {
-                    onError(error?.message ?: getString(R.string.tap_error_message_general))
+                    onError(error?.message ?: getString(io.taptalk.TapTalk.R.string.tap_error_message_general))
                 }
 
                 override fun onError(errorMessage: String) {
@@ -1393,7 +1390,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         else {
             // Register
             showVerificationSuccess()
-            ll_button_continue_to_home?.setOnClickListener { continueToRegister() }
+            binding.layoutLoginVerificationStatus.llButtonContinueToHome.setOnClickListener { continueToRegister() }
         }
     }
 
@@ -1409,7 +1406,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             object : TapCommonListener() {
                 override fun onSuccess(successMessage: String?) {
                     showVerificationSuccess()
-                    ll_button_continue_to_home?.setOnClickListener { continueToHome() }
+                    binding.layoutLoginVerificationStatus.llButtonContinueToHome.setOnClickListener { continueToHome() }
                 }
 
                 override fun onError(errorCode: String?, errorMessage: String?) {
