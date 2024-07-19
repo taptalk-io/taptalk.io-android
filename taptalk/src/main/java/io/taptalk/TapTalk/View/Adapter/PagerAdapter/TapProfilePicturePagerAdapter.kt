@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -14,7 +15,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.Model.TapPhotosItemModel
 import io.taptalk.TapTalk.R
-import kotlinx.android.synthetic.main.tap_cell_profile_picture.view.*
 
 class TapProfilePicturePagerAdapter(private val context: Context, val images: ArrayList<TapPhotosItemModel>, private val listener: ProfilePictureListener?) : PagerAdapter() {
     override fun getCount(): Int {
@@ -27,29 +27,23 @@ class TapProfilePicturePagerAdapter(private val context: Context, val images: Ar
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val layout = LayoutInflater.from(context).inflate(R.layout.tap_cell_profile_picture, container, false)
-        Glide.with(context).load(images[position].fullsizeImageURL).fitCenter().listener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(
-                e: GlideException?,
-                model: Any?,
-                target: Target<Drawable>?,
-                isFirstResource: Boolean
-            ): Boolean {
-                listener?.onFailed()
-                return false
-            }
+        val ivImage = layout.findViewById<ImageView>(R.id.iv_image)
+        ivImage?.let {
+            Glide.with(context).load(images[position].fullsizeImageURL).fitCenter().listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                    listener?.onFailed()
+                    return false
+                }
 
-            override fun onResourceReady(
-                resource: Drawable?,
-                model: Any?,
-                target: Target<Drawable>?,
-                dataSource: DataSource?,
-                isFirstResource: Boolean
-            ): Boolean {
-                layout.iv_image.setOnLongClickListener{ listener?.onLongClick(resource as BitmapDrawable); true}
-                return false
-            }
-
-        }).into(layout.iv_image)
+                override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    ivImage.setOnLongClickListener {
+                        listener?.onLongClick(resource as BitmapDrawable);
+                        true
+                    }
+                    return false
+                }
+            }).into(ivImage)
+        }
         container.addView(layout)
         return layout
     }

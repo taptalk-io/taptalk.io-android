@@ -28,9 +28,10 @@ import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel.TAPChatViewModelFactory
-import kotlinx.android.synthetic.main.tap_activity_starred_messages.*
+import io.taptalk.TapTalk.databinding.TapActivityStarredMessagesBinding
 
 class TapStarredMessagesActivity : TAPBaseActivity() {
+    private lateinit var vb : TapActivityStarredMessagesBinding
     private lateinit var vm : TAPChatViewModel
     private lateinit var glide : RequestManager
     private lateinit var messageAdapter: TAPMessageAdapter
@@ -57,7 +58,8 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_starred_messages)
+        vb = TapActivityStarredMessagesBinding.inflate(layoutInflater)
+        setContentView(vb.root)
         glide = Glide.with(this)
         initRoom()
     }
@@ -141,23 +143,18 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
                 }
             }
         }
-        rv_starred_messages.instanceKey = instanceKey
-        rv_starred_messages.adapter = messageAdapter
-        rv_starred_messages.layoutManager = messageLayoutManager
-        rv_starred_messages.setHasFixedSize(false)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(BubbleType.TYPE_BUBBLE_VIDEO_LEFT, 0)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(BubbleType.TYPE_BUBBLE_VIDEO_RIGHT, 0)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(BubbleType.TYPE_BUBBLE_PRODUCT_LIST, 0)
-        messageAnimator = rv_starred_messages.itemAnimator as SimpleItemAnimator
+        vb.rvStarredMessages.instanceKey = instanceKey
+        vb.rvStarredMessages.adapter = messageAdapter
+        vb.rvStarredMessages.layoutManager = messageLayoutManager
+        vb.rvStarredMessages.setHasFixedSize(false)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(BubbleType.TYPE_BUBBLE_VIDEO_LEFT, 0)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(BubbleType.TYPE_BUBBLE_VIDEO_RIGHT, 0)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(BubbleType.TYPE_BUBBLE_PRODUCT_LIST, 0)
+        messageAnimator = vb.rvStarredMessages.itemAnimator as SimpleItemAnimator
         messageAnimator.supportsChangeAnimations = false
-        rv_starred_messages.itemAnimator = null
+        vb.rvStarredMessages.itemAnimator = null
 
         // Listener for scroll pagination
         endlessScrollListener = object : TAPEndlessScrollListener(messageLayoutManager) {
@@ -165,7 +162,7 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
                 loadMessagesFromApi()
             }
         }
-        iv_button_back.setOnClickListener { onBackPressed() }
+        vb.ivButtonBack.setOnClickListener { onBackPressed() }
     }
 
     private fun loadMessagesFromApi() {
@@ -202,7 +199,7 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
 
     private fun showLoadingOlderMessagesIndicator() {
         hideLoadingOlderMessagesIndicator()
-        rv_starred_messages.post {
+        vb.rvStarredMessages.post {
             runOnUiThread {
                 vm.addMessagePointer(vm.getLoadingIndicator(true))
                 messageAdapter.addItem(vm.getLoadingIndicator(false)) // Add loading indicator to last index
@@ -212,7 +209,7 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
     }
 
     private fun hideLoadingOlderMessagesIndicator() {
-        rv_starred_messages.post {
+        vb.rvStarredMessages.post {
             runOnUiThread {
                 if (!messageAdapter.items.contains(vm.getLoadingIndicator(false))) {
                     return@runOnUiThread
@@ -236,17 +233,17 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
     private fun updateMessageDecoration() {
         // Update decoration for the top item in recycler view
         runOnUiThread {
-            if (rv_starred_messages.itemDecorationCount > 0) {
-                rv_starred_messages.removeItemDecorationAt(0)
+            if (vb.rvStarredMessages.itemDecorationCount > 0) {
+                vb.rvStarredMessages.removeItemDecorationAt(0)
             }
-            rv_starred_messages.addItemDecoration(
+            vb.rvStarredMessages.addItemDecoration(
                 TAPVerticalDecoration(
                     0,
                     TAPUtils.dpToPx(16),
                     messageAdapter.itemCount - 1
                 )
             )
-            rv_starred_messages.addItemDecoration(
+            vb.rvStarredMessages.addItemDecoration(
                 TAPVerticalDecoration(
                     TAPUtils.dpToPx(16),
                     0,
@@ -270,13 +267,13 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
     }
 
     private fun showEmptyState() {
-        rv_starred_messages.visibility = View.GONE
-        g_empty_starred_messages.visibility = View.VISIBLE
+        vb.rvStarredMessages.visibility = View.GONE
+        vb.gEmptyStarredMessages.visibility = View.VISIBLE
     }
 
     private fun hideEmptyState() {
-        rv_starred_messages.visibility = View.VISIBLE
-        g_empty_starred_messages.visibility = View.GONE
+        vb.rvStarredMessages.visibility = View.VISIBLE
+        vb.gEmptyStarredMessages.visibility = View.GONE
     }
 
     private val chatListener = object : TAPChatListener() {
@@ -288,5 +285,4 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
             finish()
         }
     }
-
 }

@@ -128,6 +128,7 @@
 # Retrofit
 -keepattributes Signature, InnerClasses, EnclosingMethod
 -keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+-keepattributes AnnotationDefault
 -keepclassmembers,allowshrinking,allowobfuscation interface * {
     @retrofit2.http.* <methods>;
 }
@@ -138,6 +139,16 @@
 -dontwarn retrofit2.KotlinExtensions$*
 -if interface * { @retrofit2.http.* <methods>; }
 -keep,allowobfuscation interface <1>
+-if interface * { @retrofit2.http.* <methods>; }
+-keep,allowobfuscation interface * extends <1>
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
+-if interface * { @retrofit2.http.* public *** *(...); }
+-keep,allowoptimization,allowshrinking,allowobfuscation class <3>
+-keep,allowobfuscation,allowshrinking class retrofit2.Response
+-keep,allowobfuscation,allowshrinking class io.reactivex.rxjava3.core.Flowable
+-keep,allowobfuscation,allowshrinking class io.reactivex.rxjava3.core.Maybe
+-keep,allowobfuscation,allowshrinking class io.reactivex.rxjava3.core.Observable
+-keep,allowobfuscation,allowshrinking class io.reactivex.rxjava3.core.Single
 
 # okhttp3
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
@@ -170,3 +181,16 @@
 
 -keep class com.orhanobut.hawk.** { *; }
 -keepnames class com.orhanobut.hawk.** { *; }
+
+# Please add these rules to your existing keep rules in order to suppress warnings.
+# This is generated automatically by the Android Gradle plugin.
+-dontwarn java.lang.invoke.StringConcatFactory
+-dontwarn org.bouncycastle.jsse.BCSSLParameters
+-dontwarn org.bouncycastle.jsse.BCSSLSocket
+-dontwarn org.bouncycastle.jsse.provider.BouncyCastleJsseProvider
+-dontwarn org.conscrypt.Conscrypt$Version
+-dontwarn org.conscrypt.Conscrypt
+-dontwarn org.conscrypt.ConscryptHostnameVerifier
+-dontwarn org.openjsse.javax.net.ssl.SSLParameters
+-dontwarn org.openjsse.javax.net.ssl.SSLSocket
+-dontwarn org.openjsse.net.ssl.OpenJSSE

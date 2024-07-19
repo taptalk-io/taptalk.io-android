@@ -520,6 +520,7 @@
 
     </ScrollView>
 
-    <include layout="@layout/tap_layout_popup_loading_screen" />
+    <include layout="@layout/tap_layout_popup_loading_screen"
+        android:id="@+id/layout_popup_loading_screen" />
 
 </FrameLayout>

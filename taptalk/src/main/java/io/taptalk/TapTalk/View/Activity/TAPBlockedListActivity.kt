@@ -24,10 +24,13 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapBlockedListAdapter
 import io.taptalk.TapTalk.ViewModel.TapBlockedListViewModel
-import kotlinx.android.synthetic.main.tap_activity_blocked_list.*
+import io.taptalk.TapTalk.databinding.TapActivityBlockedListBinding
 
 class TAPBlockedListActivity : TAPBaseActivity() {
+
+    private lateinit var vb: TapActivityBlockedListBinding
     private var adapter: TapBlockedListAdapter? = null
+
     val vm: TapBlockedListViewModel by lazy {
         ViewModelProvider(this)[TapBlockedListViewModel::class.java]
     }
@@ -48,32 +51,34 @@ class TAPBlockedListActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_blocked_list)
+        vb = TapActivityBlockedListBinding.inflate(layoutInflater)
+        setContentView(vb.root)
         window.setBackgroundDrawable(null)
         adapter = TapBlockedListAdapter(
             vm.blockedList,
             blockedContactsListener
         )
-        rv_blocked_list.adapter = adapter
-        rv_blocked_list.layoutManager = LinearLayoutManager(
+        vb.rvBlockedList.adapter = adapter
+        vb.rvBlockedList.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.VERTICAL,
             false
         )
         OverScrollDecoratorHelper.setUpOverScroll(
-            rv_blocked_list,
+            vb.rvBlockedList,
             OverScrollDecoratorHelper.ORIENTATION_VERTICAL
         )
-        tv_edit_save_btn.setOnClickListener {
+        vb.tvEditSaveBtn.setOnClickListener {
             if (adapter?.isEditState() == true) {
                 adapter?.setViewState()
-                tv_edit_save_btn.text = getString(R.string.tap_edit)
-            } else {
+                vb.tvEditSaveBtn.text = getString(R.string.tap_edit)
+            }
+            else {
                 adapter?.setEditState()
-                tv_edit_save_btn.text = getString(R.string.tap_done)
+                vb.tvEditSaveBtn.text = getString(R.string.tap_done)
             }
         }
-        iv_button_back.setOnClickListener { onBackPressed() }
+        vb.ivButtonBack.setOnClickListener { onBackPressed() }
     }
 
     override fun onResume() {
@@ -84,7 +89,7 @@ class TAPBlockedListActivity : TAPBaseActivity() {
     override fun onBackPressed() {
         if (adapter?.isEditState() == true) {
             adapter?.setViewState()
-            tv_edit_save_btn.text = getString(R.string.tap_edit)
+            vb.tvEditSaveBtn.text = getString(R.string.tap_edit)
         } else {
             super.onBackPressed()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
@@ -92,11 +97,11 @@ class TAPBlockedListActivity : TAPBaseActivity() {
     }
 
     private fun showLoading() {
-        ll_loading.visibility = View.VISIBLE
+        vb.llLoading.llLoadingContainer.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
-        ll_loading.visibility = View.GONE
+        vb.llLoading.llLoadingContainer.visibility = View.GONE
     }
 
     private fun getBlockedUsers() {
@@ -169,17 +174,18 @@ class TAPBlockedListActivity : TAPBaseActivity() {
             super.onSuccess(response)
             vm.blockedList.clear()
             if (response?.users?.isNotEmpty() == true) {
-                tv_edit_save_btn.visibility = View.VISIBLE
-                rv_blocked_list.visibility = View.VISIBLE
-                g_empty_state.visibility = View.GONE
+                vb.tvEditSaveBtn.visibility = View.VISIBLE
+                vb.rvBlockedList.visibility = View.VISIBLE
+                vb.gEmptyState.visibility = View.GONE
                 vm.blockedList.addAll(response.users)
                 runOnUiThread {
                     adapter?.items = vm.blockedList
                 }
-            } else {
-                tv_edit_save_btn.visibility = View.GONE
-                rv_blocked_list.visibility = View.GONE
-                g_empty_state.visibility = View.VISIBLE
+            }
+            else {
+                vb.tvEditSaveBtn.visibility = View.GONE
+                vb.rvBlockedList.visibility = View.GONE
+                vb.gEmptyState.visibility = View.VISIBLE
             }
         }
 

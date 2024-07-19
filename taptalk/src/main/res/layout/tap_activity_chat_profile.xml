@@ -144,8 +144,10 @@
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintTop_toBottomOf="@id/cl_basic_info"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
 
-    <include layout="@layout/tap_layout_popup_loading_screen" />
+    <include layout="@layout/tap_layout_popup_loading_screen"
+        android:id="@+id/layout_popup_loading_screen" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

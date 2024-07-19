@@ -31,7 +31,7 @@ import io.taptalk.TapTalkSample.databinding.TapActivityDeleteAccountBinding
 
 class TapDeleteAccountActivity : TAPBaseActivity() {
 
-    private lateinit var binding: TapActivityDeleteAccountBinding
+    private lateinit var vb: TapActivityDeleteAccountBinding
 
     val vm : TapDeleteAccountViewModel by lazy {
         ViewModelProvider(this)[TapDeleteAccountViewModel::class.java]
@@ -54,32 +54,32 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = TapActivityDeleteAccountBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        vb = TapActivityDeleteAccountBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
-        val spannable = SpannableString(binding.tvSubtitle.text)
+        val spannable = SpannableString(vb.tvSubtitle.text)
         spannable.setSpan(
             TypefaceSpan("sans-serif"),
             35,
-            binding.tvSubtitle.text.length,
+            vb.tvSubtitle.text.length,
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
         spannable.setSpan(
             ForegroundColorSpan(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapActionSheetDestructiveLabelColor)),
             35,
-            binding.tvSubtitle.text.length,
+            vb.tvSubtitle.text.length,
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
         spannable.setSpan(
             RelativeSizeSpan(0.8f),
             35,
-            binding.tvSubtitle.text.length,
+            vb.tvSubtitle.text.length,
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
-        binding.tvSubtitle.text = spannable
+        vb.tvSubtitle.text = spannable
 
-        binding.etNote.setOnTouchListener { v: View, event: MotionEvent ->
-            if (binding.etNote.hasFocus()) {
+        vb.etNote.setOnTouchListener { v: View, event: MotionEvent ->
+            if (vb.etNote.hasFocus()) {
                 v.parent.requestDisallowInterceptTouchEvent(true)
                 if (event.action and MotionEvent.ACTION_MASK == MotionEvent.ACTION_SCROLL) {
                     v.parent.requestDisallowInterceptTouchEvent(false)
@@ -89,15 +89,15 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
             false
         }
 
-        binding.cbAgree.setOnCheckedChangeListener { _, isChecked ->
-            binding.btnDelete.isEnabled = isChecked
+        vb.cbAgree.setOnCheckedChangeListener { _, isChecked ->
+            vb.btnDelete.isEnabled = isChecked
         }
 
-        binding.btnDelete.setOnClickListener {
+        vb.btnDelete.setOnClickListener {
             TAPDataManager.getInstance(instanceKey).checkDeleteAccountState(checkDeleteAccountStateView)
         }
 
-        binding.ivButtonBack.setOnClickListener {
+        vb.ivButtonBack.setOnClickListener {
             onBackPressed()
         }
     }
@@ -121,24 +121,24 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
     }
 
     private fun hideOTPVerification() {
-        binding.clActionBar.visibility = View.VISIBLE
-        binding.svDeleteAccount.visibility = View.VISIBLE
-        binding.flContainer.visibility = View.GONE
+        vb.clActionBar.visibility = View.VISIBLE
+        vb.svDeleteAccount.visibility = View.VISIBLE
+        vb.flContainer.visibility = View.GONE
         supportFragmentManager.popBackStack(VERIFICATION_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     private fun showLoading() {
         runOnUiThread {
-            binding.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_loading_progress_circle_white))
-            if (null == binding.layoutPopupLoadingScreen.ivLoadingImage.animation)
-                TAPUtils.rotateAnimateInfinitely(this, binding.layoutPopupLoadingScreen.ivLoadingImage)
-            binding.layoutPopupLoadingScreen.tvLoadingText.text = getString(io.taptalk.TapTalk.R.string.tap_loading)
-            binding.layoutPopupLoadingScreen.flLoading.visibility = View.VISIBLE
+            vb.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == vb.layoutPopupLoadingScreen.ivLoadingImage.animation)
+                TAPUtils.rotateAnimateInfinitely(this, vb.layoutPopupLoadingScreen.ivLoadingImage)
+            vb.layoutPopupLoadingScreen.tvLoadingText.text = getString(io.taptalk.TapTalk.R.string.tap_loading)
+            vb.layoutPopupLoadingScreen.flLoading.visibility = View.VISIBLE
         }
     }
 
     private fun hideLoading() {
-        binding.layoutPopupLoadingScreen.flLoading.visibility = View.GONE
+        vb.layoutPopupLoadingScreen.flLoading.visibility = View.GONE
     }
 
     private fun showErrorDialog(message: String?) {
@@ -216,9 +216,9 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
         override fun onSuccess(response: TAPOTPResponse?) {
             super.onSuccess(response)
             // show verify otp
-            binding.clActionBar.visibility = View.GONE
-            binding.svDeleteAccount.visibility = View.GONE
-            binding.flContainer.visibility = View.VISIBLE
+            vb.clActionBar.visibility = View.GONE
+            vb.svDeleteAccount.visibility = View.GONE
+            vb.flContainer.visibility = View.VISIBLE
             supportFragmentManager.beginTransaction()
                 .setCustomAnimations(
                     io.taptalk.TapTalk.R.animator.tap_slide_left_fragment,
@@ -228,7 +228,7 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
                 )
                 .replace(
                     R.id.fl_container,
-                    TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, response?.otpID ?: 0L, response?.otpKey, response?.nextRequestSeconds ?: 30, response?.channel, binding.etNote.text.toString())
+                    TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, response?.otpID ?: 0L, response?.otpKey, response?.nextRequestSeconds ?: 30, response?.channel, vb.etNote.text.toString())
                 )
                 .addToBackStack(VERIFICATION_TAG)
                 .commit()

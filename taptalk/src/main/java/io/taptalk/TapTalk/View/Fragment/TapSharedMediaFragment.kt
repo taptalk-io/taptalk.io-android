@@ -53,12 +53,15 @@ import io.taptalk.TapTalk.View.Adapter.TapSharedMediaAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.SHARED_MEDIA_TYPE
 import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
-import kotlinx.android.synthetic.main.tap_fragment_shared_media.*
+import io.taptalk.TapTalk.databinding.TapFragmentSharedMediaBinding
 import java.util.*
 
 class TapSharedMediaFragment(private val instanceKey: String, private val type: Int): Fragment() {
 
-    private lateinit var vm : TapSharedMediaViewModel
+    private lateinit var vb : TapFragmentSharedMediaBinding
+    private val vm: TapSharedMediaViewModel by lazy {
+        ViewModelProvider(this)[TapSharedMediaViewModel::class.java]
+    }
     private var sharedMediaAdapter : TapSharedMediaAdapter? = null
     private var sharedMediaGlm: GridLayoutManager? = null
     private var sharedMediaPagingScrollListener: ViewTreeObserver.OnScrollChangedListener? = null
@@ -73,14 +76,9 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             return fragment
         }
     }
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.tap_fragment_shared_media, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        vb = TapFragmentSharedMediaBinding.inflate(inflater, container, false)
         glide = Glide.with(requireActivity())
-        vm = ViewModelProvider(this, TapSharedMediaViewModel.TapSharedMediaViewModelFactory(requireActivity().application))[TapSharedMediaViewModel::class.java]
         vm.room = arguments?.getParcelable(ROOM) as TAPRoomModel?
         TAPBroadcastManager.register(
             context,
@@ -111,16 +109,16 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                 }
             }
         }
-        return view
+        return vb.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler_view.layoutManager = sharedMediaGlm
-        recycler_view.adapter = sharedMediaAdapter
+        vb.recyclerView.layoutManager = sharedMediaGlm
+        vb.recyclerView.adapter = sharedMediaAdapter
         if (!vm.isFinishedLoading) {
             if (vm.sharedMedias.isEmpty()) {
-                recycler_view.visibility = View.GONE
+                vb.recyclerView.visibility = View.GONE
             }
             Thread {
                 when (type) {
@@ -270,8 +268,8 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         if (0 == previousSize) {
                             // First load
                             requireActivity().runOnUiThread {
-                                recycler_view.visibility = View.VISIBLE
-                                g_empty_shared_media.visibility = View.GONE
+                                vb.recyclerView.visibility = View.VISIBLE
+                                vb.gEmptySharedMedia.visibility = View.GONE
                                 if (TAPDefaultConstant.MAX_ITEMS_PER_PAGE <= entities.size) {
                                     sharedMediaPagingScrollListener =
                                         ViewTreeObserver.OnScrollChangedListener {
@@ -305,7 +303,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                                                 }
                                             }
                                         }
-                                    recycler_view!!.viewTreeObserver.addOnScrollChangedListener(
+                                    vb.recyclerView.viewTreeObserver.addOnScrollChangedListener(
                                         sharedMediaPagingScrollListener
                                     )
                                 }
@@ -315,8 +313,8 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                             // No more medias in database, load from api
                             vm.isFinishedLoading = true
                             requireActivity().runOnUiThread {
-                                recycler_view.visibility = View.VISIBLE
-                                recycler_view!!.viewTreeObserver.removeOnScrollChangedListener(
+                                vb.recyclerView.visibility = View.VISIBLE
+                                vb.recyclerView.viewTreeObserver.removeOnScrollChangedListener(
                                     sharedMediaPagingScrollListener
                                 )
                                 sharedMediaPagingScrollListener =
@@ -332,7 +330,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                                             }
                                         }
                                     }
-                                recycler_view!!.viewTreeObserver.addOnScrollChangedListener(
+                                vb.recyclerView.viewTreeObserver.addOnScrollChangedListener(
                                     sharedMediaPagingScrollListener
                                 )
                             }
@@ -362,7 +360,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         requireActivity().runOnUiThread {
                             hideSharedMediaLoading()
                             hideLoading()
-                            recycler_view.post {
+                            vb.recyclerView.post {
                                 sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMediaAdapterItems.size, entities.size)
                             }
                         }
@@ -400,19 +398,19 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         }
         if (vm.sharedMedias.isEmpty()) {
             requireActivity().runOnUiThread {
-                recycler_view.visibility = View.GONE
-                g_empty_shared_media.visibility = View.VISIBLE
+                vb.recyclerView.visibility = View.GONE
+                vb.gEmptySharedMedia.visibility = View.VISIBLE
                 hideLoading()
             }
         } else {
             vm.lastTimestamp = vm.sharedMedias[0].created
             sharedMediaAdapter?.setDateSeparators(vm.dateSeparators)
             requireActivity().runOnUiThread {
-                recycler_view.visibility = View.VISIBLE
-                recycler_view!!.viewTreeObserver.removeOnScrollChangedListener(sharedMediaPagingScrollListener)
+                vb.recyclerView.visibility = View.VISIBLE
+                vb.recyclerView.viewTreeObserver.removeOnScrollChangedListener(sharedMediaPagingScrollListener)
                 hideSharedMediaLoading()
                 hideLoading()
-                recycler_view.post {
+                vb.recyclerView.post {
                     sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMedias.size, sharedMedias.size)
                 }
             }
@@ -508,15 +506,11 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     }
 
     private fun showLoading() {
-        if (progress_circular != null) {
-            progress_circular.visibility = View.VISIBLE
-        }
+        vb.progressCircular.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
-        if (progress_circular != null) {
-            progress_circular.visibility = View.GONE
-        }
+        vb.progressCircular.visibility = View.GONE
     }
 
     private fun startFileDownload(message: TAPMessageModel?) {

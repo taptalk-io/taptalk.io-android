@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SAVE
@@ -17,7 +18,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TapLongPressMenuItem
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapLongPressAdapter
-import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
 
 class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
@@ -32,6 +32,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         SCHEDULED_TYPE
     }
 
+    private lateinit var layout: View
     private var instanceKey = ""
     private var longPressType: LongPressType = LongPressType.CHAT_BUBBLE_TYPE
     private var message: TAPMessageModel? = null
@@ -159,9 +160,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.tap_fragment_long_press_action_bottom_sheet, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        layout = inflater.inflate(R.layout.tap_fragment_long_press_action_bottom_sheet, container, false)
+        return layout
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -253,9 +254,10 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             dismiss()
             return
         }
-        rv_long_press.adapter = longPressAdapter
-        rv_long_press.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        rv_long_press.setHasFixedSize(true)
+        val rvLongPress = layout.findViewById<RecyclerView>(R.id.rv_long_press)
+        rvLongPress?.adapter = longPressAdapter
+        rvLongPress?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        rvLongPress?.setHasFixedSize(true)
     }
 
     override fun onDestroyView() {

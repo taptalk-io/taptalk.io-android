@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.View.Activity
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
@@ -32,11 +31,22 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.BuildConfig
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_CAMERA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_GALLERY
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailedErrorMessage
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -45,7 +55,11 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TapCoreGetContactListener
-import io.taptalk.TapTalk.Manager.*
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Manager.TapCoreContactManager
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse
@@ -57,11 +71,14 @@ import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapProfilePicturePagerAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
-import kotlinx.android.synthetic.main.tap_activity_my_account.*
-import kotlinx.android.synthetic.main.tap_layout_basic_information.*
-import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
+import io.taptalk.TapTalk.databinding.TapActivityMyAccountBinding
 
 class TAPMyAccountActivity : TAPBaseActivity() {
+
+    private lateinit var vb: TapActivityMyAccountBinding
+    private lateinit var vm: TAPRegisterViewModel
+    private lateinit var glide: RequestManager
+    private lateinit var profilePicturePagerAdapter: TapProfilePicturePagerAdapter
 
     private val indexProfilePicture = 0
     private val indexFullName = 1
@@ -75,10 +92,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private val stateInvalid = -1
     private val stateEmpty = -2
 
-    private lateinit var vm: TAPRegisterViewModel
     private var state: ViewState = ViewState.VIEW
-    private lateinit var glide: RequestManager
-    private lateinit var profilePicturePagerAdapter: TapProfilePicturePagerAdapter
 
     companion object {
         fun start(
@@ -100,7 +114,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_my_account)
+        vb = TapActivityMyAccountBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
         glide = Glide.with(this)
         initViewModel()
@@ -123,8 +138,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     override fun onBackPressed() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
-        } else if (ViewState.EDIT == state) {
-            if (vm.myUserModel.bio != et_bio.text.toString()) {
+        }
+        else if (ViewState.EDIT == state) {
+            if (vm.myUserModel.bio != vb.etBio.text.toString()) {
                 TapTalkDialog.Builder(this)
                     .setTitle(getString(R.string.tap_you_have_unsaved_changes))
                     .setMessage(getString(R.string.tap_unsaved_changes_confirmation))
@@ -135,10 +151,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setSecondaryButtonListener(true) {}
                     .show()
-            } else {
+            }
+            else {
                 showViewState()
             }
-        } else {
+        }
+        else {
             super.onBackPressed()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
         }
@@ -189,177 +207,179 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun initView() {
         window?.setBackgroundDrawable(null)
 
-        //et_full_name.onFocusChangeListener = fullNameFocusListener
-        //et_email_address.onFocusChangeListener = emailAddressFocusListener
+        //binding.etFullName.onFocusChangeListener = fullNameFocusListener
+        //binding.etEmailAddress.onFocusChangeListener = emailAddressFocusListener
 
-        //et_full_name.addTextChangedListener(fullNameWatcher)
-        //et_email_address.addTextChangedListener(emailWatcher)
-        et_bio.addTextChangedListener(bioWatcher)
+        //binding.etFullName.addTextChangedListener(fullNameWatcher)
+        //binding.etEmailAddress.addTextChangedListener(emailWatcher)
+        vb.etBio.addTextChangedListener(bioWatcher)
 
         if (TapUI.getInstance(instanceKey).isChangeProfilePictureButtonVisible) {
-            tv_edit_profile_picture.visibility = View.VISIBLE
-        } else {
-            tv_edit_profile_picture.visibility = View.GONE
+            vb.tvEditProfilePicture.visibility = View.VISIBLE
+        }
+        else {
+            vb.tvEditProfilePicture.visibility = View.GONE
         }
 
         // TODO: 25/02/22 handle onError and save list on preference later MU 
         if (vm.currentProfilePicture.isEmpty()) {
             showDefaultProfilePicture()
-        } else {
+        }
+        else {
             val profilePictureModel = TapPhotosItemModel()
             profilePictureModel.fullsizeImageURL = vm.currentProfilePicture
             vm.profilePictureList.add(profilePictureModel)
-            vp_profile_picture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack))
-            vp_profile_picture.adapter = profilePicturePagerAdapter
-            tv_profile_picture_label.visibility = View.GONE
+            vb.vpProfilePicture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack))
+            vb.vpProfilePicture.adapter = profilePicturePagerAdapter
+            vb.tvProfilePictureLabel.visibility = View.GONE
         }
 
         if (vm.countryFlagUrl != "") {
             glide.load(vm.countryFlagUrl)
-                    .apply(RequestOptions().placeholder(R.drawable.tap_ic_default_flag))
-                    .into(iv_country_flag)
+                .apply(RequestOptions().placeholder(R.drawable.tap_ic_default_flag))
+                .into(vb.ivCountryFlag)
         }
-        et_full_name.setText(vm.myUserModel.fullname)
-        et_username.setText(vm.myUserModel.username)
-        tv_country_code.text = String.format("+%s", vm.myUserModel.countryCallingCode)
-        et_mobile_number.setText(TAPUtils.beautifyPhoneNumber(vm.myUserModel.phone, false))
-        et_email_address.setText(vm.myUserModel.email)
+        vb.etFullName.setText(vm.myUserModel.fullname)
+        vb.etUsername.setText(vm.myUserModel.username)
+        vb.tvCountryCode.text = String.format("+%s", vm.myUserModel.countryCallingCode)
+        vb.etMobileNumber.setText(TAPUtils.beautifyPhoneNumber(vm.myUserModel.phone, false))
+        vb.etEmailAddress.setText(vm.myUserModel.email)
         showViewState()
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
-            g_bio.visibility = View.VISIBLE
-            setProfileInformation(tv_bio_view, g_bio, vm.myUserModel.bio)
+            vb.clBasicInfo.gBio.visibility = View.VISIBLE
+            setProfileInformation(vb.clBasicInfo.tvBioView, vb.clBasicInfo.gBio, vm.myUserModel.bio)
             if (!vm.myUserModel.bio.isNullOrEmpty()) {
-                et_bio.setText(vm.myUserModel.bio)
+                vb.etBio.setText(vm.myUserModel.bio)
             }
-        } else {
-            g_bio.visibility = View.GONE
+        }
+        else {
+            vb.clBasicInfo.gBio.visibility = View.GONE
         }
         if (vm.myUserModel.phoneWithCode.isNullOrEmpty()) {
-            g_mobile_number.visibility = View.GONE
-        } else {
-            g_mobile_number.visibility = View.VISIBLE
-            tv_mobile_number_view.text = TAPUtils.beautifyPhoneNumber(String.format("%s %s", vm.myUserModel.countryCallingCode, vm.myUserModel.phone), true)
+            vb.clBasicInfo.gMobileNumber.visibility = View.GONE
+        }
+        else {
+            vb.clBasicInfo.gMobileNumber.visibility = View.VISIBLE
+            vb.clBasicInfo.tvMobileNumberView.text = TAPUtils.beautifyPhoneNumber(String.format("%s %s", vm.myUserModel.countryCallingCode, vm.myUserModel.phone), true)
         }
         if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
-            btn_blocked_contacts.visibility = View.VISIBLE
-        } else {
-            btn_blocked_contacts.visibility = View.GONE
+            vb.btnBlockedContacts.clContainer.visibility = View.VISIBLE
         }
-        setProfileInformation(tv_username_view, g_username, vm.myUserModel.username)
-        setProfileInformation(tv_email_view, g_email, vm.myUserModel.email)
+        else {
+            vb.btnBlockedContacts.clContainer.visibility = View.GONE
+        }
+        setProfileInformation(vb.clBasicInfo.tvUsernameView, vb.clBasicInfo.gUsername, vm.myUserModel.username)
+        setProfileInformation(vb.clBasicInfo.tvEmailView, vb.clBasicInfo.gEmail, vm.myUserModel.email)
         setTextVersionApp()
 
-        iv_button_close.setOnClickListener { onBackPressed() }
-        fl_container.setOnClickListener { clearAllFocus() }
-        cl_form_container.setOnClickListener { clearAllFocus() }
-        cl_password.setOnClickListener { openChangePasswordPage() }
-        cl_logout.setOnClickListener { promptUserLogout() }
-        btn_blocked_contacts.setOnClickListener {
+        vb.ivButtonClose.setOnClickListener { onBackPressed() }
+        vb.flContainer.setOnClickListener { clearAllFocus() }
+        vb.clFormContainer.setOnClickListener { clearAllFocus() }
+        vb.clPassword.setOnClickListener { openChangePasswordPage() }
+        vb.clLogout.setOnClickListener { promptUserLogout() }
+        vb.btnBlockedContacts.clContainer.setOnClickListener {
             TAPBlockedListActivity.start(this, instanceKey)
         }
-        btn_delete_my_account.setOnClickListener {
+        vb.btnDeleteMyAccount.setOnClickListener {
             TapUI.getInstance(instanceKey).triggerDeleteButtonInMyAccountPageTapped(this)
         }
 
-        // Obtain text field style attributes
-        val textFieldArray = obtainStyledAttributes(R.style.tapFormTextFieldStyle, R.styleable.TextAppearance)
-        vm.textFieldFontColor = textFieldArray.getColor(R.styleable.TextAppearance_android_textColor, -1)
-        vm.textFieldFontColorHint = textFieldArray.getColor(R.styleable.TextAppearance_android_textColorHint, -1)
-        textFieldArray.recycle()
-
-        val clickableLabelArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance)
-        vm.clickableLabelFontColor = clickableLabelArray.getColor(R.styleable.TextAppearance_android_textColor, -1)
-        clickableLabelArray.recycle()
+        vm.textFieldFontColor = ContextCompat.getColor(this, R.color.tapFormTextFieldColor)
+        vm.textFieldFontColorHint = ContextCompat.getColor(this, R.color.tapFormTextFieldPlaceholderColor)
+        vm.clickableLabelFontColor = ContextCompat.getColor(this, R.color.tapClickableLabelColor)
 
         // TODO temporarily disable editing
-        et_full_name.isEnabled = false
-        et_username.isEnabled = false
-        et_mobile_number.isEnabled = false
-        et_email_address.isEnabled = false
+        vb.etFullName.isEnabled = false
+        vb.etUsername.isEnabled = false
+        vb.etMobileNumber.isEnabled = false
+        vb.etEmailAddress.isEnabled = false
 
-        et_full_name.setTextColor(vm.textFieldFontColorHint)
-        et_username.setTextColor(vm.textFieldFontColorHint)
-        tv_country_code.setTextColor(vm.textFieldFontColorHint)
-        et_mobile_number.setTextColor(vm.textFieldFontColorHint)
-        et_email_address.setTextColor(vm.textFieldFontColorHint)
+        vb.etFullName.setTextColor(vm.textFieldFontColorHint)
+        vb.etUsername.setTextColor(vm.textFieldFontColorHint)
+        vb.tvCountryCode.setTextColor(vm.textFieldFontColorHint)
+        vb.etMobileNumber.setTextColor(vm.textFieldFontColorHint)
+        vb.etEmailAddress.setTextColor(vm.textFieldFontColorHint)
 
-        tv_label_password.visibility = View.GONE
-        cl_password.visibility = View.GONE
+        vb.tvLabelPassword.visibility = View.GONE
+        vb.clPassword.visibility = View.GONE
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            sv_profile.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
-        }
+        vb.svProfile.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
         getPhotoList(null)
     }
 
     private fun showViewState() {
         state = ViewState.VIEW
         TAPUtils.dismissKeyboard(this)
-        tv_title.text = vm.myUserModel.fullname
-        tv_edit_profile_picture.visibility = View.VISIBLE
-        tv_edit_save_btn.setOnClickListener { showEditState() }
-        tv_edit_save_btn.text = getString(R.string.tap_edit)
-        tv_edit_profile_picture.text = getString(R.string.tap_set_new_profile_picture)
-        tv_edit_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        g_edit.visibility = View.GONE
-        cl_basic_info.visibility = View.VISIBLE
-        tv_version_code.visibility = View.VISIBLE
-        cl_logout.visibility = View.GONE
-        btn_delete_my_account.visibility = View.GONE
-        et_bio.isEnabled = false
-        et_bio.setText(vm.myUserModel.bio)
+        vb.tvTitle.text = vm.myUserModel.fullname
+        vb.tvEditProfilePicture.visibility = View.VISIBLE
+        vb.tvEditSaveBtn.setOnClickListener { showEditState() }
+        vb.tvEditSaveBtn.text = getString(R.string.tap_edit)
+        vb.tvEditProfilePicture.text = getString(R.string.tap_set_new_profile_picture)
+        vb.tvEditProfilePicture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+        vb.gEdit.visibility = View.GONE
+        vb.clBasicInfo.clBasicInformationContainer.visibility = View.VISIBLE
+        vb.tvVersionCode.visibility = View.VISIBLE
+        vb.clLogout.visibility = View.GONE
+        vb.btnDeleteMyAccount.visibility = View.GONE
+        vb.etBio.isEnabled = false
+        vb.etBio.setText(vm.myUserModel.bio)
         if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
-            btn_blocked_contacts.visibility = View.VISIBLE
+            vb.btnBlockedContacts.clContainer.visibility = View.VISIBLE
         }
     }
 
     private fun showEditState() {
         state = ViewState.EDIT
-        tv_title.text = getString(R.string.tap_account_details)
-        tv_edit_save_btn.setOnClickListener {
+        vb.tvTitle.text = getString(R.string.tap_account_details)
+        vb.tvEditSaveBtn.setOnClickListener {
                 saveProfile()
              }
-        tv_edit_save_btn.text = getString(R.string.tap_save)
-        tv_edit_profile_picture.text = getString(R.string.tap_edit_profile_picture)
-        tv_edit_profile_picture.setOnClickListener { showProfilePictureOptionsBottomSheet() }
-        if (tv_profile_picture_label.visibility == View.VISIBLE) {
-            tv_edit_profile_picture.visibility = View.GONE
-        } else {
-            tv_edit_profile_picture.visibility = View.VISIBLE
+        vb.tvEditSaveBtn.text = getString(R.string.tap_save)
+        vb.tvEditProfilePicture.text = getString(R.string.tap_edit_profile_picture)
+        vb.tvEditProfilePicture.setOnClickListener { showProfilePictureOptionsBottomSheet() }
+        if (vb.tvProfilePictureLabel.visibility == View.VISIBLE) {
+            vb.tvEditProfilePicture.visibility = View.GONE
         }
-        g_edit.visibility = View.VISIBLE
+        else {
+            vb.tvEditProfilePicture.visibility = View.VISIBLE
+        }
+        vb.gEdit.visibility = View.VISIBLE
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible) {
-            g_bio_fields.visibility = View.VISIBLE
-        } else {
-            g_bio_fields.visibility = View.GONE
+            vb.gBioFields.visibility = View.VISIBLE
         }
-        cl_basic_info.visibility = View.GONE
-        tv_version_code.visibility = View.GONE
+        else {
+            vb.gBioFields.visibility = View.GONE
+        }
+        vb.clBasicInfo.clBasicInformationContainer.visibility = View.GONE
+        vb.tvVersionCode.visibility = View.GONE
         if (TapUI.getInstance(instanceKey).isLogoutButtonVisible) {
-            cl_logout.visibility = View.VISIBLE
-        } else {
-            cl_logout.visibility = View.GONE
+            vb.clLogout.visibility = View.VISIBLE
+        }
+        else {
+            vb.clLogout.visibility = View.GONE
         }
         if (TapUI.getInstance(instanceKey).isDeleteAccountButtonVisible) {
-            btn_delete_my_account.visibility = View.VISIBLE
-        } else {
-            btn_delete_my_account.visibility = View.GONE
+            vb.btnDeleteMyAccount.visibility = View.VISIBLE
         }
-        et_bio.isEnabled = true
-        btn_blocked_contacts.visibility = View.GONE
+        else {
+            vb.btnDeleteMyAccount.visibility = View.GONE
+        }
+        vb.etBio.isEnabled = true
+        vb.btnBlockedContacts.clContainer.visibility = View.GONE
     }
 
     private fun setProfileInformation(textView: TextView, group: View, textValue: String?) {
         if (textValue.isNullOrEmpty()) {
             group.visibility = View.GONE
-        } else {
+        }
+        else {
             group.visibility = View.VISIBLE
             textView.text = textValue
         }
     }
 
     private fun saveProfile() {
-        if (vm.myUserModel.bio != et_bio.text.toString()) {
+        if (vm.myUserModel.bio != vb.etBio.text.toString()) {
             TapTalkDialog.Builder(this@TAPMyAccountActivity)
                 .setTitle(getString(R.string.tap_save_changes_question))
                 .setMessage(getString(R.string.tap_save_changes_confirmation))
@@ -369,13 +389,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     vm.isUpdatingProfile = true
                     disableEditing()
                     showLoading(getString(R.string.tap_updating))
-                    TapCoreContactManager.getInstance(instanceKey).updateActiveUserBio(et_bio.text.toString(), updateBioListener)
+                    TapCoreContactManager.getInstance(instanceKey).updateActiveUserBio(vb.etBio.text.toString(), updateBioListener)
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                 .setSecondaryButtonListener(true) {}
                 .show()
-        } else {
+        }
+        else {
             showViewState()
         }
     }
@@ -388,7 +409,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun showProfilePicturePickerBottomSheet() {
         if (vm.isLoadPhotoFailed) {
             getPhotoListWithDialog()
-        } else {
+        }
+        else {
             if (vm.profilePictureList.size >= MAX_PHOTO_SIZE) {
                 TapTalkDialog.Builder(this)
                     .setTitle(getString(R.string.tap_max_profile_picture_title))
@@ -398,7 +420,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     .setPrimaryButtonListener(true) { }
                     .setCancelable(true)
                     .show()
-            } else {
+            }
+            else {
                 TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
                 TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(
                     supportFragmentManager,
@@ -411,22 +434,24 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun showProfilePictureOptionsBottomSheet() {
         if (vm.isLoadPhotoFailed) {
             getPhotoListWithDialog()
-        } else {
+        }
+        else {
             TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
-            TAPAttachmentBottomSheet(instanceKey, vp_profile_picture.currentItem, profilePictureOptionListener).show(supportFragmentManager, "")
+            TAPAttachmentBottomSheet(instanceKey, vb.vpProfilePicture.currentItem, profilePictureOptionListener).show(supportFragmentManager, "")
         }
     }
 
     private fun showDefaultProfilePicture() {
-        vp_profile_picture.setBackgroundColor(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname))
-        vp_profile_picture.adapter = null
-        tab_layout.visibility = View.GONE
-        tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
-        tv_profile_picture_label.visibility = View.VISIBLE
+        vb.vpProfilePicture.setBackgroundColor(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname))
+        vb.vpProfilePicture.adapter = null
+        vb.tabLayout.visibility = View.GONE
+        vb.tvProfilePictureLabel.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
+        vb.tvProfilePictureLabel.visibility = View.VISIBLE
         if (state == ViewState.EDIT) {
-            tv_edit_profile_picture.visibility = View.GONE
-        } else {
-            tv_edit_profile_picture.visibility = View.VISIBLE
+            vb.tvEditProfilePicture.visibility = View.GONE
+        }
+        else {
+            vb.tvEditProfilePicture.visibility = View.VISIBLE
         }
     }
 
@@ -434,58 +459,65 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (null == imageUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
             Toast.makeText(this@TAPMyAccountActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
-        } else {
+        }
+        else {
             vm.formCheck[indexProfilePicture] = stateValid
             uploadProfilePicture(imageUri)
         }
     }
 
     private fun checkFullName(hasFocus: Boolean) {
-        if (et_full_name.text.toString() == vm.myUserModel.fullname) {
+        if (vb.etFullName.text.toString() == vm.myUserModel.fullname) {
             // Unchanged
             vm.formCheck[indexFullName] = stateUnchanged
-            tv_label_full_name_error.visibility = View.GONE
-            updateEditTextBackground(et_full_name, hasFocus)
-        } else if (et_full_name.text.isNotEmpty() && et_full_name.text.matches(Regex("[A-Za-z ]*"))) {
+            vb.tvLabelFullNameError.visibility = View.GONE
+            updateEditTextBackground(vb.etFullName, hasFocus)
+        }
+        else if (vb.etFullName.text.isNotEmpty() && vb.etFullName.text.matches(Regex("[A-Za-z ]*"))) {
             // Valid full name
             vm.formCheck[indexFullName] = stateValid
-            tv_label_full_name_error.visibility = View.GONE
-            updateEditTextBackground(et_full_name, hasFocus)
-        } else if (et_full_name.text.isEmpty()) {
+            vb.tvLabelFullNameError.visibility = View.GONE
+            updateEditTextBackground(vb.etFullName, hasFocus)
+        }
+        else if (vb.etFullName.text.isEmpty()) {
             // Not filled
             vm.formCheck[indexFullName] = stateEmpty
-            tv_label_full_name_error.visibility = View.GONE
-            updateEditTextBackground(et_full_name, hasFocus)
-        } else {
+            vb.tvLabelFullNameError.visibility = View.GONE
+            updateEditTextBackground(vb.etFullName, hasFocus)
+        }
+        else {
             // Invalid full name
             vm.formCheck[indexFullName] = stateInvalid
-            tv_label_full_name_error.visibility = View.VISIBLE
-            et_full_name.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
+            vb.tvLabelFullNameError.visibility = View.VISIBLE
+            vb.etFullName.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
         }
         checkContinueButtonAvailability()
     }
 
     private fun checkEmailAddress(hasFocus: Boolean) {
-        if (et_email_address.text.toString() == vm.myUserModel.email) {
+        if (vb.etEmailAddress.text.toString() == vm.myUserModel.email) {
             // Unchanged
             vm.formCheck[indexEmail] = stateUnchanged
-            tv_label_email_address_error.visibility = View.GONE
-            updateEditTextBackground(et_email_address, hasFocus)
-        } else if (et_email_address.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(et_email_address.text).matches()) {
+            vb.tvLabelEmailAddressError.visibility = View.GONE
+            updateEditTextBackground(vb.etEmailAddress, hasFocus)
+        }
+        else if (vb.etEmailAddress.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(vb.etEmailAddress.text).matches()) {
             // Valid email address
             vm.formCheck[indexEmail] = stateValid
-            tv_label_email_address_error.visibility = View.GONE
-            updateEditTextBackground(et_email_address, hasFocus)
-        } else if (et_email_address.text.isEmpty()) {
+            vb.tvLabelEmailAddressError.visibility = View.GONE
+            updateEditTextBackground(vb.etEmailAddress, hasFocus)
+        }
+        else if (vb.etEmailAddress.text.isEmpty()) {
             // Not filled
             vm.formCheck[indexEmail] = stateEmpty
-            tv_label_email_address_error.visibility = View.GONE
-            updateEditTextBackground(et_email_address, hasFocus)
-        } else {
+            vb.tvLabelEmailAddressError.visibility = View.GONE
+            updateEditTextBackground(vb.etEmailAddress, hasFocus)
+        }
+        else {
             // Invalid email address
             vm.formCheck[indexEmail] = stateInvalid
-            tv_label_email_address_error.visibility = View.VISIBLE
-            et_email_address.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
+            vb.tvLabelEmailAddressError.visibility = View.VISIBLE
+            vb.etEmailAddress.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
         }
         checkContinueButtonAvailability()
     }
@@ -493,14 +525,16 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun updateEditTextBackground(view: View, hasFocus: Boolean) {
         if (hasFocus) {
             view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
-        } else {
+        }
+        else {
             view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_inactive)
         }
-        if (view == cl_password) {
+        if (view == vb.clPassword) {
             if (hasFocus) {
-                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTextFieldBorderActiveColor))
-            } else {
-                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapGreyDc))
+                vb.vPasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTextFieldBorderActiveColor))
+            }
+            else {
+                vb.vPasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapGreyDc))
             }
         }
     }
@@ -513,14 +547,15 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                                 vm.formCheck[indexEmail] != stateUnchanged ||
                                 vm.formCheck[indexPassword] != stateUnchanged)) {
             // All forms valid
-        } else {
+        }
+        else {
             // No changes / has invalid forms
         }
     }
 
     private fun clearAllFocus() {
         TAPUtils.dismissKeyboard(this)
-        fl_container.clearFocus()
+        vb.flContainer.clearFocus()
     }
 
     private fun openChangePasswordPage() {
@@ -576,18 +611,18 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun disableEditing() {
-        iv_button_close.setOnClickListener(null)
-        tv_edit_profile_picture.isEnabled = false
+        vb.ivButtonClose.setOnClickListener(null)
+        vb.tvEditProfilePicture.isEnabled = false
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_white))
-        TAPUtils.rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
+        vb.ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_white))
+        TAPUtils.rotateAnimateInfinitely(this@TAPMyAccountActivity, vb.ivButtonClose)
 
         // TODO temporarily disable editing
-//        et_full_name.isEnabled = false
-//        et_email_address.isEnabled = false
+//        binding.etFullName.isEnabled = false
+//        binding.etEmailAddress.isEnabled = false
 //
-//        et_full_name.setTextColor(resources.getColor(R.color.tap_grey_9b))
-//        et_email_address.setTextColor(resources.getColor(R.color.tap_grey_9b))
+//        binding.etFullName.setTextColor(resources.getColor(R.color.tap_grey_9b))
+//        binding.etEmailAddress.setTextColor(resources.getColor(R.color.tap_grey_9b))
 //
 //        tv_button_update.visibility = View.GONE
 //        iv_update_progress.visibility = View.VISIBLE
@@ -598,18 +633,18 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
         }
-        iv_button_close.setOnClickListener { onBackPressed() }
-        tv_edit_profile_picture.isEnabled = true
+        vb.ivButtonClose.setOnClickListener { onBackPressed() }
+        vb.tvEditProfilePicture.isEnabled = true
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white))
-        iv_button_close.clearAnimation()
+        vb.ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white))
+        vb.ivButtonClose.clearAnimation()
 
         // TODO temporarily disable editing
-//        et_full_name.isEnabled = true
-//        et_email_address.isEnabled = true
+//        binding.etFullName.isEnabled = true
+//        binding.etEmailAddress.isEnabled = true
 //
-//        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
-//        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
+//        binding.etFullName.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
+//        binding.etEmailAddress.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
 //
 //        tv_button_update.visibility = View.VISIBLE
 //        iv_update_progress.visibility = View.GONE
@@ -623,7 +658,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             enableEditing()
             hideLoading()
             vm.myUserModel = user
-            setProfileInformation(tv_bio_view, g_bio, user?.bio)
+            setProfileInformation(vb.clBasicInfo.tvBioView, vb.clBasicInfo.gBio, user?.bio)
             showViewState()
         }
 
@@ -645,7 +680,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 TAPUtils.getStoragePermissions(false),
                 PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE
             )
-        } else {
+        }
+        else {
             showLoading(getString(R.string.tap_downloading))
             TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(
                 this,
@@ -753,22 +789,25 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (photoList.isNullOrEmpty()) {
             vm.formCheck[indexProfilePicture] = stateEmpty
             showDefaultProfilePicture()
-        } else {
+        }
+        else {
             vm.formCheck[indexProfilePicture] = stateValid
             vm.profilePictureList.addAll(photoList)
-            vp_profile_picture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack))
-            vp_profile_picture.adapter = profilePicturePagerAdapter
+            vb.vpProfilePicture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack))
+            vb.vpProfilePicture.adapter = profilePicturePagerAdapter
             if (vm.profilePictureList.size > 1) {
-                tab_layout.visibility = View.VISIBLE
-                tab_layout.setupWithViewPager(vp_profile_picture)
-            } else {
-                tab_layout.visibility = View.GONE
+                vb.tabLayout.visibility = View.VISIBLE
+                vb.tabLayout.setupWithViewPager(vb.vpProfilePicture)
             }
-            tv_profile_picture_label.visibility = View.GONE
+            else {
+                vb.tabLayout.visibility = View.GONE
+            }
+            vb.tvProfilePictureLabel.visibility = View.GONE
         }
         if (loadingText.isNullOrEmpty()) {
             hideLoading()
-        } else {
+        }
+        else {
             endLoading(loadingText)
         }
         enableEditing()
@@ -826,9 +865,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private val profilePictureOptionListener = object : TAPAttachmentListener(instanceKey) {
         override fun onSaveImageToGallery(message: TAPMessageModel?) {
-            Glide.with(this@TAPMyAccountActivity).asBitmap().load(vm.profilePictureList[vp_profile_picture.currentItem].fullsizeImageURL).into(object : CustomTarget<Bitmap>() {
+            Glide.with(this@TAPMyAccountActivity).asBitmap().load(vm.profilePictureList[vb.vpProfilePicture.currentItem].fullsizeImageURL).into(object : CustomTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    saveImage(vm.profilePictureList[vp_profile_picture.currentItem].fullsizeImageURL, resource)
+                    saveImage(vm.profilePictureList[vb.vpProfilePicture.currentItem].fullsizeImageURL, resource)
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) { }
@@ -868,56 +907,50 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private val fullNameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.dpToPx(4).toFloat()
-            }
+            view.elevation = TAPUtils.dpToPx(4).toFloat()
             if (vm.formCheck[indexFullName] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
             }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = 0f
-            }
+        }
+        else {
+            view.elevation = 0f
             if (vm.formCheck[indexFullName] != stateInvalid) {
-                updateEditTextBackground(et_full_name, hasFocus)
+                updateEditTextBackground(vb.etFullName, hasFocus)
             }
         }
     }
 
     private val emailAddressFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.dpToPx(4).toFloat()
-            }
+            view.elevation = TAPUtils.dpToPx(4).toFloat()
             if (vm.formCheck[indexEmail] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
             }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = 0f
-            }
+        }
+        else {
+            view.elevation = 0f
             if (vm.formCheck[indexEmail] != stateInvalid) {
-                updateEditTextBackground(et_email_address, hasFocus)
+                updateEditTextBackground(vb.etEmailAddress, hasFocus)
             }
         }
     }
 
     private fun showLoading(message: String) {
         runOnUiThread {
-            iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
-            if (null == iv_loading_image.animation)
-                TAPUtils.rotateAnimateInfinitely(this, iv_loading_image)
-            tv_loading_text.text = message
-            fl_loading.visibility = View.VISIBLE
+            vb.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == vb.layoutPopupLoadingScreen.ivLoadingImage.animation)
+                TAPUtils.rotateAnimateInfinitely(this, vb.layoutPopupLoadingScreen.ivLoadingImage)
+            vb.layoutPopupLoadingScreen.tvLoadingText.text = message
+            vb.layoutPopupLoadingScreen.flLoading.visibility = View.VISIBLE
         }
     }
 
     private fun endLoading(message: String) {
         runOnUiThread {
-            iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin))
-            iv_loading_image.clearAnimation()
-            tv_loading_text.text = message
-            fl_loading.setOnClickListener { hideLoading() }
+            vb.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin))
+            vb.layoutPopupLoadingScreen.ivLoadingImage.clearAnimation()
+            vb.layoutPopupLoadingScreen.tvLoadingText.text = message
+            vb.layoutPopupLoadingScreen.flLoading.setOnClickListener { hideLoading() }
 
             Handler().postDelayed({
                 this.hideLoading()
@@ -926,7 +959,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun hideLoading() {
-        fl_loading.visibility = View.GONE
+        vb.layoutPopupLoadingScreen.flLoading.visibility = View.GONE
     }
 
     private fun showErrorDialog(title: String, message: String) {
@@ -949,15 +982,18 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             val versionName = info.versionName
             val versionNumber = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 info.longVersionCode
-            } else {
+            }
+            else {
                 info.versionCode
             }
             if (BuildConfig.DEBUG) {
-                tv_version_code.text = String.format("V %s(%s)", versionName, versionNumber)
-            } else {
-                tv_version_code.text = String.format("V %s", versionName)
+                vb.tvVersionCode.text = String.format("V %s(%s)", versionName, versionNumber)
             }
-        }catch (e: PackageManager.NameNotFoundException) {
+            else {
+                vb.tvVersionCode.text = String.format("V %s", versionName)
+            }
+        }
+        catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
     }
@@ -968,7 +1004,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun afterTextChanged(p0: Editable?) {
-            tv_character_count.text = "${et_bio.text.length}/100"
+            vb.tvCharacterCount.text = "${vb.etBio.text.length}/100"
         }
     }
 
@@ -999,7 +1035,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
 
         override fun onFinish() {
-            checkFullName(et_full_name.hasFocus())
+            checkFullName(vb.etFullName.hasFocus())
         }
     }
 
@@ -1008,22 +1044,20 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
 
         override fun onFinish() {
-            checkEmailAddress(et_email_address.hasFocus())
+            checkEmailAddress(vb.etEmailAddress.hasFocus())
         }
     }
 
     private val scrollViewListener = ViewTreeObserver.OnScrollChangedListener {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val y = sv_profile.scrollY
-            val h = vp_profile_picture.height
-            when {
-                y == 0 ->
-                    cl_action_bar.elevation = 0f
-                y < h ->
-                    cl_action_bar.elevation = TAPUtils.dpToPx(1).toFloat()
-                else ->
-                    cl_action_bar.elevation = TAPUtils.dpToPx(2).toFloat()
-            }
+        val y = vb.svProfile.scrollY
+        val h = vb.vpProfilePicture.height
+        when {
+            y == 0 ->
+                vb.clActionBar.elevation = 0f
+            y < h ->
+                vb.clActionBar.elevation = TAPUtils.dpToPx(1).toFloat()
+            else ->
+                vb.clActionBar.elevation = TAPUtils.dpToPx(2).toFloat()
         }
     }
 
@@ -1059,7 +1093,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     if (updatedUserModel?.userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
                         getPhotoList(getString(R.string.tap_picture_uploaded))
-                    } else {
+                    }
+                    else {
                         endLoading(getString(R.string.tap_picture_uploaded))
                     }
                     LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))

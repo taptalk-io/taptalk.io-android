@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Model.ResponseModel;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 
 import io.taptalk.TapTalk.Model.TAPImageURL;
@@ -20,7 +21,7 @@ public class TapChatProfileItemModel implements Parcelable {
     private int menuId;
     private int iconResource;
     private int iconColorResource;
-    private int textStyleResource;
+    private int textColorResource;
     private boolean isChecked;
     @Nullable private TAPMessageModel mediaMessage;
     @Nullable private TAPImageURL imageURL;
@@ -28,12 +29,12 @@ public class TapChatProfileItemModel implements Parcelable {
     @Nullable private String itemSubLabel;
 
     // Constructor for user/group detail
-    public TapChatProfileItemModel(@Nullable TAPImageURL imageURL, @Nullable String itemLabel, @Nullable String itemSubLabel, int textStyleResource) {
+    public TapChatProfileItemModel(@Nullable TAPImageURL imageURL, @Nullable String itemLabel, @Nullable String itemSubLabel, @ColorRes int textColorResource) {
         this.type = TYPE_USER_GROUP_DETAIL;
         this.imageURL = imageURL;
         this.itemLabel = itemLabel;
         this.itemSubLabel = itemSubLabel;
-        this.textStyleResource = textStyleResource;
+        this.textColorResource = textColorResource;
     }
 
     // Constructor for section title
@@ -43,13 +44,13 @@ public class TapChatProfileItemModel implements Parcelable {
     }
 
     // Constructor for menu button
-    public TapChatProfileItemModel(int menuId, @Nullable String itemLabel, int iconResource, int iconColorResource, int textStyleResource) {
+    public TapChatProfileItemModel(int menuId, @Nullable String itemLabel, int iconResource, @ColorRes int iconColorResource, @ColorRes int textColorResource) {
         this.type = TYPE_MENU_BUTTON;
         this.menuId = menuId;
         this.itemLabel = itemLabel;
         this.iconResource = iconResource;
         this.iconColorResource = iconColorResource;
-        this.textStyleResource = textStyleResource;
+        this.textColorResource = textColorResource;
     }
 
     // Constructor for media thumbnail
@@ -95,12 +96,12 @@ public class TapChatProfileItemModel implements Parcelable {
         this.iconColorResource = iconColorResource;
     }
 
-    public int getTextStyleResource() {
-        return textStyleResource;
+    public int getTextColorResource() {
+        return textColorResource;
     }
 
-    public void setTextStyleResource(int textStyleResource) {
-        this.textStyleResource = textStyleResource;
+    public void setTextColorResource(int textColorResource) {
+        this.textColorResource = textColorResource;
     }
 
     public boolean isChecked() {
@@ -158,7 +159,7 @@ public class TapChatProfileItemModel implements Parcelable {
         dest.writeInt(this.menuId);
         dest.writeInt(this.iconResource);
         dest.writeInt(this.iconColorResource);
-        dest.writeInt(this.textStyleResource);
+        dest.writeInt(this.textColorResource);
         dest.writeByte(this.isChecked ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.mediaMessage, flags);
         dest.writeParcelable(this.imageURL, flags);
@@ -171,7 +172,7 @@ public class TapChatProfileItemModel implements Parcelable {
         this.menuId = in.readInt();
         this.iconResource = in.readInt();
         this.iconColorResource = in.readInt();
-        this.textStyleResource = in.readInt();
+        this.textColorResource = in.readInt();
         this.isChecked = in.readByte() != 0;
         this.mediaMessage = in.readParcelable(TAPMessageModel.class.getClassLoader());
         this.imageURL = in.readParcelable(TAPImageURL.class.getClassLoader());

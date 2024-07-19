@@ -67,7 +67,6 @@ import static io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel.TYP
 import static io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel.TYPE_MEDIA_THUMBNAIL;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel.TYPE_MENU_BUTTON;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel.TYPE_SECTION_TITLE;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel.TYPE_USER_GROUP_DETAIL;
 
 public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemModel, TAPBaseViewHolder<TapChatProfileItemModel>> {
 
@@ -158,13 +157,13 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 
             tvLabelRoomName.setText(item.getItemLabel());
             tvLabelUsernameMemberCount.setText(item.getItemSubLabel());
-            tvLabelUsernameMemberCount.setTextAppearance(itemView.getContext(), item.getTextStyleResource());
+            tvLabelUsernameMemberCount.setTextAppearance(itemView.getContext(), item.getTextColorResource());
         }
 
         private void setInitialToProfilePicture(TapChatProfileItemModel item) {
             ImageViewCompat.setImageTintList(civProfilePicture, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), item.getItemLabel())));
             civProfilePicture.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-            tvProfilePictureLabel.setText(TAPUtils.getInitials(item.getItemLabel(), item.getTextStyleResource() == R.style.tapChatProfileMemberCountStyle ? 1 : 2));
+            tvProfilePictureLabel.setText(TAPUtils.getInitials(item.getItemLabel(), item.getTextColorResource() == R.style.tapChatProfileMemberCountStyle ? 1 : 2));
             tvProfilePictureLabel.setVisibility(View.VISIBLE);
         }
     }
@@ -211,9 +210,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 
             // Set menu label text
             tvMenuLabel.setText(item.getItemLabel());
-            TypedArray typedArray = itemView.getContext().obtainStyledAttributes(item.getTextStyleResource(), R.styleable.TextAppearance);
-            tvMenuLabel.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
-            typedArray.recycle();
+            tvMenuLabel.setTextColor(ContextCompat.getColor(itemView.getContext(), item.getTextColorResource()));
 
             // Show menu chevron
             if (item.getMenuId() == MENU_VIEW_MEMBERS ||
@@ -233,7 +230,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             }
             if (null == nextItem ||
                     nextItem.getType() != item.getType() ||
-                    nextItem.getTextStyleResource() != item.getTextStyleResource()) {
+                    nextItem.getTextColorResource() != item.getTextColorResource()) {
                 // Set single background
                 vSeparator.setBackground(null);
                 if (clContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {

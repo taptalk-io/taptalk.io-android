@@ -6,15 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapStringListAdapter
-import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
 import java.util.concurrent.TimeUnit
 
-class TapMuteBottomSheet(private val roomId: String?, private val roomPosition: Int, private  val clickListener: TAPGeneralListener<TapMutedRoomListModel>, private val menuType: MenuType = MenuType.MUTE) : BottomSheetDialogFragment() {
+class TapMuteBottomSheet(
+    private val roomId: String?,
+    private val roomPosition: Int,
+    private  val clickListener: TAPGeneralListener<TapMutedRoomListModel>,
+    private val menuType: MenuType = MenuType.MUTE
+) : BottomSheetDialogFragment() {
+
     enum class MenuType {
         MUTE, UNMUTE
     }
@@ -25,12 +31,11 @@ class TapMuteBottomSheet(private val roomId: String?, private val roomPosition: 
 
     constructor(roomId: String?, clickListener: TAPGeneralListener<TapMutedRoomListModel>, menuType: MenuType) : this(roomId, 0, clickListener, menuType)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.tap_fragment_long_press_action_bottom_sheet, container, false)
+    private lateinit var layout: View
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        layout = inflater.inflate(R.layout.tap_fragment_long_press_action_bottom_sheet, container, false)
+        return layout
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,9 +48,10 @@ class TapMuteBottomSheet(private val roomId: String?, private val roomPosition: 
         } else {
             TapStringListAdapter(unmuteList, onItemClickListener)
         }
-        rv_long_press.adapter = adapter
-        rv_long_press.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        rv_long_press.setHasFixedSize(true)
+        val rvLongPress = layout.findViewById<RecyclerView>(R.id.rv_long_press)
+        rvLongPress?.adapter = adapter
+        rvLongPress?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        rvLongPress?.setHasFixedSize(true)
     }
 
     override fun show(manager: FragmentManager, tag: String?) {

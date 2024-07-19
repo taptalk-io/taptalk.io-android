@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.*
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.Editable
@@ -47,7 +46,7 @@ import io.taptalk.TapTalkSample.databinding.TapActivityRegisterBinding
 
 class TAPRegisterActivity : TAPBaseActivity() {
 
-    private lateinit var binding: TapActivityRegisterBinding
+    private lateinit var vb: TapActivityRegisterBinding
     private lateinit var vm: TAPRegisterViewModel
     private lateinit var glide: RequestManager
 
@@ -89,8 +88,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = TapActivityRegisterBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        vb = TapActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
         glide = Glide.with(this)
         initViewModel()
@@ -116,10 +115,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
         }
-        if (binding.tvPhoneNumber.text.isNotEmpty() ||
-            binding.etFullName.text.isNotEmpty() ||
-            binding.etUsername.text.isNotEmpty() ||
-            binding.etEmailAddress.text.isNotEmpty()
+        if (vb.tvPhoneNumber.text.isNotEmpty() ||
+            vb.etFullName.text.isNotEmpty() ||
+            vb.etUsername.text.isNotEmpty() ||
+            vb.etEmailAddress.text.isNotEmpty()
         ) {
             showPopupDiscardChanges()
             return
@@ -178,42 +177,42 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun initView() {
         window?.setBackgroundDrawable(null)
 
-        binding.etFullName.imeOptions = EditorInfo.IME_ACTION_NEXT
-        binding.etFullName.setRawInputType(InputType.TYPE_CLASS_TEXT)
+        vb.etFullName.imeOptions = EditorInfo.IME_ACTION_NEXT
+        vb.etFullName.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
-        binding.etFullName.onFocusChangeListener = fullNameFocusListener
-        binding.etUsername.onFocusChangeListener = usernameFocusListener
-        binding.etEmailAddress.onFocusChangeListener = emailAddressFocusListener
+        vb.etFullName.onFocusChangeListener = fullNameFocusListener
+        vb.etUsername.onFocusChangeListener = usernameFocusListener
+        vb.etEmailAddress.onFocusChangeListener = emailAddressFocusListener
 //        binding.etPassword.onFocusChangeListener = passwordFocusListener
 //        binding.etRetypePassword.onFocusChangeListener = passwordRetypeFocusListener
 
-        binding.etFullName.addTextChangedListener(fullNameWatcher)
-        binding.etUsername.addTextChangedListener(usernameWatcher)
-        binding.etEmailAddress.addTextChangedListener(emailWatcher)
+        vb.etFullName.addTextChangedListener(fullNameWatcher)
+        vb.etUsername.addTextChangedListener(usernameWatcher)
+        vb.etEmailAddress.addTextChangedListener(emailWatcher)
 //        binding.etPassword.addTextChangedListener(passwordWatcher)
 //        binding.etRetypePassword.addTextChangedListener(passwordRetypeWatcher)
 
         if (vm.countryFlagUrl != "") {
             glide.load(vm.countryFlagUrl)
                 .apply(RequestOptions().placeholder(io.taptalk.TapTalk.R.drawable.tap_ic_default_flag))
-                .into(binding.ivCountryFlag)
+                .into(vb.ivCountryFlag)
         }
 
         vm.textFieldFontColor = ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapFormTextFieldColor)
         vm.textFieldFontColorHint = ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapFormTextFieldPlaceholderColor)
 
         // Set password field input type and typeface
-        binding.etPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        binding.etRetypePassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        vb.etPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        vb.etRetypePassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
 
         // Set mobile number & disable editing
-        binding.tvCountryCode.text = String.format("+%s", vm.countryCallingCode)
-        binding.tvPhoneNumber.text = TAPUtils.beautifyPhoneNumber(intent.getStringExtra(MOBILE_NUMBER), false)
-        binding.tvCountryCode.setTextColor(vm.textFieldFontColorHint)
-        binding.tvPhoneNumber.setTextColor(vm.textFieldFontColorHint)
+        vb.tvCountryCode.text = String.format("+%s", vm.countryCallingCode)
+        vb.tvPhoneNumber.text = TAPUtils.beautifyPhoneNumber(intent.getStringExtra(MOBILE_NUMBER), false)
+        vb.tvCountryCode.setTextColor(vm.textFieldFontColorHint)
+        vb.tvPhoneNumber.setTextColor(vm.textFieldFontColorHint)
 
         // Set url span for privacy policy label
-        val spannableString = SpannableString(binding.tvLabelPrivacyPolicy.text)
+        val spannableString = SpannableString(vb.tvLabelPrivacyPolicy.text)
         spannableString.setSpan(
             URLSpan("https://taptalk.io/privacy-policy/"),
             spannableString.length - 27,
@@ -231,30 +230,30 @@ class TAPRegisterActivity : TAPBaseActivity() {
                 Toast.makeText(this@TAPRegisterActivity, "Link Copied", Toast.LENGTH_SHORT).show()
                 true
             }
-        binding.tvLabelPrivacyPolicy.text = spannableString
-        binding.tvLabelPrivacyPolicy.movementMethod = movementMethod
+        vb.tvLabelPrivacyPolicy.text = spannableString
+        vb.tvLabelPrivacyPolicy.movementMethod = movementMethod
 
-        binding.flContainer.setOnClickListener { clearAllFocus() }
-        binding.clFormContainer.setOnClickListener { clearAllFocus() }
-        binding.llChangeProfilePicture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        binding.flRemoveProfilePicture.setOnClickListener { removeProfilePicture() }
-        binding.ivViewPassword.setOnClickListener { togglePasswordVisibility(binding.etPassword, binding.ivViewPassword) }
-        binding.ivViewPasswordRetype.setOnClickListener { togglePasswordVisibility(binding.etRetypePassword, binding.ivViewPasswordRetype) }
-        binding.cbPrivacyPolicy.setOnCheckedChangeListener { _, _ -> checkPrivacyPolicy() }
-        binding.etRetypePassword.setOnEditorActionListener { v, a, e -> binding.clButtonContinue.callOnClick() }
+        vb.flContainer.setOnClickListener { clearAllFocus() }
+        vb.clFormContainer.setOnClickListener { clearAllFocus() }
+        vb.llChangeProfilePicture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+        vb.flRemoveProfilePicture.setOnClickListener { removeProfilePicture() }
+        vb.ivViewPassword.setOnClickListener { togglePasswordVisibility(vb.etPassword, vb.ivViewPassword) }
+        vb.ivViewPasswordRetype.setOnClickListener { togglePasswordVisibility(vb.etRetypePassword, vb.ivViewPasswordRetype) }
+        vb.cbPrivacyPolicy.setOnCheckedChangeListener { _, _ -> checkPrivacyPolicy() }
+        vb.etRetypePassword.setOnEditorActionListener { v, a, e -> vb.clButtonContinue.callOnClick() }
 
         enableContinueButton()
 
         // Temporarily removed password
-        binding.tvLabelPassword.visibility = View.GONE
-        binding.tvLabelPasswordOptional.visibility = View.GONE
-        binding.clPassword.visibility = View.GONE
-        binding.tvLabelPasswordGuide.visibility = View.GONE
-        binding.tvLabelPasswordError.visibility = View.GONE
-        binding.tvLabelRetypePassword.visibility = View.GONE
-        binding.tvLabelRetypePasswordError.visibility = View.GONE
-        binding.clRetypePassword.visibility = View.GONE
-        binding.etEmailAddress.setOnEditorActionListener { v, a, e -> binding.clButtonContinue.callOnClick() }
+        vb.tvLabelPassword.visibility = View.GONE
+        vb.tvLabelPasswordOptional.visibility = View.GONE
+        vb.clPassword.visibility = View.GONE
+        vb.tvLabelPasswordGuide.visibility = View.GONE
+        vb.tvLabelPasswordError.visibility = View.GONE
+        vb.tvLabelRetypePassword.visibility = View.GONE
+        vb.tvLabelRetypePasswordError.visibility = View.GONE
+        vb.clRetypePassword.visibility = View.GONE
+        vb.etEmailAddress.setOnEditorActionListener { v, a, e -> vb.clButtonContinue.callOnClick() }
     }
 
     private fun registerBroadcastReceiver() {
@@ -274,95 +273,95 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun reloadProfilePicture(showErrorMessage: Boolean) {
         if (null == vm.profilePictureUri) {
-            binding.ivProfilePicturePlaceholder.visibility = View.VISIBLE
-            binding.civProfilePicture.visibility = View.INVISIBLE
-            glide.load(io.taptalk.TapTalk.R.drawable.tap_img_default_avatar).into(binding.civProfilePicture)
-            binding.tvLabelChangeProfilePicture.text = getString(io.taptalk.TapTalk.R.string.tap_upload_image)
+            vb.ivProfilePicturePlaceholder.visibility = View.VISIBLE
+            vb.civProfilePicture.visibility = View.INVISIBLE
+            glide.load(io.taptalk.TapTalk.R.drawable.tap_img_default_avatar).into(vb.civProfilePicture)
+            vb.tvLabelChangeProfilePicture.text = getString(io.taptalk.TapTalk.R.string.tap_upload_image)
 //            binding.flRemoveProfilePicture.visibility = View.GONE
             if (showErrorMessage) {
                 Toast.makeText(this@TAPRegisterActivity, getString(io.taptalk.TapTalk.R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
             }
         }
         else {
-            binding.ivProfilePicturePlaceholder.visibility = View.INVISIBLE
-            binding.civProfilePicture.visibility = View.VISIBLE
-            glide.load(vm.profilePictureUri).into(binding.civProfilePicture)
-            binding.tvLabelChangeProfilePicture.text = getString(io.taptalk.TapTalk.R.string.tap_change)
+            vb.ivProfilePicturePlaceholder.visibility = View.INVISIBLE
+            vb.civProfilePicture.visibility = View.VISIBLE
+            glide.load(vm.profilePictureUri).into(vb.civProfilePicture)
+            vb.tvLabelChangeProfilePicture.text = getString(io.taptalk.TapTalk.R.string.tap_change)
 //            binding.flRemoveProfilePicture.visibility = View.VISIBLE
         }
     }
 
     private fun validateFullName(checkMinLength: Boolean = true): Boolean {
-        if (checkMinLength && binding.etFullName.text.isEmpty()) {
+        if (checkMinLength && vb.etFullName.text.isEmpty()) {
             // Full name empty
             setFullNameError(getString(io.taptalk.TapTalk.R.string.tap_this_field_is_required))
             return false
         }
-        if (binding.etFullName.text.length > FULL_NAME_MAX_LENGTH) {
+        if (vb.etFullName.text.length > FULL_NAME_MAX_LENGTH) {
             // Exceeds max length
             setFullNameError(String.format(getString(R.string.tap_error_register_full_name_max), FULL_NAME_MAX_LENGTH))
             return false
         }
-        if (binding.etFullName.text.isNotEmpty() && !binding.etFullName.text.matches(Regex("[A-Za-z ]*"))) {
+        if (vb.etFullName.text.isNotEmpty() && !vb.etFullName.text.matches(Regex("[A-Za-z ]*"))) {
             // Invalid full name
             setFullNameError(getString(io.taptalk.TapTalk.R.string.tap_error_invalid_full_name))
             return false
         }
-        binding.llFullNameError.visibility = View.GONE
-        updateEditTextBackground(binding.etFullName, binding.etFullName.hasFocus())
+        vb.llFullNameError.visibility = View.GONE
+        updateEditTextBackground(vb.etFullName, vb.etFullName.hasFocus())
         vm.formCheck[indexFullName] = stateValid
         return true
     }
 
     private fun validateUsername(checkMinLength: Boolean = true): Boolean {
-        if (checkMinLength && binding.etUsername.text.isEmpty()) {
+        if (checkMinLength && vb.etUsername.text.isEmpty()) {
             // Username empty
             setUsernameError(getString(io.taptalk.TapTalk.R.string.tap_this_field_is_required))
             return false
         }
-        val firstChar = if (binding.etUsername.text.isNullOrEmpty()) Character.MIN_VALUE else binding.etUsername.text[0]
+        val firstChar = if (vb.etUsername.text.isNullOrEmpty()) Character.MIN_VALUE else vb.etUsername.text[0]
         if (firstChar.isDigit() || firstChar == '.' || firstChar == '_') {
             // Starts with number or symbol
             setUsernameError(getString(R.string.tap_error_register_username_start))
             return false
         }
-        if ((checkMinLength && binding.etUsername.text.length < USERNAME_MIN_LENGTH) || binding.etUsername.text.length > USERNAME_MAX_LENGTH) {
+        if ((checkMinLength && vb.etUsername.text.length < USERNAME_MIN_LENGTH) || vb.etUsername.text.length > USERNAME_MAX_LENGTH) {
             // Invalid username length
             setUsernameError(String.format(getString(R.string.tap_error_register_username_length), USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH))
             return false
         }
-        if (binding.etUsername.text.isNotEmpty()) {
-            if (!binding.etUsername.text.matches(Regex("[a-zA-Z0-9._]*"))) {
+        if (vb.etUsername.text.isNotEmpty()) {
+            if (!vb.etUsername.text.matches(Regex("[a-zA-Z0-9._]*"))) {
                 // Invalid symbol
                 setUsernameError(getString(R.string.tap_error_register_username_symbol))
                 return false
             }
-            if (binding.etUsername.text.contains("..") || binding.etUsername.text.contains("__") || binding.etUsername.text.contains("._") || binding.etUsername.text.contains("_.")) {
+            if (vb.etUsername.text.contains("..") || vb.etUsername.text.contains("__") || vb.etUsername.text.contains("._") || vb.etUsername.text.contains("_.")) {
                 // Consecutive symbols
                 setUsernameError(getString(R.string.tap_error_register_username_consecutive_symbols))
                 return false
             }
-            if (binding.etUsername.text.endsWith('.') || binding.etUsername.text.endsWith('_')) {
+            if (vb.etUsername.text.endsWith('.') || vb.etUsername.text.endsWith('_')) {
                 // Ends with symbol
                 setUsernameError(getString(R.string.tap_error_register_username_end))
                 return false
             }
         }
-        binding.llUsernameError.visibility = View.GONE
-        binding.ivUsernameStatusIcon.visibility = View.GONE
-        updateEditTextBackground(binding.etUsername, binding.etUsername.hasFocus())
+        vb.llUsernameError.visibility = View.GONE
+        vb.ivUsernameStatusIcon.visibility = View.GONE
+        updateEditTextBackground(vb.etUsername, vb.etUsername.hasFocus())
         vm.formCheck[indexUsername] = stateValid
         return true
     }
 
     private fun validateEmailAddress(): Boolean {
-        if (binding.etEmailAddress.text.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(binding.etEmailAddress.text).matches()) {
+        if (vb.etEmailAddress.text.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(vb.etEmailAddress.text).matches()) {
             // Invalid email address
             setEmailAddressError(getString(io.taptalk.TapTalk.R.string.tap_error_invalid_email_address))
             return false
         }
-        binding.llEmailAddressError.visibility = View.GONE
-        updateEditTextBackground(binding.etEmailAddress, binding.etEmailAddress.hasFocus())
+        vb.llEmailAddressError.visibility = View.GONE
+        updateEditTextBackground(vb.etEmailAddress, vb.etEmailAddress.hasFocus())
         vm.formCheck[indexEmail] = stateValid
         return true
     }
@@ -374,34 +373,34 @@ class TAPRegisterActivity : TAPBaseActivity() {
             validateUsername(true)
         }
 
-        return isFullNameValid && vm.isUsernameValid && isEmailValid && binding.cbPrivacyPolicy.isChecked
+        return isFullNameValid && vm.isUsernameValid && isEmailValid && vb.cbPrivacyPolicy.isChecked
     }
 
     private fun setFullNameError(errorMessage: String) {
-        binding.llFullNameError.visibility = View.VISIBLE
-        binding.tvLabelFullNameError.text = errorMessage
-        binding.etFullName.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
+        vb.llFullNameError.visibility = View.VISIBLE
+        vb.tvLabelFullNameError.text = errorMessage
+        vb.etFullName.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
         vm.formCheck[indexFullName] = stateInvalid
     }
 
     private fun setUsernameError(errorMessage: String) {
-        binding.llUsernameError.visibility = View.VISIBLE
-        binding.tvLabelUsernameError.text = errorMessage
-        binding.etUsername.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
+        vb.llUsernameError.visibility = View.VISIBLE
+        vb.tvLabelUsernameError.text = errorMessage
+        vb.etUsername.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
         if (errorMessage != getString(io.taptalk.TapTalk.R.string.tap_this_field_is_required)) {
-            binding.ivUsernameStatusIcon.visibility = View.VISIBLE
-            binding.ivUsernameStatusIcon.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_close_circle_red))
+            vb.ivUsernameStatusIcon.visibility = View.VISIBLE
+            vb.ivUsernameStatusIcon.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_close_circle_red))
         }
         else {
-            binding.ivUsernameStatusIcon.visibility = View.GONE
+            vb.ivUsernameStatusIcon.visibility = View.GONE
         }
         vm.formCheck[indexUsername] = stateInvalid
     }
 
     private fun setEmailAddressError(errorMessage: String) {
-        binding.llEmailAddressError.visibility = View.VISIBLE
-        binding.tvLabelEmailAddressError.text = errorMessage
-        binding.etEmailAddress.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
+        vb.llEmailAddressError.visibility = View.VISIBLE
+        vb.tvLabelEmailAddressError.text = errorMessage
+        vb.etEmailAddress.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
         vm.formCheck[indexEmail] = stateInvalid
     }
 
@@ -455,13 +454,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
 //    }
 
     private fun checkPrivacyPolicy() {
-        if (binding.cbPrivacyPolicy.isChecked) {
-            binding.cbPrivacyPolicy.animate().alpha(1f).setDuration(200L).start()
-            binding.cbPrivacyPolicy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimary))
+        if (vb.cbPrivacyPolicy.isChecked) {
+            vb.cbPrivacyPolicy.animate().alpha(1f).setDuration(200L).start()
+            vb.cbPrivacyPolicy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimary))
         }
         else {
-            binding.cbPrivacyPolicy.animate().alpha(0.2f).setDuration(200L).start()
-            binding.cbPrivacyPolicy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapBlack19))
+            vb.cbPrivacyPolicy.animate().alpha(0.2f).setDuration(200L).start()
+            vb.cbPrivacyPolicy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapBlack19))
         }
     }
 
@@ -471,17 +470,17 @@ class TAPRegisterActivity : TAPBaseActivity() {
         } else {
             view.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_light)
         }
-        if (view == binding.clPassword) {
+        if (view == vb.clPassword) {
             if (hasFocus) {
-                binding.vPasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTextFieldBorderActiveColor))
+                vb.vPasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTextFieldBorderActiveColor))
             } else {
-                binding.vPasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1910))
+                vb.vPasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1910))
             }
-        } else if (view == binding.clRetypePassword) {
+        } else if (view == vb.clRetypePassword) {
             if (hasFocus) {
-                binding.vRetypePasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTextFieldBorderActiveColor))
+                vb.vRetypePasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTextFieldBorderActiveColor))
             } else {
-                binding.vRetypePasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1910))
+                vb.vRetypePasswordSeparator.setBackgroundColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1910))
             }
         }
     }
@@ -503,25 +502,25 @@ class TAPRegisterActivity : TAPBaseActivity() {
 //    }
 
     private fun enableContinueButton() {
-        binding.clButtonContinue.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_button_active_ripple)
-        binding.ivButtonIcon.visibility = View.VISIBLE
-        binding.pbButtonLoading.visibility = View.INVISIBLE
-        binding.clButtonContinue.setOnClickListener { register() }
+        vb.clButtonContinue.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_button_active_ripple)
+        vb.ivButtonIcon.visibility = View.VISIBLE
+        vb.pbButtonLoading.visibility = View.INVISIBLE
+        vb.clButtonContinue.setOnClickListener { register() }
     }
 
     private fun disableContinueButton() {
-        binding.clButtonContinue.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_button_inactive)
-        binding.ivButtonIcon.visibility = View.INVISIBLE
-        binding.pbButtonLoading.visibility = View.VISIBLE
-        binding.clButtonContinue.setOnClickListener(null)
+        vb.clButtonContinue.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_button_inactive)
+        vb.ivButtonIcon.visibility = View.INVISIBLE
+        vb.pbButtonLoading.visibility = View.VISIBLE
+        vb.clButtonContinue.setOnClickListener(null)
     }
 
     private fun clearAllFocus() {
-        TAPUtils.dismissKeyboard(this, binding.etFullName)
-        TAPUtils.dismissKeyboard(this, binding.etUsername)
-        TAPUtils.dismissKeyboard(this, binding.etEmailAddress)
-        TAPUtils.dismissKeyboard(this, binding.etPassword)
-        TAPUtils.dismissKeyboard(this, binding.etRetypePassword)
+        TAPUtils.dismissKeyboard(this, vb.etFullName)
+        TAPUtils.dismissKeyboard(this, vb.etUsername)
+        TAPUtils.dismissKeyboard(this, vb.etEmailAddress)
+        TAPUtils.dismissKeyboard(this, vb.etPassword)
+        TAPUtils.dismissKeyboard(this, vb.etRetypePassword)
     }
 
     private fun togglePasswordVisibility(editText: EditText, button: ImageView) {
@@ -538,20 +537,20 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun register() {
         if (!validateForm()) {
-            if (!binding.cbPrivacyPolicy.isChecked) {
+            if (!vb.cbPrivacyPolicy.isChecked) {
                 showErrorSnackbar(getString(R.string.tap_error_register_privacy_policy))
-                binding.cbPrivacyPolicy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorError))
-                binding.cbPrivacyPolicy.animate().alpha(1f).setDuration(200L).start()
+                vb.cbPrivacyPolicy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorError))
+                vb.cbPrivacyPolicy.animate().alpha(1f).setDuration(200L).start()
             }
             return
         }
         TAPDataManager.getInstance(instanceKey).register(
-                binding.etFullName.text.toString(),
-                binding.etUsername.text.toString(),
+                vb.etFullName.text.toString(),
+                vb.etUsername.text.toString(),
                 vm.countryID,
-                binding.tvPhoneNumber.text.toString().replace(" ", ""),
-                binding.etEmailAddress.text.toString(),
-                binding.etPassword.text.toString(),
+                vb.tvPhoneNumber.text.toString().replace(" ", ""),
+                vb.etEmailAddress.text.toString(),
+                vb.etPassword.text.toString(),
                 registerView
         )
     }
@@ -572,91 +571,91 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun disableEditing() {
         clearAllFocus()
 
-        binding.llChangeProfilePicture.setOnClickListener(null)
-        binding.flRemoveProfilePicture.setOnClickListener(null)
+        vb.llChangeProfilePicture.setOnClickListener(null)
+        vb.flRemoveProfilePicture.setOnClickListener(null)
         disableContinueButton()
 
-        binding.etFullName.isEnabled = false
-        binding.etUsername.isEnabled = false
-        binding.etEmailAddress.isEnabled = false
-        binding.etPassword.isEnabled = false
-        binding.etRetypePassword.isEnabled = false
-        binding.cbPrivacyPolicy.isEnabled = false
+        vb.etFullName.isEnabled = false
+        vb.etUsername.isEnabled = false
+        vb.etEmailAddress.isEnabled = false
+        vb.etPassword.isEnabled = false
+        vb.etRetypePassword.isEnabled = false
+        vb.cbPrivacyPolicy.isEnabled = false
 
-        binding.tvLabelChangeProfilePicture.setTextColor(vm.textFieldFontColorHint)
-        ImageViewCompat.setImageTintList(binding.ivEditProfilePictureIcon, ColorStateList.valueOf(vm.textFieldFontColorHint))
+        vb.tvLabelChangeProfilePicture.setTextColor(vm.textFieldFontColorHint)
+        ImageViewCompat.setImageTintList(vb.ivEditProfilePictureIcon, ColorStateList.valueOf(vm.textFieldFontColorHint))
 
-        binding.tvLabelFullName.setTextColor(vm.textFieldFontColorHint)
-        binding.tvLabelUsername.setTextColor(vm.textFieldFontColorHint)
-        binding.tvLabelMobileNumber.setTextColor(vm.textFieldFontColorHint)
-        binding.tvLabelEmailAddress.setTextColor(vm.textFieldFontColorHint)
-        binding.tvLabelPrivacyPolicy.setTextColor(vm.textFieldFontColorHint)
-        binding.tvLabelPrivacyPolicy.setLinkTextColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1960))
-        binding.tvButtonContinue.setTextColor(vm.textFieldFontColorHint)
+        vb.tvLabelFullName.setTextColor(vm.textFieldFontColorHint)
+        vb.tvLabelUsername.setTextColor(vm.textFieldFontColorHint)
+        vb.tvLabelMobileNumber.setTextColor(vm.textFieldFontColorHint)
+        vb.tvLabelEmailAddress.setTextColor(vm.textFieldFontColorHint)
+        vb.tvLabelPrivacyPolicy.setTextColor(vm.textFieldFontColorHint)
+        vb.tvLabelPrivacyPolicy.setLinkTextColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1960))
+        vb.tvButtonContinue.setTextColor(vm.textFieldFontColorHint)
 
-        binding.etFullName.setTextColor(vm.textFieldFontColorHint)
-        binding.etUsername.setTextColor(vm.textFieldFontColorHint)
-        binding.etEmailAddress.setTextColor(vm.textFieldFontColorHint)
-        binding.etPassword.setTextColor(vm.textFieldFontColorHint)
-        binding.etRetypePassword.setTextColor(vm.textFieldFontColorHint)
+        vb.etFullName.setTextColor(vm.textFieldFontColorHint)
+        vb.etUsername.setTextColor(vm.textFieldFontColorHint)
+        vb.etEmailAddress.setTextColor(vm.textFieldFontColorHint)
+        vb.etPassword.setTextColor(vm.textFieldFontColorHint)
+        vb.etRetypePassword.setTextColor(vm.textFieldFontColorHint)
 
-        binding.etFullName.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
-        binding.etUsername.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
-        binding.etEmailAddress.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
-        binding.etPassword.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
-        binding.etRetypePassword.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
+        vb.etFullName.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
+        vb.etUsername.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
+        vb.etEmailAddress.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
+        vb.etPassword.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
+        vb.etRetypePassword.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_disabled)
 
-        binding.ivUsernameStatusIcon.alpha = 0.4f
-        ImageViewCompat.setImageTintList(binding.ivUsernameStatusIcon, ColorStateList.valueOf(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapBlack19)))
+        vb.ivUsernameStatusIcon.alpha = 0.4f
+        ImageViewCompat.setImageTintList(vb.ivUsernameStatusIcon, ColorStateList.valueOf(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapBlack19)))
 
-        binding.cbPrivacyPolicy.alpha = 0.4f
-        binding.cbPrivacyPolicy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapBlack19))
+        vb.cbPrivacyPolicy.alpha = 0.4f
+        vb.cbPrivacyPolicy.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapBlack19))
     }
 
     private fun enableEditing() {
-        binding.llChangeProfilePicture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        binding.flRemoveProfilePicture.setOnClickListener { removeProfilePicture() }
+        vb.llChangeProfilePicture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+        vb.flRemoveProfilePicture.setOnClickListener { removeProfilePicture() }
         enableContinueButton()
 
-        binding.etFullName.isEnabled = true
-        binding.etUsername.isEnabled = true
-        binding.etEmailAddress.isEnabled = true
-        binding.etPassword.isEnabled = true
-        binding.etRetypePassword.isEnabled = true
-        binding.cbPrivacyPolicy.isEnabled = true
+        vb.etFullName.isEnabled = true
+        vb.etUsername.isEnabled = true
+        vb.etEmailAddress.isEnabled = true
+        vb.etPassword.isEnabled = true
+        vb.etRetypePassword.isEnabled = true
+        vb.cbPrivacyPolicy.isEnabled = true
 
-        binding.tvLabelChangeProfilePicture.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
-        ImageViewCompat.setImageTintList(binding.ivEditProfilePictureIcon, ColorStateList.valueOf(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapIconChangePicture)))
+        vb.tvLabelChangeProfilePicture.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
+        ImageViewCompat.setImageTintList(vb.ivEditProfilePictureIcon, ColorStateList.valueOf(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapIconChangePicture)))
 
-        binding.tvLabelFullName.setTextColor(vm.textFieldFontColor)
-        binding.tvLabelUsername.setTextColor(vm.textFieldFontColor)
-        binding.tvLabelMobileNumber.setTextColor(vm.textFieldFontColor)
-        binding.tvLabelEmailAddress.setTextColor(vm.textFieldFontColor)
-        binding.tvLabelPrivacyPolicy.setTextColor(vm.textFieldFontColor)
-        binding.tvLabelPrivacyPolicy.setLinkTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
-        binding.tvButtonContinue.setTextColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapButtonLabelColor))
+        vb.tvLabelFullName.setTextColor(vm.textFieldFontColor)
+        vb.tvLabelUsername.setTextColor(vm.textFieldFontColor)
+        vb.tvLabelMobileNumber.setTextColor(vm.textFieldFontColor)
+        vb.tvLabelEmailAddress.setTextColor(vm.textFieldFontColor)
+        vb.tvLabelPrivacyPolicy.setTextColor(vm.textFieldFontColor)
+        vb.tvLabelPrivacyPolicy.setLinkTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
+        vb.tvButtonContinue.setTextColor(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapButtonLabelColor))
 
-        binding.etFullName.setTextColor(vm.textFieldFontColor)
-        binding.etUsername.setTextColor(vm.textFieldFontColor)
-        binding.etEmailAddress.setTextColor(vm.textFieldFontColor)
-        binding.etPassword.setTextColor(vm.textFieldFontColor)
-        binding.etRetypePassword.setTextColor(vm.textFieldFontColor)
+        vb.etFullName.setTextColor(vm.textFieldFontColor)
+        vb.etUsername.setTextColor(vm.textFieldFontColor)
+        vb.etEmailAddress.setTextColor(vm.textFieldFontColor)
+        vb.etPassword.setTextColor(vm.textFieldFontColor)
+        vb.etRetypePassword.setTextColor(vm.textFieldFontColor)
 
-        updateEditTextBackground(binding.etFullName, binding.etFullName.hasFocus())
-        updateEditTextBackground(binding.etUsername, binding.etUsername.hasFocus())
-        updateEditTextBackground(binding.etEmailAddress, binding.etEmailAddress.hasFocus())
-        updateEditTextBackground(binding.etPassword, binding.etPassword.hasFocus())
-        updateEditTextBackground(binding.etRetypePassword, binding.etRetypePassword.hasFocus())
+        updateEditTextBackground(vb.etFullName, vb.etFullName.hasFocus())
+        updateEditTextBackground(vb.etUsername, vb.etUsername.hasFocus())
+        updateEditTextBackground(vb.etEmailAddress, vb.etEmailAddress.hasFocus())
+        updateEditTextBackground(vb.etPassword, vb.etPassword.hasFocus())
+        updateEditTextBackground(vb.etRetypePassword, vb.etRetypePassword.hasFocus())
 
-        binding.ivUsernameStatusIcon.alpha = 1f
-        ImageViewCompat.setImageTintList(binding.ivUsernameStatusIcon, null)
+        vb.ivUsernameStatusIcon.alpha = 1f
+        ImageViewCompat.setImageTintList(vb.ivUsernameStatusIcon, null)
 
         checkPrivacyPolicy()
     }
 
     private fun uploadProfilePicture() {
         vm.isUploadingProfilePicture = true
-        binding.pbProfilePictureProgress.progress = 0
+        vb.pbProfilePictureProgress.progress = 0
         TAPFileUploadManager.getInstance(instanceKey).uploadProfilePicture(this@TAPRegisterActivity, vm.profilePictureUri, vm.myUserModel.userID)
     }
 
@@ -754,7 +753,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            validateFullName(binding.llFullNameError.visibility == View.VISIBLE && binding.etFullName.text.isNotEmpty())
+            validateFullName(vb.llFullNameError.visibility == View.VISIBLE && vb.etFullName.text.isNotEmpty())
         }
     }
 
@@ -767,8 +766,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
             vm.isUsernameValid = false
             checkUsernameTimer.cancel()
             TAPDataManager.getInstance(instanceKey).cancelCheckUsernameApiCall()
-            if (validateUsername(binding.llUsernameError.visibility == View.VISIBLE && binding.etUsername.text.length >= USERNAME_MIN_LENGTH)) {
-                if (binding.etUsername.text.length >= USERNAME_MIN_LENGTH) {
+            if (validateUsername(vb.llUsernameError.visibility == View.VISIBLE && vb.etUsername.text.length >= USERNAME_MIN_LENGTH)) {
+                if (vb.etUsername.text.length >= USERNAME_MIN_LENGTH) {
                     checkUsernameTimer.start()
                 }
             }
@@ -781,7 +780,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (binding.llEmailAddressError.visibility == View.VISIBLE) {
+            if (vb.llEmailAddressError.visibility == View.VISIBLE) {
                 validateEmailAddress()
             }
         }
@@ -812,18 +811,18 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onFinish() {
-            val username = binding.etUsername.text.toString()
-            TAPDataManager.getInstance(instanceKey).checkUsernameExists(binding.etUsername.text.toString(), object : TAPDefaultDataView<TAPCheckUsernameResponse>() {
+            val username = vb.etUsername.text.toString()
+            TAPDataManager.getInstance(instanceKey).checkUsernameExists(vb.etUsername.text.toString(), object : TAPDefaultDataView<TAPCheckUsernameResponse>() {
                 override fun onSuccess(response: TAPCheckUsernameResponse?) {
-                    if (username != binding.etUsername.text.toString()) {
+                    if (username != vb.etUsername.text.toString()) {
                         return
                     }
                     if (response?.exists == false) {
                         vm.isUsernameValid = true
-                        binding.llUsernameError.visibility = View.GONE
-                        binding.ivUsernameStatusIcon.visibility = View.VISIBLE
-                        binding.ivUsernameStatusIcon.setImageDrawable(ContextCompat.getDrawable(this@TAPRegisterActivity, io.taptalk.TapTalk.R.drawable.tap_ic_check_circle_green))
-                        updateEditTextBackground(binding.etUsername, binding.etUsername.hasFocus())
+                        vb.llUsernameError.visibility = View.GONE
+                        vb.ivUsernameStatusIcon.visibility = View.VISIBLE
+                        vb.ivUsernameStatusIcon.setImageDrawable(ContextCompat.getDrawable(this@TAPRegisterActivity, io.taptalk.TapTalk.R.drawable.tap_ic_check_circle_green))
+                        updateEditTextBackground(vb.etUsername, vb.etUsername.hasFocus())
                         vm.formCheck[indexUsername] = stateValid
                     }
                     else {
@@ -904,7 +903,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             val action = intent?.action
             when (action) {
                 UploadProgressLoading -> {
-                    binding.pbProfilePictureProgress.progress = TAPFileUploadManager.getInstance(instanceKey)
+                    vb.pbProfilePictureProgress.progress = TAPFileUploadManager.getInstance(instanceKey)
                             .getUploadProgressPercent(vm.myUserModel.userID) ?: 0
                 }
                 UploadProgressFinish -> {
@@ -932,14 +931,14 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun showErrorSnackbar(errorMessage: String?) {
         if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this)) {
-            binding.tapCustomSnackbar.show(
+            vb.tapCustomSnackbar.show(
                 TapCustomSnackbarView.Companion.Type.ERROR,
                 io.taptalk.TapTalk.R.drawable.tap_ic_info_outline_primary,
                 errorMessage ?: getString(io.taptalk.TapTalk.R.string.tap_error_message_general)
             )
         }
         else {
-            binding.tapCustomSnackbar.show(
+            vb.tapCustomSnackbar.show(
                 TapCustomSnackbarView.Companion.Type.ERROR,
                 io.taptalk.TapTalk.R.drawable.tap_ic_wifi_off_red,
                 io.taptalk.TapTalk.R.string.tap_error_check_your_network

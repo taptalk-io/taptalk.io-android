@@ -6,9 +6,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.moselo.SampleApps.Activity.TAPLoginActivityOld
@@ -31,13 +28,13 @@ import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalkSample.R
-import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
+import io.taptalk.TapTalkSample.databinding.TapFragmentLoginVerificationBinding
 
 class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
-    val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
-            ?: ""
-    var otpTimer: CountDownTimer? = null
 
+    private lateinit var vb: TapFragmentLoginVerificationBinding
+    val generalErrorMessage = context?.resources?.getString(io.taptalk.TapTalk.R.string.tap_error_message_general) ?: ""
+    var otpTimer: CountDownTimer? = null
     var waitTime = 30L * 1000
     var phoneNumber = "0"
     var phoneNumberWithCode = "0"
@@ -100,10 +97,10 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.tap_fragment_login_verification, container, false)
+        vb = TapFragmentLoginVerificationBinding.inflate(inflater, container, false)
+        return vb.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -130,26 +127,27 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         countryID = arguments?.getInt(kCountryID) ?: 0
         countryCallingCode = arguments?.getString(kCountryCallingCode, "") ?: ""
         countryFlagUrl = arguments?.getString(kCountryFlagUrl, "") ?: ""
-        waitTime = arguments?.getLong(kWaitTime, 30L * 1000) ?: 30L * 1000
+        waitTime = (arguments?.getLong(kWaitTime, 30L * 1000) ?: 30L) * 1000
         otpType = arguments?.getString(kType, LOGIN) ?: LOGIN
         note = arguments?.getString(kNote, "") ?: ""
         if (otpType == VERIFICATION) {
-            tv_toolbar_title.visibility = View.VISIBLE
-        } else {
-            tv_toolbar_title.visibility = View.GONE
+            vb.tvToolbarTitle.visibility = View.VISIBLE
+        }
+        else {
+            vb.tvToolbarTitle.visibility = View.GONE
         }
         setTextandImageBasedOnOTPMethod(channel)
 
-        TAPUtils.animateClickButton(iv_back_button, 0.95f)
-        iv_back_button.setOnClickListener { activity?.onBackPressed() }
-        et_otp_code.addTextChangedListener(otpTextWatcher)
-        et_otp_code.requestFocus()
-        TAPUtils.showKeyboard(activity, et_otp_code)
+        TAPUtils.animateClickButton(vb.ivBackButton, 0.95f)
+        vb.ivBackButton.setOnClickListener { activity?.onBackPressed() }
+        vb.etOtpCode.addTextChangedListener(otpTextWatcher)
+        vb.etOtpCode.requestFocus()
+        TAPUtils.showKeyboard(activity, vb.etOtpCode)
         clearOTPEditText()
 
         setupTimer()
 
-        ll_request_otp_again.setOnClickListener {
+        vb.llRequestOtpAgain.setOnClickListener {
             showRequestingOTPLoading()
             hideBtnSendViaSMS()
             if (otpType == LOGIN) {
@@ -161,7 +159,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                         object : TAPDefaultDataView<TAPOTPResponse>() {
                             override fun onSuccess(response: TAPOTPResponse) {
                                 super.onSuccess(response)
-                                et_otp_code.isEnabled = true
+                                vb.etOtpCode.isEnabled = true
                                 val additional = HashMap<String, String>()
                                 additional.put("phoneNumber", phoneNumber)
                                 additional.put("countryCode", countryID.toString())
@@ -180,7 +178,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
                             override fun onError(error: TAPErrorModel) {
                                 super.onError(error)
-                                et_otp_code.isEnabled = true
+                                vb.etOtpCode.isEnabled = true
                                 val additional = HashMap<String, String>()
                                 additional.put("phoneNumber", phoneNumber)
                                 additional.put("countryCode", countryID.toString())
@@ -189,7 +187,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                             }
 
                             override fun onError(errorMessage: String) {
-                                et_otp_code.isEnabled = true
+                                vb.etOtpCode.isEnabled = true
                                 requestOTPInterface.onRequestFailed(errorMessage, "400")
                             }
                         })
@@ -198,13 +196,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ll_btn_send_via_sms.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_border_ripple)
-        }
+        vb.llBtnSendViaSms.background = ContextCompat.getDrawable(requireContext(), io.taptalk.TapTalk.R.drawable.tap_bg_button_border_ripple)
 
-        ll_btn_send_via_sms.setOnClickListener {
+        vb.llBtnSendViaSms.setOnClickListener {
             isFromBtnSendViaSMS = true
-            showPopupLoading(getString(R.string.tap_loading))
+            showPopupLoading(getString(io.taptalk.TapTalk.R.string.tap_loading))
             showRequestingOTPLoading()
             if (otpType == LOGIN) {
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey)
@@ -214,7 +210,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                         "sms",
                         object : TAPDefaultDataView<TAPOTPResponse>() {
                             override fun onSuccess(response: TAPOTPResponse) {
-                                et_otp_code.isEnabled = true
+                                vb.etOtpCode.isEnabled = true
                                 val additional = HashMap<String, String>()
                                 additional.put("phoneNumber", phoneNumberWithCode)
                                 additional.put("countryCode", countryID.toString())
@@ -233,7 +229,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                             }
 
                             override fun onError(error: TAPErrorModel) {
-                                et_otp_code.isEnabled = true
+                                vb.etOtpCode.isEnabled = true
                                 super.onError(error)
                                 val additional = HashMap<String, String>()
                                 additional.put("phoneNumber", phoneNumberWithCode)
@@ -243,7 +239,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                             }
 
                             override fun onError(errorMessage: String?) {
-                                et_otp_code.isEnabled = true
+                                vb.etOtpCode.isEnabled = true
                                 super.onError(errorMessage)
                                 requestOTPInterface.onRequestFailed(errorMessage, "400")
                             }
@@ -276,21 +272,24 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
                 waitTime = nextRequestSeconds * 1000L
                 setAndStartTimer(waitTime)
-                et_otp_code.requestFocus()
-                TAPUtils.showKeyboard(activity, et_otp_code)
+                vb.etOtpCode.requestFocus()
+                TAPUtils.showKeyboard(activity, vb.etOtpCode)
                 Handler().postDelayed({ showTimer() }, 2000)
-            } else {
+            }
+            else {
                 showRequestAgain()
                 if (isFromBtnSendViaSMS) {
                     hidePopupLoading()
                     isFromBtnSendViaSMS = false
-                } else {
+                }
+                else {
                     showBtnSendViaSMS()
                 }
                 if (whatsAppFailureReason == "") {
-                    showDialog(getString(R.string.tap_error), message)
-                } else {
-                    showDialog(getString(R.string.tap_currently_unavailable), getString(R.string.tap_error_we_are_experiencing_some_issues))
+                    showDialog(getString(io.taptalk.TapTalk.R.string.tap_error), message)
+                }
+                else {
+                    showDialog(getString(io.taptalk.TapTalk.R.string.tap_currently_unavailable), getString(io.taptalk.TapTalk.R.string.tap_error_we_are_experiencing_some_issues))
                 }
             }
         }
@@ -299,14 +298,18 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             if (isFromBtnSendViaSMS) {
                 hidePopupLoading()
                 isFromBtnSendViaSMS = false
-            } else {
+            }
+            else {
                 showBtnSendViaSMS()
             }
             showRequestAgain()
             if (TAPNetworkStateManager.getInstance("").hasNetworkConnection(context)) {
-                showDialog(getString(R.string.tap_error), errorMessage
-                        ?: getString(R.string.tap_error_we_are_experiencing_some_issues))
-            }else {
+                showDialog(
+                    getString(io.taptalk.TapTalk.R.string.tap_error), errorMessage ?:
+                    getString(io.taptalk.TapTalk.R.string.tap_error_we_are_experiencing_some_issues)
+                )
+            }
+            else {
                 TAPUtils.showNoInternetErrorDialog(context)
             }
         }
@@ -317,7 +320,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             object : TAPDefaultDataView<TAPOTPResponse>() {
                 override fun onSuccess(response: TAPOTPResponse) {
                     super.onSuccess(response)
-                    et_otp_code.isEnabled = true
+                    vb.etOtpCode.isEnabled = true
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
@@ -336,7 +339,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
                 override fun onError(error: TAPErrorModel?) {
                     super.onError(error)
-                    et_otp_code.isEnabled = true
+                    vb.etOtpCode.isEnabled = true
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
@@ -346,7 +349,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
                 override fun onError(errorMessage: String?) {
                     super.onError(errorMessage)
-                    et_otp_code.isEnabled = true
+                    vb.etOtpCode.isEnabled = true
                     requestOTPInterface.onRequestFailed(errorMessage, "400")
                 }
             })
@@ -354,11 +357,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
     private fun resendOtpSuccessMessage() {
         clearOTPEditText()
-        ll_request_otp_again.visibility = View.GONE
-        ll_loading_otp.visibility = View.GONE
-        tv_otp_timer.visibility = View.GONE
-        ll_otp_sent.visibility = View.VISIBLE
-        iv_progress_otp.clearAnimation()
+        vb.llRequestOtpAgain.visibility = View.GONE
+        vb.llLoadingOtp.visibility = View.GONE
+        vb.tvOtpTimer.visibility = View.GONE
+        vb.llOtpSent.visibility = View.VISIBLE
+        vb.ivProgressOtp.clearAnimation()
     }
 
     private fun setupTimer() {
@@ -382,11 +385,8 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun setAndStartTimer(waitTime: Long) {
-
-        if (null != tv_didnt_receive_and_invalid) {
-            tv_didnt_receive_and_invalid.text = resources.getText(R.string.tap_didnt_receive_the_6_digit_otp)
-            tv_didnt_receive_and_invalid.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-        }
+        vb.tvDidntReceiveAndInvalid.text = resources.getText(io.taptalk.TapTalk.R.string.tap_didnt_receive_the_6_digit_otp)
+        vb.tvDidntReceiveAndInvalid.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
 
         otpTimer?.cancel()
 
@@ -404,8 +404,8 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 when (minuteLeft) {
                     0L -> {
                         try {
-                            if (10 > secondLeft) tv_otp_timer.text = "Wait 0:0$secondLeft"
-                            else tv_otp_timer.text = "Wait 0:$secondLeft"
+                            if (10 > secondLeft) vb.tvOtpTimer.text = "Wait 0:0$secondLeft"
+                            else vb.tvOtpTimer.text = "Wait 0:$secondLeft"
                         } catch (e: Exception) {
                             cancelTimer()
                             e.printStackTrace()
@@ -413,7 +413,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     }
                     else -> {
                         try {
-                            tv_otp_timer.text = "Wait $minuteLeft:$secondLeft"
+                            vb.tvOtpTimer.text = "Wait $minuteLeft:$secondLeft"
                         } catch (e: Exception) {
                             cancelTimer()
                             e.printStackTrace()
@@ -448,10 +448,10 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).verifyOTPLogin(
                 otpID,
                 otpKey,
-                et_otp_code.text.toString(),
+                vb.etOtpCode.text.toString(),
                 object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
                     override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
-                        et_otp_code.isEnabled = true
+                        vb.etOtpCode.isEnabled = true
                         if (response.isRegistered) {
 //                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
 //                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success")
@@ -479,13 +479,13 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     }
 
                     override fun onError(error: TAPErrorModel) {
-                        et_otp_code.isEnabled = true
+                        vb.etOtpCode.isEnabled = true
 //                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Login Failed", error.code, error.message)
                         verifyOTPInterface.verifyOTPFailed(error.message, error.code)
                     }
 
                     override fun onError(errorMessage: String) {
-                        et_otp_code.isEnabled = true
+                        vb.etOtpCode.isEnabled = true
                         verifyOTPInterface.verifyOTPFailed(errorMessage, "400")
                     }
                 })
@@ -494,17 +494,17 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).verifyOtpDeleteAccount(
                 otpID,
                 otpKey,
-                et_otp_code.text.toString(),
+                vb.etOtpCode.text.toString(),
                 note,
                 object : TAPDefaultDataView<TAPCommonResponse>() {
                     override fun onSuccess(response: TAPCommonResponse) {
                         (activity as TapDeleteAccountActivity).vm.isLoading = false
                         (activity as TapDeleteAccountActivity).vm.isDeleted = true
-                        fl_otp.visibility = View.GONE
-                        ll_loading_otp.visibility = View.GONE
-                        tv_didnt_receive_and_invalid.text = getString(R.string.tap_verification_succeed)
-                        tv_didnt_receive_and_invalid.setTextColor(ContextCompat.getColor(requireContext(), R.color.tapTransparentBlack1980))
-                        iv_check.visibility = View.VISIBLE
+                        vb.flOtp.visibility = View.GONE
+                        vb.llLoadingOtp.visibility = View.GONE
+                        vb.tvDidntReceiveAndInvalid.text = getString(io.taptalk.TapTalk.R.string.tap_verification_succeed)
+                        vb.tvDidntReceiveAndInvalid.setTextColor(ContextCompat.getColor(requireContext(), io.taptalk.TapTalk.R.color.tapTransparentBlack1980))
+                        vb.ivCheck.visibility = View.VISIBLE
                         Handler(Looper.getMainLooper()).postDelayed({
                             TapTalk.logoutAndClearAllTapTalkData((activity as TAPBaseActivity).instanceKey)
                         }, 3000L)
@@ -512,14 +512,14 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
                     override fun onError(error: TAPErrorModel) {
                         (activity as TapDeleteAccountActivity).vm.isLoading = false
-                        et_otp_code.isEnabled = true
+                        vb.etOtpCode.isEnabled = true
 //                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Login Failed", error.code, error.message)
                         verifyOTPInterface.verifyOTPFailed(error.message, error.code)
                     }
 
                     override fun onError(errorMessage: String) {
                         (activity as TapDeleteAccountActivity).vm.isLoading = false
-                        et_otp_code.isEnabled = true
+                        vb.etOtpCode.isEnabled = true
                         verifyOTPInterface.verifyOTPFailed(errorMessage, "400")
                     }
                 })
@@ -554,20 +554,20 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         }
 
         override fun verifyOTPFailed(errorCode: String?, errorMessage: String?) {
-            tv_didnt_receive_and_invalid.text = resources.getText(R.string.tap_error_invalid_otp)
-            tv_didnt_receive_and_invalid.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            tv_otp_filled_1.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            tv_otp_filled_2.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            tv_otp_filled_3.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            tv_otp_filled_4.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            tv_otp_filled_5.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
-            tv_otp_filled_6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.tvDidntReceiveAndInvalid.text = resources.getText(io.taptalk.TapTalk.R.string.tap_error_invalid_otp)
+            vb.tvDidntReceiveAndInvalid.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.tvOtpFilled1.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.tvOtpFilled2.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.tvOtpFilled3.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.tvOtpFilled4.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.tvOtpFilled5.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+            vb.tvOtpFilled6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
 
             if (isTimerFinished) {
                 showRequestAgain()
@@ -575,28 +575,28 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 showTimer()
             }
             isOtpInvalid = true
-            et_otp_code.requestFocus()
-            TAPUtils.showKeyboard(activity, et_otp_code)
+            vb.etOtpCode.requestFocus()
+            TAPUtils.showKeyboard(activity, vb.etOtpCode)
 
 
         }
     }
 
     private fun clearOTPEditText() {
-        v_pointer_1.visibility = View.VISIBLE
-        v_pointer_2.visibility = View.VISIBLE
-        v_pointer_3.visibility = View.VISIBLE
-        v_pointer_4.visibility = View.VISIBLE
-        v_pointer_5.visibility = View.VISIBLE
-        v_pointer_6.visibility = View.VISIBLE
+        vb.vPointer1.visibility = View.VISIBLE
+        vb.vPointer2.visibility = View.VISIBLE
+        vb.vPointer3.visibility = View.VISIBLE
+        vb.vPointer4.visibility = View.VISIBLE
+        vb.vPointer5.visibility = View.VISIBLE
+        vb.vPointer6.visibility = View.VISIBLE
 
-        tv_otp_filled_1.text = ""
-        tv_otp_filled_2.text = ""
-        tv_otp_filled_3.text = ""
-        tv_otp_filled_4.text = ""
-        tv_otp_filled_5.text = ""
-        tv_otp_filled_6.text = ""
-        et_otp_code.setText("")
+        vb.tvOtpFilled1.text = ""
+        vb.tvOtpFilled2.text = ""
+        vb.tvOtpFilled3.text = ""
+        vb.tvOtpFilled4.text = ""
+        vb.tvOtpFilled5.text = ""
+        vb.tvOtpFilled6.text = ""
+        vb.etOtpCode.setText("")
     }
 
     val otpTextWatcher = object : TextWatcher {
@@ -611,101 +611,101 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             when (s?.length) {
                 1 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    vb.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    vb.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_1.text = String.format("%s", s[0])
-                    tv_otp_filled_2.text = ""
-                    tv_otp_filled_3.text = ""
-                    tv_otp_filled_4.text = ""
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    vb.tvOtpFilled1.text = String.format("%s", s[0])
+                    vb.tvOtpFilled2.text = ""
+                    vb.tvOtpFilled3.text = ""
+                    vb.tvOtpFilled4.text = ""
+                    vb.tvOtpFilled5.text = ""
+                    vb.tvOtpFilled6.text = ""
                 }
                 2 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    vb.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    vb.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_2.text = String.format("%s", s[1])
-                    tv_otp_filled_3.text = ""
-                    tv_otp_filled_4.text = ""
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    vb.tvOtpFilled2.text = String.format("%s", s[1])
+                    vb.tvOtpFilled3.text = ""
+                    vb.tvOtpFilled4.text = ""
+                    vb.tvOtpFilled5.text = ""
+                    vb.tvOtpFilled6.text = ""
                 }
                 3 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    vb.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    vb.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_3.text = String.format("%s", s[2])
-                    tv_otp_filled_4.text = ""
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    vb.tvOtpFilled3.text = String.format("%s", s[2])
+                    vb.tvOtpFilled4.text = ""
+                    vb.tvOtpFilled5.text = ""
+                    vb.tvOtpFilled6.text = ""
                 }
                 4 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    vb.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    vb.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_4.text = String.format("%s", s[3])
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    vb.tvOtpFilled4.text = String.format("%s", s[3])
+                    vb.tvOtpFilled5.text = ""
+                    vb.tvOtpFilled6.text = ""
                 }
                 5 -> {
                     if (isOtpInvalid) {
-                        tv_otp_filled_1.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        tv_otp_filled_2.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        tv_otp_filled_3.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        tv_otp_filled_4.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        tv_otp_filled_5.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        tv_otp_filled_6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        et_otp_code.setText("")
+                        vb.tvOtpFilled1.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        vb.tvOtpFilled2.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        vb.tvOtpFilled3.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        vb.tvOtpFilled4.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        vb.tvOtpFilled5.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        vb.tvOtpFilled6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        vb.etOtpCode.setText("")
                         isOtpInvalid = false
                     } else {
-                        v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                        v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                        v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                        v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                        v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                        v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                        vb.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                        vb.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                        vb.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                        vb.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                        vb.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                        vb.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
 
-                        tv_otp_filled_5.text = String.format("%s", s[4])
-                        tv_otp_filled_6.text = ""
+                        vb.tvOtpFilled5.text = String.format("%s", s[4])
+                        vb.tvOtpFilled6.text = ""
                     }
                 }
                 6 -> {
 
-                    tv_otp_filled_6.text = String.format("%s", s[5])
+                    vb.tvOtpFilled6.text = String.format("%s", s[5])
 
                     verifyOTP()
                 }
                 else -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    vb.vPointer1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    vb.vPointer2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
+                    vb.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
-                    tv_otp_filled_1.text = ""
-                    tv_otp_filled_2.text = ""
-                    tv_otp_filled_3.text = ""
-                    tv_otp_filled_4.text = ""
-                    tv_otp_filled_5.text = ""
-                    tv_otp_filled_6.text = ""
+                    vb.tvOtpFilled1.text = ""
+                    vb.tvOtpFilled2.text = ""
+                    vb.tvOtpFilled3.text = ""
+                    vb.tvOtpFilled4.text = ""
+                    vb.tvOtpFilled5.text = ""
+                    vb.tvOtpFilled6.text = ""
                 }
             }
         }
@@ -716,86 +716,85 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setTitle(title)
                 .setMessage(message)
-                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setPrimaryButtonTitle(getString(io.taptalk.TapTalk.R.string.tap_ok))
                 .setPrimaryButtonListener {}
                 .show()
     }
 
     private fun showRequestingOTPLoading() {
-        ll_otp_sent.visibility = View.GONE
-        ll_request_otp_again.visibility = View.GONE
-        tv_otp_timer.visibility = View.GONE
-        iv_progress_otp.clearAnimation()
-        ll_loading_otp.visibility = View.VISIBLE
-        tv_loading_otp.text = resources.getText(R.string.tap_requesting_otp)
-        TAPUtils.rotateAnimateInfinitely(context, iv_progress_otp)
-        et_otp_code.isEnabled = false
+        vb.llOtpSent.visibility = View.GONE
+        vb.llRequestOtpAgain.visibility = View.GONE
+        vb.tvOtpTimer.visibility = View.GONE
+        vb.ivProgressOtp.clearAnimation()
+        vb.llLoadingOtp.visibility = View.VISIBLE
+        vb.tvLoadingOtp.text = resources.getText(io.taptalk.TapTalk.R.string.tap_requesting_otp)
+        TAPUtils.rotateAnimateInfinitely(context, vb.ivProgressOtp)
+        vb.etOtpCode.isEnabled = false
     }
 
     private fun showVerifyingOTPLoading() {
-        ll_otp_sent.visibility = View.GONE
-        ll_request_otp_again.visibility = View.GONE
-        tv_otp_timer.visibility = View.GONE
-        iv_progress_otp.clearAnimation()
-        ll_loading_otp.visibility = View.VISIBLE
-        tv_loading_otp.text = resources.getText(R.string.tap_verifying_otp)
-        TAPUtils.rotateAnimateInfinitely(context, iv_progress_otp)
-        et_otp_code.isEnabled = false
+        vb.llOtpSent.visibility = View.GONE
+        vb.llRequestOtpAgain.visibility = View.GONE
+        vb.tvOtpTimer.visibility = View.GONE
+        vb.ivProgressOtp.clearAnimation()
+        vb.llLoadingOtp.visibility = View.VISIBLE
+        vb.tvLoadingOtp.text = resources.getText(io.taptalk.TapTalk.R.string.tap_verifying_otp)
+        TAPUtils.rotateAnimateInfinitely(context, vb.ivProgressOtp)
+        vb.etOtpCode.isEnabled = false
     }
 
     private fun setTextandImageBasedOnOTPMethod(channel: String) {
         if (channel == "whatsapp") {
-            iv_otp_method.setImageResource(R.drawable.tap_ic_whatsapp)
-            tv_method_and_phonenumber.text = String.format(getString(R.string.tap_format_ss_to), getString(R.string.tap_whatsapp), phoneNumberWithCode)
-        } else {
-            iv_otp_method.setImageResource(R.drawable.tap_ic_sms_orange)
-            iv_otp_method.setColorFilter(ContextCompat.getColor(requireContext(), R.color.tapBlack19))
-            tv_method_and_phonenumber.text = String.format(getString(R.string.tap_format_ss_to), getString(R.string.tap_sms), phoneNumberWithCode)
+            vb.ivOtpMethod.setImageResource(io.taptalk.TapTalk.R.drawable.tap_ic_whatsapp)
+            vb.tvMethodAndPhonenumber.text = String.format(getString(io.taptalk.TapTalk.R.string.tap_format_ss_to), getString(io.taptalk.TapTalk.R.string.tap_whatsapp), phoneNumberWithCode)
+        }
+        else {
+            vb.ivOtpMethod.setImageResource(io.taptalk.TapTalk.R.drawable.tap_ic_sms_orange)
+            vb.ivOtpMethod.setColorFilter(ContextCompat.getColor(requireContext(), io.taptalk.TapTalk.R.color.tapBlack19))
+            vb.tvMethodAndPhonenumber.text = String.format(getString(io.taptalk.TapTalk.R.string.tap_format_ss_to), getString(io.taptalk.TapTalk.R.string.tap_sms), phoneNumberWithCode)
             hideBtnSendViaSMS()
         }
     }
 
     private fun showPopupLoading(message: String) {
         activity?.runOnUiThread {
-            popup_loading.findViewById<ImageView>(R.id.iv_loading_image).setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.tap_ic_loading_progress_circle_white))
-            if (null == popup_loading.findViewById<ImageView>(R.id.iv_loading_image).animation)
-                TAPUtils.rotateAnimateInfinitely(context, popup_loading.findViewById<ImageView>(R.id.iv_loading_image))
-            popup_loading.findViewById<TextView>(R.id.tv_loading_text)?.text = message
-            popup_loading.findViewById<FrameLayout>(R.id.popup_loading).visibility = View.VISIBLE
+            vb.popupLoading.ivLoadingImage.setImageDrawable(ContextCompat.getDrawable(requireContext(), io.taptalk.TapTalk.R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == vb.popupLoading.ivLoadingImage.animation) {
+                TAPUtils.rotateAnimateInfinitely(context, vb.popupLoading.ivLoadingImage)
+            }
+            vb.popupLoading.tvLoadingText.text = message
+            vb.popupLoading.flLoading.visibility = View.VISIBLE
         }
     }
 
     private fun hidePopupLoading() {
-        popup_loading.findViewById<FrameLayout>(R.id.popup_loading).visibility = View.GONE
+        vb.popupLoading.flLoading.visibility = View.GONE
     }
 
     private fun showTimer() {
-        if (null != tv_otp_timer && null != ll_request_otp_again
-                && null != ll_loading_otp && null != ll_otp_sent && null != iv_progress_otp) {
-            tv_otp_timer.visibility = View.VISIBLE
-            ll_request_otp_again.visibility = View.GONE
-            ll_loading_otp.visibility = View.GONE
-            ll_otp_sent.visibility = View.GONE
-            iv_progress_otp.clearAnimation()
-        }
+        vb.tvOtpTimer.visibility = View.VISIBLE
+        vb.llRequestOtpAgain.visibility = View.GONE
+        vb.llLoadingOtp.visibility = View.GONE
+        vb.llOtpSent.visibility = View.GONE
+        vb.ivProgressOtp.clearAnimation()
     }
 
     private fun showRequestAgain() {
-        ll_request_otp_again.visibility = View.VISIBLE
-        tv_otp_timer.visibility = View.GONE
-        ll_loading_otp.visibility = View.GONE
-        ll_otp_sent.visibility = View.GONE
+        vb.llRequestOtpAgain.visibility = View.VISIBLE
+        vb.tvOtpTimer.visibility = View.GONE
+        vb.llLoadingOtp.visibility = View.GONE
+        vb.llOtpSent.visibility = View.GONE
     }
 
     private fun showBtnSendViaSMS() {
         if (channel == "whatsapp") {
-            ll_btn_send_via_sms.visibility = View.VISIBLE
-            tv_not_working.visibility = View.VISIBLE
+            vb.llBtnSendViaSms.visibility = View.VISIBLE
+            vb.tvNotWorking.visibility = View.VISIBLE
         }
     }
 
     private fun hideBtnSendViaSMS() {
-        tv_not_working.visibility = View.GONE
-        ll_btn_send_via_sms.visibility = View.GONE
+        vb.tvNotWorking.visibility = View.GONE
+        vb.llBtnSendViaSms.visibility = View.GONE
     }
 }

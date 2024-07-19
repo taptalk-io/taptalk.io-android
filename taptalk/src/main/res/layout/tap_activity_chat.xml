@@ -1475,6 +1475,7 @@
 
     <include
         layout="@layout/tap_layout_user_mention_list"
+        android:id="@+id/layout_user_mention_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history" />
@@ -1528,6 +1529,7 @@
         android:visibility="gone"
         app:constraint_referenced_ids="v_screen, cv_schedule" />
 
-    <include layout="@layout/tap_layout_popup_loading_screen" />
+    <include layout="@layout/tap_layout_popup_loading_screen"
+        android:id="@+id/layout_popup_loading_screen" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

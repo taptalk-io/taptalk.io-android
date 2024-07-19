@@ -31,13 +31,15 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapSelectableStringListAdapter
 import io.taptalk.TapTalk.ViewModel.TapReportViewModel
-import kotlinx.android.synthetic.main.activity_tap_report.*
+import io.taptalk.TapTalk.databinding.ActivityTapReportBinding
 
 class TapReportActivity : TAPBaseActivity() {
+
+    private lateinit var vb : ActivityTapReportBinding
+    private lateinit var optionsAdapter : TapSelectableStringListAdapter
     val vm : TapReportViewModel by lazy {
         ViewModelProvider(this)[TapReportViewModel::class.java]
     }
-    private lateinit var optionsAdapter : TapSelectableStringListAdapter
     private var isLoading = false
 
     enum class ReportType {
@@ -94,7 +96,8 @@ class TapReportActivity : TAPBaseActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tap_report)
+        vb = ActivityTapReportBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
         if (intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) != null) {
             vm.reportType = intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) as ReportType
@@ -108,33 +111,33 @@ class TapReportActivity : TAPBaseActivity() {
         if (intent.getParcelableExtra<TAPMessageModel>(TAPDefaultConstant.Extras.MESSAGE) != null) {
             vm.message = intent.getParcelableExtra(TAPDefaultConstant.Extras.MESSAGE)
         }
-        val spannable = SpannableString(tv_label_optional.text)
+        val spannable = SpannableString(vb.tvLabelOptional.text)
         spannable.setSpan(
             TypefaceSpan("sans-serif"),
             37,
-            tv_label_optional.text.length,
+            vb.tvLabelOptional.text.length,
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
         spannable.setSpan(
             ForegroundColorSpan(ContextCompat.getColor(this, R.color.tapColorTextMedium)),
             37,
-            tv_label_optional.text.length,
+            vb.tvLabelOptional.text.length,
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
         spannable.setSpan(
             RelativeSizeSpan(0.8f),
             37,
-            tv_label_optional.text.length,
+            vb.tvLabelOptional.text.length,
             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         )
-        tv_label_optional.text = spannable
+        vb.tvLabelOptional.text = spannable
         if (vm.reportType == ReportType.MESSAGE) {
-            tv_title.text = getString(R.string.tap_report_message)
+            vb.tvTitle.text = getString(R.string.tap_report_message)
         }
-        et_other.addTextChangedListener(otherTextWatcher)
-        et_reason.addTextChangedListener(characterWatcher)
-        et_reason.setOnTouchListener { view, motionEvent ->
-            if (et_reason.hasFocus()) {
+        vb.etOther.addTextChangedListener(otherTextWatcher)
+        vb.etReason.addTextChangedListener(characterWatcher)
+        vb.etReason.setOnTouchListener { view, motionEvent ->
+            if (vb.etReason.hasFocus()) {
                 view.parent.requestDisallowInterceptTouchEvent(true)
                 if (motionEvent.action and MotionEvent.ACTION_MASK == MotionEvent.ACTION_SCROLL) {
                     view.parent.requestDisallowInterceptTouchEvent(false)
@@ -160,17 +163,17 @@ class TapReportActivity : TAPBaseActivity() {
         }
 
         optionsAdapter = TapSelectableStringListAdapter(vm.reportOptions, onClickListener)
-        rv_options.adapter = optionsAdapter
-        rv_options.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        rv_options.setHasFixedSize(true)
+        vb.rvOptions.adapter = optionsAdapter
+        vb.rvOptions.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        vb.rvOptions.setHasFixedSize(true)
 
-        btn_submit.setOnClickListener {
+        vb.btnSubmit.setOnClickListener {
             if (vm.selectedReportOption.isEmpty()) {
                 showOtherError(R.string.tap_please_select_a_category)
             }
             else {
                 val isOther = vm.selectedReportOption == optionsAdapter.items[optionsAdapter.itemCount - 1]
-                if (isOther && et_other.text.isEmpty()) {
+                if (isOther && vb.etOther.text.isEmpty()) {
                     showOtherError(R.string.tap_this_field_is_required)
                 }
                 else {
@@ -180,14 +183,14 @@ class TapReportActivity : TAPBaseActivity() {
                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                         .setPrimaryButtonTitle(getString(R.string.tap_submit))
                         .setPrimaryButtonListener {
-                            val category = if (isOther) et_other.text.toString() else vm.selectedReportOption
+                            val category = if (isOther) vb.etOther.text.toString() else vm.selectedReportOption
                             when (vm.reportType) {
                                 ReportType.USER -> TAPDataManager.getInstance(instanceKey)
                                     .submitUserReport(
                                         vm.user?.userID,
                                         category,
                                         isOther,
-                                        et_reason.text.toString(),
+                                        vb.etReason.text.toString(),
                                         submitReportView
                                     )
                                 ReportType.MESSAGE -> TAPDataManager.getInstance(instanceKey)
@@ -196,7 +199,7 @@ class TapReportActivity : TAPBaseActivity() {
                                         vm.message?.room?.roomID,
                                         category,
                                         isOther,
-                                        et_reason.text.toString(),
+                                        vb.etReason.text.toString(),
                                         submitReportView
                                     )
                             }
@@ -207,7 +210,7 @@ class TapReportActivity : TAPBaseActivity() {
                 }
             }
         }
-        iv_button_back.setOnClickListener {
+        vb.ivButtonBack.setOnClickListener {
             onBackPressed()
         }
     }
@@ -218,10 +221,12 @@ class TapReportActivity : TAPBaseActivity() {
         if (isLoading) {
             title = getString(R.string.tap_report_might_not_submitted)
             message = getString(R.string.tap_report_might_not_submitted_wording)
-        } else if (vm.selectedReportOption.isNotEmpty() || vm.reportReason.isNotEmpty()) {
+        }
+        else if (vm.selectedReportOption.isNotEmpty() || vm.reportReason.isNotEmpty()) {
             title = getString(R.string.tap_you_havent_submit_report)
             message = getString(R.string.tap_havent_submit_report_wording)
-        } else {
+        }
+        else {
             title = ""
             message = ""
         }
@@ -238,7 +243,8 @@ class TapReportActivity : TAPBaseActivity() {
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setSecondaryButtonListener { }
                 .show()
-        } else {
+        }
+        else {
             finish()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
         }
@@ -246,34 +252,34 @@ class TapReportActivity : TAPBaseActivity() {
 
     private fun showLoading() {
         isLoading = true
-        pb_loading.visibility = View.VISIBLE
-        btn_submit.text = ""
-        et_reason.isEnabled = false
-        et_other.isEnabled = false
+        vb.pbLoading.visibility = View.VISIBLE
+        vb.btnSubmit.text = ""
+        vb.etReason.isEnabled = false
+        vb.etOther.isEnabled = false
         optionsAdapter.setEnabled(false)
     }
 
     private fun hideLoading() {
         isLoading = false
-        pb_loading.visibility = View.GONE
-        btn_submit.text = getString(R.string.tap_submit_report)
-        et_reason.isEnabled = true
-        et_other.isEnabled = true
+        vb.pbLoading.visibility = View.GONE
+        vb.btnSubmit.text = getString(R.string.tap_submit_report)
+        vb.etReason.isEnabled = true
+        vb.etOther.isEnabled = true
         optionsAdapter.setEnabled(true)
     }
 
     private fun showOtherError(stringRes: Int) {
-        if (tv_error_other.visibility == View.GONE) {
-            tv_error_other.text = getString(stringRes)
-            tv_error_other.visibility = View.VISIBLE
-            et_other.setBackgroundResource(R.drawable.tap_bg_text_field_error)
+        if (vb.tvErrorOther.visibility == View.GONE) {
+            vb.tvErrorOther.text = getString(stringRes)
+            vb.tvErrorOther.visibility = View.VISIBLE
+            vb.etOther.setBackgroundResource(R.drawable.tap_bg_text_field_error)
         }
     }
 
     private fun hideOtherError() {
-        if (tv_error_other.visibility == View.VISIBLE) {
-            tv_error_other.visibility = View.GONE
-            et_other.setBackgroundResource(R.drawable.tap_bg_area_text_field)
+        if (vb.tvErrorOther.visibility == View.VISIBLE) {
+            vb.tvErrorOther.visibility = View.GONE
+            vb.etOther.setBackgroundResource(R.drawable.tap_bg_area_text_field)
         }
     }
 
@@ -342,7 +348,7 @@ class TapReportActivity : TAPBaseActivity() {
         override fun afterTextChanged(text: Editable?) {
             vm.reportReason = text.toString()
             val reasonCount = "${text?.length}/2000"
-            tv_character_count.text = reasonCount
+            vb.tvCharacterCount.text = reasonCount
         }
     }
 
@@ -352,14 +358,16 @@ class TapReportActivity : TAPBaseActivity() {
             if (vm.selectedReportOption != item && !isLoading) {
                 vm.selectedReportOption = if (item == optionsAdapter.getSelectedText()) {
                     ""
-                } else {
+                }
+                else {
                     item.toString()
                 }
                 if (position == optionsAdapter.itemCount - 1 && item != optionsAdapter.getSelectedText()) {
-                    et_other.visibility = View.VISIBLE
-                } else {
-                    et_other.visibility = View.GONE
-                    et_other.setText("")
+                    vb.etOther.visibility = View.VISIBLE
+                }
+                else {
+                    vb.etOther.visibility = View.GONE
+                    vb.etOther.setText("")
                     TAPUtils.dismissKeyboard(this@TapReportActivity)
                 }
                 optionsAdapter.setSelectedText(vm.selectedReportOption)

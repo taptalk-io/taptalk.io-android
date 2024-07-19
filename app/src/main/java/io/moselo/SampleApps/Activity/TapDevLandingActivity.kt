@@ -10,7 +10,7 @@ import io.taptalk.TapTalkSample.databinding.ActivityDevLandingBinding
 
 class TapDevLandingActivity : TAPBaseActivity() {
 
-    private lateinit var binding: ActivityDevLandingBinding
+    private lateinit var vb: ActivityDevLandingBinding
 
     companion object {
         fun start(
@@ -25,10 +25,10 @@ class TapDevLandingActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityDevLandingBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        vb = ActivityDevLandingBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
-        binding.llButtonOpenChat.setOnClickListener {
+        vb.llButtonOpenChat.setOnClickListener {
             TapUIRoomListActivity.start(this, instanceKey)
         }
     }

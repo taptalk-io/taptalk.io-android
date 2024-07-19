@@ -162,13 +162,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             tvUserName.setText(message.getRoomName());
 
             // Get highlighted color code
-            TypedArray typedArrayMessage = itemView.getContext().obtainStyledAttributes(R.style.tapRoomListMessageHighlightedStyle, R.styleable.TextAppearance);
-            String colorCode = Integer.toHexString(typedArrayMessage.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
-            typedArrayMessage.recycle();
-
-            TypedArray typedArraySender = itemView.getContext().obtainStyledAttributes(R.style.tapGroupRoomListSenderNameStyle, R.styleable.TextAppearance);
-            String colorSender = Integer.toHexString(typedArraySender.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
-            typedArraySender.recycle();
+            String colorCode = Integer.toHexString(ContextCompat.getColor(itemView.getContext(), R.color.tapRoomListMessageHighlightedColor)).substring(2);
+            String colorSender = Integer.toHexString(ContextCompat.getColor(itemView.getContext(), R.color.tapGroupRoomListSenderNameColor)).substring(2);
 
             // Set message body with highlighted text
             String highlightedText;
@@ -338,9 +333,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
 
             // Get highlighted color code
-            TypedArray typedArray = itemView.getContext().obtainStyledAttributes(R.style.tapRoomListNameHighlightedStyle, R.styleable.TextAppearance);
-            String colorCode = Integer.toHexString(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
-            typedArray.recycle();
+            String colorCode = Integer.toHexString(ContextCompat.getColor(itemView.getContext(), R.color.tapRoomListNameHighlightedColor)).substring(2);
 
             // Set room name with highlighted text
             String roomName;

@@ -1,11 +1,9 @@
 package io.taptalk.TapTalk.View.Fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -17,6 +15,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.vision.CameraSource;
@@ -33,7 +32,6 @@ import io.taptalk.TapTalk.View.Activity.TAPScanResultActivity;
 import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SCAN_RESULT;
 
 public class TAPBarcodeScannerFragment extends Fragment {
 
@@ -62,7 +60,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.activity = (Activity) context;
     }
@@ -108,17 +106,17 @@ public class TAPBarcodeScannerFragment extends Fragment {
 
         svScanner.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
-            public void surfaceCreated(SurfaceHolder holder) {
+            public void surfaceCreated(@NonNull SurfaceHolder holder) {
                 startCameraSource();
             }
 
             @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
 
             }
 
             @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
+            public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
                 cameraSource.stop();
             }
         });
@@ -131,11 +129,12 @@ public class TAPBarcodeScannerFragment extends Fragment {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != getContext()) {
-            btnShowQRCode.setBackground(getContext().getDrawable(R.drawable.tap_bg_button_active_ripple));
+        if (null != getContext()) {
+            btnShowQRCode.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_button_active_ripple));
         }
     }
 
+    @SuppressLint("MissingPermission")
     public void startCameraSource() {
         if (!TAPUtils.hasPermissions(activity, Manifest.permission.CAMERA)) {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);

@@ -476,7 +476,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                     getString(R.string.tap_notifications),
                     R.drawable.tap_ic_notification_orange,
                     R.color.tapIconChatProfileMenuNotificationInactive,
-                    R.style.tapChatProfileMenuLabelStyle);
+                    R.color.tapChatProfileMenuLabelColor);
             menuNotification.setChecked(!vm.getRoom().getIsMuted());
 
             // Room color
@@ -485,7 +485,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                     getString(R.string.tap_conversation_color),
                     R.drawable.tap_ic_color_grey,
                     R.color.tapIconChatProfileMenuConversationColor,
-                    R.style.tapChatProfileMenuLabelStyle);
+                    R.color.tapChatProfileMenuLabelColor);
 
             // Search chat
             TapChatProfileItemModel menuRoomSearchChat = new TapChatProfileItemModel(
@@ -493,7 +493,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                     getString(R.string.tap_search_chat),
                     R.drawable.tap_ic_search_grey_small,
                     R.color.tapIconChatProfileMenuSearchChat,
-                    R.style.tapChatProfileMenuLabelStyle);
+                    R.color.tapChatProfileMenuLabelColor);
 
             // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
 //        menuItems.add(menuNotification);
@@ -512,7 +512,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                             getString(R.string.tap_add_to_contacts),
                             R.drawable.tap_ic_add_circle_orange,
                             R.color.tapIconGroupMemberProfileMenuAddToContacts,
-                            R.style.tapChatProfileMenuLabelStyle);
+                            R.color.tapChatProfileMenuLabelColor);
                     menuItems.add(menuAddToContact);
                 }
 
@@ -522,7 +522,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_block_user),
                         R.drawable.tap_ic_block_red,
                         R.color.tapIconChatProfileMenuBlockUser,
-                        R.style.tapChatProfileMenuLabelStyle);
+                        R.color.tapChatProfileMenuLabelColor);
 
                 // Clear chat
                 TapChatProfileItemModel menuClearChat = new TapChatProfileItemModel(
@@ -530,7 +530,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_clear_chat),
                         R.drawable.tap_ic_delete_red,
                         R.color.tapIconChatProfileMenuClearChat,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle);
+                        R.color.tapChatProfileMenuDestructiveLabelColor);
 
                 // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
 //            menuItems.add(2, menuBlock);
@@ -546,7 +546,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_view_members),
                         R.drawable.tap_ic_members_orange,
                         R.color.tapIconGroupProfileMenuViewMembers,
-                        R.style.tapChatProfileMenuLabelStyle);
+                        R.color.tapChatProfileMenuLabelColor);
                 menuItems.add(menuViewMembers);
 
                 // Exit group
@@ -555,7 +555,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_leave_group),
                         R.drawable.tap_ic_logout_red,
                         R.color.tapIconChatProfileMenuClearChat,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle);
+                        R.color.tapChatProfileMenuDestructiveLabelColor);
                 menuItems.add(menuExitGroup);
             } else if (vm.getRoom().getType() == TYPE_GROUP &&
                     null != vm.getRoom().getAdmins() &&
@@ -568,7 +568,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_view_members),
                         R.drawable.tap_ic_members_orange,
                         R.color.tapIconGroupProfileMenuViewMembers,
-                        R.style.tapChatProfileMenuLabelStyle);
+                        R.color.tapChatProfileMenuLabelColor);
                 menuItems.add(menuViewMembers);
 
                 // Delete group
@@ -577,7 +577,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_delete_group),
                         R.drawable.tap_ic_delete_red,
                         R.color.tapIconChatProfileMenuClearChat,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle);
+                        R.color.tapChatProfileMenuDestructiveLabelColor);
                 menuItems.add(menuDeleteGroup);
             }
         } else {
@@ -591,7 +591,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_add_to_contacts),
                         R.drawable.tap_ic_add_circle_orange,
                         R.color.tapIconGroupMemberProfileMenuAddToContacts,
-                        R.style.tapChatProfileMenuLabelStyle);
+                        R.color.tapChatProfileMenuLabelColor);
                 menuItems.add(menuAddToContact);
             }
 
@@ -601,7 +601,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                     getString(R.string.tap_send_message),
                     R.drawable.tap_ic_send_message_orange,
                     R.color.tapIconGroupMemberProfileMenuSendMessage,
-                    R.style.tapChatProfileMenuLabelStyle);
+                    R.color.tapChatProfileMenuLabelColor);
             menuItems.add(menuSendMessage);
 
             // Promote admin
@@ -613,7 +613,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_promote_admin),
                         R.drawable.tap_ic_appoint_admin,
                         R.color.tapIconGroupMemberProfileMenuPromoteAdmin,
-                        R.style.tapChatProfileMenuLabelStyle);
+                        R.color.tapChatProfileMenuLabelColor);
                 menuItems.add(menuPromoteAdmin);
             }
             // Demote admin
@@ -624,7 +624,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_demote_admin),
                         R.drawable.tap_ic_remove_circle_grey,
                         R.color.tapIconGroupMemberProfileMenuDemoteAdmin,
-                        R.style.tapChatProfileMenuLabelStyle);
+                        R.color.tapChatProfileMenuLabelColor);
                 menuItems.add(menuDemoteAdmin);
             }
 
@@ -636,7 +636,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         getString(R.string.tap_remove_group_member),
                         R.drawable.tap_ic_delete_red,
                         R.color.tapIconGroupMemberProfileMenuRemoveMember,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle);
+                        R.color.tapChatProfileMenuDestructiveLabelColor);
                 menuItems.add(menuRemoveMember);
             }
         }

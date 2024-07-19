@@ -20,14 +20,16 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPSearchChatAdapter
 import io.taptalk.TapTalk.ViewModel.TapGroupsInCommonViewModel
-import kotlinx.android.synthetic.main.tap_activity_groups_in_common.*
+import io.taptalk.TapTalk.databinding.TapActivityGroupsInCommonBinding
 
 class TapGroupsInCommonActivity : TAPBaseActivity() {
+
+    private lateinit var vb: TapActivityGroupsInCommonBinding
+    private lateinit var adapter : TAPSearchChatAdapter
 
     private val vm : TapGroupsInCommonViewModel by lazy {
         ViewModelProvider(this)[TapGroupsInCommonViewModel::class.java]
     }
-    private lateinit var adapter : TAPSearchChatAdapter
 
     companion object {
         fun start(
@@ -46,12 +48,13 @@ class TapGroupsInCommonActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_groups_in_common)
+        vb = TapActivityGroupsInCommonBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
         val user = intent.getParcelableExtra<TAPUserModel>(Extras.USER)
         if (user != null) {
             vm.userId = user.userID
-            tv_title.text = user.fullname
+            vb.tvTitle.text = user.fullname
         }
 
         adapter = TAPSearchChatAdapter(
@@ -60,15 +63,15 @@ class TapGroupsInCommonActivity : TAPBaseActivity() {
             Glide.with(this),
             roomListInterface
         )
-        rv_groups.adapter = adapter
-        rv_groups.setHasFixedSize(false)
-        rv_groups.layoutManager = LinearLayoutManager(
+        vb.rvGroups.adapter = adapter
+        vb.rvGroups.setHasFixedSize(false)
+        vb.rvGroups.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.VERTICAL,
             false
         )
 
-        iv_button_back.setOnClickListener {
+        vb.ivButtonBack.setOnClickListener {
             onBackPressed()
         }
     }
@@ -79,21 +82,21 @@ class TapGroupsInCommonActivity : TAPBaseActivity() {
     }
 
     private fun showLoading() {
-        ll_loading.visibility = View.VISIBLE
+        vb.llLoading.llLoadingContainer.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
-        ll_loading.visibility = View.GONE
+        vb.llLoading.llLoadingContainer.visibility = View.GONE
     }
 
     private fun showViewState() {
-        g_view_state.visibility = View.VISIBLE
-        g_empty_state.visibility = View.GONE
+        vb.gViewState.visibility = View.VISIBLE
+        vb.gEmptyState.visibility = View.GONE
     }
 
     private fun showEmptyState() {
-        g_view_state.visibility = View.GONE
-        g_empty_state.visibility = View.VISIBLE
+        vb.gViewState.visibility = View.GONE
+        vb.gEmptyState.visibility = View.VISIBLE
     }
 
     private val roomListInterface =
@@ -124,11 +127,13 @@ class TapGroupsInCommonActivity : TAPBaseActivity() {
                 }
                 showViewState()
                 if (vm.groups.size > 1) {
-                    tv_section_title.text = String.format(getString(R.string.tap_s_format_groups_in_common), vm.groups.size)
-                } else if (vm.groups.size > 0) {
-                    tv_section_title.text = getString(R.string.tap_one_group_in_common)
+                    vb.tvSectionTitle.text = String.format(getString(R.string.tap_s_format_groups_in_common), vm.groups.size.toString())
                 }
-            } else {
+                else if (vm.groups.size > 0) {
+                    vb.tvSectionTitle.text = getString(R.string.tap_one_group_in_common)
+                }
+            }
+            else {
                 showEmptyState()
             }
         }

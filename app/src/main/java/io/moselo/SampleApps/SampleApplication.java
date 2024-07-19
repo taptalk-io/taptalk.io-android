@@ -117,7 +117,7 @@ public class SampleApplication extends MultiDexApplication {
             List<TAPCustomKeyboardItemModel> keyboardItemModelList = new ArrayList<>();
             TAPCustomKeyboardItemModel testCustomKeyboard = new TAPCustomKeyboardItemModel(
                     "hello",
-                    ContextCompat.getDrawable(SampleApplication.this, R.drawable.tap_ic_send_message_orange),
+                    ContextCompat.getDrawable(SampleApplication.this, io.taptalk.TapTalk.R.drawable.tap_ic_send_message_orange),
                     "Hello World!"
             );
             keyboardItemModelList.add(testCustomKeyboard);

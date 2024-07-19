@@ -1,13 +1,13 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.location.*
-import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.Settings
@@ -46,13 +46,18 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.View.Adapter.TAPSearchLocationAdapter
 import io.taptalk.TapTalk.R
-import kotlinx.android.synthetic.main.tap_activity_map.*
+import io.taptalk.TapTalk.databinding.TapActivityMapBinding
 import java.util.*
 
-class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraIdleListener, View.OnClickListener,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+class TAPMapActivity : TAPBaseActivity(),
+    OnMapReadyCallback,
+    GoogleMap.OnCameraMoveListener,
+    GoogleMap.OnCameraIdleListener,
+    View.OnClickListener,
+    GoogleApiClient.OnConnectionFailedListener,
+    LocationListener {
 
+    private lateinit var vb: TapActivityMapBinding
     private lateinit var placesClient: PlacesClient
 
     private var longitude: Double = 0.0
@@ -80,10 +85,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         private val JAKARTA: LatLng = LatLng(-6.175403, 106.827114)
         private val WORLD: LatLngBounds = LatLngBounds(LatLng(-90.0, 90.0), LatLng(-180.0, 180.0))
 
-        fun start(
-                context: Activity,
-                instanceKey: String
-        ) {
+        fun start(context: Activity, instanceKey: String) {
             val intent = Intent(context, TAPMapActivity::class.java)
             intent.putExtra(INSTANCE_KEY, instanceKey)
             context.startActivityForResult(intent, PICK_LOCATION)
@@ -93,7 +95,8 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_map)
+        vb = TapActivityMapBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
         latitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LATITUDE, 0.0)
         longitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LONGITUDE, 0.0)
@@ -109,21 +112,22 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        iv_button_back.setOnClickListener(this)
-        iv_current_location.setOnClickListener(this)
-        tv_clear.setOnClickListener(this)
+        vb.ivButtonBack.setOnClickListener(this)
+        vb.ivCurrentLocation.setOnClickListener(this)
+        vb.tvClear.setOnClickListener(this)
 
-        et_keyword.addTextChangedListener(textWatcher)
-        et_keyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+        vb.etKeyword.addTextChangedListener(textWatcher)
+        vb.etKeyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
-                if (!TAPUtils.isListEmpty(locationList) && et_keyword.text.isNotEmpty())
-                    cv_search_result.visibility = View.VISIBLE
-            } else {
-                rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_inactive)
+                vb.rlSearch.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
+                if (!TAPUtils.isListEmpty(locationList) && vb.etKeyword.text.isNotEmpty())
+                    vb.cvSearchResult.visibility = View.VISIBLE
+            }
+            else {
+                vb.rlSearch.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_inactive)
             }
         }
-        et_keyword.setOnEditorActionListener(object : TextView.OnEditorActionListener {
+        vb.etKeyword.setOnEditorActionListener(object : TextView.OnEditorActionListener {
             override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     TAPUtils.dismissKeyboard(this@TAPMapActivity)
@@ -134,15 +138,13 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         })
 
         adapter = TAPSearchLocationAdapter(locationList, generalListener)
-        recycler_view.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        recycler_view.adapter = adapter
+        vb.recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        vb.recyclerView.adapter = adapter
         if (TAPUtils.hasPermissions(this, PERMISSIONS[0])) {
             getLocation()
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            iv_current_location.background = getDrawable(R.drawable.tap_bg_recenter_location_button_ripple)
-        }
+        vb.ivCurrentLocation.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_recenter_location_button_ripple)
     }
 
     override fun onStop() {
@@ -150,6 +152,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         timer?.cancel()
     }
 
+    @SuppressLint("MissingPermission")
     override fun onDestroy() {
         if (null != locationManager) {
             locationManager?.removeUpdates(this)
@@ -167,6 +170,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         return false
     }
 
+    @SuppressLint("MissingPermission")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults.isNotEmpty() && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
@@ -187,9 +191,10 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
-        var latLng: LatLng?
+        val latLng: LatLng?
         if (0.0 == longitude && 0.0 == latitude && 0.0 == currentLongitude && 0.0 == currentLatitude) {
             // Location of Monumen Nasional Indonesia
             longitude = 106.827114
@@ -199,7 +204,8 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         } else if (0.0 == longitude && 0.0 == latitude) {
             latLng = LatLng(currentLatitude, currentLongitude)
             googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
-        } else {
+        }
+        else {
             latLng = LatLng(latitude, longitude)
             googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
         }
@@ -224,23 +230,23 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         latitude = centerOfMap?.latitude ?: 0.0
         longitude = centerOfMap?.longitude ?: 0.0
         disableSendButton()
-        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
-        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
+        vb.ivLocation.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
+        vb.ivLocation.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
 
-        tv_location.setHint(R.string.tap_searching_for_address)
-        tv_location.text = ""
+        vb.tvLocation.setHint(R.string.tap_searching_for_address)
+        vb.tvLocation.text = ""
 
-        cv_search_result.visibility = View.GONE
+        vb.cvSearchResult.visibility = View.GONE
         TAPUtils.dismissKeyboard(this)
     }
 
     override fun onCameraIdle() {
         getGeoCoderAddress()
 
-        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
-        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
+        vb.ivLocation.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
+        vb.ivLocation.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
 
-        cv_search_result.visibility = View.GONE
+        vb.cvSearchResult.visibility = View.GONE
         isSearch = !isSameKeyword
     }
 
@@ -287,14 +293,15 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(this, PERMISSIONS, PERMISSION_LOCATION)
-                } else {
+                }
+                else {
                     moveToCurrentLocation()
                 }
             }
             R.id.tv_clear -> {
-                et_keyword.setText("")
-                tv_clear.visibility = View.GONE
-                cv_search_result.visibility = View.GONE
+                vb.etKeyword.setText("")
+                vb.tvClear.visibility = View.GONE
+                vb.cvSearchResult.visibility = View.GONE
                 locationList.clear()
             }
         }
@@ -303,9 +310,9 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     private val generalListener = object : TAPGeneralListener<TAPLocationItem>() {
         override fun onClick(position: Int, item: TAPLocationItem?) {
             TAPUtils.dismissKeyboard(this@TAPMapActivity)
-            if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(et_keyword.text.toString()))
+            if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(vb.etKeyword.text.toString()))
                 isSameKeyword = true
-            et_keyword.setText(item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString())
+            vb.etKeyword.setText(item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString())
             val placeID: String = item?.prediction?.placeId ?: "0"
             val placeFields: MutableList<Place.Field> = Arrays.asList(Place.Field.LAT_LNG)
             val request: FetchPlaceRequest = FetchPlaceRequest.builder(placeID, placeFields).build()
@@ -317,15 +324,16 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 val curr: LatLng = LatLng(latitude, longitude)
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
                 getGeoCoderAddress()
-                iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
-                iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
-                cv_search_result.visibility = View.GONE
-                if (et_keyword.isFocused)
-                    et_keyword.clearFocus()
+                vb.ivLocation.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
+                vb.ivLocation.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
+                vb.cvSearchResult.visibility = View.GONE
+                if (vb.etKeyword.isFocused)
+                    vb.etKeyword.clearFocus()
             }
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun getLocation() {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (locationManager?.allProviders?.contains(LocationManager.GPS_PROVIDER) == true) {
@@ -334,7 +342,8 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 return
             }
             locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0.toLong(), 0.toFloat(), this)
-        } else if (locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
+        }
+        else if (locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
             locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0.toLong(), 0.toFloat(), this)
         }
 
@@ -352,7 +361,8 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     private fun getGeoCoderAddress() {
         try {
             addresses = geoCoder?.getFromLocation(latitude, longitude, 1) ?: mutableListOf()
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             e.printStackTrace()
         }
 
@@ -361,15 +371,17 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
             try {
                 currentAddress = address.getAddressLine(0)
                 postalCode = address.postalCode
-                tv_location.text = currentAddress
+                vb.tvLocation.text = currentAddress
                 enableSendButton()
-            } catch (e: Exception) {
+            }
+            catch (e: Exception) {
                 e.printStackTrace()
-                tv_location.text = resources.getText(R.string.tap_location_not_found)
+                vb.tvLocation.text = resources.getText(R.string.tap_location_not_found)
                 disableSendButton()
             }
-        } else {
-            tv_location.text = resources.getText(R.string.tap_location_not_found)
+        }
+        else {
+            vb.tvLocation.text = resources.getText(R.string.tap_location_not_found)
             disableSendButton()
         }
     }
@@ -378,14 +390,14 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         override fun afterTextChanged(s: Editable?) {
             timer = object : CountDownTimer(300, 1000) {
                 override fun onFinish() {
-                    if (!"".equals(et_keyword.text.toString().trim())) {
+                    if (!"".equals(vb.etKeyword.text.toString().trim())) {
                         val token = AutocompleteSessionToken.newInstance()
                         val bounds = RectangularBounds.newInstance(WORLD)
                         val request = FindAutocompletePredictionsRequest.builder()
                                 .setLocationBias(bounds)
                                 .setCountry("id")
                                 .setSessionToken(token)
-                                .setQuery(et_keyword.text.toString())
+                                .setQuery(vb.etKeyword.text.toString())
                                 .build()
                         try {
                             placesClient.findAutocompletePredictions(request).addOnSuccessListener { p0 ->
@@ -393,7 +405,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                     locationList.clear()
 
                                 p0?.autocompletePredictions?.forEach { prediction ->
-                                    var item = TAPLocationItem()
+                                    val item = TAPLocationItem()
                                     item.prediction = prediction
                                     item.myReturnType = TAPLocationItem.MyReturnType.MIDDLE
                                     locationList.add(item)
@@ -402,8 +414,9 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                 if (!TAPUtils.isListEmpty(locationList) && 1 == locationList.size) {
                                     locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
                                     adapter?.items = locationList
-                                    cv_search_result.visibility = if (isSearch) View.VISIBLE else View.GONE
-                                } else if (!TAPUtils.isListEmpty(locationList)) {
+                                    vb.cvSearchResult.visibility = if (isSearch) View.VISIBLE else View.GONE
+                                }
+                                else if (!TAPUtils.isListEmpty(locationList)) {
                                     locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
                                     locationList[locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
 
@@ -411,7 +424,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                         locationList.subList(0, 5)
                                     }
                                     adapter?.items = locationList
-                                    cv_search_result.visibility = if (isSearch) View.VISIBLE else View.GONE
+                                    vb.cvSearchResult.visibility = if (isSearch) View.VISIBLE else View.GONE
                                 }
                             }
                         } catch (e: UninitializedPropertyAccessException) {
@@ -434,20 +447,22 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             isSameKeyword = false
             isSearch = true
-            cv_search_result.visibility = View.GONE
-            if (0 < et_keyword.text.toString().length) {
-                tv_clear.visibility = View.VISIBLE
-            } else {
-                tv_clear.visibility = View.GONE
+            vb.cvSearchResult.visibility = View.GONE
+            if (vb.etKeyword.text.toString().isNotEmpty()) {
+                vb.tvClear.visibility = View.VISIBLE
+            }
+            else {
+                vb.tvClear.visibility = View.GONE
             }
         }
     }
 
     override fun onBackPressed() {
-        if (et_keyword.isFocused) {
+        if (vb.etKeyword.isFocused) {
             TAPUtils.dismissKeyboard(this)
-            et_keyword.clearFocus()
-        } else {
+            vb.etKeyword.clearFocus()
+        }
+        else {
             super.onBackPressed()
         }
     }
@@ -465,7 +480,8 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setSecondaryButtonListener { }
                     .show()
-        } else {
+        }
+        else {
             latitude = currentLatitude
             longitude = currentLongitude
             centerOfMap = LatLng(currentLatitude, currentLongitude)
@@ -475,21 +491,13 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     private fun disableSendButton() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ll_button_send_location.background = getDrawable(R.drawable.tap_bg_button_inactive)
-        } else {
-            ll_button_send_location.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-        }
-        ll_button_send_location.setOnClickListener(null)
+        vb.llButtonSendLocation.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+        vb.llButtonSendLocation.setOnClickListener(null)
     }
 
     private fun enableSendButton() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ll_button_send_location.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
-        } else {
-            ll_button_send_location.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active)
-        }
-        ll_button_send_location.setOnClickListener { sendLocation() }
+        vb.llButtonSendLocation.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
+        vb.llButtonSendLocation.setOnClickListener { sendLocation() }
     }
 
     private fun sendLocation() {
