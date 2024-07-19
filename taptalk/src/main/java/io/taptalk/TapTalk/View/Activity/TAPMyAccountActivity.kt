@@ -495,13 +495,20 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun checkEmailAddress(hasFocus: Boolean) {
+        var isEmailPatternValid = false
+        try {
+            isEmailPatternValid = Patterns.EMAIL_ADDRESS.matcher(vb.etEmailAddress.text).matches()
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
         if (vb.etEmailAddress.text.toString() == vm.myUserModel.email) {
             // Unchanged
             vm.formCheck[indexEmail] = stateUnchanged
             vb.tvLabelEmailAddressError.visibility = View.GONE
             updateEditTextBackground(vb.etEmailAddress, hasFocus)
         }
-        else if (vb.etEmailAddress.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(vb.etEmailAddress.text).matches()) {
+        else if (vb.etEmailAddress.text.isNotEmpty() && isEmailPatternValid) {
             // Valid email address
             vm.formCheck[indexEmail] = stateValid
             vb.tvLabelEmailAddressError.visibility = View.GONE

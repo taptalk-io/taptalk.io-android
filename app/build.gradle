@@ -15,12 +15,12 @@ android {
     namespace = "io.taptalk.TapTalkSample"
     def globalConfig = rootProject.extensions.getByName("ext")
 
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "io.taptalk.TapTalkSample"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode taptalk_version_code
         versionName taptalk_version_name
         multiDexEnabled true

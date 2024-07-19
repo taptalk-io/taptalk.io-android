@@ -355,11 +355,18 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun validateEmailAddress(): Boolean {
-        if (vb.etEmailAddress.text.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(vb.etEmailAddress.text).matches()) {
-            // Invalid email address
-            setEmailAddressError(getString(io.taptalk.TapTalk.R.string.tap_error_invalid_email_address))
+        try {
+            if (vb.etEmailAddress.text.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(vb.etEmailAddress.text).matches()) {
+                // Invalid email address
+                setEmailAddressError(getString(io.taptalk.TapTalk.R.string.tap_error_invalid_email_address))
+                return false
+            }
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
             return false
         }
+
         vb.llEmailAddressError.visibility = View.GONE
         updateEditTextBackground(vb.etEmailAddress, vb.etEmailAddress.hasFocus())
         vm.formCheck[indexEmail] = stateValid

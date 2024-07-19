@@ -838,13 +838,20 @@ class TAPLoginActivity : TAPBaseActivity() {
     private fun validatePhoneNumber(): Boolean {
         val phoneNumber = checkAndEditPhoneNumber()
         val phoneNumberWithCode = String.format("%s%s", vm?.countryCallingID ?: "", phoneNumber)
+        var isPhonePatternValid = false
+        try {
+            isPhonePatternValid = Patterns.PHONE.matcher(phoneNumber).matches()
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
         return if (vb.layoutLoginInput.etPhoneNumber.text.isEmpty()) {
             vb.layoutLoginInput.tvInputErrorInfo.text = getString(io.taptalk.TapTalk.R.string.tap_this_field_is_required)
             vb.layoutLoginInput.llInputErrorInfo.visibility = View.VISIBLE
             vb.layoutLoginInput.clInputPhoneNumber.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
             false
         }
-        else if (!Patterns.PHONE.matcher(phoneNumber).matches() || phoneNumberWithCode.length !in 7..15) {
+        else if (!isPhonePatternValid || phoneNumberWithCode.length !in 7..15) {
             vb.layoutLoginInput.tvInputErrorInfo.text = getString(io.taptalk.TapTalk.R.string.tap_error_invalid_phone_number)
             vb.layoutLoginInput.llInputErrorInfo.visibility = View.VISIBLE
             vb.layoutLoginInput.clInputPhoneNumber.background = ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_bg_text_field_error)
@@ -934,17 +941,17 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun openWhatsAppLink() {
-        val waLink = vm?.verification?.waLink ?: ""
-        if (waLink.isNotEmpty() && Patterns.WEB_URL.matcher(waLink).matches()) {
-            try {
+        try {
+            val waLink = vm?.verification?.waLink ?: ""
+            if (waLink.isNotEmpty() && Patterns.WEB_URL.matcher(waLink).matches()) {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(waLink)
                 startActivity(intent)
                 vm?.isCheckWhatsAppVerificationPending = true
             }
-            catch (e: Exception) {
-                e.printStackTrace()
-            }
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
