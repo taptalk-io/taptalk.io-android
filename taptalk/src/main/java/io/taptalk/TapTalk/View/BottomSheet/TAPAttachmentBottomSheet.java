@@ -140,7 +140,7 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
 //        titleResIds.add(R.string.audio);
 //        ids.add(ATTACH_AUDIO);
 
-        if (Places.isInitialized() && !TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()) {
+        if (/*Places.isInitialized() && */!TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()) {
             // Attach location
             imageResIds.add(R.drawable.tap_ic_location_orange);
             titleResIds.add(R.string.tap_location);

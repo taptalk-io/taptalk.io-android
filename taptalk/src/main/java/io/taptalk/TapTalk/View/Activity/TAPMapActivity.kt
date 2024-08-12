@@ -14,6 +14,7 @@ import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -116,26 +117,31 @@ class TAPMapActivity : TAPBaseActivity(),
         vb.ivCurrentLocation.setOnClickListener(this)
         vb.tvClear.setOnClickListener(this)
 
-        vb.etKeyword.addTextChangedListener(textWatcher)
-        vb.etKeyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                vb.rlSearch.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
-                if (!TAPUtils.isListEmpty(locationList) && vb.etKeyword.text.isNotEmpty())
-                    vb.cvSearchResult.visibility = View.VISIBLE
-            }
-            else {
-                vb.rlSearch.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_inactive)
-            }
-        }
-        vb.etKeyword.setOnEditorActionListener(object : TextView.OnEditorActionListener {
-            override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    TAPUtils.dismissKeyboard(this@TAPMapActivity)
-                    return true
+        if (Places.isInitialized()) {
+            vb.etKeyword.addTextChangedListener(textWatcher)
+            vb.etKeyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                if (hasFocus) {
+                    vb.rlSearch.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
+                    if (!TAPUtils.isListEmpty(locationList) && vb.etKeyword.text.isNotEmpty())
+                        vb.cvSearchResult.visibility = View.VISIBLE
                 }
-                return false
+                else {
+                    vb.rlSearch.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_inactive)
+                }
             }
-        })
+            vb.etKeyword.setOnEditorActionListener(object : TextView.OnEditorActionListener {
+                override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        TAPUtils.dismissKeyboard(this@TAPMapActivity)
+                        return true
+                    }
+                    return false
+                }
+            })
+        }
+        else {
+            vb.rlSearch.visibility = View.GONE
+        }
 
         adapter = TAPSearchLocationAdapter(locationList, generalListener)
         vb.recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
@@ -400,7 +406,8 @@ class TAPMapActivity : TAPBaseActivity(),
                                 .setQuery(vb.etKeyword.text.toString())
                                 .build()
                         try {
-                            placesClient.findAutocompletePredictions(request).addOnSuccessListener { p0 ->
+                            placesClient.findAutocompletePredictions(request)
+                            .addOnSuccessListener { p0 ->
                                 if (!TAPUtils.isListEmpty(locationList))
                                     locationList.clear()
 
@@ -427,7 +434,11 @@ class TAPMapActivity : TAPBaseActivity(),
                                     vb.cvSearchResult.visibility = if (isSearch) View.VISIBLE else View.GONE
                                 }
                             }
-                        } catch (e: UninitializedPropertyAccessException) {
+                            .addOnFailureListener { e ->
+                                e.printStackTrace()
+                            }
+                        }
+                        catch (e: UninitializedPropertyAccessException) {
                             e.printStackTrace()
                         }
                     }
@@ -436,7 +447,6 @@ class TAPMapActivity : TAPBaseActivity(),
                 override fun onTick(millisUntilFinished: Long) {
 
                 }
-
             }.start()
         }
 
