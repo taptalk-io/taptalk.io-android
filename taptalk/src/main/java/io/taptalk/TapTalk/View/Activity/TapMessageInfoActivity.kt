@@ -54,21 +54,16 @@ import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TapMessageInfoAdapter
 import io.taptalk.TapTalk.ViewModel.TapMessageInfoViewModel
-import kotlinx.android.synthetic.main.tap_activity_message_info.cl_sticky_section_container
-import kotlinx.android.synthetic.main.tap_activity_message_info.fl_sticky_section_container
-import kotlinx.android.synthetic.main.tap_activity_message_info.iv_button_back
-import kotlinx.android.synthetic.main.tap_activity_message_info.iv_sticky_section_icon
-import kotlinx.android.synthetic.main.tap_activity_message_info.ll_loading
-import kotlinx.android.synthetic.main.tap_activity_message_info.rv_message_info
-import kotlinx.android.synthetic.main.tap_activity_message_info.tv_sticky_section_title
+import io.taptalk.TapTalk.databinding.TapActivityMessageInfoBinding
 
 class TapMessageInfoActivity : TAPBaseActivity() {
+
+    private lateinit var vb: TapActivityMessageInfoBinding
+    private lateinit var adapter: TapMessageInfoAdapter
 
     private val vm : TapMessageInfoViewModel by lazy {
         ViewModelProvider(this)[TapMessageInfoViewModel::class.java]
     }
-
-    private lateinit var adapter: TapMessageInfoAdapter
 
     companion object {
         fun start(
@@ -102,7 +97,8 @@ class TapMessageInfoActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_message_info)
+        vb = TapActivityMessageInfoBinding.inflate(layoutInflater)
+        setContentView(vb.root)
         if (intent.getParcelableExtra<TAPMessageModel>(MESSAGE) != null) {
             vm.message = intent.getParcelableExtra(MESSAGE)
         }
@@ -117,10 +113,10 @@ class TapMessageInfoActivity : TAPBaseActivity() {
 
         val resultList = listOf(TapMessageRecipientModel())
         adapter = TapMessageInfoAdapter(instanceKey, vm.message!!, resultList)
-        rv_message_info.adapter = adapter
-        rv_message_info.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        rv_message_info.setHasFixedSize(true)
-        rv_message_info.addItemDecoration(
+        vb.rvMessageInfo.adapter = adapter
+        vb.rvMessageInfo.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        vb.rvMessageInfo.setHasFixedSize(true)
+        vb.rvMessageInfo.addItemDecoration(
             TAPVerticalDecoration(
                 TAPUtils.dpToPx(12),
                 TAPUtils.dpToPx(16),
@@ -128,7 +124,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             )
         )
 
-        iv_button_back.setOnClickListener { onBackPressed() }
+        vb.ivButtonBack.setOnClickListener { onBackPressed() }
 
         supportPostponeEnterTransition()
 
@@ -156,7 +152,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
     override fun onResume() {
         super.onResume()
         if (!vm.isFirstLoadFinished) {
-            ll_loading.visibility = View.VISIBLE
+            vb.llLoading.llLoadingContainer.visibility = View.VISIBLE
         }
         TapCoreMessageManager.getInstance(instanceKey).getMessageDetails(vm.message?.messageID, messageInfoView)
     }
@@ -172,7 +168,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             deliveredTo: List<TapMessageRecipientModel>?,
             readBy: List<TapMessageRecipientModel>?
         ) {
-            ll_loading.visibility = View.GONE
+            vb.llLoading.llLoadingContainer.visibility = View.GONE
 
             vm.readList.clear()
             val resultList = ArrayList<TapMessageRecipientModel>()
@@ -200,9 +196,9 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             }
             adapter.items = resultList
 
-            rv_message_info.post {
+            vb.rvMessageInfo.post {
                 addStickyHeaderScrollListener(vm.readList.size, vm.deliveredList.size)
-                val layoutManager = rv_message_info.layoutManager as LinearLayoutManager?
+                val layoutManager = vb.rvMessageInfo.layoutManager as LinearLayoutManager?
                 if (!vm.isFirstLoadFinished) {
                     vm.isFirstLoadFinished = true
                     layoutManager?.scrollToPositionWithOffset(1, TAPUtils.getScreenHeight() / 2)
@@ -211,7 +207,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
         }
 
         override fun onError(errorCode: String?, errorMessage: String?) {
-            ll_loading.visibility = View.GONE
+            vb.llLoading.llLoadingContainer.visibility = View.GONE
             Toast.makeText(this@TapMessageInfoActivity, errorMessage, Toast.LENGTH_SHORT).show()
             finish()
         }
@@ -222,11 +218,11 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 // Handle sticky section header
                 if (readCount <= 0 && deliveredCount <= 0) {
-                    fl_sticky_section_container.visibility = View.GONE
+                    vb.flStickySectionContainer.visibility = View.GONE
                     return
                 }
 
-                val layoutManager = rv_message_info.layoutManager as LinearLayoutManager?
+                val layoutManager = vb.rvMessageInfo.layoutManager as LinearLayoutManager?
                 val firstVisibleIndex = layoutManager?.findFirstVisibleItemPosition() ?: -1
 
                 if (firstVisibleIndex < 0 || firstVisibleIndex >= (adapter.itemCount)) {
@@ -235,7 +231,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
 
                 val firstVisibleItem = adapter.getItemAt(firstVisibleIndex)
 
-                if (null == firstVisibleItem/* || cl_sticky_section_container.visibility != View.VISIBLE*/) {
+                if (null == firstVisibleItem/* || binding.clStickySectionContainer.visibility != View.VISIBLE*/) {
                     return
                 }
 
@@ -244,19 +240,19 @@ class TapMessageInfoActivity : TAPBaseActivity() {
                     (firstVisibleItem.readTime == null || firstVisibleItem.readTime <= 0L) &&
                     (firstVisibleItem.deliveredTime == null || firstVisibleItem.deliveredTime <= 0L)
                 ) {
-                    fl_sticky_section_container.visibility = View.GONE
+                    vb.flStickySectionContainer.visibility = View.GONE
                     return
                 }
 
                 if (firstVisibleItem.readTime != null && firstVisibleItem.readTime > 0L) {
                     // Set Read by
-                    tv_sticky_section_title.text = String.format(getString(R.string.tap_read_by_d_format), readCount)
-                    iv_sticky_section_icon.setImageDrawable(ContextCompat.getDrawable(this@TapMessageInfoActivity, R.drawable.tap_ic_read_orange))
+                    vb.tvStickySectionTitle.text = String.format(getString(R.string.tap_read_by_d_format), readCount)
+                    vb.ivStickySectionIcon.setImageDrawable(ContextCompat.getDrawable(this@TapMessageInfoActivity, R.drawable.tap_ic_read_orange))
                 }
                 else if (firstVisibleItem.deliveredTime != null && firstVisibleItem.deliveredTime > 0L) {
                     // Set Delivered to
-                    tv_sticky_section_title.text = String.format(getString(R.string.tap_delivered_to_d_format), deliveredCount)
-                    iv_sticky_section_icon.setImageDrawable(ContextCompat.getDrawable(this@TapMessageInfoActivity, R.drawable.tap_ic_delivered_grey))
+                    vb.tvStickySectionTitle.text = String.format(getString(R.string.tap_delivered_to_d_format), deliveredCount)
+                    vb.ivStickySectionIcon.setImageDrawable(ContextCompat.getDrawable(this@TapMessageInfoActivity, R.drawable.tap_ic_delivered_grey))
                 }
 
                 val secondVisibleCell: View? = layoutManager?.findViewByPosition(firstVisibleIndex + 1)
@@ -267,10 +263,10 @@ class TapMessageInfoActivity : TAPBaseActivity() {
                 }
 
                 val recyclerViewLocation = IntArray(2)
-                rv_message_info?.getLocationOnScreen(recyclerViewLocation)
+                vb.rvMessageInfo.getLocationOnScreen(recyclerViewLocation)
                 val recyclerViewY = recyclerViewLocation[1]
 
-                fl_sticky_section_container.visibility = View.VISIBLE
+                vb.flStickySectionContainer.visibility = View.VISIBLE
 
                 if (secondVisibleItem.userID.isNullOrEmpty()) {
                     // Animate sticky header translation if second visible item is header
@@ -278,21 +274,21 @@ class TapMessageInfoActivity : TAPBaseActivity() {
                     secondVisibleCell.getLocationOnScreen(cellLocation)
 
                     val heightDiff = cellLocation[1] - recyclerViewY
-                    val headerHeight = fl_sticky_section_container.height
+                    val headerHeight = vb.flStickySectionContainer.height
                     if (heightDiff < headerHeight) {
-                        cl_sticky_section_container.translationY = -((headerHeight - heightDiff).toFloat())
+                        vb.clStickySectionContainer.translationY = -((headerHeight - heightDiff).toFloat())
                     }
                     else {
-                        cl_sticky_section_container.translationY = 0f
+                        vb.clStickySectionContainer.translationY = 0f
                     }
                 }
                 else {
-                    cl_sticky_section_container.translationY = 0f
+                    vb.clStickySectionContainer.translationY = 0f
                 }
             }
         }
-        rv_message_info.clearOnScrollListeners()
-        rv_message_info.addOnScrollListener(onScrollListener)
+        vb.rvMessageInfo.clearOnScrollListeners()
+        vb.rvMessageInfo.addOnScrollListener(onScrollListener)
     }
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {

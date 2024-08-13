@@ -19,15 +19,17 @@ import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
-import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapSharedMediaPagerAdapter
 import io.taptalk.TapTalk.View.Fragment.TapSharedMediaFragment
 import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
-import kotlinx.android.synthetic.main.tap_activity_shared_media.*
+import io.taptalk.TapTalk.databinding.TapActivitySharedMediaBinding
 
 class TapSharedMediaActivity : TAPBaseActivity() {
 
-    private lateinit var vm : TapSharedMediaViewModel
+    private lateinit var vb : TapActivitySharedMediaBinding
+    private val vm: TapSharedMediaViewModel by lazy {
+        ViewModelProvider(this)[TapSharedMediaViewModel::class.java]
+    }
 
     companion object {
         fun start(
@@ -44,14 +46,15 @@ class TapSharedMediaActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_shared_media)
-        vm = ViewModelProvider(this, TapSharedMediaViewModel.TapSharedMediaViewModelFactory(application))[TapSharedMediaViewModel::class.java]
+        vb = TapActivitySharedMediaBinding.inflate(layoutInflater)
+        setContentView(vb.root)
+
         vm.room = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
-        vp_shared_media.adapter = TapSharedMediaPagerAdapter(this, instanceKey, supportFragmentManager, vm.room)
+        vb.vpSharedMedia.adapter = TapSharedMediaPagerAdapter(this, instanceKey, supportFragmentManager, vm.room)
         //viewpager cache fragments
-        vp_shared_media.offscreenPageLimit = 3
-        tab_layout.setupWithViewPager(vp_shared_media)
-        iv_button_back.setOnClickListener { onBackPressed() }
+        vb.vpSharedMedia.offscreenPageLimit = 3
+        vb.tabLayout.setupWithViewPager(vb.vpSharedMedia)
+        vb.ivButtonBack.setOnClickListener { onBackPressed() }
         TAPDataManager.getInstance(instanceKey).getOldestCreatedTimeFromRoom(vm.room?.roomID, object : TAPDatabaseListener<Long>() {
             override fun onSelectFinished(entity: Long?) {
                 super.onSelectFinished(entity)
@@ -73,7 +76,8 @@ class TapSharedMediaActivity : TAPBaseActivity() {
         if (vm.isRemoteContentFetched) {
             // LOAD DATA FROM VM
             loadSharedMedia(type)
-        } else {
+        }
+        else {
             vm.isLoading = true
             if (vm.oldestCreatedTime != null) {
                 // LOAD DATA FROM API
@@ -83,7 +87,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
                         if (response == null) {
                             return
                         }
-                        if (response.media != null && response.media.isNotEmpty() && vm.remoteMedias.isEmpty()) {
+                        if (!response.media.isNullOrEmpty() && vm.remoteMedias.isEmpty()) {
                             for (media in response.media) {
                                 val data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(media?.data as String, media.localID))
                                 val message = TAPMessageModel.Builder(
@@ -98,7 +102,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
                                 vm.remoteMedias.add(message)
                             }
                         }
-                        if (response.files != null && response.files.isNotEmpty() && vm.remoteDocuments.isEmpty()) {
+                        if (!response.files.isNullOrEmpty() && vm.remoteDocuments.isEmpty()) {
                             for (files in response.files) {
                                 val data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(files?.data as String, files.localID))
                                 val message = TAPMessageModel.Builder(
@@ -113,7 +117,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
                                 vm.remoteDocuments.add(message)
                             }
                         }
-                        if (response.links != null && response.links.isNotEmpty() && vm.remoteLinks.isEmpty()) {
+                        if (!response.links.isNullOrEmpty() && vm.remoteLinks.isEmpty()) {
                             for (links in response.links) {
                                 val data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(links?.data as String, links.localID))
                                 val message = TAPMessageModel.Builder(
@@ -143,23 +147,18 @@ class TapSharedMediaActivity : TAPBaseActivity() {
                         vm.isLoading = false
                     }
                 })
-            } else {
+            }
+            else {
                 getMoreSharedMedias(type)
             }
         }
     }
 
     private fun loadSharedMedia(type: Int) {
-        when(type) {
-            TYPE_MEDIA -> (vp_shared_media.adapter?.instantiateItem(vp_shared_media,
-                0
-            ) as TapSharedMediaFragment).addRemoteSharedMedias(vm.remoteMedias)
-            TYPE_LINK -> (vp_shared_media.adapter?.instantiateItem(vp_shared_media,
-                1
-            ) as TapSharedMediaFragment).addRemoteSharedMedias(vm.remoteLinks)
-            TYPE_DOCUMENT -> (vp_shared_media.adapter?.instantiateItem(vp_shared_media,
-                2
-            ) as TapSharedMediaFragment).addRemoteSharedMedias(vm.remoteDocuments)
+        when (type) {
+            TYPE_MEDIA -> (vb.vpSharedMedia.adapter?.instantiateItem(vb.vpSharedMedia, 0) as TapSharedMediaFragment).addRemoteSharedMedias(vm.remoteMedias)
+            TYPE_LINK -> (vb.vpSharedMedia.adapter?.instantiateItem(vb.vpSharedMedia, 1) as TapSharedMediaFragment).addRemoteSharedMedias(vm.remoteLinks)
+            TYPE_DOCUMENT -> (vb.vpSharedMedia.adapter?.instantiateItem(vb.vpSharedMedia, 2) as TapSharedMediaFragment).addRemoteSharedMedias(vm.remoteDocuments)
         }
     }
 }

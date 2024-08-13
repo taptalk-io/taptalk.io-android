@@ -159,8 +159,9 @@ public class TAPUtils {
     public static String toJsonString(Object object) {
         try {
             return createObjectMapper().writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            Log.e(TAG, "toJsonString: ", e);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "toJsonString exception: ", e);
             return "{}";
         }
     }
@@ -1694,11 +1695,16 @@ public class TAPUtils {
                 hasIDCountryCodePrefix = false;
             }
 
-            Pattern notNumberPattern = Pattern.compile("[^0-9]");
-            Matcher notNumberMatcher = notNumberPattern.matcher(phoneWithoutCode);
-            if (notNumberMatcher.find()) {
-                // Return original string if not number
-                return phoneNumber;
+            try {
+                Pattern notNumberPattern = Pattern.compile("[^0-9]");
+                Matcher notNumberMatcher = notNumberPattern.matcher(phoneWithoutCode);
+                if (notNumberMatcher.find()) {
+                    // Return original string if not number
+                    return phoneNumber;
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
             }
 
             if (phoneWithoutCode.length() < 6) {

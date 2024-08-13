@@ -1,11 +1,9 @@
 package io.taptalk.TapTalk.View.Activity
 
-import android.Manifest
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -49,13 +47,12 @@ import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.View.BottomSheet.TapMuteBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
-import kotlinx.android.synthetic.main.tap_activity_chat_profile.*
-import kotlinx.android.synthetic.main.tap_cell_profile_menu_button.*
-import kotlinx.android.synthetic.main.tap_layout_basic_information.*
-import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
+import io.taptalk.TapTalk.databinding.TapActivityChatProfileBinding
 
 class TAPChatProfileActivity : TAPBaseActivity() {
-   
+
+    private lateinit var vb: TapActivityChatProfileBinding
+    private lateinit var profilePicturePagerAdapter: TapProfilePicturePagerAdapter
     private var adapter: TapChatProfileAdapter? = null
     private var sharedMediaAdapter: TapChatProfileAdapter? = null
     private var glm: GridLayoutManager? = null
@@ -63,11 +60,11 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     private var sharedMediaPagingScrollListener: OnScrollChangedListener? = null
     private var vm: TAPProfileViewModel? = null
     private var glide: RequestManager? = null
-    private lateinit var profilePicturePagerAdapter: TapProfilePicturePagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_chat_profile)
+        vb = TapActivityChatProfileBinding.inflate(layoutInflater)
+        setContentView(vb.root)
         glide = Glide.with(this)
         initViewModel()
         profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm!!.profilePictureList, profilePictureListener)
@@ -205,9 +202,9 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 }
             }
         }
-        rv_chat_profile.adapter = adapter
-        rv_chat_profile.layoutManager = glm
-        val recyclerAnimator = rv_chat_profile.itemAnimator as SimpleItemAnimator?
+        vb.rvChatProfile.adapter = adapter
+        vb.rvChatProfile.layoutManager = glm
+        val recyclerAnimator = vb.rvChatProfile.itemAnimator as SimpleItemAnimator?
         if (null != recyclerAnimator) {
             recyclerAnimator.supportsChangeAnimations = false
         }
@@ -224,14 +221,15 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             override fun getSpanSize(position: Int): Int {
                 return if (sharedMediaAdapter!!.getItemAt(position).type == TapChatProfileItemModel.TYPE_MEDIA_THUMBNAIL) {
                     1
-                } else {
+                }
+                else {
                     3
                 }
             }
         }
 
-        iv_button_back.setOnClickListener { onBackPressed() }
-        fl_loading.setOnClickListener { }
+        vb.ivButtonBack.setOnClickListener { onBackPressed() }
+        vb.layoutPopupLoadingScreen.flLoading.setOnClickListener { }
 
         // Update room data
         if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
@@ -239,11 +237,12 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm!!.room.roomID),
                 getUserView
             )
-        } else if (vm!!.room.type == RoomType.TYPE_GROUP) {
+        }
+        else if (vm!!.room.type == RoomType.TYPE_GROUP) {
             TAPDataManager.getInstance(instanceKey).getChatRoomData(vm!!.room.roomID, getRoomView)
             if (!vm!!.isGroupMemberProfile) {
                 // Change title to Group Details
-                tv_title.setText(R.string.tap_group_details)
+                vb.tvTitle.setText(R.string.tap_group_details)
             }
         }
         // init listener
@@ -251,6 +250,9 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun updateView() {
+        if (null == vm) {
+            return
+        }
         // Set profile detail item
         var imageURL: TAPImageURL? = null
         var itemLabel: String? = null
@@ -264,131 +266,140 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 isSimpleProfile = true
                 setSimpleProfile()
                 showDeletedUserProfilePicture()
-                tv_title.text = vm!!.userDataFromManager.fullname
-            } else if (TAPUtils.isSavedMessagesRoom(vm!!.room.roomID, instanceKey)) {
+                vb.tvTitle.text = vm!!.userDataFromManager.fullname
+            }
+            else if (TAPUtils.isSavedMessagesRoom(vm!!.room.roomID, instanceKey)) {
                 // set saved messages profile
                 isSimpleProfile = true
                 setSimpleProfile()
                 showSavedMessagesProfilePicture()
-                tv_title.text = getString(R.string.tap_saved_messages)
-            } else {
+                vb.tvTitle.text = getString(R.string.tap_saved_messages)
+            }
+            else {
                 // Set name & avatar from contact manager
                 hideSimpleProfilePicture()
                 imageURL = vm!!.userDataFromManager.imageURL
                 itemLabel = vm!!.userDataFromManager.fullname
-                tv_title.text = itemLabel
+                vb.tvTitle.text = itemLabel
                 if (!vm!!.userDataFromManager.username.isNullOrEmpty() &&
                     TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
                 ) {
                     itemSubLabel = vm!!.userDataFromManager.username
-                    g_username.visibility = View.VISIBLE
-                    tv_username_view.text = itemSubLabel
-                } else {
-                    g_username.visibility = View.GONE
+                    vb.clBasicInfo.gUsername.visibility = View.VISIBLE
+                    vb.clBasicInfo.tvUsernameView.text = itemSubLabel
+                }
+                else {
+                    vb.clBasicInfo.gUsername.visibility = View.GONE
                 }
                 setBasicInfo(
                     vm!!.userDataFromManager.phoneWithCode,
                     TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
-                    g_mobile_number,
-                    tv_mobile_number_view,
+                    vb.clBasicInfo.gMobileNumber,
+                    vb.clBasicInfo.tvMobileNumberView,
                     true
                 )
                 setBasicInfo(
                     vm!!.userDataFromManager.email,
                     TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible,
-                    g_email,
-                    tv_email_view
+                    vb.clBasicInfo.gEmail,
+                    vb.clBasicInfo.tvEmailView
                 )
                 setBasicInfo(
                     vm!!.userDataFromManager.bio,
                     TapUI.getInstance(instanceKey).isEditBioTextFieldVisible,
-                    g_bio,
-                    tv_bio_view
+                    vb.clBasicInfo.gBio,
+                    vb.clBasicInfo.tvBioView
                 )
                 getPhotoList(vm!!.userDataFromManager.userID, itemLabel)
             }
-        } else if (null != vm!!.groupDataFromManager &&
+        }
+        else if (null != vm!!.groupDataFromManager &&
             vm!!.groupDataFromManager.name.isNotEmpty()
         ) {
             // Set name & avatar from group manager
             imageURL = vm!!.groupDataFromManager.imageURL
             itemLabel = vm!!.groupDataFromManager.name
-            tv_title.text = itemLabel
-            if (!vm!!.groupDataFromManager.participants!!.isNullOrEmpty()) {
-                cl_basic_info.visibility = View.GONE
+            vb.tvTitle.text = itemLabel
+            if (!vm!!.groupDataFromManager.participants.isNullOrEmpty()) {
+                vb.clBasicInfo.clBasicInformationContainer.visibility = View.GONE
                 itemSubLabel = String.format(
                     getString(R.string.tap_format_d_group_member_count),
                     vm!!.groupDataFromManager.participants!!.size
                 )
-                tv_member_count.text = itemSubLabel
-                tv_member_count.visibility = View.VISIBLE
+                vb.tvMemberCount.text = itemSubLabel
+                vb.tvMemberCount.visibility = View.VISIBLE
             }
-        } else if (vm!!.isGroupMemberProfile) {
+        }
+        else if (vm!!.isGroupMemberProfile) {
             if (vm!!.groupMemberUser.deleted != null && vm!!.groupMemberUser.deleted!! > 0L) {
                 // set deleted user profile
                 isSimpleProfile = true
                 setSimpleProfile()
                 showDeletedUserProfilePicture()
-                tv_title.text = vm!!.groupMemberUser.fullname
-            } else if (TAPUtils.isSavedMessagesRoom(vm!!.room.roomID, instanceKey)) {
+                vb.tvTitle.text = vm!!.groupMemberUser.fullname
+            }
+            else if (TAPUtils.isSavedMessagesRoom(vm!!.room.roomID, instanceKey)) {
                 // set saved messages profile
                 isSimpleProfile = true
                 setSimpleProfile()
                 showSavedMessagesProfilePicture()
-                tv_title.text = getString(R.string.tap_saved_messages)
-            } else {
+                vb.tvTitle.text = getString(R.string.tap_saved_messages)
+            }
+            else {
                 // Set name & avatar from passed member profile intent
                 hideSimpleProfilePicture()
                 imageURL = vm!!.groupMemberUser.imageURL
                 itemLabel = vm!!.groupMemberUser.fullname
-                tv_title.text = itemLabel
+                vb.tvTitle.text = itemLabel
                 if (!vm!!.groupMemberUser.username.isNullOrEmpty() &&
                     TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
                 ) {
                     itemSubLabel = vm!!.groupMemberUser.username
-                    tv_username_view.text = itemSubLabel
+                    vb.clBasicInfo.tvUsernameView.text = itemSubLabel
                 }
                 setBasicInfo(
                     vm!!.groupMemberUser.phoneWithCode,
                     TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
-                    g_mobile_number,
-                    tv_mobile_number_view,
+                    vb.clBasicInfo.gMobileNumber,
+                    vb.clBasicInfo.tvMobileNumberView,
                     true
                 )
                 setBasicInfo(
                     vm!!.groupMemberUser.email,
                     TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible,
-                    g_email,
-                    tv_email_view
+                    vb.clBasicInfo.gEmail,
+                    vb.clBasicInfo.tvEmailView
                 )
                 setBasicInfo(
                     vm!!.groupMemberUser.bio,
                     TapUI.getInstance(instanceKey).isEditBioTextFieldVisible,
-                    g_bio,
-                    tv_bio_view
+                    vb.clBasicInfo.gBio,
+                    vb.clBasicInfo.tvBioView
                 )
                 getPhotoList(vm!!.groupMemberUser.userID, itemLabel)
             }
-        } else {
+        }
+        else {
             // Set name & avatar from passed room intent
             if (TAPUtils.isSavedMessagesRoom(vm!!.room.roomID, instanceKey)) {
                 // set saved messages profile
                 isSimpleProfile = true
                 setSimpleProfile()
                 showSavedMessagesProfilePicture()
-                tv_title.text = getString(R.string.tap_saved_messages)
-            } else {
+                vb.tvTitle.text = getString(R.string.tap_saved_messages)
+            }
+            else {
                 imageURL = vm!!.room.imageURL
                 itemLabel = vm!!.room.name
-                tv_title.text = itemLabel
+                vb.tvTitle.text = itemLabel
                 if (vm!!.room.participants != null && vm!!.room.participants!!.isNotEmpty()) {
-                    cl_basic_info.visibility = View.GONE
+                    vb.clBasicInfo.clBasicInformationContainer.visibility = View.GONE
                     itemSubLabel = String.format(
                         getString(R.string.tap_format_d_group_member_count),
                         vm!!.room.participants!!.size
                     )
-                    tv_member_count.text = itemSubLabel
-                    tv_member_count.visibility = View.VISIBLE
+                    vb.tvMemberCount.text = itemSubLabel
+                    vb.tvMemberCount.visibility = View.VISIBLE
                 }
             }
         }
@@ -399,14 +410,15 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 photosItemModel.fullsizeImageURL = imageURL.fullsize
                 photosItemModel.thumbnailImageURL = imageURL.thumbnail
                 vm!!.profilePictureList.add(photosItemModel)
-                vp_profile_picture.adapter = profilePicturePagerAdapter
+                vb.vpProfilePicture.adapter = profilePicturePagerAdapter
                 if (vm!!.room.type != RoomType.TYPE_GROUP && vm!!.profilePictureList.size > 1) {
-                    tab_layout.visibility = View.VISIBLE
-                    tab_layout.setupWithViewPager(vp_profile_picture)
+                    vb.tabLayout.visibility = View.VISIBLE
+                    vb.tabLayout.setupWithViewPager(vb.vpProfilePicture)
                 }
-                vp_profile_picture.setBackgroundColor(Color.TRANSPARENT)
-                tv_profile_picture_label.visibility = View.GONE
-            } else {
+                vb.vpProfilePicture.setBackgroundColor(Color.TRANSPARENT)
+                vb.tvProfilePictureLabel.visibility = View.GONE
+            }
+            else {
                 setInitialToProfilePicture(itemLabel)
             }
         }
@@ -437,34 +449,34 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun setInitialToProfilePicture(itemLabel: String?) {
-        vp_profile_picture.setBackgroundColor(TAPUtils.getRandomColor(this, itemLabel))
-        vp_profile_picture.adapter = null
-        tv_profile_picture_label.text = TAPUtils.getInitials(
+        vb.vpProfilePicture.setBackgroundColor(TAPUtils.getRandomColor(this, itemLabel))
+        vb.vpProfilePicture.adapter = null
+        vb.tvProfilePictureLabel.text = TAPUtils.getInitials(
             itemLabel, 2
         )
-        tv_profile_picture_label.visibility = View.VISIBLE
-        iv_simple_profile_picture.visibility = View.GONE
+        vb.tvProfilePictureLabel.visibility = View.VISIBLE
+        vb.ivSimpleProfilePicture.visibility = View.GONE
     }
 
     private fun showDeletedUserProfilePicture() {
-        vp_profile_picture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
-        glide?.load(R.drawable.tap_ic_deleted_user_large)?.centerInside()?.into(iv_simple_profile_picture)
+        vb.vpProfilePicture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
+        glide?.load(R.drawable.tap_ic_deleted_user_large)?.centerInside()?.into(vb.ivSimpleProfilePicture)
     }
 
     private fun showSavedMessagesProfilePicture() {
-        vp_profile_picture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
-        glide?.load(R.drawable.tap_ic_bookmark_large)?.centerInside()?.into(iv_simple_profile_picture)
+        vb.vpProfilePicture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
+        glide?.load(R.drawable.tap_ic_bookmark_large)?.centerInside()?.into(vb.ivSimpleProfilePicture)
     }
 
     private fun hideSimpleProfilePicture() {
-        iv_simple_profile_picture.visibility = View.GONE
+        vb.ivSimpleProfilePicture.visibility = View.GONE
     }
 
     private fun setSimpleProfile() {
-        cl_basic_info.visibility = View.GONE
-        g_username.visibility = View.GONE
-        tv_profile_picture_label.visibility = View.GONE
-        iv_simple_profile_picture.visibility = View.VISIBLE
+        vb.clBasicInfo.clBasicInformationContainer.visibility = View.GONE
+        vb.clBasicInfo.gUsername.visibility = View.GONE
+        vb.tvProfilePictureLabel.visibility = View.GONE
+        vb.ivSimpleProfilePicture.visibility = View.VISIBLE
     }
 
     private fun getPhotoList(userId: String?, itemLabel: String?) {
@@ -482,33 +494,35 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             setInitialToProfilePicture(itemLabel)
         } else {
             vm?.profilePictureList?.addAll(photoList)
-            vp_profile_picture.adapter = profilePicturePagerAdapter
+            vb.vpProfilePicture.adapter = profilePicturePagerAdapter
             if (vm?.profilePictureList?.size!! > 1) {
-                tab_layout.visibility = View.VISIBLE
-                tab_layout.setupWithViewPager(vp_profile_picture)
-            } else {
-                tab_layout.visibility = View.GONE
+                vb.tabLayout.visibility = View.VISIBLE
+                vb.tabLayout.setupWithViewPager(vb.vpProfilePicture)
             }
-            vp_profile_picture.setBackgroundColor(Color.TRANSPARENT)
-            tv_profile_picture_label.visibility = View.GONE
+            else {
+                vb.tabLayout.visibility = View.GONE
+            }
+            vb.vpProfilePicture.setBackgroundColor(Color.TRANSPARENT)
+            vb.tvProfilePictureLabel.visibility = View.GONE
         }
     }
 
     private fun updateMuteMenu() {
         if (TapUI.getInstance(instanceKey).isMuteRoomListSwipeMenuEnabled) {
-            cl_mute.visibility = View.VISIBLE
+            vb.clMute.clContainer.visibility = View.VISIBLE
             val menuLabel: String
             val menuIcon: Int
             val expiredAt: Long? = TAPDataManager.getInstance(instanceKey).mutedRoomIDs[vm!!.room.roomID]
             if (expiredAt != null) {
                 menuLabel = getString(R.string.tap_muted)
                 menuIcon = R.drawable.tap_ic_mute_white
-            } else {
+            }
+            else {
                 menuLabel = getString(R.string.tap_mute)
                 menuIcon = R.drawable.tap_ic_unmute_white
             }
-            tv_menu_label.text = menuLabel
-            tv_menu_info.text = if (expiredAt != null)
+            vb.clMute.tvMenuLabel.text = menuLabel
+            vb.clMute.tvMenuInfo.text = if (expiredAt != null)
                 when {
                     expiredAt > 0L -> {
                         val timeString = TAPTimeFormatter.forwardDateStampString(this, expiredAt)
@@ -519,14 +533,15 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 } else getString(R.string.tap_off)
 
             // Set menu icon
-            iv_menu_icon.setImageDrawable(ContextCompat.getDrawable(this, menuIcon))
-            ImageViewCompat.setImageTintList(iv_menu_icon, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimary)))
-            cl_mute.setOnClickListener {
+            vb.clMute.ivMenuIcon.setImageDrawable(ContextCompat.getDrawable(this, menuIcon))
+            ImageViewCompat.setImageTintList(vb.clMute.ivMenuIcon, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimary)))
+            vb.clMute.clContainer.setOnClickListener {
                 showMuteBottomSheet()
             }
-            tv_menu_info.visibility = View.VISIBLE
-        } else {
-            cl_mute.visibility = View.GONE
+            vb.clMute.tvMenuInfo.visibility = View.VISIBLE
+        }
+        else {
+            vb.clMute.clContainer.visibility = View.GONE
         }
     }
 
@@ -540,7 +555,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     getString(R.string.tap_starred_messages),
                     R.drawable.tap_ic_star_outline,
                     R.color.tapIconChatProfileMenuStarredMessages,
-                    R.style.tapChatProfileMenuStarredLabelStyle
+                    R.color.tapChatProfileMenuLabelColor
                 )
                 menuItems.add(menuStarredMessages)
             }
@@ -552,7 +567,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     getString(R.string.tap_notifications),
                     R.drawable.tap_ic_notification_orange,
                     R.color.tapIconChatProfileMenuNotificationInactive,
-                    R.style.tapChatProfileMenuLabelStyle
+                    R.color.tapChatProfileMenuLabelColor
                 )
                 menuNotification.isChecked = !vm!!.room.isMuted
 
@@ -562,7 +577,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     getString(R.string.tap_conversation_color),
                     R.drawable.tap_ic_color_grey,
                     R.color.tapIconChatProfileMenuConversationColor,
-                    R.style.tapChatProfileMenuLabelStyle
+                    R.color.tapChatProfileMenuLabelColor
                 )
 
                 // Search chat
@@ -571,7 +586,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     getString(R.string.tap_search_chat),
                     R.drawable.tap_ic_search_grey_small,
                     R.color.tapIconChatProfileMenuSearchChat,
-                    R.style.tapChatProfileMenuLabelStyle
+                    R.color.tapChatProfileMenuLabelColor
                 )
 
                 // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
@@ -588,7 +603,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_starred_messages),
                             R.drawable.tap_ic_star_outline,
                             R.color.tapIconChatProfileMenuStarredMessages,
-                            R.style.tapChatProfileMenuStarredLabelStyle
+                            R.color.tapChatProfileMenuLabelColor
                         )
                         menuItems.add(menuStarredMessages)
                     }
@@ -597,7 +612,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_shared_media),
                         R.drawable.tap_ic_attach_orange,
                         R.color.tapIconChatProfileMenuSharedMedia,
-                        R.style.tapChatProfileMenuStarredLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuSharedMedia)
                     if (TapUI.getInstance(instanceKey).isGroupInCommonMenuEnabled) {
@@ -606,7 +621,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_groups_in_common),
                             R.drawable.tap_ic_users_primary,
                             R.color.tapIconChatProfileMenuGroupInCommon,
-                            R.style.tapChatProfileMenuStarredLabelStyle
+                            R.color.tapChatProfileMenuLabelColor
                         )
                         menuItems.add(menuGroupInCommon)
                     }
@@ -625,7 +640,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                                 getString(R.string.tap_add_to_contacts),
                                 R.drawable.tap_ic_add_circle_orange,
                                 R.color.tapIconGroupMemberProfileMenuAddToContacts,
-                                R.style.tapChatProfileMenuLabelStyle
+                                R.color.tapChatProfileMenuLabelColor
                             )
                             menuItems.add(menuAddToContact)
                         }
@@ -637,7 +652,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_send_message),
                             R.drawable.tap_ic_send_message_orange,
                             R.color.tapIconGroupMemberProfileMenuSendMessage,
-                            R.style.tapChatProfileMenuLabelStyle
+                            R.color.tapChatProfileMenuLabelColor
                         )
                         menuItems.add(menuSendMessage)
                     }
@@ -648,7 +663,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_clear_chat),
                         R.drawable.tap_ic_delete_red,
                         R.color.tapIconChatProfileMenuClearChat,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                        R.color.tapChatProfileMenuDestructiveLabelColor
                     )
 
                     // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
@@ -661,7 +676,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_report_user),
                             R.drawable.tap_ic_warning_triangle_red,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
-                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                            R.color.tapChatProfileMenuDestructiveLabelColor
                         )
                         menuItems.add(menuReport)
                     }
@@ -673,7 +688,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             if (isUserBlocked()) getString(R.string.tap_unblock_user) else getString(R.string.tap_block_user),
                             R.drawable.tap_ic_block_red,
                             R.color.tapIconChatProfileMenuBlockUser,
-                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                            R.color.tapChatProfileMenuDestructiveLabelColor
                         )
                         menuItems.add(menuBlock)
                     }
@@ -690,7 +705,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_view_members),
                         R.drawable.tap_ic_members_orange,
                         R.color.tapIconGroupProfileMenuViewMembers,
-                        R.style.tapChatProfileMenuLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuViewMembers)
 
@@ -700,7 +715,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_edit_group),
                         R.drawable.tap_ic_edit_orange,
                         R.color.tapIconGroupProfileMenuEditGroup,
-                        R.style.tapChatProfileMenuLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuEditGroup)
                     // Starred messages
@@ -710,7 +725,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_starred_messages),
                             R.drawable.tap_ic_star_outline,
                             R.color.tapIconChatProfileMenuStarredMessages,
-                            R.style.tapChatProfileMenuStarredLabelStyle
+                            R.color.tapChatProfileMenuLabelColor
                         )
                         menuItems.add(menuStarredMessages)
                     }
@@ -719,7 +734,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_shared_media),
                         R.drawable.tap_ic_attach_orange,
                         R.color.tapIconChatProfileMenuSharedMedia,
-                        R.style.tapChatProfileMenuStarredLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuSharedMedia)
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
@@ -730,7 +745,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_report_group),
                             R.drawable.tap_ic_warning_triangle_red,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
-                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                            R.color.tapChatProfileMenuDestructiveLabelColor
                         )
                         menuItems.add(menuReport)
                     }
@@ -743,7 +758,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_leave_group),
                             R.drawable.tap_ic_logout_red,
                             R.color.tapIconChatProfileMenuClearChat,
-                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                            R.color.tapChatProfileMenuDestructiveLabelColor
                         )
                         menuItems.add(menuExitGroup)
                     } else {
@@ -753,7 +768,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_delete_group),
                             R.drawable.tap_ic_delete_red,
                             R.color.tapIconChatProfileMenuClearChat,
-                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                            R.color.tapChatProfileMenuDestructiveLabelColor
                         )
                         menuItems.add(menuDeleteGroup)
                     }
@@ -766,7 +781,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_view_members),
                         R.drawable.tap_ic_members_orange,
                         R.color.tapIconGroupProfileMenuViewMembers,
-                        R.style.tapChatProfileMenuLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuViewMembers)
                     // Starred messages
@@ -776,7 +791,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_starred_messages),
                             R.drawable.tap_ic_star_outline,
                             R.color.tapIconChatProfileMenuStarredMessages,
-                            R.style.tapChatProfileMenuStarredLabelStyle
+                            R.color.tapChatProfileMenuLabelColor
                         )
                         menuItems.add(menuStarredMessages)
                     }
@@ -785,7 +800,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_shared_media),
                         R.drawable.tap_ic_attach_orange,
                         R.color.tapIconChatProfileMenuSharedMedia,
-                        R.style.tapChatProfileMenuStarredLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuSharedMedia)
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
@@ -796,7 +811,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_report_group),
                             R.drawable.tap_ic_warning_triangle_red,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
-                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                            R.color.tapChatProfileMenuDestructiveLabelColor
                         )
                         menuItems.add(menuReport)
                     }
@@ -807,7 +822,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_leave_group),
                         R.drawable.tap_ic_logout_red,
                         R.color.tapIconChatProfileMenuClearChat,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                        R.color.tapChatProfileMenuDestructiveLabelColor
                     )
                     menuItems.add(menuExitGroup)
                 }
@@ -821,7 +836,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_starred_messages),
                         R.drawable.tap_ic_star_outline,
                         R.color.tapIconChatProfileMenuStarredMessages,
-                        R.style.tapChatProfileMenuStarredLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuStarredMessages)
                 }
@@ -830,7 +845,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     getString(R.string.tap_shared_media),
                     R.drawable.tap_ic_attach_orange,
                     R.color.tapIconChatProfileMenuSharedMedia,
-                    R.style.tapChatProfileMenuStarredLabelStyle
+                    R.color.tapChatProfileMenuLabelColor
                 )
                 menuItems.add(menuSharedMedia)
                 if (TapUI.getInstance(instanceKey).isGroupInCommonMenuEnabled) {
@@ -839,7 +854,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_groups_in_common),
                         R.drawable.tap_ic_users_primary,
                         R.color.tapIconChatProfileMenuGroupInCommon,
-                        R.style.tapChatProfileMenuStarredLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuGroupInCommon)
                 }
@@ -857,7 +872,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             getString(R.string.tap_add_to_contacts),
                             R.drawable.tap_ic_add_circle_orange,
                             R.color.tapIconGroupMemberProfileMenuAddToContacts,
-                            R.style.tapChatProfileMenuLabelStyle
+                            R.color.tapChatProfileMenuLabelColor
                         )
                         menuItems.add(menuAddToContact)
                     }
@@ -869,7 +884,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     getString(R.string.tap_send_message),
                     R.drawable.tap_ic_send_message_orange,
                     R.color.tapIconGroupMemberProfileMenuSendMessage,
-                    R.style.tapChatProfileMenuLabelStyle
+                    R.color.tapChatProfileMenuLabelColor
                 )
                 menuItems.add(menuSendMessage)
 
@@ -884,7 +899,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_promote_admin),
                         R.drawable.tap_ic_appoint_admin,
                         R.color.tapIconGroupMemberProfileMenuPromoteAdmin,
-                        R.style.tapChatProfileMenuLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuPromoteAdmin)
                 } else if (null != vm!!.room.admins &&
@@ -896,7 +911,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_demote_admin),
                         R.drawable.tap_ic_demote_admin,
                         R.color.tapIconGroupMemberProfileMenuDemoteAdmin,
-                        R.style.tapChatProfileMenuLabelStyle
+                        R.color.tapChatProfileMenuLabelColor
                     )
                     menuItems.add(menuDemoteAdmin)
                 }
@@ -911,7 +926,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_remove_group_member),
                         R.drawable.tap_ic_delete_red,
                         R.color.tapIconGroupMemberProfileMenuRemoveMember,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                        R.color.tapChatProfileMenuDestructiveLabelColor
                     )
                     menuItems.add(menuRemoveMember)
                 }
@@ -923,7 +938,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         getString(R.string.tap_report_user),
                         R.drawable.tap_ic_warning_triangle_red,
                         R.color.tapIconChatProfileMenuReportUserOrGroup,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                        R.color.tapChatProfileMenuDestructiveLabelColor
                     )
                     menuItems.add(menuReport)
                 }
@@ -935,7 +950,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         if (isUserBlocked()) getString(R.string.tap_unblock_user) else getString(R.string.tap_block_user),
                         R.drawable.tap_ic_block_red,
                         R.color.tapIconChatProfileMenuBlockUser,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                        R.color.tapChatProfileMenuDestructiveLabelColor
                     )
                     menuItems.add(menuBlock)
                 }
@@ -969,9 +984,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
             if (isUserBlocked()) {
                 TapTalkDialog.Builder(this)
-                    .setTitle(
-                        String.format(this.getString(R.string.tap_unblock_s_format, user.fullname))
-                    )
+                    .setTitle(String.format(getString(R.string.tap_unblock_s_format), user.fullname))
                     .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                     .setMessage(getString(R.string.tap_sure_unblock_wording))
                     .setPrimaryButtonTitle(getString(R.string.tap_yes))
@@ -982,7 +995,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                     .setSecondaryButtonListener { }
                     .show()
-            } else {
+            }
+            else {
                 TapTalkDialog.Builder(this)
                     .setTitle(this.getString(R.string.tap_block_user))
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
@@ -1201,39 +1215,34 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     private fun showLoadingPopup(message: String) {
         vm!!.isApiCallOnProgress = true
         runOnUiThread {
-            iv_loading_image.setImageDrawable(
+            vb.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(
                 ContextCompat.getDrawable(
                     this,
                     R.drawable.tap_ic_loading_progress_circle_white
                 )
             )
-            if (null == iv_loading_image.animation) {
-                TAPUtils.rotateAnimateInfinitely(this, iv_loading_image)
+            if (null == vb.layoutPopupLoadingScreen.ivLoadingImage.animation) {
+                TAPUtils.rotateAnimateInfinitely(this, vb.layoutPopupLoadingScreen.ivLoadingImage)
             }
-            tv_loading_text!!.text = message
-            fl_loading!!.visibility = View.VISIBLE
+            vb.layoutPopupLoadingScreen.tvLoadingText.text = message
+            vb.layoutPopupLoadingScreen.flLoading.visibility = View.VISIBLE
         }
     }
 
     private fun hideLoadingPopup(message: String) {
         //vm.setApiCallOnProgress(false);
         runOnUiThread {
-            iv_loading_image.setImageDrawable(
-                ContextCompat.getDrawable(
-                    this,
-                    R.drawable.tap_ic_checklist_pumpkin
-                )
-            )
-            iv_loading_image.clearAnimation()
-            tv_loading_text!!.text = message
-            fl_loading!!.setOnClickListener { hideLoadingPopup() }
+            vb.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin))
+            vb.layoutPopupLoadingScreen.ivLoadingImage.clearAnimation()
+            vb.layoutPopupLoadingScreen.tvLoadingText.text = message
+            vb.layoutPopupLoadingScreen.flLoading.setOnClickListener { hideLoadingPopup() }
             Handler(mainLooper).postDelayed({ this.hideLoadingPopup() }, 1000L)
         }
     }
 
     private fun hideLoadingPopup() {
         vm!!.isApiCallOnProgress = false
-        fl_loading!!.visibility = View.GONE
+        vb.layoutPopupLoadingScreen.flLoading.visibility = View.GONE
     }
 
     private fun showErrorDialog(title: String, message: String?) {
@@ -1569,17 +1578,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                                             getInstance(instanceKey).removeGroupData(vm!!.room.roomID)
                                             getInstance(instanceKey).refreshRoomList = true
                                             runOnUiThread {
-                                                iv_loading_image.setImageDrawable(
+                                                vb.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(
                                                     ContextCompat.getDrawable(
                                                         this@TAPChatProfileActivity,
                                                         R.drawable.tap_ic_checklist_pumpkin
                                                     )
                                                 )
-                                                iv_loading_image.clearAnimation()
-                                                tv_loading_text!!.text = vm!!.loadingEndText
+                                                vb.layoutPopupLoadingScreen.ivLoadingImage.clearAnimation()
+                                                vb.layoutPopupLoadingScreen.tvLoadingText.text = vm!!.loadingEndText
                                                 Handler(mainLooper).postDelayed({
                                                     vm!!.isApiCallOnProgress = false
-                                                    fl_loading!!.visibility = View.GONE
+                                                    vb.layoutPopupLoadingScreen.flLoading.visibility = View.GONE
                                                     setResult(RESULT_OK)
                                                     finish()
                                                     overridePendingTransition(

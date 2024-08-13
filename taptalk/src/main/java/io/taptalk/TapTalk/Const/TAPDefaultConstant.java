@@ -384,6 +384,7 @@ public class TAPDefaultConstant {
         public static final String DownloadErrorCode = "kTAPDownloadErrorCode";
         public static final String DownloadErrorMessage = "kTAPDownloadErrorMessage";
         public static final String PlayPauseVoiceNote = "kTAPPlayPauseVoiceNote";
+        public static final String LinkPreviewImageLoaded = "kTAPPLinkPreviewImageLoaded";
     }
 
     public static final class LongPressBroadcastEvent {

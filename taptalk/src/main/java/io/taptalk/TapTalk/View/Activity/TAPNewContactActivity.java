@@ -249,7 +249,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             }).into(civAvatar);
             ImageViewCompat.setImageTintList(civAvatar, null);
             tvAvatarLabel.setVisibility(View.GONE);
-        } else {
+        }
+        else {
             // Show initial
             glide.clear(civAvatar);
             ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getSearchResult().getFullname())));
@@ -267,11 +268,10 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             ivButtonImage.setVisibility(View.GONE);
             tvButtonText.setVisibility(View.VISIBLE);
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
-            tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
-            typedArray.recycle();
+            tvButtonText.setTextColor(ContextCompat.getColor(this, R.color.tapClickableLabelColor));
             clButtonAction.setBackground(null);
-        } else {
+        }
+        else {
             // Check if user is in my contacts
             tvButtonText.setVisibility(View.GONE);
             ivButtonImage.setVisibility(View.GONE);
@@ -321,7 +321,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             }).into(civAvatar);
             ImageViewCompat.setImageTintList(civAvatar, null);
             tvAvatarLabel.setVisibility(View.GONE);
-        } else {
+        }
+        else {
             // Show initial
             glide.clear(civAvatar);
             ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getSearchResult().getFullname())));
@@ -334,7 +335,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         if (null != vm.getSearchResult().getUserRole() && !vm.getSearchResult().getUserRole().getIconURL().isEmpty()) {
             glide.load(vm.getSearchResult().getUserRole().getIconURL()).into(ivAvatarIcon);
             ivAvatarIcon.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else {
             ivAvatarIcon.setVisibility(View.GONE);
         }
 
@@ -352,11 +354,10 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             ivButtonImage.setVisibility(View.GONE);
             tvButtonText.setVisibility(View.VISIBLE);
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
-            tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
-            typedArray.recycle();
+            tvButtonText.setTextColor(ContextCompat.getColor(this, R.color.tapClickableLabelColor));
             clButtonAction.setBackground(null);
-        } else {
+        }
+        else {
             // Check if user is in my contacts
             tvButtonText.setVisibility(View.GONE);
             ivButtonImage.setVisibility(View.GONE);
@@ -370,7 +371,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         // TODO: 25 October 2018 CHECK USER ROLE
         if (null != vm.getSearchResult().getUserRole() && vm.getSearchResult().getUserRole().getCode().equals("expert")) {
             showExpertView();
-        } else {
+        }
+        else {
             showUserView();
         }
     }
@@ -426,7 +428,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             if (s.length() > 0) {
                 searchTimer.start();
                 ivButtonClearText.setVisibility(View.VISIBLE);
-            } else {
+            }
+            else {
                 showEmpty();
                 vm.setPendingSearch("");
                 ivButtonClearText.setVisibility(View.GONE);
@@ -459,12 +462,11 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             runOnUiThread(() -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
-                } else {
+                }
+                else {
                     clButtonAction.setBackground(ContextCompat.getDrawable(TAPNewContactActivity.this, R.drawable.tap_bg_button_active));
                 }
-                TypedArray typedArray = obtainStyledAttributes(R.style.tapButtonLabelStyle, R.styleable.TextAppearance);
-                tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
-                typedArray.recycle();
+                tvButtonText.setTextColor(ContextCompat.getColor(TAPNewContactActivity.this, R.color.tapButtonLabelColor));
                 if (isContact == 0) {
                     // Searched user is not a contact
                     runOnUiThread(() -> {
@@ -475,7 +477,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                         tvButtonText.setText(getString(R.string.tap_add_to_contacts));
                         clButtonAction.setOnClickListener(v -> addToContact());
                     });
-                } else {
+                }
+                else {
                     // Searched user is in my contacts
                     runOnUiThread(() -> {
                         ivButtonImage.setVisibility(View.VISIBLE);

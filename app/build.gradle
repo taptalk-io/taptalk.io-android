@@ -1,7 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
+//    id 'kotlin-android-extensions'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
 }
@@ -11,14 +12,15 @@ if (file("${rootProject.rootDir}/environment.properties").exists()) {
 }
 
 android {
+    namespace = "io.taptalk.TapTalkSample"
     def globalConfig = rootProject.extensions.getByName("ext")
 
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "io.taptalk.TapTalkSample"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode taptalk_version_code
         versionName taptalk_version_name
         multiDexEnabled true
@@ -227,13 +229,18 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding true
+        buildConfig = true
+    }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '17'
     }
 
     lintOptions {

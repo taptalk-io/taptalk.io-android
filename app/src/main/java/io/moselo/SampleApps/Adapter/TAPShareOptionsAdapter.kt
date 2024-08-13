@@ -356,9 +356,7 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             }
 
             // Get highlighted color code
-            val typedArray = itemView.context.obtainStyledAttributes(R.style.tapRoomListNameHighlightedStyle, R.styleable.TextAppearance)
-            val colorCode = Integer.toHexString(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2)
-            typedArray.recycle()
+            val colorCode = Integer.toHexString(ContextCompat.getColor(itemView.context, io.taptalk.TapTalk.R.color.tapRoomListNameHighlightedColor)).substring(2)
 
             // Set room name with highlighted text
             val roomName = room.name

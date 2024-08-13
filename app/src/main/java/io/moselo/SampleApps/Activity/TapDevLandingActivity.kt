@@ -3,14 +3,14 @@ package io.moselo.SampleApps.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
-import io.taptalk.TapTalkSample.R
-import kotlinx.android.synthetic.main.activity_dev_landing.*
+import io.taptalk.TapTalkSample.databinding.ActivityDevLandingBinding
 
 class TapDevLandingActivity : TAPBaseActivity() {
+
+    private lateinit var vb: ActivityDevLandingBinding
 
     companion object {
         fun start(
@@ -25,9 +25,10 @@ class TapDevLandingActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dev_landing)
+        vb = ActivityDevLandingBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
-        ll_button_open_chat.setOnClickListener {
+        vb.llButtonOpenChat.setOnClickListener {
             TapUIRoomListActivity.start(this, instanceKey)
         }
     }

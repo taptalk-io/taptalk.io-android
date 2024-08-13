@@ -1,6 +1,5 @@
 package io.moselo.SampleApps.Activity
 
-import android.Manifest
 import android.content.Intent
 import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
@@ -15,7 +14,9 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.*
+import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener
+import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -38,53 +39,57 @@ import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager
 import io.taptalk.TapTalk.Manager.TapUI
-import io.taptalk.TapTalk.Model.*
+import io.taptalk.TapTalk.Model.TAPImageURL
+import io.taptalk.TapTalk.Model.TAPMessageModel
+import io.taptalk.TapTalk.Model.TAPRoomListModel
+import io.taptalk.TapTalk.Model.TAPRoomModel
+import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalk.ViewModel.TAPShareOptionsViewModel
 import io.taptalk.TapTalkSample.R
-import kotlinx.android.synthetic.main.activity_share_options.*
+import io.taptalk.TapTalkSample.databinding.ActivityShareOptionsBinding
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 class TAPShareOptionsActivity : TAPBaseActivity() {
 
-    private var vm: TAPShareOptionsViewModel? = null
+    private lateinit var vb: ActivityShareOptionsBinding
+    private lateinit var glide: RequestManager
+    private val vm: TAPShareOptionsViewModel by lazy {
+        ViewModelProvider(this)[TAPShareOptionsViewModel::class.java]
+    }
     private var adapter: TAPShareOptionsAdapter? = null
     private var selectedAdapter: TAPShareOptionsSelectedAdapter? = null
     private var searchAdapter: TAPShareOptionsAdapter? = null
-    private lateinit var glide: RequestManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_share_options)
+        vb = ActivityShareOptionsBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
-        vm = ViewModelProvider(this,
-                TAPShareOptionsViewModel.TAPShareOptionsViewModelFactory(
-                        application))
-                .get(TAPShareOptionsViewModel::class.java)
         glide = Glide.with(this)
         instanceKey = SampleApplication.INSTANCE_KEY
-        adapter = TAPShareOptionsAdapter(instanceKey, vm?.roomList!!, vm!!, glide, roomListener)
-        searchAdapter = TAPShareOptionsAdapter(instanceKey, vm?.searchRoomResults!!, vm!!, glide, roomListener)
+        adapter = TAPShareOptionsAdapter(instanceKey, vm.roomList!!, vm, glide, roomListener)
+        searchAdapter = TAPShareOptionsAdapter(instanceKey, vm.searchRoomResults!!, vm, glide, roomListener)
 
         val llm = LinearLayoutManager(this, VERTICAL, false)
-        rv_room_list.adapter = adapter
-        rv_room_list.layoutManager = llm
-        rv_room_list.setHasFixedSize(true)
-        OverScrollDecoratorHelper.setUpOverScroll(rv_room_list, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
-        val messageAnimator = rv_room_list.itemAnimator as SimpleItemAnimator
+        vb.rvRoomList.adapter = adapter
+        vb.rvRoomList.layoutManager = llm
+        vb.rvRoomList.setHasFixedSize(true)
+        OverScrollDecoratorHelper.setUpOverScroll(vb.rvRoomList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+        val messageAnimator = vb.rvRoomList.itemAnimator as SimpleItemAnimator
         messageAnimator.supportsChangeAnimations = false
 
         val searchLlm = LinearLayoutManager(this, VERTICAL, false)
-        rv_search_list.adapter = searchAdapter
-        rv_search_list.layoutManager = searchLlm
-        rv_search_list.setHasFixedSize(true)
-        OverScrollDecoratorHelper.setUpOverScroll(rv_search_list, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
-        val searchAnimator = rv_search_list.itemAnimator as SimpleItemAnimator
+        vb.rvSearchList.adapter = searchAdapter
+        vb.rvSearchList.layoutManager = searchLlm
+        vb.rvSearchList.setHasFixedSize(true)
+        OverScrollDecoratorHelper.setUpOverScroll(vb.rvSearchList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+        val searchAnimator = vb.rvSearchList.itemAnimator as SimpleItemAnimator
         searchAnimator.supportsChangeAnimations = false
-        rv_search_list.addOnScrollListener(object : OnScrollListener() {
+        vb.rvSearchList.addOnScrollListener(object : OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 TAPUtils.dismissKeyboard(this@TAPShareOptionsActivity)
@@ -98,7 +103,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         }
 
         TAPDataManager.getInstance(instanceKey).getRoomList(false, listener)
-        btn_send_message.setOnClickListener {
+        vb.btnSendMessage.setOnClickListener {
             if ((!intent.type?.startsWith("text")!! ||
                 !intent.type?.startsWith("image")!! ||
                 !intent.type?.startsWith("video")!!) &&
@@ -111,7 +116,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 )
             }
             else {
-                val list = vm?.selectedRooms
+                val list = vm.selectedRooms
                 val recipient: String
                 val keys: List<String> = ArrayList(list?.keys)
                 recipient = if (list?.size == 1) {
@@ -120,12 +125,12 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                     String.format(getString(R.string.df_recipients), list?.size)
                 }
                 TapTalkDialog.Builder(this)
-                        .setTitle(getString(R.string.tap_send_message))
+                        .setTitle(getString(io.taptalk.TapTalk.R.string.tap_send_message))
                         .setMessage(String.format(getString(R.string.send_this_message_to_sf), recipient))
                         .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-                        .setPrimaryButtonTitle(getString(R.string.tap_send))
+                        .setPrimaryButtonTitle(getString(io.taptalk.TapTalk.R.string.tap_send))
                         .setPrimaryButtonListener { handleIntentData(intent) }
-                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                        .setSecondaryButtonTitle(getString(io.taptalk.TapTalk.R.string.tap_cancel))
                         .setSecondaryButtonListener { }
                         .show()
             }
@@ -133,16 +138,16 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
         //max caption length is 100 for single image/video
         if (intent.action == Intent.ACTION_SEND && (intent.type!!.startsWith("image/") || intent.type!!.startsWith("video/"))) {
-            et_caption.filters += InputFilter.LengthFilter(100)
+            vb.etCaption.filters += InputFilter.LengthFilter(100)
         }
 
-        iv_close_btn.setOnClickListener { onBackPressed() }
-        iv_search_icon.setOnClickListener { showSearchBar() }
-        iv_button_clear_text.setOnClickListener { et_search.setText("") }
+        vb.ivCloseBtn.setOnClickListener { onBackPressed() }
+        vb.ivSearchIcon.setOnClickListener { showSearchBar() }
+        vb.ivButtonClearText.setOnClickListener { vb.etSearch.setText("") }
     }
 
     override fun onBackPressed() {
-        if (vm!!.isSelecting) {
+        if (vm.isSelecting) {
             showToolbar()
         } else {
             super.onBackPressed()
@@ -154,7 +159,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
         override fun onSelectFinishedWithUnreadCount(entities: MutableList<TAPMessageEntity>?, unreadMap: MutableMap<String, Int>?, mentionCount: MutableMap<String, Int>?) {
             val messageModels: MutableList<TAPRoomListModel> = ArrayList()
-            vm?.roomPointer?.clear()
+            vm.roomPointer?.clear()
             val blockedUserIDs = TAPDataManager.getInstance(instanceKey).blockedUserIds
             for (entity in entities!!) {
                 val model = TAPMessageModel.fromMessageEntity(entity)
@@ -168,9 +173,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 ) {
                     messageModels.add(roomModel)
                 }
-                vm?.addRoomPointer(roomModel)
+                vm.addRoomPointer(roomModel)
             }
-            vm?.roomList = messageModels
+            vm.roomList = messageModels
             reloadLocalDataAndUpdateUILogic()
         }
     }
@@ -178,28 +183,28 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private fun reloadLocalDataAndUpdateUILogic() {
         runOnUiThread {
             if (null != adapter) {
-                if (0 == vm!!.roomList?.size) {
+                if (0 == vm.roomList?.size) {
                     // Room list is empty
-                    tv_empty_room.visibility = View.VISIBLE
-                    rv_room_list.visibility = View.GONE
+                    vb.tvEmptyRoom.visibility = View.VISIBLE
+                    vb.rvRoomList.visibility = View.GONE
                 } else {
-                    adapter?.addRoomList(vm!!.roomList)
-                    rv_room_list.visibility = View.VISIBLE
-                    rv_room_list.scrollToPosition(0)
-                    tv_empty_room.visibility = View.GONE
+                    adapter?.addRoomList(vm.roomList)
+                    vb.rvRoomList.visibility = View.VISIBLE
+                    vb.rvRoomList.scrollToPosition(0)
+                    vb.tvEmptyRoom.visibility = View.GONE
                 }
             }
-            vm?.searchState = vm?.STATE_IDLE
+            vm.searchState = vm.STATE_IDLE
         }
     }
 
     private val roomSearchListener: TAPDatabaseListener<TAPMessageEntity> = object : TAPDatabaseListener<TAPMessageEntity>() {
         override fun onSelectedRoomList(entities: List<TAPMessageEntity>, unreadMap: Map<String, Int>, mentionMap: Map<String, Int>) {
-            if (vm?.searchState == vm?.STATE_PENDING && vm?.pendingSearch?.isNotEmpty()!!) {
-                vm?.searchState = vm?.STATE_IDLE
-                startSearch(vm?.pendingSearch)
+            if (vm.searchState == vm.STATE_PENDING && vm.pendingSearch?.isNotEmpty()!!) {
+                vm.searchState = vm.STATE_IDLE
+                startSearch(vm.pendingSearch)
                 return
-            } else if (vm?.searchState != vm?.STATE_SEARCHING) {
+            } else if (vm.searchState != vm.STATE_SEARCHING) {
                 return
             }
             val myId = TAPChatManager.getInstance(instanceKey).activeUser.userID
@@ -216,9 +221,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                         result.lastMessage.room = room
                         result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
                         if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled) {
-                            vm?.groupContacts?.add(0, result)
+                            vm.groupContacts?.add(0, result)
                         } else {
-                            vm?.groupContacts?.add(result)
+                            vm.groupContacts?.add(result)
                         }
                     }
                     else if (entity.roomID != TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId) &&
@@ -237,32 +242,32 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                         result.lastMessage.room = room
                         result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
                         if (room.type == TYPE_PERSONAL) {
-                            if (vm?.personalContacts!!.isEmpty()) {
+                            if (vm.personalContacts!!.isEmpty()) {
                                 val personalSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
                                 personalSectionTitle.title = getString(R.string.contacts)
-                                vm?.personalContacts?.add(personalSectionTitle)
+                                vm.personalContacts?.add(personalSectionTitle)
                             }
-                            vm?.personalContacts?.add(result)
+                            vm.personalContacts?.add(result)
                         } else if (room.type == TYPE_GROUP) {
-                            if (vm?.groupContacts!!.isEmpty() || (vm?.groupContacts!!.size == 1 && TAPUtils.isSavedMessagesRoom(vm?.groupContacts!![0].lastMessage.room.roomID, instanceKey))) {
+                            if (vm.groupContacts!!.isEmpty() || (vm.groupContacts!!.size == 1 && TAPUtils.isSavedMessagesRoom(vm.groupContacts!![0].lastMessage.room.roomID, instanceKey))) {
                                 val groupSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
                                 groupSectionTitle.title = getString(R.string.groups)
-                                vm?.groupContacts?.add(groupSectionTitle)
+                                vm.groupContacts?.add(groupSectionTitle)
                             }
-                            vm?.groupContacts?.add(result)
+                            vm.groupContacts?.add(result)
                         }
                     }
                 }
                 runOnUiThread {
-                    tv_empty_room.visibility = View.GONE
-                    rv_search_list.visibility = View.VISIBLE
-                    TAPDataManager.getInstance(instanceKey).searchContactsByName(vm?.searchKeyword, contactSearchListener)
+                    vb.tvEmptyRoom.visibility = View.GONE
+                    vb.rvSearchList.visibility = View.VISIBLE
+                    TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.searchKeyword, contactSearchListener)
                 }
             } else {
                 val result = TAPRoomListModel()
                 val room = TAPRoomModel.Builder(
                     String.format("%s-%s", myId, myId),
-                    getString(R.string.tap_saved_messages),
+                    getString(io.taptalk.TapTalk.R.string.tap_saved_messages),
                     TYPE_PERSONAL,
                     TAPImageURL("", ""),
                     ""
@@ -270,28 +275,28 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 result.lastMessage = TAPMessageModel()
                 result.lastMessage.room = room
                 result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
-                vm?.groupContacts?.add(0, result)
-                TAPDataManager.getInstance(instanceKey).searchContactsByName(vm?.searchKeyword, contactSearchListener)
+                vm.groupContacts?.add(0, result)
+                TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.searchKeyword, contactSearchListener)
             }
         }
     }
 
     private val contactSearchListener: TAPDatabaseListener<TAPUserModel> = object : TAPDatabaseListener<TAPUserModel>() {
         override fun onSelectFinished(entities: List<TAPUserModel>) {
-            if (vm?.searchState == vm?.STATE_PENDING && vm?.pendingSearch?.isNotEmpty()!!) {
-                vm?.searchState = vm?.STATE_IDLE
-                startSearch(vm?.pendingSearch)
+            if (vm.searchState == vm.STATE_PENDING && vm.pendingSearch?.isNotEmpty()!!) {
+                vm.searchState = vm.STATE_IDLE
+                startSearch(vm.pendingSearch)
                 return
-            } else if (vm?.searchState != vm?.STATE_SEARCHING) {
+            } else if (vm.searchState != vm.STATE_SEARCHING) {
                 return
             }
-            vm?.pendingSearch = ""
-            vm?.searchState = vm?.STATE_IDLE
+            vm.pendingSearch = ""
+            vm.searchState = vm.STATE_IDLE
             when {
                 entities.isNotEmpty() -> {
                     runOnUiThread {
-                        tv_empty_room.visibility = View.GONE
-                        rv_search_list.visibility = View.VISIBLE
+                        vb.tvEmptyRoom.visibility = View.GONE
+                        vb.rvSearchList.visibility = View.VISIBLE
                     }
                     val blockedUserIDs = TAPDataManager.getInstance(instanceKey).blockedUserIds
                     for (contact in entities) {
@@ -305,40 +310,40 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                             ""
                         )
                         // Check if result already contains contact from chat room query / user is blocked
-                        if (!vm?.resultContainsRoom(room.roomID)!! && !blockedUserIDs.contains(contact.userID)) {
+                        if (!vm.resultContainsRoom(room.roomID)!! && !blockedUserIDs.contains(contact.userID)) {
                             result.lastMessage.room = room
                             if (room.type == TYPE_PERSONAL) {
-                                if (vm?.personalContacts!!.isEmpty()) {
+                                if (vm.personalContacts!!.isEmpty()) {
                                     val personalSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
                                     personalSectionTitle.title = getString(R.string.contacts)
-                                    vm?.personalContacts?.add(personalSectionTitle)
+                                    vm.personalContacts?.add(personalSectionTitle)
                                 }
-                                vm?.personalContacts?.add(result)
+                                vm.personalContacts?.add(result)
                             } else if (room.type == TYPE_GROUP) {
-                                if (vm?.groupContacts!!.isEmpty()) {
+                                if (vm.groupContacts!!.isEmpty()) {
                                     val groupSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
                                     groupSectionTitle.title = getString(R.string.groups)
-                                    vm?.groupContacts?.add(groupSectionTitle)
+                                    vm.groupContacts?.add(groupSectionTitle)
                                 }
-                                vm?.groupContacts?.add(result)
+                                vm.groupContacts?.add(result)
                             }
                         }
                     }
                     runOnUiThread {
-                        searchAdapter?.setItems(vm?.getSearchResults(), false)
+                        searchAdapter?.setItems(vm.getSearchResults(), false)
                     }
                 }
-                vm?.getSearchResults().isNullOrEmpty() -> {
+                vm.getSearchResults().isNullOrEmpty() -> {
                     //room and contact list empty
                     runOnUiThread {
-                        tv_empty_room.visibility = View.VISIBLE
-                        rv_search_list.visibility = View.GONE
+                        vb.tvEmptyRoom.visibility = View.VISIBLE
+                        vb.rvSearchList.visibility = View.GONE
                     }
                 }
                 else -> {
                     //room or contact not empty
                     runOnUiThread {
-                        searchAdapter?.setItems(vm?.getSearchResults(), false)
+                        searchAdapter?.setItems(vm.getSearchResults(), false)
                     }
                 }
             }
@@ -348,71 +353,71 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private val searchTextWatcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            et_search.removeTextChangedListener(this)
+            vb.etSearch.removeTextChangedListener(this)
             if (s.isEmpty()) {
-                vm?.pendingSearch = ""
-                iv_button_clear_text.visibility = View.GONE
+                vm.pendingSearch = ""
+                vb.ivButtonClearText.visibility = View.GONE
             } else {
-                iv_button_clear_text.visibility = View.VISIBLE
+                vb.ivButtonClearText.visibility = View.VISIBLE
             }
-            startSearch(et_search.text.toString())
-            et_search.addTextChangedListener(this)
+            startSearch(vb.etSearch.text.toString())
+            vb.etSearch.addTextChangedListener(this)
         }
 
         override fun afterTextChanged(s: Editable) {}
     }
 
     private fun showToolbar() {
-        vm?.isSelecting = false
+        vm.isSelecting = false
         TAPUtils.dismissKeyboard(this)
-        tv_toolbar_title.visibility = View.VISIBLE
-        et_search.visibility = View.GONE
-        et_search.removeTextChangedListener(searchTextWatcher)
-        et_search.setText("")
-        iv_search_icon.visibility = View.VISIBLE
-        iv_button_clear_text.visibility = View.GONE
-        (cl_toolbar.background as TransitionDrawable).reverseTransition(TAPDefaultConstant.SHORT_ANIMATION_TIME)
+        vb.tvToolbarTitle.visibility = View.VISIBLE
+        vb.etSearch.visibility = View.GONE
+        vb.etSearch.removeTextChangedListener(searchTextWatcher)
+        vb.etSearch.setText("")
+        vb.ivSearchIcon.visibility = View.VISIBLE
+        vb.ivButtonClearText.visibility = View.GONE
+        (vb.clToolbar.background as TransitionDrawable).reverseTransition(TAPDefaultConstant.SHORT_ANIMATION_TIME)
         reloadLocalDataAndUpdateUILogic()
-        rv_search_list.visibility = View.GONE
+        vb.rvSearchList.visibility = View.GONE
     }
 
     private fun showSearchBar() {
-        vm?.isSelecting = true
-        tv_toolbar_title.visibility = View.GONE
-        et_search.visibility = View.VISIBLE
-        et_search.addTextChangedListener(searchTextWatcher)
-        iv_search_icon.visibility = View.GONE
-        TAPUtils.showKeyboard(this, et_search)
-        (cl_toolbar.background as TransitionDrawable).startTransition(TAPDefaultConstant.SHORT_ANIMATION_TIME)
-        rv_room_list.visibility = View.GONE
-        rv_search_list.visibility = View.VISIBLE
-        startSearch(et_search.text.toString())
+        vm.isSelecting = true
+        vb.tvToolbarTitle.visibility = View.GONE
+        vb.etSearch.visibility = View.VISIBLE
+        vb.etSearch.addTextChangedListener(searchTextWatcher)
+        vb.ivSearchIcon.visibility = View.GONE
+        TAPUtils.showKeyboard(this, vb.etSearch)
+        (vb.clToolbar.background as TransitionDrawable).startTransition(TAPDefaultConstant.SHORT_ANIMATION_TIME)
+        vb.rvRoomList.visibility = View.GONE
+        vb.rvSearchList.visibility = View.VISIBLE
+        startSearch(vb.etSearch.text.toString())
     }
 
     private fun startSearch(keyword: String?) {
-        vm!!.clearSearchResults()
-        vm?.searchKeyword = keyword?.toLowerCase(Locale.getDefault())?.trim { it <= ' ' }
-        searchAdapter?.searchKeyword = vm?.searchKeyword!!
-        if (vm?.searchState == vm!!.STATE_IDLE) {
+        vm.clearSearchResults()
+        vm.searchKeyword = keyword?.toLowerCase(Locale.getDefault())?.trim { it <= ' ' }
+        searchAdapter?.searchKeyword = vm.searchKeyword!!
+        if (vm.searchState == vm.STATE_IDLE) {
             // Search with keyword
-            vm?.searchState = vm!!.STATE_SEARCHING
-            TAPDataManager.getInstance(instanceKey).searchAllRoomsFromDatabase(vm?.searchKeyword, roomSearchListener)
+            vm.searchState = vm.STATE_SEARCHING
+            TAPDataManager.getInstance(instanceKey).searchAllRoomsFromDatabase(vm.searchKeyword, roomSearchListener)
         } else {
             // Set search as pending
-            vm?.pendingSearch = vm?.searchKeyword
-            vm?.searchState = vm!!.STATE_PENDING
+            vm.pendingSearch = vm.searchKeyword
+            vm.searchState = vm.STATE_PENDING
         }
     }
 
     private fun showSelectedRecipients() {
-        g_selected_rooms.visibility = View.VISIBLE
-        selectedAdapter = TAPShareOptionsSelectedAdapter(vm?.selectedRooms!!.values.toList(), roomListener, instanceKey)
+        vb.gSelectedRooms.visibility = View.VISIBLE
+        selectedAdapter = TAPShareOptionsSelectedAdapter(vm.selectedRooms!!.values.toList(), roomListener, instanceKey)
         val selectedLlm = LinearLayoutManager(this, HORIZONTAL, false)
-        rv_selected.adapter = selectedAdapter
-        rv_selected.layoutManager = selectedLlm
-        rv_selected.setHasFixedSize(true)
-        OverScrollDecoratorHelper.setUpOverScroll(rv_selected, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL)
-        val animator = rv_selected.itemAnimator as SimpleItemAnimator
+        vb.rvSelected.adapter = selectedAdapter
+        vb.rvSelected.layoutManager = selectedLlm
+        vb.rvSelected.setHasFixedSize(true)
+        OverScrollDecoratorHelper.setUpOverScroll(vb.rvSelected, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL)
+        val animator = vb.rvSelected.itemAnimator as SimpleItemAnimator
         animator.supportsChangeAnimations = false
 
     }
@@ -420,21 +425,22 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private val roomListener = object : TAPShareOptionsInterface {
         override fun onRoomSelected(item: TAPRoomListModel?) {
             val roomID = item?.lastMessage?.room?.roomID
-            if (!vm!!.selectedRooms?.containsKey(roomID)!!) {
-                vm!!.selectedRooms!![roomID!!] = item
-                if (g_selected_rooms.visibility == View.GONE) {
+            if (!vm.selectedRooms?.containsKey(roomID)!!) {
+                vm.selectedRooms!![roomID!!] = item
+                if (vb.gSelectedRooms.visibility == View.GONE) {
                     showSelectedRecipients()
                 }
-                val recipients = vm?.selectedRooms?.size
+                val recipients = vm.selectedRooms?.size
                 if (recipients!! > 1) {
-                    tv_toolbar_title.text = String.format(getString(R.string.df_recipients), recipients)
-                    tv_selected.text = String.format(getString(R.string.selected_df_recipients), recipients)
-                } else if (vm?.selectedRooms?.size!! == 1) {
-                    tv_toolbar_title.text = getString(R.string.one_recipient)
-                    tv_selected.text = getString(R.string.selected_one_recipient)
+                    vb.tvToolbarTitle.text = String.format(getString(R.string.df_recipients), recipients)
+                    vb.tvSelected.text = String.format(getString(R.string.selected_df_recipients), recipients)
                 }
-                selectedAdapter?.items = vm?.selectedRooms!!.values.toList()
-                rv_selected.scrollToPosition(recipients - 1)
+                else if (vm.selectedRooms?.size!! == 1) {
+                    vb.tvToolbarTitle.text = getString(R.string.one_recipient)
+                    vb.tvSelected.text = getString(R.string.selected_one_recipient)
+                }
+                selectedAdapter?.items = vm.selectedRooms!!.values.toList()
+                vb.rvSelected.scrollToPosition(recipients - 1)
                 adapter?.notifyDataSetChanged()
                 searchAdapter?.notifyDataSetChanged()
             }
@@ -442,29 +448,29 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
         override fun onRoomDeselected(item: TAPRoomListModel?, position: Int) {
             val roomID = item?.lastMessage?.room?.roomID
-            if (vm!!.selectedRooms?.containsKey(roomID)!!) {
-                vm!!.selectedRooms!!.remove(roomID)
-                if (vm!!.selectedRooms!!.isEmpty()) {
-                    g_selected_rooms.visibility = View.GONE
-                    tv_toolbar_title.text = getString(R.string.select_chat)
+            if (vm.selectedRooms?.containsKey(roomID)!!) {
+                vm.selectedRooms!!.remove(roomID)
+                if (vm.selectedRooms!!.isEmpty()) {
+                    vb.gSelectedRooms.visibility = View.GONE
+                    vb.tvToolbarTitle.text = getString(R.string.select_chat)
                 }
 
-                val recipients = vm?.selectedRooms?.size
+                val recipients = vm.selectedRooms?.size
                 if (recipients!! > 1) {
-                    tv_toolbar_title.text = String.format(getString(R.string.df_recipients), recipients)
-                    tv_selected.text = String.format(getString(R.string.selected_df_recipients), recipients)
-                } else if (vm?.selectedRooms?.size!! == 1) {
-                    tv_toolbar_title.text = getString(R.string.one_recipient)
-                    tv_selected.text = getString(R.string.selected_one_recipient)
+                    vb.tvToolbarTitle.text = String.format(getString(R.string.df_recipients), recipients)
+                    vb.tvSelected.text = String.format(getString(R.string.selected_df_recipients), recipients)
+                } else if (vm.selectedRooms?.size!! == 1) {
+                    vb.tvToolbarTitle.text = getString(R.string.one_recipient)
+                    vb.tvSelected.text = getString(R.string.selected_one_recipient)
                 }
-                selectedAdapter?.items = vm?.selectedRooms!!.values.toList()
+                selectedAdapter?.items = vm.selectedRooms!!.values.toList()
                 adapter?.notifyDataSetChanged()
                 searchAdapter?.notifyDataSetChanged()
             }
         }
 
         override fun onMultipleRoomSelected(v: View?, item: TAPRoomListModel?, position: Int): Boolean {
-            if (vm!!.isSelecting) {
+            if (vm.isSelecting) {
                 // Select room when other room is already selected
                 onRoomSelected(item, position)
             } else {
@@ -486,20 +492,20 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun onRoomSelected(item: TAPRoomListModel?, position: Int) {
         val roomID = item?.lastMessage?.room?.roomID
-        if (!vm!!.selectedRooms?.containsKey(roomID)!!) {
+        if (!vm.selectedRooms?.containsKey(roomID)!!) {
             // Room selected
-            vm!!.selectedRooms!![roomID!!] = item
+            vm.selectedRooms!![roomID!!] = item
         } else {
             // Room deselected
-            vm!!.selectedRooms?.remove(roomID)
+            vm.selectedRooms?.remove(roomID)
         }
         adapter?.notifyItemChanged(position)
     }
 
     private fun handleIntentData(intent: Intent) {
-        val selectedRooms = vm?.selectedRooms
+        val selectedRooms = vm.selectedRooms
         if (selectedRooms!!.isNotEmpty()) {
-            val caption = et_caption.text.toString()
+            val caption = vb.etCaption.text.toString()
             when (intent.action) {
                 Intent.ACTION_SEND -> {
                     val data = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
@@ -641,9 +647,11 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     fun deleteDir(dir: File?) {
         if (dir != null && dir.isDirectory) {
             val children = dir.listFiles()
-            for (i in children.indices) {
-                if (children[i].name.equals("share")) {
-                    children[i].deleteRecursively()
+            if (children != null) {
+                for (i in children.indices) {
+                    if (children[i].name.equals("share")) {
+                        children[i].deleteRecursively()
+                    }
                 }
             }
         }

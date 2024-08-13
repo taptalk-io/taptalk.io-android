@@ -15,6 +15,11 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT
 import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener
@@ -25,10 +30,10 @@ import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel
-import kotlinx.android.synthetic.main.tap_activity_starred_messages.*
-import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
+import io.taptalk.TapTalk.databinding.TapActivityStarredMessagesBinding
 
 class TapPinnedMessagesActivity : TAPBaseActivity() {
+    private lateinit var vb : TapActivityStarredMessagesBinding
     private lateinit var vm : TAPChatViewModel
     private lateinit var glide : RequestManager
     private lateinit var messageAdapter: TAPMessageAdapter
@@ -56,7 +61,8 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_starred_messages)
+        vb = TapActivityStarredMessagesBinding.inflate(layoutInflater)
+        setContentView(vb.root)
         glide = Glide.with(this)
         initRoom()
     }
@@ -70,7 +76,8 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
         if (initViewModel()) {
             initView()
 
-        } else if (vm.messageModels.size == 0) {
+        }
+        else if (vm.messageModels.size == 0) {
             initView()
         }
     }
@@ -101,7 +108,8 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
         if (null == vm.otherUserModel && TAPDefaultConstant.RoomType.TYPE_PERSONAL == vm.room.type) {
             if (TAPUtils.isSavedMessagesRoom(vm.room.roomID, instanceKey)) {
                 vm.otherUserModel = TAPChatManager.getInstance(instanceKey).activeUser
-            } else {
+            }
+            else {
                 vm.otherUserModel =
                     TAPContactManager.getInstance(instanceKey).getUserData(vm.otherUserID)
             }
@@ -124,8 +132,8 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
 
     private fun initView() {
         window.setBackgroundDrawable(null)
-        tv_title.text = getString(R.string.tap_pinned_messages)
-        cl_unpin_all.isVisible = true
+        vb.tvTitle.text = getString(R.string.tap_pinned_messages)
+        vb.clUnpinAll.isVisible = true
         // Initialize chat message RecyclerView
         messageAdapter =
             TAPMessageAdapter(instanceKey, glide, chatListener, vm, TAPMessageAdapter.RoomType.PINNED)
@@ -139,23 +147,18 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
                 }
             }
         }
-        rv_starred_messages.instanceKey = instanceKey
-        rv_starred_messages.adapter = messageAdapter
-        rv_starred_messages.layoutManager = messageLayoutManager
-        rv_starred_messages.setHasFixedSize(false)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT, 0)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT, 0)
-        rv_starred_messages.recycledViewPool
-            .setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST, 0)
-        messageAnimator = rv_starred_messages.itemAnimator as SimpleItemAnimator
+        vb.rvStarredMessages.instanceKey = instanceKey
+        vb.rvStarredMessages.adapter = messageAdapter
+        vb.rvStarredMessages.layoutManager = messageLayoutManager
+        vb.rvStarredMessages.setHasFixedSize(false)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(TYPE_BUBBLE_IMAGE_LEFT, 0)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(TYPE_BUBBLE_IMAGE_RIGHT, 0)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(TYPE_BUBBLE_VIDEO_LEFT, 0)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(TYPE_BUBBLE_VIDEO_RIGHT, 0)
+        vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(TYPE_BUBBLE_PRODUCT_LIST, 0)
+        messageAnimator = vb.rvStarredMessages.itemAnimator as SimpleItemAnimator
         messageAnimator.supportsChangeAnimations = false
-        rv_starred_messages.itemAnimator = null
+        vb.rvStarredMessages.itemAnimator = null
 
         // Listener for scroll pagination
         endlessScrollListener = object : TAPEndlessScrollListener(messageLayoutManager) {
@@ -163,8 +166,8 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
                 loadMessagesFromApi()
             }
         }
-        iv_button_back.setOnClickListener { onBackPressed() }
-        cl_unpin_all.setOnClickListener{
+        vb.ivButtonBack.setOnClickListener { onBackPressed() }
+        vb.clUnpinAll.setOnClickListener{
             showLoading()
             TapCoreMessageManager.getInstance(instanceKey).getPinnedMessageIDs(vm.room.roomID, object : TapCoreGetStringArrayListener() {
                 override fun onSuccess(arrayList: ArrayList<String>) {
@@ -229,7 +232,7 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
 
     private fun showLoadingOlderMessagesIndicator() {
         hideLoadingOlderMessagesIndicator()
-        rv_starred_messages.post {
+        vb.rvStarredMessages.post {
             runOnUiThread {
                 vm.addMessagePointer(vm.getLoadingIndicator(true))
                 messageAdapter.addItem(vm.getLoadingIndicator(false)) // Add loading indicator to last index
@@ -239,7 +242,7 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
     }
 
     private fun hideLoadingOlderMessagesIndicator() {
-        rv_starred_messages.post {
+        vb.rvStarredMessages.post {
             runOnUiThread {
                 if (!messageAdapter.items.contains(vm.getLoadingIndicator(false))) {
                     return@runOnUiThread
@@ -250,7 +253,8 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
                     messageAdapter.removeMessage(vm.getLoadingIndicator(false))
                     if (null != messageAdapter.getItemAt(index)) {
                         messageAdapter.notifyItemChanged(index)
-                    } else {
+                    }
+                    else {
                         messageAdapter.notifyItemRemoved(index)
                     }
                     updateMessageDecoration()
@@ -262,16 +266,17 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
 
     private fun showLoading() {
         runOnUiThread {
-            iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_loading_progress_circle_white))
-            if (null == iv_loading_image.animation)
-                TAPUtils.rotateAnimateInfinitely(this, iv_loading_image)
-            tv_loading_text.text = getString(R.string.tap_loading)
-            fl_loading.visibility = View.VISIBLE
+            vb.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == vb.layoutPopupLoadingScreen.ivLoadingImage.animation) {
+                TAPUtils.rotateAnimateInfinitely(this, vb.layoutPopupLoadingScreen.ivLoadingImage)
+            }
+            vb.layoutPopupLoadingScreen.tvLoadingText.text = getString(R.string.tap_loading)
+            vb.layoutPopupLoadingScreen.flLoading.visibility = View.VISIBLE
         }
     }
 
     private fun hideLoading() {
-        fl_loading.visibility = View.GONE
+        vb.layoutPopupLoadingScreen.flLoading.visibility = View.GONE
     }
 
     private fun showErrorDialog(message: String?) {
@@ -288,10 +293,10 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
     private fun updateMessageDecoration() {
         // Update decoration for the top item in recycler view
         runOnUiThread {
-            if (rv_starred_messages.itemDecorationCount > 0) {
-                rv_starred_messages.removeItemDecorationAt(0)
+            if (vb.rvStarredMessages.itemDecorationCount > 0) {
+                vb.rvStarredMessages.removeItemDecorationAt(0)
             }
-            rv_starred_messages.addItemDecoration(
+            vb.rvStarredMessages.addItemDecoration(
                 TAPVerticalDecoration(
                     TAPUtils.dpToPx(16),
                     0,
@@ -319,5 +324,4 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
             finish()
         }
     }
-
 }

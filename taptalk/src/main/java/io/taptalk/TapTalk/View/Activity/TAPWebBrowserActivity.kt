@@ -11,9 +11,11 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import io.taptalk.TapTalk.R
-import kotlinx.android.synthetic.main.tap_activity_web_browser.*
+import io.taptalk.TapTalk.databinding.TapActivityWebBrowserBinding
 
 class TAPWebBrowserActivity : AppCompatActivity() {
+
+    private lateinit var vb: TapActivityWebBrowserBinding
     companion object {
         const val EXTRA_URL = "extra.url"
     }
@@ -21,50 +23,54 @@ class TAPWebBrowserActivity : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_web_browser)
+        vb = TapActivityWebBrowserBinding.inflate(layoutInflater)
+        setContentView(vb.root)
         val url: String = intent.getStringExtra(EXTRA_URL) ?: ""
 
-        iv_close_btn.setOnClickListener { v: View? ->
+        vb.ivCloseBtn.setOnClickListener { v: View? ->
             run {
                 finish()
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
             }
         }
 
-        tv_title.visibility = View.GONE
-        tv_url.text = url
-        webView.webChromeClient = object : WebChromeClient() {
+        vb.tvTitle.visibility = View.GONE
+        vb.tvUrl.text = url
+        vb.webView.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
                 if (100 > newProgress && Build.VERSION.SDK_INT >= 24) {
-                    pb_loading_webview.visibility = View.VISIBLE
-                    pb_loading_webview.setProgress(newProgress, true)
-                } else if (100 > newProgress) {
-                    pb_loading_webview.visibility = View.VISIBLE
-                    pb_loading_webview.progress = newProgress
-                } else if (Build.VERSION.SDK_INT >= 24) {
-                    pb_loading_webview.setProgress(100, true)
-                    pb_loading_webview.visibility = View.GONE
-                } else {
-                    pb_loading_webview.progress = 100
-                    pb_loading_webview.visibility = View.GONE
+                    vb.pbLoadingWebview.visibility = View.VISIBLE
+                    vb.pbLoadingWebview.setProgress(newProgress, true)
+                }
+                else if (100 > newProgress) {
+                    vb.pbLoadingWebview.visibility = View.VISIBLE
+                    vb.pbLoadingWebview.progress = newProgress
+                }
+                else if (Build.VERSION.SDK_INT >= 24) {
+                    vb.pbLoadingWebview.setProgress(100, true)
+                    vb.pbLoadingWebview.visibility = View.GONE
+                }
+                else {
+                    vb.pbLoadingWebview.progress = 100
+                    vb.pbLoadingWebview.visibility = View.GONE
                 }
             }
         }
 
-        webView.webViewClient = object : WebViewClient() {
+        vb.webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 if (null != view) {
-                    tv_title.visibility = View.VISIBLE
-                    tv_title.text = view.title
+                    vb.tvTitle.visibility = View.VISIBLE
+                    vb.tvTitle.text = view.title
                 }
             }
         }
 
-        val webSettings: WebSettings = webView.settings
+        val webSettings: WebSettings = vb.webView.settings
         webSettings.javaScriptEnabled = true
         webSettings.domStorageEnabled = true
-        webView.loadUrl(url)
+        vb.webView.loadUrl(url)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -78,9 +84,10 @@ class TAPWebBrowserActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
-        } else {
+        if (vb.webView.canGoBack()) {
+            vb.webView.goBack()
+        }
+        else {
             super.onBackPressed()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
         }

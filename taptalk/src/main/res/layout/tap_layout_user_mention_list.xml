@@ -4,9 +4,9 @@
     android:id="@+id/cl_user_mention_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/tap_bg_user_mention_list"
     android:elevation="4dp"
     android:visibility="gone">
-    android:background="@drawable/tap_bg_user_mention_list"
 
     <ImageView
         android:id="@+id/iv_drag_indicator"

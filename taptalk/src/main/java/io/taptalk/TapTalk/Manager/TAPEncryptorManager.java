@@ -87,7 +87,9 @@ public class TAPEncryptorManager {
     }
 
     public HashMap<String, Object> encryptMessage(TAPMessageModel messageModel, boolean isRemoveUser) {
-//        HashMap<String, Object> encryptedMessageMap = TAPUtils.toHashMap(messageModel);
+        if (messageModel == null) {
+            return null;
+        }
         HashMap<String, Object> encryptedMessageMap = messageModel.toHashMap();
         try {
             String localID = messageModel.getLocalID();
@@ -96,12 +98,21 @@ public class TAPEncryptorManager {
             if (null != messageModel.getData() && !messageModel.getData().isEmpty()) {
                 // Encrypt message data
                 encryptedMessageMap.put(K_DATA, encrypt(TAPUtils.toJsonString(messageModel.getData()), localID));
-            } else {
+            }
+            else {
                 encryptedMessageMap.put(K_DATA, "");
             }
             if (null != messageModel.getQuote()) {
                 // Encrypt quote content
                 HashMap<String, Object> quoteMap = TAPUtils.toHashMap(messageModel.getQuote());
+                if (quoteMap == null) {
+                    quoteMap = new HashMap<>();
+                    quoteMap.put("title", "");
+                    quoteMap.put("content", "");
+                    quoteMap.put("fileID", "");
+                    quoteMap.put("imageURL", "");
+                    quoteMap.put("fileType", "");
+                }
                 quoteMap.put(K_CONTENT, encrypt(messageModel.getQuote().getContent(), localID));
                 encryptedMessageMap.put(K_QUOTE, quoteMap);
             }
@@ -109,47 +120,69 @@ public class TAPEncryptorManager {
             if (isRemoveUser) {
                 encryptedMessageMap.remove(K_USER);
             }
-            HashMap<String, Object> roomMap = (HashMap<String, Object>) encryptedMessageMap.get(K_ROOM);
-            if (roomMap != null) {
-                roomMap.remove(K_PARTICIPANTS);
-                roomMap.remove(K_ADMINS);
-                roomMap.remove(K_LOCKED);
-                roomMap.remove(K_UNREAD_COUNT);
+            if (null != encryptedMessageMap.get(K_ROOM)) {
+                HashMap<String, Object> roomMap = (HashMap<String, Object>) encryptedMessageMap.get(K_ROOM);
+                if (roomMap != null) {
+                    roomMap.remove(K_PARTICIPANTS);
+                    roomMap.remove(K_ADMINS);
+                    roomMap.remove(K_LOCKED);
+                    roomMap.remove(K_UNREAD_COUNT);
+                }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return encryptedMessageMap;
     }
 
     public TAPMessageModel decryptMessage(HashMap<String, Object> messageMap) {
+        if (null == messageMap) {
+            return null;
+        }
         try {
             String localID = (String) messageMap.get(K_LOCAL_ID);
             // Decrypt message body
             String body = (String) messageMap.get(K_BODY);
             if (null != body && !body.isEmpty()) {
                 // Decrypt message body
-                messageMap.put(K_BODY, decrypt((String) messageMap.get(K_BODY), localID));
-            } else {
+                messageMap.put(K_BODY, decrypt(body, localID));
+            }
+            else {
                 // Body is empty
                 messageMap.put(K_BODY, "");
             }
             String data = (String) messageMap.get(K_DATA);
             if (null != data && !data.isEmpty()) {
                 // Decrypt message data
-                messageMap.put(K_DATA, TAPUtils.toHashMap(decrypt((String) messageMap.get(K_DATA), localID)));
-            } else {
+                messageMap.put(K_DATA, TAPUtils.toHashMap(decrypt(data, localID)));
+            }
+            else {
                 // Data is empty
                 messageMap.put(K_DATA, null);
             }
             if (null != messageMap.get(K_QUOTE)) {
                 // Decrypt quote content
                 HashMap<String, Object> quoteMap = TAPUtils.toHashMap(messageMap.get(K_QUOTE));
-                quoteMap.put(K_CONTENT, decrypt((String) quoteMap.get(K_CONTENT), localID));
+                if (quoteMap == null) {
+                    quoteMap = new HashMap<>();
+                    quoteMap.put("title", "");
+                    quoteMap.put("content", "");
+                    quoteMap.put("fileID", "");
+                    quoteMap.put("imageURL", "");
+                    quoteMap.put("fileType", "");
+                }
+                String quoteContent = (String) quoteMap.get(K_CONTENT);
+                if (null != quoteContent && !quoteContent.isEmpty()) {
+                    quoteMap.put(K_CONTENT, decrypt(quoteContent, localID));
+                }
                 messageMap.put(K_QUOTE, quoteMap);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         TAPMessageModel decryptedMessage = TAPMessageModel.fromHashMap(messageMap);
         if (null != decryptedMessage) {

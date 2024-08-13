@@ -180,97 +180,97 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
             int id = item.getId();
             switch (id) {
                 case SELECT_PICTURE_CAMERA:
-                    setComponentColors(R.color.tapIconSelectPictureCamera, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconSelectPictureCamera, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case SELECT_PICTURE_GALLERY:
-                    setComponentColors(R.color.tapIconSelectPictureGallery, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconSelectPictureGallery, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case ATTACH_DOCUMENT:
-                    setComponentColors(R.color.tapIconAttachDocuments, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconAttachDocuments, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case ATTACH_CAMERA:
-                    setComponentColors(R.color.tapIconAttachCamera, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconAttachCamera, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case ATTACH_GALLERY:
-                    setComponentColors(R.color.tapIconAttachGallery, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconAttachGallery, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case ATTACH_AUDIO:
-                    setComponentColors(R.color.tapIconAttachAudio, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconAttachAudio, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case ATTACH_LOCATION:
-                    setComponentColors(R.color.tapIconAttachLocation, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconAttachLocation, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case ATTACH_CONTACT:
-                    setComponentColors(R.color.tapIconAttachContact, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconAttachContact, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_REPLY:
-                    setComponentColors(R.color.tapIconLongPressActionReply, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionReply, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_FORWARD:
-                    setComponentColors(R.color.tapIconLongPressActionForward, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionForward, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_COPY:
-                    setComponentColors(R.color.tapIconLongPressActionCopy, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionCopy, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_OPEN_LINK:
-                    setComponentColors(R.color.tapIconLongPressActionOpenLink, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionOpenLink, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_COMPOSE_EMAIL:
-                    setComponentColors(R.color.tapIconLongPressActionComposeEmail, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionComposeEmail, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_CALL:
-                    setComponentColors(R.color.tapIconLongPressActionCallNumber, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionCallNumber, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_SEND_SMS:
-                    setComponentColors(R.color.tapIconLongPressActionSmsNumber, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionSmsNumber, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_SAVE_IMAGE_GALLERY:
                 case LONG_PRESS_SAVE_VIDEO_GALLERY:
                 case LONG_PRESS_SAVE_DOWNLOADS:
                 case LONG_PRESS_SAVE_PROFILE_PICTURE:
-                    setComponentColors(R.color.tapIconLongPressActionSaveToGallery, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionSaveToGallery, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_VIEW_PROFILE:
-                    setComponentColors(R.color.tapIconLongPressActionViewProfile, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionViewProfile, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_SEND_MESSAGE:
-                    setComponentColors(R.color.tapIconLongPressActionSendMessage, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionSendMessage, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_DELETE:
-                    setComponentColors(R.color.tapIconLongPressActionDelete, R.style.tapActionSheetDestructiveLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionDelete, R.color.tapActionSheetDestructiveLabelColor);
                     break;
                 case SELECT_SET_AS_MAIN:
-                    setComponentColors(R.color.tapIconSetAsMain, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconSetAsMain, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case SELECT_SAVE_IMAGE:
-                    setComponentColors(R.color.tapIconSaveToGallery, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconSaveToGallery, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case SELECT_REMOVE_PHOTO:
-                    setComponentColors(R.color.tapIconRemoveImage, R.style.tapActionSheetDestructiveLabelStyle);
+                    setComponentColors(R.color.tapIconRemoveImage, R.color.tapActionSheetDestructiveLabelColor);
                     break;
                 case LONG_PRESS_STAR:
-                    setComponentColors(R.color.tapIconLongPressActionStarMessage, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionStarMessage, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_EDIT:
-                    setComponentColors(R.color.tapIconLongPressActionEditMessage, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionEditMessage, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_PIN:
-                    setComponentColors(R.color.tapIconLongPressActionPinMessage, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressActionPinMessage, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_SHARED_MEDIA:
-                    setComponentColors(R.color.tapIconLongPressSharedMedia, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressSharedMedia, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_SEND_NOW:
-                    setComponentColors(R.color.tapIconLongPressSendNow, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressSendNow, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_RESCHEDULE:
-                    setComponentColors(R.color.tapIconLongPressReschedule, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressReschedule, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_REPORT:
-                    setComponentColors(R.color.tapIconLongPressReport, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressReport, R.color.tapActionSheetDefaultLabelColor);
                     break;
                 case LONG_PRESS_MESSAGE_INFO:
-                    setComponentColors(R.color.tapIconLongPressMessageInfo, R.style.tapActionSheetDefaultLabelStyle);
+                    setComponentColors(R.color.tapIconLongPressMessageInfo, R.color.tapActionSheetDefaultLabelColor);
                     break;
             }
 
@@ -284,14 +284,12 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         }
 
         @SuppressLint("PrivateResource")
-        private void setComponentColors(@ColorRes int iconColorRes, @StyleRes int textStyleRes) {
+        private void setComponentColors(@ColorRes int iconColorRes, @ColorRes int textColorRes) {
             // Set icon color
             ImageViewCompat.setImageTintList(ivAttachIcon, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), iconColorRes)));
 
             // Set text color
-            TypedArray typedArray = itemView.getContext().obtainStyledAttributes(textStyleRes, R.styleable.TextAppearance);
-            tvAttachTitle.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
-            typedArray.recycle();
+            tvAttachTitle.setTextColor(ContextCompat.getColor(itemView.getContext(), textColorRes));
         }
 
         private void onAttachmentClicked(TAPAttachmentModel item) {

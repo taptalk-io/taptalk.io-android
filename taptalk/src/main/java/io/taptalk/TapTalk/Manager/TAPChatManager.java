@@ -2582,9 +2582,9 @@ public class TAPChatManager {
      */
     private void sendEmit(String eventName, TAPMessageModel messageModel) {
         try {
-            TAPEmitModel<HashMap<String, Object>> TAPEmitModel;
-            TAPEmitModel = new TAPEmitModel<>(eventName, TAPEncryptorManager.getInstance().encryptMessage(messageModel));
-            TAPConnectionManager.getInstance(instanceKey).send(TAPUtils.toJsonString(TAPEmitModel));
+            TAPEmitModel<HashMap<String, Object>> encryptedMessageMap;
+            encryptedMessageMap = new TAPEmitModel<>(eventName, TAPEncryptorManager.getInstance().encryptMessage(messageModel));
+            TAPConnectionManager.getInstance(instanceKey).send(TAPUtils.toJsonString(encryptedMessageMap));
             Log.d(TAG, "sendEmit: " + TAPUtils.toJsonString(messageModel));
             if (sendMessageListeners.containsKey(messageModel.getLocalID())) {
                 sendMessageListeners.get(messageModel.getLocalID()).onSuccess(messageModel);
@@ -2701,6 +2701,9 @@ public class TAPChatManager {
 
     private void receiveMessageFromSocket(HashMap<String, Object> newMessageMap, String eventName) {
         TAPMessageModel newMessage = TAPEncryptorManager.getInstance().decryptMessage(newMessageMap);
+        if (newMessage == null) {
+            return;
+        }
 
         // TODO: 28 Jan 2020 TEMPORARY SOCKET MESSAGE LOG
         if (TapTalk.isLoggingEnabled) {

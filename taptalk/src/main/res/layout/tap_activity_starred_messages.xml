@@ -127,5 +127,7 @@
                 android:text="@string/unpin_all_messages" />
     </LinearLayout>
 
-    <include layout="@layout/tap_layout_popup_loading_screen" />
+    <include layout="@layout/tap_layout_popup_loading_screen"
+        android:id="@+id/layout_popup_loading_screen" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

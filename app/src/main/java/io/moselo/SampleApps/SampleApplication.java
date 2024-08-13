@@ -56,7 +56,7 @@ public class SampleApplication extends MultiDexApplication {
                 TAPTALK_SDK_BASE_URL,
                 TapTalkImplementationTypeCombine,
                 tapListener);
-        TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
+//        TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
@@ -117,7 +117,7 @@ public class SampleApplication extends MultiDexApplication {
             List<TAPCustomKeyboardItemModel> keyboardItemModelList = new ArrayList<>();
             TAPCustomKeyboardItemModel testCustomKeyboard = new TAPCustomKeyboardItemModel(
                     "hello",
-                    ContextCompat.getDrawable(SampleApplication.this, R.drawable.tap_ic_send_message_orange),
+                    ContextCompat.getDrawable(SampleApplication.this, io.taptalk.TapTalk.R.drawable.tap_ic_send_message_orange),
                     "Hello World!"
             );
             keyboardItemModelList.add(testCustomKeyboard);

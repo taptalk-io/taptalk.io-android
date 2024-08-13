@@ -3,7 +3,6 @@ package io.moselo.SampleApps.Fragment
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -29,13 +28,12 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
-import io.taptalk.TapTalkSample.R
-import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
+import io.taptalk.TapTalkSample.databinding.TapFragmentPhoneLoginBinding
 
 class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
-    val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
-            ?: ""
+    private lateinit var vb: TapFragmentPhoneLoginBinding
+    val generalErrorMessage = context?.resources?.getString(io.taptalk.TapTalk.R.string.tap_error_message_general) ?: ""
     var countryIsoCode = "id" //Indonesia Default
     var defaultCallingCode = "62" //Indonesia Default
     var defaultCountryID = 1 //Indonesia Default
@@ -55,10 +53,10 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.tap_fragment_phone_login, container, false)
+        vb = TapFragmentPhoneLoginBinding.inflate(inflater, container, false)
+        return vb.root
     }
 
     @SuppressLint("SetTextI18n")
@@ -67,7 +65,8 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
         if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp == lastCallCountryTimestamp) {
             callCountryListFromAPI()
-        } else if (isNeedResetData) {
+        }
+        else if (isNeedResetData) {
             callCountryListFromAPI()
             countryIsoCode = TAPUtils.getDeviceCountryCode(context)
             //countryHashMap = TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).countryList
@@ -76,21 +75,23 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
             isNeedResetData = false
             if (!countryHashMap.containsKey(countryIsoCode) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
                 setCountry(defaultCountryID, defaultCallingCode, "")
-            } else {
+            }
+            else {
                 setCountry(countryHashMap.get(countryIsoCode)?.countryID ?: 0,
                         countryHashMap.get(countryIsoCode)?.callingCode ?: "",
                         countryHashMap.get(countryIsoCode)?.flagIconUrl ?: "")
             }
-        } else {
+        }
+        else {
             setCountry(defaultCountryID, defaultCallingCode, countryFlagUrl)
         }
         initView()
     }
 
     private fun initView() {
-        et_phone_number.addTextChangedListener(phoneNumberTextWatcher)
+        vb.etPhoneNumber.addTextChangedListener(phoneNumberTextWatcher)
 
-        et_phone_number.setOnEditorActionListener { v, actionId, event ->
+        vb.etPhoneNumber.setOnEditorActionListener { v, actionId, event ->
             when (v?.length() ?: 0) {
                 in 7..15 -> {
                     attemptLogin()
@@ -99,11 +100,12 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
             false
         }
 
-        et_phone_number.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+        vb.etPhoneNumber.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_text_field_active)
-            } else {
-                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_text_field_inactive)
+                vb.flPhoneNumber.setBackgroundResource(io.taptalk.TapTalk.R.drawable.tap_bg_text_field_active)
+            }
+            else {
+                vb.flPhoneNumber.setBackgroundResource(io.taptalk.TapTalk.R.drawable.tap_bg_text_field_inactive)
             }
         }
 
@@ -112,14 +114,14 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
     private fun enableContinueButton() {
         enableCountryPicker()
-        fl_continue_btn.setOnClickListener { attemptLogin() }
-        fl_continue_btn.isClickable = true
+        vb.flContinueBtn.setOnClickListener { attemptLogin() }
+        vb.flContinueBtn.isClickable = true
     }
 
     private fun disableContinueButton() {
         disableCountryPicker()
-        fl_continue_btn.setOnClickListener(null)
-        fl_continue_btn.isClickable = false
+        vb.flContinueBtn.setOnClickListener(null)
+        vb.flContinueBtn.isClickable = false
     }
 
     private fun attemptLogin() {
@@ -132,7 +134,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun enableCountryPicker() {
-        ll_country_code.setOnClickListener {
+        vb.llCountryCode.setOnClickListener {
 //            val activity = context as TAPBaseActivity
 //            TAPCountryListActivity.start(activity, activity.instanceKey, countryListitems, defaultCountryID)
             val intent = Intent(context, TAPCountryListActivity::class.java)
@@ -143,11 +145,11 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun disableCountryPicker() {
-        ll_country_code.setOnClickListener(null)
+        vb.llCountryCode.setOnClickListener(null)
     }
 
     private fun checkAndEditPhoneNumber(): String {
-        var phoneNumber = et_phone_number.text.toString().replace("-", "").trim()
+        var phoneNumber = vb.etPhoneNumber.text.toString().replace("-", "").trim()
         val callingCodeLength: Int = defaultCallingCode.length
         when {
             phoneNumber.isEmpty() || callingCodeLength > phoneNumber.length -> {
@@ -197,17 +199,17 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
     private fun showProgress() {
         if (isVisible) {
-            tv_btn_continue.visibility = View.GONE
-            iv_loading_progress_request_otp.visibility = View.VISIBLE
-            TAPUtils.rotateAnimateInfinitely(context, iv_loading_progress_request_otp)
+            vb.tvBtnContinue.visibility = View.GONE
+            vb.ivLoadingProgressRequestOtp.visibility = View.VISIBLE
+            TAPUtils.rotateAnimateInfinitely(context, vb.ivLoadingProgressRequestOtp)
         }
     }
 
     private fun stopAndHideProgress() {
         if (isVisible) {
-            tv_btn_continue.visibility = View.VISIBLE
-            iv_loading_progress_request_otp.visibility = View.GONE
-            iv_loading_progress_request_otp.clearAnimation()
+            vb.tvBtnContinue.visibility = View.VISIBLE
+            vb.ivLoadingProgressRequestOtp.visibility = View.GONE
+            vb.ivLoadingProgressRequestOtp.clearAnimation()
         }
     }
 
@@ -227,12 +229,13 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                             e.printStackTrace()
                         }
                     }
-                }else {
+                }
+                else {
                     enableContinueButton()
                     if (whatsAppFailureReason == "") {
-                        showDialog(getString(R.string.tap_error), message)
+                        showDialog(getString(io.taptalk.TapTalk.R.string.tap_error), message)
                     } else {
-                        showDialog(getString(R.string.tap_currently_unavailable), getString(R.string.tap_error_we_are_experiencing_some_issues))
+                        showDialog(getString(io.taptalk.TapTalk.R.string.tap_currently_unavailable), getString(io.taptalk.TapTalk.R.string.tap_error_we_are_experiencing_some_issues))
                     }
                 }
             }
@@ -241,8 +244,9 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
             enableContinueButton()
             if (TAPNetworkStateManager.getInstance("").hasNetworkConnection(context)) {
-                showDialog(getString(R.string.tap_error), errorMessage ?: generalErrorMessage)
-            } else {
+                showDialog(getString(io.taptalk.TapTalk.R.string.tap_error), errorMessage ?: generalErrorMessage)
+            }
+            else {
                 TAPUtils.showNoInternetErrorDialog(context)
                 stopAndHideProgress()
             }
@@ -252,15 +256,15 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     private fun callCountryListFromAPI() {
         TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
             override fun startLoading() {
-                et_phone_number.isEnabled = false
-                tv_country_code.visibility = View.GONE
-                iv_loading_progress_country.visibility = View.VISIBLE
-                TAPUtils.rotateAnimateInfinitely(context, iv_loading_progress_country)
+                vb.etPhoneNumber.isEnabled = false
+                vb.tvCountryCode.visibility = View.GONE
+                vb.ivLoadingProgressCountry.visibility = View.VISIBLE
+                TAPUtils.rotateAnimateInfinitely(context, vb.ivLoadingProgressCountry)
             }
 
             @SuppressLint("SetTextI18n")
             override fun onSuccess(response: TAPCountryListResponse?) {
-                et_phone_number.isEnabled = true
+                vb.etPhoneNumber.isEnabled = true
                 countryListitems.clear()
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveLastCallCountryTimestamp(System.currentTimeMillis())
                 setCountry(0, "", "")
@@ -269,21 +273,23 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                     response?.countries?.forEach {
                         countryListitems.add(it)
                         countryHashMap.put(it.iso2Code, it)
-                        if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase() && it.iso2Code.toLowerCase() == "id") {
+                        if (countryIsoCode.equals(it.iso2Code, true) && it.iso2Code.lowercase() == "id") {
                             defaultCountry = it
                             activity?.runOnUiThread {
                                 setCountry(it.countryID, it.callingCode, it.flagIconUrl)
                             }
-                        } else if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase()) {
+                        }
+                        else if (countryIsoCode.equals(it.iso2Code, true)) {
                             activity?.runOnUiThread {
                                 setCountry(it.countryID, it.callingCode, it.flagIconUrl)
                             }
-                        } else if (it.iso2Code.toLowerCase() == "id") {
+                        }
+                        else if (it.iso2Code.lowercase() == "id") {
                             defaultCountry = it
                         }
                     }
 
-                    if ("" == tv_country_code.text) {
+                    if ("" == vb.tvCountryCode.text) {
                         val callingCode: String = defaultCountry?.callingCode ?: ""
                         activity?.runOnUiThread {
                             setCountry(defaultCountry?.countryID
@@ -294,27 +300,27 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                     TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveCountryList(countryListitems)
 
                     activity?.runOnUiThread {
-                        iv_loading_progress_country.visibility = View.GONE
-                        iv_loading_progress_country.clearAnimation()
-                        tv_country_code.visibility = View.VISIBLE
+                        vb.ivLoadingProgressCountry.visibility = View.GONE
+                        vb.ivLoadingProgressCountry.clearAnimation()
+                        vb.tvCountryCode.visibility = View.VISIBLE
                     }
                 }.start()
             }
 
             override fun onError(error: TAPErrorModel?) {
                 super.onError(error)
-                iv_loading_progress_country.visibility = View.GONE
-                iv_loading_progress_country.clearAnimation()
-                tv_country_code.visibility = View.VISIBLE
+                vb.ivLoadingProgressCountry.visibility = View.GONE
+                vb.ivLoadingProgressCountry.clearAnimation()
+                vb.tvCountryCode.visibility = View.VISIBLE
                 setCountry(0, "", "")
                 showDialog("ERROR", error?.message ?: generalErrorMessage)
             }
 
             override fun onError(errorMessage: String?) {
                 super.onError(errorMessage)
-                iv_loading_progress_country.visibility = View.GONE
-                iv_loading_progress_country.clearAnimation()
-                tv_country_code.visibility = View.VISIBLE
+                vb.ivLoadingProgressCountry.visibility = View.GONE
+                vb.ivLoadingProgressCountry.clearAnimation()
+                vb.tvCountryCode.visibility = View.VISIBLE
                 setCountry(0, "", "")
                 showDialog("ERROR", errorMessage ?: generalErrorMessage)
             }
@@ -324,13 +330,13 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     private fun showDialog(title: String, message: String) {
         if (isVisible)
             TapTalkDialog.Builder(context)
-                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle(title)
-                    .setMessage(message)
-                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                    .setPrimaryButtonListener {
-                        stopAndHideProgress()
-                    }.show()
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setMessage(message)
+                .setPrimaryButtonTitle(getString(io.taptalk.TapTalk.R.string.tap_ok))
+                .setPrimaryButtonListener {
+                    stopAndHideProgress()
+                }.show()
     }
 
     @SuppressLint("SetTextI18n")
@@ -345,7 +351,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                         val textCount = callingCode.length + checkAndEditPhoneNumber().length
                         when {
                             textCount > 15 -> {
-                                et_phone_number.setText("")
+                                vb.etPhoneNumber.setText("")
                             }
                             textCount in 7..15 -> {
                                 changeButtonContinueStateEnabled()
@@ -362,38 +368,33 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun setCountry(countryID: Int, callingCode: String, flagIconUrl: String) {
-        tv_country_code.text = "+$callingCode"
+        vb.tvCountryCode.text = "+$callingCode"
         defaultCountryID = countryID
         defaultCallingCode = callingCode
         countryFlagUrl = flagIconUrl
 
-        if ("" != flagIconUrl)
-            Glide.with(this).load(flagIconUrl).into(iv_country_flag)
-        else iv_country_flag.setImageResource(R.drawable.tap_ic_default_flag)
+        if ("" != flagIconUrl) {
+            Glide.with(this).load(flagIconUrl).into(vb.ivCountryFlag)
+        }
+        else {
+            vb.ivCountryFlag.setImageResource(io.taptalk.TapTalk.R.drawable.tap_ic_default_flag)
+        }
     }
 
     private fun changeButtonContinueStateEnabled() {
         if (context != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                fl_continue_btn.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_active_ripple)
-            } else {
-                fl_continue_btn.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_active)
-            }
+            vb.flContinueBtn.background = ContextCompat.getDrawable(requireContext(), io.taptalk.TapTalk.R.drawable.tap_bg_button_active_ripple)
         }
-        fl_continue_btn.setOnClickListener { attemptLogin() }
-        fl_continue_btn.isClickable = true
+        vb.flContinueBtn.setOnClickListener { attemptLogin() }
+        vb.flContinueBtn.isClickable = true
     }
 
     private fun changeButtonContinueStateDisabled() {
         if (context != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                fl_continue_btn.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_inactive_ripple)
-            } else {
-                fl_continue_btn.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_inactive)
-            }
+            vb.flContinueBtn.background = ContextCompat.getDrawable(requireContext(), io.taptalk.TapTalk.R.drawable.tap_bg_button_inactive_ripple)
         }
-        fl_continue_btn.setOnClickListener(null)
-        fl_continue_btn.isClickable = false
+        vb.flContinueBtn.setOnClickListener(null)
+        vb.flContinueBtn.isClickable = false
     }
 
     private val phoneNumberTextWatcher = object : TextWatcher{
@@ -413,12 +414,11 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
         override fun afterTextChanged(p0: Editable?) {
             val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length + defaultCallingCode.length
             if (textCount > 15) {
-                et_phone_number.removeTextChangedListener(this)
-                et_phone_number.setText(previousPhoneNumber)
-                et_phone_number.addTextChangedListener(this)
-                et_phone_number.setSelection(et_phone_number.length())
+                vb.etPhoneNumber.removeTextChangedListener(this)
+                vb.etPhoneNumber.setText(previousPhoneNumber)
+                vb.etPhoneNumber.addTextChangedListener(this)
+                vb.etPhoneNumber.setSelection(vb.etPhoneNumber.length())
             }
         }
-
     }
 }

@@ -374,6 +374,9 @@ public class TAPMessageModel implements Parcelable {
     }
 
     public static TAPMessageModel fromHashMap(HashMap<String, Object> hashMap) {
+        if (hashMap == null) {
+            return null;
+        }
         try {
             return TAPUtils.convertObject(hashMap, new TypeReference<TAPMessageModel>() {
             });

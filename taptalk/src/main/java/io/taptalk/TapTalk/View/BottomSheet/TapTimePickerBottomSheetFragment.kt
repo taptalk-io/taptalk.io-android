@@ -7,15 +7,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
-import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
-import kotlinx.android.synthetic.main.tap_fragment_time_picker_bottom_sheet.*
+import io.taptalk.TapTalk.databinding.TapFragmentTimePickerBottomSheetBinding
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<Long>, private val defaultTimestamp: Long?) : BottomSheetDialogFragment() {
 
+    private lateinit var vb : TapFragmentTimePickerBottomSheetBinding
     private lateinit var currentDate : Date
     private lateinit var defaultDate : Date
     private lateinit var currentCal : Calendar
@@ -67,53 +67,50 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.tap_fragment_time_picker_bottom_sheet, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        vb = TapFragmentTimePickerBottomSheetBinding.inflate(inflater, container, false)
+        return vb.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        np_date.displayedValues = null
-        np_date.minValue = 0
-        np_date.maxValue = dates.size - 1
-        np_date.wrapSelectorWheel = false
-        np_date.displayedValues = dates
-        np_date.value = dateIndex
-        np_date.setOnValueChangedListener { _, _, _ ->
+        vb.npDate.displayedValues = null
+        vb.npDate.minValue = 0
+        vb.npDate.maxValue = dates.size - 1
+        vb.npDate.wrapSelectorWheel = false
+        vb.npDate.displayedValues = dates
+        vb.npDate.value = dateIndex
+        vb.npDate.setOnValueChangedListener { _, _, _ ->
             checkTimeValue()
-            btn_send.text = getTimeResult()
+            vb.btnSend.text = getTimeResult()
         }
 
-        np_hour.displayedValues = null
-        np_hour.minValue = hours[0].toInt()
-        np_hour.maxValue = hours[hours.size-1].toInt()
-        np_hour.displayedValues = hours
-        np_hour.value = currentCal.get(Calendar.HOUR_OF_DAY)
-        np_hour.setOnValueChangedListener { _, _, _ ->
+        vb.npHour.displayedValues = null
+        vb.npHour.minValue = hours[0].toInt()
+        vb.npHour.maxValue = hours[hours.size-1].toInt()
+        vb.npHour.displayedValues = hours
+        vb.npHour.value = currentCal.get(Calendar.HOUR_OF_DAY)
+        vb.npHour.setOnValueChangedListener { _, _, _ ->
             checkTimeValue()
-            btn_send.text = getTimeResult()
+            vb.btnSend.text = getTimeResult()
         }
 
-        np_minute.displayedValues = null
-        np_minute.minValue = minutes[0].toInt()
-        np_minute.maxValue = minutes[minutes.size-1].toInt()
-        np_minute.displayedValues = minutes
-        np_minute.setOnValueChangedListener { _, _, _ ->
+        vb.npMinute.displayedValues = null
+        vb.npMinute.minValue = minutes[0].toInt()
+        vb.npMinute.maxValue = minutes[minutes.size-1].toInt()
+        vb.npMinute.displayedValues = minutes
+        vb.npMinute.setOnValueChangedListener { _, _, _ ->
             checkTimeValue()
-            btn_send.text = getTimeResult()
+            vb.btnSend.text = getTimeResult()
         }
-        np_minute.value = currentCal.get(Calendar.MINUTE) + 1
+        vb.npMinute.value = currentCal.get(Calendar.MINUTE) + 1
 
-        tv_cancel_btn.setOnClickListener {
+        vb.tvCancelBtn.setOnClickListener {
             dismiss()
         }
-        btn_send.text = getTimeResult()
-        btn_send.setOnClickListener {
+        vb.btnSend.text = getTimeResult()
+        vb.btnSend.setOnClickListener {
             listener.onClick(0, getScheduledTime())
             dismiss()
         }
@@ -128,28 +125,28 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
     }
 
     private fun getTimeResult(): String {
-        val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(np_date.value.toLong())))
-        return "Send on ${resultSdf.format(date)} at ${hours[np_hour.value]}:${minutes[ np_minute.value]}"
+        val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(vb.npDate.value.toLong())))
+        return "Send on ${resultSdf.format(date)} at ${hours[vb.npHour.value]}:${minutes[ vb.npMinute.value]}"
     }
 
     private fun checkTimeValue() {
-        val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(np_date.value.toLong())))
-        val shownTime = "${resultSdf.format(date)} ${hours[np_hour.value]}:${minutes[np_minute.value]}"
+        val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(vb.npDate.value.toLong())))
+        val shownTime = "${resultSdf.format(date)} ${hours[vb.npHour.value]}:${minutes[vb.npMinute.value]}"
         val shownDate = fullSdf.parse(shownTime)
         if (shownDate != null) {
             if (shownDate.time < System.currentTimeMillis()) {
                 // time less than current, reset value
                 currentCal = Calendar.getInstance()
-                np_date.value = 0
-                np_hour.value = currentCal.get(Calendar.HOUR_OF_DAY)
-                np_minute.value = currentCal.get(Calendar.MINUTE) + 1
+                vb.npDate.value = 0
+                vb.npHour.value = currentCal.get(Calendar.HOUR_OF_DAY)
+                vb.npMinute.value = currentCal.get(Calendar.MINUTE) + 1
             }
         }
     }
 
     private fun getScheduledTime(): Long {
-        val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(np_date.value.toLong())))
-        val shownTime = "${resultSdf.format(date)} ${hours[np_hour.value]}:${minutes[np_minute.value]}"
+        val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(vb.npDate.value.toLong())))
+        val shownTime = "${resultSdf.format(date)} ${hours[vb.npHour.value]}:${minutes[vb.npMinute.value]}"
         val shownDate = fullSdf.parse(shownTime)
         return shownDate?.time ?: 0L
     }

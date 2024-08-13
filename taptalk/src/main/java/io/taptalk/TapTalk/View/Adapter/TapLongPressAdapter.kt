@@ -145,58 +145,58 @@ class TapLongPressAdapter(
             tvAttachTitle.text = item.text
             when (item.id) {
                 REPLY -> {
-                    setComponentColors(R.color.tapIconLongPressActionReply, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionReply, R.color.tapActionSheetDefaultLabelColor)
                 }
                 FORWARD -> {
-                    setComponentColors(R.color.tapIconLongPressActionForward, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionForward, R.color.tapActionSheetDefaultLabelColor)
                 }
                 COPY -> {
-                    setComponentColors(R.color.tapIconLongPressActionCopy, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionCopy, R.color.tapActionSheetDefaultLabelColor)
                 }
                 SAVE -> {
-                    setComponentColors(R.color.tapIconLongPressActionSaveToGallery, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionSaveToGallery, R.color.tapActionSheetDefaultLabelColor)
                 }
                 STAR, UNSTAR -> {
-                    setComponentColors(R.color.tapIconLongPressActionStarMessage, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionStarMessage, R.color.tapActionSheetDefaultLabelColor)
                 }
                 EDIT -> {
-                    setComponentColors(R.color.tapIconLongPressActionEditMessage, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionEditMessage, R.color.tapActionSheetDefaultLabelColor)
                 }
                 PIN, UNPIN -> {
-                    setComponentColors(R.color.tapIconLongPressActionPinMessage, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionPinMessage, R.color.tapActionSheetDefaultLabelColor)
                 }
                 INFO -> {
-                    setComponentColors(R.color.tapIconLongPressMessageInfo, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressMessageInfo, R.color.tapActionSheetDefaultLabelColor)
                 }
                 DELETE -> {
-                    setComponentColors(R.color.tapIconLongPressActionDelete, R.style.tapActionSheetDestructiveLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionDelete, R.color.tapActionSheetDestructiveLabelColor)
                 }
                 REPORT -> {
-                    setComponentColors(R.color.tapIconLongPressReport, R.style.tapActionSheetDestructiveLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressReport, R.color.tapActionSheetDestructiveLabelColor)
                 }
                 OPEN_LINK -> {
-                    setComponentColors(R.color.tapIconLongPressActionOpenLink, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionOpenLink, R.color.tapActionSheetDefaultLabelColor)
                 }
                 COMPOSE -> {
-                    setComponentColors(R.color.tapIconLongPressActionComposeEmail, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionComposeEmail, R.color.tapActionSheetDefaultLabelColor)
                 }
                 CALL -> {
-                    setComponentColors(R.color.tapIconLongPressActionCallNumber, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionCallNumber, R.color.tapActionSheetDefaultLabelColor)
                 }
                 SMS -> {
-                    setComponentColors(R.color.tapIconLongPressActionSmsNumber, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionSmsNumber, R.color.tapActionSheetDefaultLabelColor)
                 }
                 VIEW_PROFILE -> {
-                    setComponentColors(R.color.tapIconLongPressActionViewProfile, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionViewProfile, R.color.tapActionSheetDefaultLabelColor)
                 }
                 SEND_MESSAGE -> {
-                    setComponentColors(R.color.tapIconLongPressActionSendMessage, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressActionSendMessage, R.color.tapActionSheetDefaultLabelColor)
                 }
                 RESCHEDULE -> {
-                    setComponentColors(R.color.tapIconLongPressReschedule, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapIconLongPressReschedule, R.color.tapActionSheetDefaultLabelColor)
                 }
                 else -> {
-                    setComponentColors(R.color.tapColorPrimaryIcon, R.style.tapActionSheetDefaultLabelStyle)
+                    setComponentColors(R.color.tapColorPrimaryIcon, R.color.tapActionSheetDefaultLabelColor)
                 }
             }
             if (itemCount - 1 == position) {
@@ -209,17 +209,12 @@ class TapLongPressAdapter(
         }
 
         @SuppressLint("PrivateResource")
-        private fun setComponentColors(@ColorRes iconColorRes: Int, @StyleRes textStyleRes: Int) {
+        private fun setComponentColors(@ColorRes iconColorRes: Int, @ColorRes textColorRes: Int) {
             // Set icon color
-            ImageViewCompat.setImageTintList(
-                ivAttachIcon,
-                ColorStateList.valueOf(ContextCompat.getColor(itemView.context, iconColorRes))
-            )
+            ImageViewCompat.setImageTintList(ivAttachIcon, ColorStateList.valueOf(ContextCompat.getColor(itemView.context, iconColorRes)))
 
             // Set text color
-            val typedArray = itemView.context.obtainStyledAttributes(textStyleRes, R.styleable.TextAppearance)
-            tvAttachTitle.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1))
-            typedArray.recycle()
+            tvAttachTitle.setTextColor(ContextCompat.getColor(itemView.context, textColorRes))
         }
     }
 }

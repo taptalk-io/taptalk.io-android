@@ -97,7 +97,7 @@ public class TAPLoginActivityOld extends TAPBaseActivity {
 
     public void showPhoneLogin() {
         getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(R.animator.tap_slide_left_fragment, R.animator.tap_fade_out_fragment, R.animator.tap_fade_in_fragment, R.animator.tap_slide_right_fragment)
+                .setCustomAnimations(io.taptalk.TapTalk.R.animator.tap_slide_left_fragment, io.taptalk.TapTalk.R.animator.tap_fade_out_fragment, io.taptalk.TapTalk.R.animator.tap_fade_in_fragment, io.taptalk.TapTalk.R.animator.tap_slide_right_fragment)
                 .replace(R.id.fl_container, TAPPhoneLoginFragment.Companion.getInstance())
                 .addToBackStack(null)
                 .commit();
@@ -157,7 +157,7 @@ public class TAPLoginActivityOld extends TAPBaseActivity {
         }
         else {
             getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.animator.tap_slide_left_fragment, R.animator.tap_fade_out_fragment, R.animator.tap_fade_in_fragment, R.animator.tap_slide_right_fragment)
+                    .setCustomAnimations(io.taptalk.TapTalk.R.animator.tap_slide_left_fragment, io.taptalk.TapTalk.R.animator.tap_fade_out_fragment, io.taptalk.TapTalk.R.animator.tap_fade_in_fragment, io.taptalk.TapTalk.R.animator.tap_slide_right_fragment)
                     .replace(R.id.fl_container, TAPLoginVerificationFragment.Companion.getInstance(otpID, otpKey, phoneNumber, phoneNumberWithCode, countryID, countryCallingID, countryFlagUrl, channel, nextRequestSeconds))
                     .addToBackStack(null)
                     .commit();

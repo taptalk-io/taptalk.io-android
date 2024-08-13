@@ -12,6 +12,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.LinkPreviewImageLoaded;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
@@ -277,6 +278,7 @@ import io.taptalk.TapTalk.View.BottomSheet.TapTimePickerBottomSheetFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
+import io.taptalk.TapTalk.databinding.TapActivityChatBinding;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -287,6 +289,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private String TAG = TapUIChatActivity.class.getSimpleName();
 
     // View
+    private TapActivityChatBinding vb;
 //    private SwipeBackLayout sblChat;
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
@@ -347,7 +350,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TextView tvButtonAddToContacts;
     private TextView tvRoomTypingStatus;
     private TextView tvChatHistoryContent;
-    private TextView tvMessage;
     private TextView tvLoadingText;
     private View vRoomImage;
     private View vStatusBadge;
@@ -514,7 +516,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tap_activity_chat);
+        vb = TapActivityChatBinding.inflate(getLayoutInflater());
+        setContentView(vb.getRoot());
 
         glide = Glide.with(this);
         audioManager = TapAudioManager.Companion.getInstance(instanceKey, audioListener);
@@ -980,105 +983,102 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void bindViews() {
 //        sblChat = getSwipeBackLayout();
-        flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
-        flRoomUnavailable = (FrameLayout) findViewById(R.id.fl_room_unavailable);
-        flLoading = (FrameLayout) findViewById(R.id.fl_loading);
-        llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
-        tvDeleteChat = findViewById(R.id.tv_delete);
-        ivDelete = findViewById(R.id.iv_delete);
-        pbDelete = findViewById(R.id.pb_delete);
-        clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
-        clActionBar = (ConstraintLayout) findViewById(R.id.cl_action_bar);
-        clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
-        clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
-        clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
-        clChatComposerAndHistory = (ConstraintLayout) findViewById(R.id.cl_chat_composer_and_history);
-        clChatHistory = (ConstraintLayout) findViewById(R.id.cl_chat_history);
-        clQuote = (ConstraintLayout) findViewById(R.id.cl_quote_layout);
-        clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
-        clUserMentionList = (ConstraintLayout) findViewById(R.id.cl_user_mention_list);
-        clRoomStatus = (ConstraintLayout) findViewById(R.id.cl_room_status);
-        clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
-        clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
-        ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
-        ivRoomIcon = (ImageView) findViewById(R.id.iv_room_icon);
-        ivButtonDismissContactAction = (ImageView) findViewById(R.id.iv_button_dismiss_contact_action);
-        ivUnreadButtonImage = (ImageView) findViewById(R.id.iv_unread_button_image);
-        ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
-        ivChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
-        ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu_area);
-        ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
-        ivSend = (ImageView) findViewById(R.id.iv_send);
-        ivButtonSend = (ImageView) findViewById(R.id.iv_send_area);
-        ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
-        ivMentionAnchor = (ImageView) findViewById(R.id.iv_mention_anchor);
-        ivRoomTypingIndicator = (ImageView) findViewById(R.id.iv_room_typing_indicator);
-        ivLoadingPopup = findViewById(R.id.iv_loading_image);
-        civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
-        civMyAvatarEmpty = (CircleImageView) findViewById(R.id.civ_my_avatar_empty);
-        civRoomAvatarEmpty = (CircleImageView) findViewById(R.id.civ_room_avatar_empty);
-        rcivQuoteImage = (TAPRoundedCornerImageView) findViewById(R.id.rciv_quote_layout_image);
-        tvRoomName = (TextView) findViewById(R.id.tv_room_name);
-        tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
-        tvRoomImageLabel = (TextView) findViewById(R.id.tv_room_image_label);
-        tvRoomTypingStatus = (TextView) findViewById(R.id.tv_room_typing_status);
-        tvButtonBlockContact = (TextView) findViewById(R.id.tv_button_block_contact);
-        tvButtonAddToContacts = (TextView) findViewById(R.id.tv_button_add_to_contacts);
-        tvDateIndicator = (TextView) findViewById(R.id.tv_date_indicator);
-        tvUnreadButtonCount = (TextView) findViewById(R.id.tv_unread_button_count);
-        tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
-        tvMyAvatarLabelEmpty = (TextView) findViewById(R.id.tv_my_avatar_label_empty);
-        tvRoomAvatarLabelEmpty = (TextView) findViewById(R.id.tv_room_avatar_label_empty);
-        tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
-        tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_layout_title);
-        tvQuoteContent = (TextView) findViewById(R.id.tv_quote_layout_content);
-        tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
-        tvBadgeMentionCount = (TextView) findViewById(R.id.tv_badge_mention_count);
-        tvChatHistoryContent = (TextView) findViewById(R.id.tv_chat_history_content);
-        tvMessage = (TextView) findViewById(R.id.tv_message);
-        tvLoadingText = findViewById(R.id.tv_loading_text);
-        rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
-        rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
-        rvUserMentionList = (MaxHeightRecyclerView) findViewById(R.id.rv_user_mention_list);
-        etChat = (EditText) findViewById(R.id.et_chat);
-        vRoomImage = findViewById(R.id.v_room_image);
-        vStatusBadge = findViewById(R.id.v_room_status_badge);
-        vQuoteDecoration = findViewById(R.id.v_quote_layout_decoration);
+        flMessageList = vb.flMessageList;
+        flRoomUnavailable = vb.flRoomUnavailable;
+        flLoading = vb.layoutPopupLoadingScreen.flLoading;
+        llButtonDeleteChat = vb.llButtonDeleteChat;
+        tvDeleteChat = vb.tvDelete;
+        ivDelete = vb.ivDelete;
+        pbDelete = vb.pbDelete;
+        clContainer = vb.clContainer;
+        clActionBar = vb.clActionBar;
+        clContactAction = vb.clContactAction;
+        clUnreadButton = vb.clUnreadButton;
+        clEmptyChat = vb.clEmptyChat;
+        clChatComposerAndHistory = vb.clChatComposerAndHistory;
+        clChatHistory = vb.clChatHistory;
+        clQuote = vb.clQuoteLayout;
+        clChatComposer = vb.clChatComposer;
+        clUserMentionList = vb.layoutUserMentionList.clUserMentionList;
+        clRoomStatus = vb.clRoomStatus;
+        clRoomOnlineStatus = vb.clRoomOnlineStatus;
+        clRoomTypingStatus = vb.clRoomTypingStatus;
+        ivButtonBack = vb.ivButtonBack;
+        ivRoomIcon = vb.ivRoomIcon;
+        ivButtonDismissContactAction = vb.ivButtonDismissContactAction;
+        ivUnreadButtonImage = vb.ivUnreadButtonImage;
+        ivButtonCancelReply = vb.ivCancelReply;
+        ivChatMenu = vb.ivChatMenu;
+        ivButtonChatMenu = vb.ivChatMenuArea;
+        ivButtonAttach = vb.ivAttach;
+        ivSend = vb.ivSend;
+        ivButtonSend = vb.ivSendArea;
+        ivToBottom = vb.ivToBottom;
+        ivMentionAnchor = vb.ivMentionAnchor;
+        ivRoomTypingIndicator = vb.ivRoomTypingIndicator;
+        ivLoadingPopup = vb.layoutPopupLoadingScreen.ivLoadingImage;
+        civRoomImage = vb.civRoomImage;
+        civMyAvatarEmpty = vb.civMyAvatarEmpty;
+        civRoomAvatarEmpty = vb.civRoomAvatarEmpty;
+        rcivQuoteImage = vb.rcivQuoteLayoutImage;
+        tvRoomName = vb.tvRoomName;
+        tvRoomStatus = vb.tvRoomStatus;
+        tvRoomImageLabel = vb.tvRoomImageLabel;
+        tvRoomTypingStatus = vb.tvRoomTypingStatus;
+        tvButtonBlockContact = vb.tvButtonBlockContact;
+        tvButtonAddToContacts = vb.tvButtonAddToContacts;
+        tvDateIndicator = vb.tvDateIndicator;
+        tvUnreadButtonCount = vb.tvUnreadButtonCount;
+        tvChatEmptyGuide = vb.tvChatEmptyGuide;
+        tvMyAvatarLabelEmpty = vb.tvMyAvatarLabelEmpty;
+        tvRoomAvatarLabelEmpty = vb.tvRoomAvatarLabelEmpty;
+        tvProfileDescription = vb.tvProfileDescription;
+        tvQuoteTitle = vb.tvQuoteLayoutTitle;
+        tvQuoteContent = vb.tvQuoteLayoutContent;
+        tvBadgeUnread = vb.tvBadgeUnread;
+        tvBadgeMentionCount = vb.tvBadgeMentionCount;
+        tvChatHistoryContent = vb.tvChatHistoryContent;
+        tvLoadingText = vb.layoutPopupLoadingScreen.tvLoadingText;
+        rvMessageList = vb.rvMessageList;
+        rvCustomKeyboard = vb.rvCustomKeyboard;
+        rvUserMentionList = vb.layoutUserMentionList.rvUserMentionList;
+        etChat = vb.etChat;
+        vRoomImage = vb.vRoomImage;
+        vStatusBadge = vb.vRoomStatusBadge;
+        vQuoteDecoration = vb.vQuoteLayoutDecoration;
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
-        ivVoiceNote = findViewById(R.id.iv_voice_note);
-        clVoiceNote = findViewById(R.id.cl_voice_note);
-        ivVoiceNoteControl = findViewById(R.id.iv_voice_note_control);
-        tvRecordTime = findViewById(R.id.tv_record_time);
-        ivRecording = findViewById(R.id.iv_recording);
-        tvSlideLabel = findViewById(R.id.tv_slide_label);
-        ivLeft = findViewById(R.id.iv_left);
-        ivRemoveVoiceNote = findViewById(R.id.iv_remove_voice_note);
-        clSwipeVoiceNote = findViewById(R.id.cl_swipe_voice_note);
-        gTooltip = findViewById(R.id.g_tooltip);
-        seekBar = findViewById(R.id.seek_bar);
-        clForward = findViewById(R.id.cl_forward);
-        tvForwardCount = findViewById(R.id.tv_forward_count);
-        ivForward = findViewById(R.id.iv_forward);
-        cvEmptySavedMessages = findViewById(R.id.cv_empty_saved_message);
-        clPinnedMessage = findViewById(R.id.cl_pinned_message);
-        clPinnedIndicator = findViewById(R.id.cl_pinned_message_indicator);
-        rcivPinnedImage = findViewById(R.id.rciv_pinned_image);
-        tvPinnedLabel = findViewById(R.id.tv_pinned_label);
-        tvPinnedMessage = findViewById(R.id.tv_pinned_message);
-        ibPinnedMessages = findViewById(R.id.ib_pin_messages);
-        clLink = findViewById(R.id.cl_link);
-        rcivLink = findViewById(R.id.rciv_link);
-        tvLinkTitle = findViewById(R.id.tv_link_title);
-        tvLinkContent = findViewById(R.id.tv_link_content);
-        ivCloseLink = findViewById(R.id.iv_close_link);
-        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
-        cvSchedule = findViewById(R.id.cv_schedule);
-        vScreen = findViewById(R.id.v_screen);
-        gScheduleMessage = findViewById(R.id.g_schedule_message);
-        ivSchedule = findViewById(R.id.iv_schedule);
-        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
-        btnUnblock = findViewById(R.id.btn_unblock);
-        customNavigationBarFragmentContainerView = findViewById(R.id.custom_action_bar_fragment_container);
+        ivVoiceNote = vb.ivVoiceNote;
+        clVoiceNote = vb.clVoiceNote;
+        ivVoiceNoteControl = vb.ivVoiceNoteControl;
+        tvRecordTime = vb.tvRecordTime;
+        ivRecording = vb.ivRecording;
+        tvSlideLabel = vb.tvSlideLabel;
+        ivLeft = vb.ivLeft;
+        ivRemoveVoiceNote = vb.ivRemoveVoiceNote;
+        clSwipeVoiceNote = vb.clSwipeVoiceNote;
+        gTooltip = vb.gTooltip;
+        seekBar = vb.seekBar;
+        clForward = vb.clForward;
+        tvForwardCount = vb.tvForwardCount;
+        ivForward = vb.ivForward;
+        cvEmptySavedMessages = vb.cvEmptySavedMessage;
+        clPinnedMessage = vb.clPinnedMessage;
+        clPinnedIndicator = vb.clPinnedMessageIndicator;
+        rcivPinnedImage = vb.rcivPinnedImage;
+        tvPinnedLabel = vb.tvPinnedLabel;
+        tvPinnedMessage = vb.tvPinnedMessage;
+        ibPinnedMessages = vb.ibPinMessages;
+        clLink = vb.clLink;
+        rcivLink = vb.rcivLink;
+        tvLinkTitle = vb.tvLinkTitle;
+        tvLinkContent = vb.tvLinkContent;
+        ivCloseLink = vb.ivCloseLink;
+        cvSchedule = vb.cvSchedule;
+        vScreen = vb.vScreen;
+        gScheduleMessage = vb.gScheduleMessage;
+        ivSchedule = vb.ivSchedule;
+        btnUnblock = vb.btnUnblock;
+        customNavigationBarFragmentContainerView = vb.customActionBarFragmentContainer;
     }
 
     private boolean initViewModel() {
@@ -1600,7 +1600,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 LongPressEmail,
                 LongPressLink,
                 LongPressPhone,
-                LongPressMention
+                LongPressMention,
+                LinkPreviewImageLoaded
         );
     }
 
@@ -5459,6 +5460,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
+                case LinkPreviewImageLoaded:
+                    if (vm.isOnBottom() && rvMessageList.getScrollState() == SCROLL_STATE_IDLE) {
+                        // Scroll recycler to bottom
+                        rvMessageList.scrollToPosition(0);
+                    }
+                    break;
             }
         }
     };
@@ -5773,83 +5780,85 @@ public class TapUIChatActivity extends TAPBaseActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    String newID = message.getLocalID();
-                    if (vm.getMessagePointer().containsKey(newID)) {
-                        // Update existing message
-                        vm.updateMessagePointer(message);
-                        runOnUiThread(() -> {
-                            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-                        });
-                    } else if (!vm.getMessagePointer().containsKey(newID)) {
-                        // Insert new message to list and HashMap
-                        messageAfterModels.add(message);
-                        vm.addMessagePointer(message);
+                    if (message != null) {
+                        String newID = message.getLocalID();
+                        if (vm.getMessagePointer().containsKey(newID)) {
+                            // Update existing message
+                            vm.updateMessagePointer(message);
+                            runOnUiThread(() -> {
+                                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                            });
+                        } else if (!vm.getMessagePointer().containsKey(newID)) {
+                            // Insert new message to list and HashMap
+                            messageAfterModels.add(message);
+                            vm.addMessagePointer(message);
 
-                        if ("".equals(vm.getLastUnreadMessageLocalID())
-                                && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
-                                && (null != message.getIsRead() && !message.getIsRead())
-                                && null == vm.getUnreadIndicator()) {
-                            // Update first unread message index
-                            unreadMessageIndex = messageAfterModels.indexOf(message);
-                            smallestUnreadCreated = message.getCreated();
+                            if ("".equals(vm.getLastUnreadMessageLocalID())
+                                    && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
+                                    && (null != message.getIsRead() && !message.getIsRead())
+                                    && null == vm.getUnreadIndicator()) {
+                                // Update first unread message index
+                                unreadMessageIndex = messageAfterModels.indexOf(message);
+                                smallestUnreadCreated = message.getCreated();
+                            }
+
+                            if (allMessagesHidden && (null == message.getIsHidden() || !message.getIsHidden())) {
+                                allMessagesHidden = false;
+                            }
+
+                            updateMessageMentionIndexes(message);
+
+                            if ((null == message.getIsRead() || !message.getIsRead()) &&
+                                    TAPUtils.isActiveUserMentioned(message, vm.getMyUserModel())) {
+                                // Add unread mention
+                                vm.addUnreadMention(message);
+                            }
+
+                            if (message.getType() == TYPE_SYSTEM_MESSAGE &&
+                                    null != message.getAction() &&
+                                    (message.getAction().equals(UPDATE_ROOM) ||
+                                            message.getAction().equals(UPDATE_USER)) &&
+                                    (null == updateRoomDetailSystemMessage ||
+                                            updateRoomDetailSystemMessage.getCreated() < message.getCreated())) {
+                                // Store update room system message
+                                updateRoomDetailSystemMessage = message;
+                            }
                         }
 
-                        if (allMessagesHidden && (null == message.getIsHidden() || !message.getIsHidden())) {
-                            allMessagesHidden = false;
+                        if (null == message.getIsRead() || !message.getIsRead()) {
+    //                        TAPMessageModel messageFromPointer = vm.getMessagePointer().get(message.getLocalID());
+    //                        if (null != messageFromPointer) {
+    //                            messageFromPointer = messageFromPointer.copyMessageModel();
+    //                        }
+                            if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID()) &&
+    //                                (null == message.getHidden() || !message.getHidden()) &&
+    //                                (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
+    //                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
+                                    !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(message.getMessageID()) &&
+                                    !TAPMessageStatusManager.getInstance(instanceKey).getMessagesMarkedAsRead().contains(message.getMessageID())
+                            ) {
+                                // Add message ID to pending list if new message has not been read or not in mark read queue
+                                unreadMessageIds.add(message.getMessageID());
+                            }
+
+                            if (allUnreadHidden != -1 && null != message.getIsHidden() && message.getIsHidden()) {
+                                allUnreadHidden = 1;
+                            } else {
+                                // Set allUnreadHidden to false
+                                allUnreadHidden = -1;
+                            }
                         }
 
-                        updateMessageMentionIndexes(message);
-
-                        if ((null == message.getIsRead() || !message.getIsRead()) &&
-                                TAPUtils.isActiveUserMentioned(message, vm.getMyUserModel())) {
-                            // Add unread mention
-                            vm.addUnreadMention(message);
-                        }
-
-                        if (message.getType() == TYPE_SYSTEM_MESSAGE &&
-                                null != message.getAction() &&
-                                (message.getAction().equals(UPDATE_ROOM) ||
-                                        message.getAction().equals(UPDATE_USER)) &&
-                                (null == updateRoomDetailSystemMessage ||
-                                        updateRoomDetailSystemMessage.getCreated() < message.getCreated())) {
-                            // Store update room system message
-                            updateRoomDetailSystemMessage = message;
-                        }
+                        responseMessages.add(TAPMessageEntity.fromMessageModel(message));
+                        new Thread(() -> {
+                            // Update last updated timestamp in preference (new thread to prevent stutter when scrolling)
+                            if (null != message.getUpdated() &&
+                                    TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()
+                            ) {
+                                TAPDataManager.getInstance(instanceKey).saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
+                            }
+                        }).start();
                     }
-
-                    if (null == message.getIsRead() || !message.getIsRead()) {
-//                        TAPMessageModel messageFromPointer = vm.getMessagePointer().get(message.getLocalID());
-//                        if (null != messageFromPointer) {
-//                            messageFromPointer = messageFromPointer.copyMessageModel();
-//                        }
-                        if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID()) &&
-//                                (null == message.getHidden() || !message.getHidden()) &&
-//                                (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
-//                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
-                                !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(message.getMessageID()) &&
-                                !TAPMessageStatusManager.getInstance(instanceKey).getMessagesMarkedAsRead().contains(message.getMessageID())
-                        ) {
-                            // Add message ID to pending list if new message has not been read or not in mark read queue
-                            unreadMessageIds.add(message.getMessageID());
-                        }
-
-                        if (allUnreadHidden != -1 && null != message.getIsHidden() && message.getIsHidden()) {
-                            allUnreadHidden = 1;
-                        } else {
-                            // Set allUnreadHidden to false
-                            allUnreadHidden = -1;
-                        }
-                    }
-
-                    responseMessages.add(TAPMessageEntity.fromMessageModel(message));
-                    new Thread(() -> {
-                        // Update last updated timestamp in preference (new thread to prevent stutter when scrolling)
-                        if (null != message.getUpdated() &&
-                                TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()
-                        ) {
-                            TAPDataManager.getInstance(instanceKey).saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
-                        }
-                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -6068,12 +6077,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    messageBeforeModels.addAll(addBeforeTextMessage(message));
-                    responseMessages.add(TAPMessageEntity.fromMessageModel(message));
-                    updateMessageMentionIndexes(message);
+                    if (message != null) {
+                        messageBeforeModels.addAll(addBeforeTextMessage(message));
+                        responseMessages.add(TAPMessageEntity.fromMessageModel(message));
+                        updateMessageMentionIndexes(message);
 
-                    if (message.getIsHidden() == null || !message.getIsHidden()) {
-                        visibleCount++;
+                        if (message.getIsHidden() == null || !message.getIsHidden()) {
+                            visibleCount++;
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

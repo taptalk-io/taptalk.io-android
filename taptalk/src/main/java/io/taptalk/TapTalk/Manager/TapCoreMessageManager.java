@@ -1460,8 +1460,10 @@ public class TapCoreMessageManager {
                         for (HashMap<String, Object> messageMap : response.getMessages()) {
                             try {
                                 TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                                messageBeforeModels.add(message);
-                                entities.add(TAPMessageEntity.fromMessageModel(message));
+                                if (message != null) {
+                                    messageBeforeModels.add(message);
+                                    entities.add(TAPMessageEntity.fromMessageModel(message));
+                                }
                             } catch (Exception e) {
                                 if (null != listener) {
                                     listener.onError(ERROR_CODE_OTHERS, e.getMessage());
@@ -1553,13 +1555,15 @@ public class TapCoreMessageManager {
                         for (HashMap<String, Object> messageMap : response.getMessages()) {
                             try {
                                 TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                                messageAfterModels.add(message);
-                                entities.add(TAPMessageEntity.fromMessageModel(message));
+                                if (message != null) {
+                                    messageAfterModels.add(message);
+                                    entities.add(TAPMessageEntity.fromMessageModel(message));
 
-                                if (null != message.getUpdated() &&
-                                        TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID) < message.getUpdated()
-                                ) {
-                                    TAPDataManager.getInstance(instanceKey).saveLastUpdatedMessageTimestamp(roomID, message.getUpdated());
+                                    if (null != message.getUpdated() &&
+                                            TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID) < message.getUpdated()
+                                    ) {
+                                        TAPDataManager.getInstance(instanceKey).saveLastUpdatedMessageTimestamp(roomID, message.getUpdated());
+                                    }
                                 }
                             } catch (Exception e) {
                                 if (null != listener) {
@@ -1939,9 +1943,11 @@ public class TapCoreMessageManager {
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                            starredMessageList.add(message);
-                            if (!starredMessageIDs.contains(message.getMessageID())) {
-                                starredMessageIDs.add(message.getMessageID());
+                            if (message != null) {
+                                starredMessageList.add(message);
+                                if (!starredMessageIDs.contains(message.getMessageID())) {
+                                    starredMessageIDs.add(message.getMessageID());
+                                }
                             }
                         } catch (Exception e) {
                             listener.onError(ERROR_CODE_OTHERS, e.getMessage());
@@ -2080,9 +2086,11 @@ public class TapCoreMessageManager {
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                            pinnedMessageList.add(message);
-                            if (!pinnedMessageIDs.contains(message.getMessageID())) {
-                                pinnedMessageIDs.add(message.getMessageID());
+                            if (message != null) {
+                                pinnedMessageList.add(message);
+                                if (!pinnedMessageIDs.contains(message.getMessageID())) {
+                                    pinnedMessageIDs.add(message.getMessageID());
+                                }
                             }
                         } catch (Exception e) {
                             listener.onError(ERROR_CODE_OTHERS, e.getMessage());
@@ -2279,15 +2287,24 @@ public class TapCoreMessageManager {
             @Override
             public void onSuccess(TapCreateScheduledMessageResponse response) {
                 super.onSuccess(response);
-                if (null != listener) {
-                    TapScheduledMessageModel resultModel = new TapScheduledMessageModel(
+                if (null != listener && null != response.getCreatedItem() && null != response.getCreatedItem().getMessage()) {
+                    TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(response.getCreatedItem().getMessage());
+                    if (null != message) {
+                        TapScheduledMessageModel resultModel = new TapScheduledMessageModel(
                             response.getCreatedItem().getUpdatedTime(),
                             response.getCreatedItem().getScheduledTime(),
                             response.getCreatedItem().getCreatedTime(),
                             response.getCreatedItem().getId(),
-                            TAPEncryptorManager.getInstance().decryptMessage(response.getCreatedItem().getMessage())
-                    );
-                    listener.onSuccess(resultModel);
+                            message
+                        );
+                        listener.onSuccess(resultModel);
+                    }
+                    else {
+                        listener.onError(ERROR_CODE_OTHERS, "Unable to decrypt message");
+                    }
+                }
+                else if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, "Unable to decrypt message");
                 }
             }
 
@@ -2314,13 +2331,16 @@ public class TapCoreMessageManager {
                 if (response.getItems() != null) {
                     List<TapScheduledMessageModel> scheduledMessages = new ArrayList<>();
                     for (TapGetScheduledMessageItem item : response.getItems()) {
-                        scheduledMessages.add(new TapScheduledMessageModel(
+                        TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(item.getMessage());
+                        if (message != null) {
+                            scheduledMessages.add(new TapScheduledMessageModel(
                                 item.getUpdatedTime(),
                                 item.getScheduledTime(),
                                 item.getCreatedTime(),
                                 item.getId(),
-                                TAPEncryptorManager.getInstance().decryptMessage(item.getMessage())
-                        ));
+                                message
+                            ));
+                        }
                     }
                     if (null != listener) {
                         listener.onSuccess(scheduledMessages);
@@ -2455,7 +2475,13 @@ public class TapCoreMessageManager {
             public void onSuccess(TapGetMessageDetailResponse response) {
                 super.onSuccess(response);
                 if (null != listener) {
-                    listener.onSuccess(TAPEncryptorManager.getInstance().decryptMessage(response.getMessage()), response.getDeliveredTo(), response.getReadBy());
+                    TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(response.getMessage());
+                    if (null != message) {
+                        listener.onSuccess(message, response.getDeliveredTo(), response.getReadBy());
+                    }
+                    else {
+                        listener.onError(ERROR_CODE_OTHERS, "Unable to decrypt message");
+                    }
                 }
             }
 

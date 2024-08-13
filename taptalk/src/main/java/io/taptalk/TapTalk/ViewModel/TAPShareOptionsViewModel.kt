@@ -1,19 +1,10 @@
 package io.taptalk.TapTalk.ViewModel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import io.taptalk.TapTalk.Model.TAPRoomListModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 
-class TAPShareOptionsViewModel(application: Application): AndroidViewModel(application) {
-
-    class TAPShareOptionsViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return TAPShareOptionsViewModel(application) as T
-        }
-    }
+class TAPShareOptionsViewModel: ViewModel() {
 
     var roomList: List<TAPRoomListModel>? = ArrayList()
     var roomPointer: MutableMap<String, TAPRoomListModel>? = LinkedHashMap()
@@ -85,6 +76,4 @@ class TAPShareOptionsViewModel(application: Application): AndroidViewModel(appli
     fun addRecentSearches(item: TAPRoomListModel) {
         recentSearches?.toMutableList()?.add(item)
     }
-
-
 }

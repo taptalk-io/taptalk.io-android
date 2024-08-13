@@ -117,6 +117,9 @@ public class TAPContactManager {
     }
 
     public void removeFromContacts(String userID) {
+        if (getUserData(userID) == null) {
+            return;
+        }
         getUserData(userID).setIsContact(0);
         TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(getUserData(userID));
     }
