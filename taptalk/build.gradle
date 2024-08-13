@@ -72,6 +72,13 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+
+    publishing {
+        singleVariant("release") {
+            withJavadocJar()
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
@@ -150,7 +157,7 @@ dependencies {
 //    implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
 }
 
-task androidSourcesJar(type: Jar) {
+tasks.register('androidSourcesJar', Jar) {
 //    classifier 'sources'
     archiveClassifier.set("sources")
     from android.sourceSets.main.java.srcDirs
@@ -161,10 +168,11 @@ project.afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                artifact androidSourcesJar // optional sources
+//                artifact androidSourcesJar // optional sources
                 groupId = 'com.github.taptalk-io'
                 artifactId = 'taptalk.io-android'
                 version = "$taptalk_version_name"
+                generateMetadataFileForReleasePublication.dependsOn androidSourcesJar
             }
         }
     }
