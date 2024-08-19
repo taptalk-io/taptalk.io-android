@@ -10,6 +10,8 @@ import android.graphics.Typeface
 import android.location.*
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,6 +22,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
@@ -67,6 +70,8 @@ class TAPMapActivity : TAPBaseActivity(),
     private var isFirstTriggered = true
     private var isSearch: Boolean = true
     private var isSameKeyword: Boolean = false
+    private var isCurrentLocationInitialized: Boolean = false
+    private var fetchingCurrentLocationCount = 0
     private var currentLongitude: Double = 0.0
     private var currentLatitude: Double = 0.0
     private var currentAddress = ""
@@ -110,9 +115,6 @@ class TAPMapActivity : TAPBaseActivity(),
         }
         geoCoder = Geocoder(this, Locale.getDefault())
 
-        val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-
         vb.ivButtonBack.setOnClickListener(this)
         vb.ivCurrentLocation.setOnClickListener(this)
         vb.tvClear.setOnClickListener(this)
@@ -146,11 +148,21 @@ class TAPMapActivity : TAPBaseActivity(),
         adapter = TAPSearchLocationAdapter(locationList, generalListener)
         vb.recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         vb.recyclerView.adapter = adapter
+
+        vb.ivCurrentLocation.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_recenter_location_button_ripple)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (!isCurrentLocationInitialized) {
+            val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
+            mapFragment.getMapAsync(this)
+        }
+
         if (TAPUtils.hasPermissions(this, PERMISSIONS[0])) {
             getLocation()
         }
-
-        vb.ivCurrentLocation.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_recenter_location_button_ripple)
     }
 
     override fun onStop() {
@@ -184,8 +196,9 @@ class TAPMapActivity : TAPBaseActivity(),
                 PERMISSION_LOCATION -> {
                     getLocation()
                     try {
-                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        ) {
                             return
                         }
                         googleMap?.isMyLocationEnabled = true
@@ -214,11 +227,13 @@ class TAPMapActivity : TAPBaseActivity(),
         else {
             latLng = LatLng(latitude, longitude)
             googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
+            isCurrentLocationInitialized = true
         }
 
         try {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            ) {
                 return
             }
             googleMap?.isMyLocationEnabled = true
@@ -296,11 +311,13 @@ class TAPMapActivity : TAPBaseActivity(),
                 onBackPressed()
             }
             R.id.iv_current_location -> {
-                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(this, PERMISSIONS, PERMISSION_LOCATION)
                 }
                 else {
+                    if (fetchingCurrentLocationCount > 1) {
+                        fetchingCurrentLocationCount = 1
+                    }
                     moveToCurrentLocation()
                 }
             }
@@ -343,8 +360,9 @@ class TAPMapActivity : TAPBaseActivity(),
     private fun getLocation() {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (locationManager?.allProviders?.contains(LocationManager.GPS_PROVIDER) == true) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            ) {
                 return
             }
             locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0.toLong(), 0.toFloat(), this)
@@ -361,6 +379,10 @@ class TAPMapActivity : TAPBaseActivity(),
         val mobileLocation: Location? = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         if (null != mobileLocation) {
             onLocationChanged(mobileLocation)
+        }
+
+        if (netLocation == null && mobileLocation == null && fetchingCurrentLocationCount > 0) {
+            moveToCurrentLocation()
         }
     }
 
@@ -481,7 +503,7 @@ class TAPMapActivity : TAPBaseActivity(),
         if (!locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
             TapTalkDialog.Builder(this)
                     .setTitle(getString(R.string.tap_location_disabled))
-                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                     .setMessage(getString(R.string.tap_allow_location_services))
                     .setPrimaryButtonTitle(getString(R.string.tap_go_to_settings))
                     .setPrimaryButtonListener {
@@ -491,12 +513,27 @@ class TAPMapActivity : TAPBaseActivity(),
                     .setSecondaryButtonListener { }
                     .show()
         }
-        else {
+        else if (currentLatitude != 0.0 || currentLongitude != 0.0) {
             latitude = currentLatitude
             longitude = currentLongitude
             centerOfMap = LatLng(currentLatitude, currentLongitude)
+            fetchingCurrentLocationCount = 0
             val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap ?: return, 16.toFloat())
             googleMap?.animateCamera(locations)
+        }
+        else if (fetchingCurrentLocationCount <= 5) {
+            if (fetchingCurrentLocationCount == 0) {
+                Toast.makeText(this, getString(R.string.tap_fetching_current_location), Toast.LENGTH_SHORT).show()
+            }
+
+            fetchingCurrentLocationCount++
+            Handler(Looper.getMainLooper()).postDelayed({
+                getLocation()
+            }, 5000L)
+        }
+        else {
+            fetchingCurrentLocationCount = 0
+            Toast.makeText(this, getString(R.string.tap_unable_to_obtain_current_location), Toast.LENGTH_SHORT).show()
         }
     }
 
