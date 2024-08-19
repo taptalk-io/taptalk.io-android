@@ -295,6 +295,8 @@
     <string name="tap_location_disabled">Location Disabled</string>
     <string name="tap_allow_location_services">Please allow location services to continue</string>
     <string name="tap_go_to_settings">Go to Settings</string>
+    <string name="tap_fetching_current_location">Fetching current location, please wait…</string>
+    <string name="tap_unable_to_obtain_current_location">Unable to obtain current location, please try again shortly.</string>
 
     <!--Custom Material File Picker-->
     <string name="tap_cfp_empty_directory_hint">Empty directory</string>

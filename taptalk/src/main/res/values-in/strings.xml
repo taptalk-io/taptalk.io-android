@@ -293,6 +293,8 @@
     <string name="tap_location_disabled">Fitur Lokasi Tidak Aktif</string>
     <string name="tap_allow_location_services">Mohon aktifkan izin lokasi untuk melanjutkan</string>
     <string name="tap_go_to_settings">Buka Pengaturan</string>
+    <string name="tap_fetching_current_location">Sedang mencari lokasi saat ini, mohon tunggu…</string>
+    <string name="tap_unable_to_obtain_current_location">Lokasi tidak ditemukan, mohon coba kembali dalam waktu dekat</string>
 
     <!--Custom Material File Picker-->
     <string name="tap_cfp_empty_directory_hint">Direktori kosong</string>
