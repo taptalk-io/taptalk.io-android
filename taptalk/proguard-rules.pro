@@ -87,10 +87,10 @@
     *;
 }
 -keep public class com.google.android.gms.* { public *; }
--dontwarn com.google.android.gms.
+-dontwarn com.google.android.gms.*
 -keep public class * extends java.lang.Exception
 -keep class com.crashlytics.** { *; }
--dontwarn com.crashlytics.
+-dontwarn com.crashlytics.*
 
 -keep class okio.** { *; }
 -keepnames class okio.** { *; }
