@@ -25,6 +25,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
 import io.taptalk.TapTalk.Helper.*
@@ -38,7 +39,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.R
-import retrofit2.adapter.rxjava.Result.response
 import java.util.*
 
 
@@ -90,6 +90,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
         private val vThumbnailOverlay: View = itemView.findViewById(R.id.v_thumbnail_overlay)
         private var thumbnail: Drawable? = null
         private var isMediaReady = false
+
         override fun onBind(message: TAPMessageModel?, position: Int) {
             if (null == message || null == message.data) {
                 return
@@ -138,10 +139,14 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
             // Show/hide video icon
             if (message.type == TYPE_VIDEO) {
                 ivVideoIcon.visibility = View.VISIBLE
-            } else {
+            }
+            else {
                 ivVideoIcon.visibility = View.GONE
             }
-            if (TAPCacheManager.getInstance(itemView.context).containsCache(message) ||
+
+            val url = message.data?.get(FILE_URL) as String?
+            if ((message.type == TYPE_IMAGE && !url.isNullOrEmpty()) ||
+                TAPCacheManager.getInstance(itemView.context).containsCache(message) ||
                 TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)
             ) {
                 // Image exists in cache / file exists in storage
@@ -152,11 +157,13 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                             TAPUtils.getMediaDurationString(duration.toInt(), duration.toInt())
                         tvMediaInfo.visibility = View.VISIBLE
                         vThumbnailOverlay.visibility = View.VISIBLE
-                    } else {
+                    }
+                    else {
                         tvMediaInfo.visibility = View.GONE
                         vThumbnailOverlay.visibility = View.VISIBLE
                     }
-                } else {
+                }
+                else {
                     tvMediaInfo.visibility = View.GONE
                     vThumbnailOverlay.visibility = View.GONE
                 }
@@ -171,19 +178,13 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                             val retriever = MediaMetadataRetriever()
                             val dataUri =
                                 message.data!![MessageData.FILE_URI] as String?
-                            val videoUri =
-                                if (null != dataUri) Uri.parse(dataUri) else TAPFileDownloadManager.getInstance(
-                                    instanceKey
-                                ).getFileMessageUri(message)
+                            val videoUri = if (null != dataUri) Uri.parse(dataUri) else TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message)
                             try {
 //                                Uri parsedUri = TAPFileUtils.parseFileUri(videoUri);
 //                                retriever.setDataSource(itemView.getContext(), parsedUri);
                                 retriever.setDataSource(itemView.context, videoUri)
-                                mediaThumbnail = BitmapDrawable(
-                                    itemView.context.resources,
-                                    retriever.frameAtTime
-                                )
-                                val fileUrl = message.data!![MessageData.FILE_URL] as String?
+                                mediaThumbnail = BitmapDrawable(itemView.context.resources, retriever.frameAtTime)
+                                val fileUrl = message.data!![FILE_URL] as String?
                                 val fileID = message.data!![MessageData.FILE_ID] as String?
                                 var key = ""
                                 if (!fileUrl.isNullOrEmpty()) {
@@ -193,7 +194,8 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                                     key = fileID
                                 }
                                 TAPCacheManager.getInstance(itemView.context).addBitmapDrawableToCache(key, mediaThumbnail)
-                            } catch (e: Exception) {
+                            }
+                            catch (e: Exception) {
                                 e.printStackTrace()
                                 mediaThumbnail = thumbnail as BitmapDrawable?
                             }
@@ -204,41 +206,52 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                                 // Load media thumbnail
                                 glide.load(finalMediaThumbnail)
                                     .apply(RequestOptions().placeholder(thumbnail))
-                                    .listener(object :
-                                        RequestListener<Drawable?> {
-                                        override fun onLoadFailed(
-                                            e: GlideException?,
-                                            model: Any,
-                                            target: Target<Drawable?>,
-                                            isFirstResource: Boolean
-                                        ): Boolean {
+                                    .listener(object : RequestListener<Drawable?> {
+                                        override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
                                             return false
                                         }
 
-                                        override fun onResourceReady(
-                                            resource: Drawable?,
-                                            model: Any,
-                                            target: Target<Drawable?>,
-                                            dataSource: DataSource,
-                                            isFirstResource: Boolean
-                                        ): Boolean {
-                                            return if (position == bindingAdapterPosition) {
+                                        override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                                            if (position == bindingAdapterPosition) {
                                                 // Load image only if view has not been recycled
                                                 isMediaReady = true
                                                 clContainer.setOnClickListener {
                                                     listener.onMediaClicked(message, rcivThumbnail, isMediaReady)
                                                 }
-                                                false
-                                            } else {
-                                                true
+                                                return false
                                             }
+                                            return true
+                                        }
+                                    }).into(rcivThumbnail)
+                            }
+                        }
+                        else if (message.type == TYPE_IMAGE && !url.isNullOrEmpty()) {
+                            activity.runOnUiThread {
+                                glide.load(url)
+                                    .apply(RequestOptions().placeholder(thumbnail))
+                                    .listener(object : RequestListener<Drawable?> {
+                                        override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
+                                            return false
+                                        }
+
+                                        override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                                            if (position == bindingAdapterPosition) {
+                                                // Load image only if view has not been recycled
+                                                isMediaReady = true
+                                                clContainer.setOnClickListener {
+                                                    listener.onMediaClicked(message, rcivThumbnail, isMediaReady)
+                                                }
+                                                return false
+                                            }
+                                            return true
                                         }
                                     }).into(rcivThumbnail)
                             }
                         }
                     }
                 }.start()
-            } else {
+            }
+            else {
                 // Show small thumbnail
                 val size = message.data!![MessageData.SIZE] as Number?
                 val videoSize =

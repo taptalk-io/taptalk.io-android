@@ -218,7 +218,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
         tvTitle.setText(title);
         tvMessageStatus.setText(messageStatus);
 
-        if (!caption.isEmpty()) {
+        if (caption != null && !caption.isEmpty()) {
             llCaption.setVisibility(View.VISIBLE);
             tvCaption.setText(caption);
             tvCaption.setMovementMethod(new ScrollingMovementMethod());
@@ -242,7 +242,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
         } else {
             // Show UI
             clActionBar.setVisibility(View.VISIBLE);
-            llCaption.setVisibility(caption.isEmpty() ? View.GONE : View.VISIBLE);
+            llCaption.setVisibility((caption == null || caption.isEmpty()) ? View.GONE : View.VISIBLE);
         }
     }
 

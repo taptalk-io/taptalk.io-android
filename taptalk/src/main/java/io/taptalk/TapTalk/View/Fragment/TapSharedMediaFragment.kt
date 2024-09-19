@@ -162,19 +162,15 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     }
 
     private val sharedMediaAdapterListener = object : TapSharedMediaInterface {
-        override fun onMediaClicked(
-            item: TAPMessageModel,
-            ivThumbnail: ImageView?,
-            isMediaReady: Boolean
-        ) {
+        override fun onMediaClicked(item: TAPMessageModel, ivThumbnail: ImageView?, isMediaReady: Boolean) {
             if (item.type == TYPE_IMAGE && isMediaReady) {
-            // Preview image detail
-            TAPImageDetailPreviewActivity.start(
-                context,
-                instanceKey,
-                item,
-                ivThumbnail
-            )
+                // Preview image detail
+                TAPImageDetailPreviewActivity.start(
+                    context,
+                    instanceKey,
+                    item,
+                    ivThumbnail
+                )
             } else if (item.type == TYPE_IMAGE) {
                 // Download image
                 TAPFileDownloadManager.getInstance(instanceKey)

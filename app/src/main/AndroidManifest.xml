@@ -86,6 +86,7 @@
 
         <service
             android:name="io.taptalk.TapTalk.Firebase.TapFirebaseMessagingService"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

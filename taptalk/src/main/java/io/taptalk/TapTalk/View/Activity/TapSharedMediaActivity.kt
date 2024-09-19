@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
+import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapSharedMediaPagerAdapter
 import io.taptalk.TapTalk.View.Fragment.TapSharedMediaFragment
 import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
@@ -41,6 +42,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
             intent.putExtra(TAPDefaultConstant.Extras.INSTANCE_KEY, instanceKey)
             intent.putExtra(TAPDefaultConstant.Extras.ROOM, room)
             context.startActivityForResult(intent, OPEN_SHARED_MEDIA)
+            context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
         }
     }
 
@@ -70,6 +72,11 @@ class TapSharedMediaActivity : TAPBaseActivity() {
         intent.putExtra(TAPDefaultConstant.Extras.MESSAGE, message)
         setResult(RESULT_OK, intent)
         finish()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
     }
 
     fun getMoreSharedMedias(type : Int) {
