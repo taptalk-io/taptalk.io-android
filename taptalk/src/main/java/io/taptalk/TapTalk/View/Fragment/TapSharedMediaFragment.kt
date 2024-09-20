@@ -27,9 +27,11 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.VIEW_IN_CHAT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Interface.TapLongPressInterface
@@ -56,7 +58,7 @@ import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
 import io.taptalk.TapTalk.databinding.TapFragmentSharedMediaBinding
 import java.util.*
 
-class TapSharedMediaFragment(private val instanceKey: String, private val type: Int): Fragment() {
+class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fragment() {
 
     private lateinit var vb : TapFragmentSharedMediaBinding
     private val vm: TapSharedMediaViewModel by lazy {
@@ -78,7 +80,9 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         vb = TapFragmentSharedMediaBinding.inflate(inflater, container, false)
-        glide = Glide.with(requireActivity())
+        activity?.let {
+            glide = Glide.with(it)
+        }
         vm.room = arguments?.getParcelable(ROOM) as TAPRoomModel?
         TAPBroadcastManager.register(
             context,
@@ -95,7 +99,8 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
                 try {
                     super.onLayoutChildren(recycler, state)
-                } catch (e: IndexOutOfBoundsException) {
+                }
+                catch (e: IndexOutOfBoundsException) {
                     e.printStackTrace()
                 }
             }
@@ -104,7 +109,8 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             override fun getSpanSize(position: Int): Int {
                 return if (vm.sharedMediaAdapterItems[position].type == TYPE_IMAGE || vm.sharedMediaAdapterItems[position].type == TYPE_VIDEO) {
                     1
-                } else {
+                }
+                else {
                     3
                 }
             }
@@ -123,18 +129,13 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             Thread {
                 when (type) {
                     TYPE_MEDIA -> {
-                        TAPDataManager.getInstance(instanceKey)
-                            .getRoomMedias(0L, vm.room?.roomID, sharedMediaListener)
-
+                        TAPDataManager.getInstance(instanceKey).getRoomMedias(0L, vm.room?.roomID, sharedMediaListener)
                     }
                     TYPE_LINK -> {
-                        TAPDataManager.getInstance(instanceKey)
-                            .getRoomLinks(0L, vm.room?.roomID, sharedMediaListener)
-
+                        TAPDataManager.getInstance(instanceKey).getRoomLinks(0L, vm.room?.roomID, sharedMediaListener)
                     }
                     TYPE_DOCUMENT -> {
-                        TAPDataManager.getInstance(instanceKey)
-                            .getRoomFiles(0L, vm.room?.roomID, sharedMediaListener)
+                        TAPDataManager.getInstance(instanceKey).getRoomFiles(0L, vm.room?.roomID, sharedMediaListener)
                     }
                 }
             }.start()
@@ -149,7 +150,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (TAPUtils.allPermissionsGranted(grantResults)) {
             when (requestCode) {
-                TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE -> startVideoDownload(
+                PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE -> startVideoDownload(
                     vm.pendingDownloadMessage
                 )
             }
@@ -171,12 +172,14 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                     item,
                     ivThumbnail
                 )
-            } else if (item.type == TYPE_IMAGE) {
+            }
+            else if (item.type == TYPE_IMAGE) {
                 // Download image
                 TAPFileDownloadManager.getInstance(instanceKey)
                     .downloadImage(context, item)
                 notifyItemChanged(item)
-            } else if (item.type == TYPE_VIDEO && isMediaReady && null != item.data) {
+            }
+            else if (item.type == TYPE_VIDEO && isMediaReady && null != item.data) {
                 val videoUri =
                     TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item)
                 if (null == videoUri) {
@@ -192,7 +195,8 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                         .setPrimaryButtonListener { startVideoDownload(item) }
                         .show()
-                } else {
+                }
+                else {
                     // Open video player
                     TAPVideoPlayerActivity.start(
                         context,
@@ -201,7 +205,8 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         item
                     )
                 }
-            } else if (item.type == TYPE_VIDEO) {
+            }
+            else if (item.type == TYPE_VIDEO) {
                 // Download video
                 startVideoDownload(item)
             }
@@ -213,7 +218,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         }
 
         override fun onDocumentClicked(item: TAPMessageModel) {
-//            TODO("Not yet implemented")
+
         }
 
         override fun onLinkClicked(item: TAPMessageModel) {
@@ -244,126 +249,107 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             }
         }
 
-    private val sharedMediaListener: TAPDatabaseListener<TAPMessageEntity> =
-        object : TAPDatabaseListener<TAPMessageEntity>() {
-            override fun onSelectFinished(entities: List<TAPMessageEntity>) {
-                Thread {
-                    if (entities.isEmpty() && 0 == vm.sharedMedias.size) {
-                        // No shared media in database, load from api
-                        vm.isFinishedLoading = true
-                        requireActivity().runOnUiThread {
-                            vm.isLoading = true
-                            showLoading()
-                            Thread {
-                                (requireActivity() as TapSharedMediaActivity).getMoreSharedMedias(type)
-                            }.start()
-                        }
-                    } else {
-                        // Has shared media
-                        val previousSize = vm.sharedMedias.size
-                        if (0 == previousSize) {
-                            // First load
-                            requireActivity().runOnUiThread {
-                                vb.recyclerView.visibility = View.VISIBLE
-                                vb.gEmptySharedMedia.visibility = View.GONE
-                                if (TAPDefaultConstant.MAX_ITEMS_PER_PAGE <= entities.size) {
-                                    sharedMediaPagingScrollListener =
-                                        ViewTreeObserver.OnScrollChangedListener {
-                                            if (!vm.isFinishedLoading && sharedMediaGlm!!.findLastVisibleItemPosition() > vm.sharedMedias.size - TAPDefaultConstant.MAX_ITEMS_PER_PAGE / 2) {
-                                                // Load more if view holder is visible
-                                                if (!vm.isLoading) {
-                                                    vm.isLoading = true
-                                                    showSharedMediaLoading()
-                                                    Thread {
-                                                        when(type) {
-                                                            TYPE_MEDIA -> TAPDataManager.getInstance(instanceKey)
-                                                                .getRoomMedias(
-                                                                    vm.lastTimestamp,
-                                                                    vm.room?.roomID,
-                                                                    this
-                                                                )
-                                                            TYPE_LINK -> TAPDataManager.getInstance(instanceKey)
-                                                                .getRoomLinks(
-                                                                    vm.lastTimestamp,
-                                                                    vm.room?.roomID,
-                                                                    this
-                                                                )
-                                                            TYPE_DOCUMENT -> TAPDataManager.getInstance(instanceKey)
-                                                                .getRoomFiles(
-                                                                    vm.lastTimestamp,
-                                                                    vm.room?.roomID,
-                                                                    this
-                                                                )
-                                                        }
-                                                    }.start()
+    private val sharedMediaListener: TAPDatabaseListener<TAPMessageEntity> = object : TAPDatabaseListener<TAPMessageEntity>() {
+        override fun onSelectFinished(entities: List<TAPMessageEntity>) {
+            Thread {
+                if (entities.isEmpty() && 0 == vm.sharedMedias.size) {
+                    // No shared media in database, load from api
+                    vm.isFinishedLoading = true
+                    activity?.runOnUiThread {
+                        vm.isLoading = true
+                        showLoading()
+                        Thread {
+                            (activity as TapSharedMediaActivity?)?.getMoreSharedMedias(type)
+                        }.start()
+                    }
+                }
+                else {
+                    // Has shared media
+                    val previousSize = vm.sharedMedias.size
+                    if (0 == previousSize) {
+                        // First load
+                        activity?.runOnUiThread {
+                            vb.recyclerView.visibility = View.VISIBLE
+                            vb.gEmptySharedMedia.visibility = View.GONE
+                            if (MAX_ITEMS_PER_PAGE <= entities.size) {
+                                sharedMediaPagingScrollListener = ViewTreeObserver.OnScrollChangedListener {
+                                    if (!vm.isFinishedLoading &&
+                                        (sharedMediaGlm?.findLastVisibleItemPosition() ?: -1) > vm.sharedMedias.size - MAX_ITEMS_PER_PAGE / 2
+                                    ) {
+                                        // Load more if view holder is visible
+                                        if (!vm.isLoading) {
+                                            vm.isLoading = true
+                                            showSharedMediaLoading()
+                                            Thread {
+                                                when (type) {
+                                                    TYPE_MEDIA -> TAPDataManager.getInstance(instanceKey).getRoomMedias(vm.lastTimestamp, vm.room?.roomID, this)
+                                                    TYPE_LINK -> TAPDataManager.getInstance(instanceKey).getRoomLinks(vm.lastTimestamp, vm.room?.roomID, this)
+                                                    TYPE_DOCUMENT -> TAPDataManager.getInstance(instanceKey).getRoomFiles(vm.lastTimestamp, vm.room?.roomID, this)
                                                 }
-                                            }
-                                        }
-                                    vb.recyclerView.viewTreeObserver.addOnScrollChangedListener(
-                                        sharedMediaPagingScrollListener
-                                    )
-                                }
-                            }
-                        }
-                        if (TAPDefaultConstant.MAX_ITEMS_PER_PAGE > entities.size) {
-                            // No more medias in database, load from api
-                            vm.isFinishedLoading = true
-                            requireActivity().runOnUiThread {
-                                vb.recyclerView.visibility = View.VISIBLE
-                                vb.recyclerView.viewTreeObserver.removeOnScrollChangedListener(
-                                    sharedMediaPagingScrollListener
-                                )
-                                sharedMediaPagingScrollListener =
-                                    ViewTreeObserver.OnScrollChangedListener {
-                                        if (!vm.isRemoteContentFetched && sharedMediaGlm!!.findLastVisibleItemPosition() > vm.sharedMedias.size - TAPDefaultConstant.MAX_ITEMS_PER_PAGE / 2) {
-                                            // Load more if view holder is visible
-                                            if (!vm.isLoading) {
-                                                vm.isLoading = true
-                                                showSharedMediaLoading()
-                                                Thread {
-                                                    (requireActivity() as TapSharedMediaActivity).getMoreSharedMedias(type)
-                                                }.start()
-                                            }
+                                            }.start()
                                         }
                                     }
-                                vb.recyclerView.viewTreeObserver.addOnScrollChangedListener(
-                                    sharedMediaPagingScrollListener
-                                )
-                            }
-                        }
-                        var previousDate = ""
-                        var previousMessage: TAPMessageModel? = null
-                        var additionalSeparators = 0
-                        for (entity in entities) {
-                            val mediaMessage = TAPMessageModel.fromMessageEntity(entity)
-                            val currentDate = TAPTimeFormatter.formatMonth(mediaMessage.created)
-                            if ((previousMessage == null || !currentDate.equals(previousDate)) && !vm.dateSeparators.containsKey(currentDate)) {
-                                val dateSeparator = vm.generateDateSeparator(mediaMessage)
-                                previousDate = currentDate
-                                previousMessage = mediaMessage
-                                vm.dateSeparators[currentDate] = dateSeparator
-                                vm.sharedMediaAdapterItems.add(dateSeparator)
-                                vm.dateSeparatorIndexes[currentDate] = vm.sharedMediaAdapterItems.indexOf(dateSeparator)
-                                additionalSeparators++
-                            }
-                            vm.addSharedMedia(mediaMessage)
-                            vm.sharedMediaAdapterItems.add(mediaMessage)
-                            vm.sharedMediaIndexes[mediaMessage.localID] = vm.sharedMediaAdapterItems.indexOf(mediaMessage)
-                        }
-                        vm.lastTimestamp = vm.sharedMedias[0].created
-                        vm.isLoading = false
-                        sharedMediaAdapter?.setDateSeparators(vm.dateSeparators)
-                        requireActivity().runOnUiThread {
-                            hideSharedMediaLoading()
-                            hideLoading()
-                            vb.recyclerView.post {
-                                sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMediaAdapterItems.size, entities.size)
+                                }
+                                vb.recyclerView.viewTreeObserver.addOnScrollChangedListener(sharedMediaPagingScrollListener)
                             }
                         }
                     }
-                }.start()
-            }
+                    if (MAX_ITEMS_PER_PAGE > entities.size) {
+                        // No more medias in database, load from api
+                        vm.isFinishedLoading = true
+                        activity?.runOnUiThread {
+                            vb.recyclerView.visibility = View.VISIBLE
+                            vb.recyclerView.viewTreeObserver.removeOnScrollChangedListener(sharedMediaPagingScrollListener)
+                            sharedMediaPagingScrollListener = ViewTreeObserver.OnScrollChangedListener {
+                                if (!vm.isRemoteContentFetched &&
+                                    (sharedMediaGlm?.findLastVisibleItemPosition() ?: -1) > vm.sharedMedias.size - MAX_ITEMS_PER_PAGE / 2
+                                ) {
+                                    // Load more if view holder is visible
+                                    if (!vm.isLoading) {
+                                        vm.isLoading = true
+                                        showSharedMediaLoading()
+                                        Thread {
+                                            (activity as TapSharedMediaActivity?)?.getMoreSharedMedias(type)
+                                        }.start()
+                                    }
+                                }
+                            }
+                            vb.recyclerView.viewTreeObserver.addOnScrollChangedListener(sharedMediaPagingScrollListener)
+                        }
+                    }
+                    var previousDate = ""
+                    var previousMessage: TAPMessageModel? = null
+                    var additionalSeparators = 0
+                    for (entity in entities) {
+                        val mediaMessage = TAPMessageModel.fromMessageEntity(entity)
+                        val currentDate = TAPTimeFormatter.formatMonth(mediaMessage.created)
+                        if ((previousMessage == null || !currentDate.equals(previousDate)) && !vm.dateSeparators.containsKey(currentDate)) {
+                            val dateSeparator = vm.generateDateSeparator(mediaMessage)
+                            previousDate = currentDate
+                            previousMessage = mediaMessage
+                            vm.dateSeparators[currentDate] = dateSeparator
+                            vm.sharedMediaAdapterItems.add(dateSeparator)
+                            vm.dateSeparatorIndexes[currentDate] = vm.sharedMediaAdapterItems.indexOf(dateSeparator)
+                            additionalSeparators++
+                        }
+                        vm.addSharedMedia(mediaMessage)
+                        vm.sharedMediaAdapterItems.add(mediaMessage)
+                        vm.sharedMediaIndexes[mediaMessage.localID] = vm.sharedMediaAdapterItems.indexOf(mediaMessage)
+                    }
+                    vm.lastTimestamp = vm.sharedMedias[0].created
+                    vm.isLoading = false
+                    sharedMediaAdapter?.setDateSeparators(vm.dateSeparators)
+                    activity?.runOnUiThread {
+                        hideSharedMediaLoading()
+                        hideLoading()
+                        vb.recyclerView.post {
+                            sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMediaAdapterItems.size, entities.size)
+                        }
+                    }
+                }
+            }.start()
         }
+    }
 
     fun addRemoteSharedMedias(sharedMedias : List<TAPMessageModel>) {
         var previousDate = ""
@@ -387,21 +373,23 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             vm.addSharedMedia(item, lastSharedMediaIndex)
             if (currentDate == previousDate) {
                 vm.sharedMediaAdapterItems.add(lastSharedMediaAdapterIndex, item)
-            } else {
+            }
+            else {
                 vm.sharedMediaAdapterItems.add(lastSharedMediaSeparatorIndex, item)
             }
             vm.sharedMediaIndexes[item.localID] = vm.sharedMediaAdapterItems.indexOf(item)
         }
         if (vm.sharedMedias.isEmpty()) {
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 vb.recyclerView.visibility = View.GONE
                 vb.gEmptySharedMedia.visibility = View.VISIBLE
                 hideLoading()
             }
-        } else {
+        }
+        else {
             vm.lastTimestamp = vm.sharedMedias[0].created
             sharedMediaAdapter?.setDateSeparators(vm.dateSeparators)
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 vb.recyclerView.visibility = View.VISIBLE
                 vb.recyclerView.viewTreeObserver.removeOnScrollChangedListener(sharedMediaPagingScrollListener)
                 hideSharedMediaLoading()
@@ -418,13 +406,16 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     private fun startVideoDownload(message: TAPMessageModel?) {
         if (!TAPUtils.hasPermissions(context, *TAPUtils.getStoragePermissions(false))) {
             // Request storage permission
-            vm.pendingDownloadMessage = message
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                TAPUtils.getStoragePermissions(false),
-                TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
-            )
-        } else {
+            activity?.let {
+                vm.pendingDownloadMessage = message
+                ActivityCompat.requestPermissions(
+                    it,
+                    TAPUtils.getStoragePermissions(false),
+                    PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
+                )
+            }
+        }
+        else {
             // Download file
             vm.pendingDownloadMessage = null
             TAPFileDownloadManager.getInstance(instanceKey).downloadMessageFile(message)
@@ -440,14 +431,14 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                 return
             }
             when (action) {
-                DownloadBroadcastEvent.DownloadProgressLoading, DownloadBroadcastEvent.DownloadFinish -> requireActivity().runOnUiThread {
+                DownloadBroadcastEvent.DownloadProgressLoading, DownloadBroadcastEvent.DownloadFinish -> activity?.runOnUiThread {
                     if (vm.getSharedMedia(localID) != null) {
                         notifyItemChanged(
                             vm.getSharedMedia(localID)
                         )
                     }
                 }
-                DownloadBroadcastEvent.DownloadFailed -> requireActivity().runOnUiThread {
+                DownloadBroadcastEvent.DownloadFailed -> activity?.runOnUiThread {
                     TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(localID)
                     if (vm.getSharedMedia(localID) != null) {
                         notifyItemChanged(
@@ -455,16 +446,16 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         )
                     }
                 }
-                DownloadBroadcastEvent.DownloadFile -> requireActivity().runOnUiThread {
+                DownloadBroadcastEvent.DownloadFile -> activity?.runOnUiThread {
                     startFileDownload(intent.getParcelableExtra(MESSAGE))
                 }
-                DownloadBroadcastEvent.CancelDownload -> requireActivity().runOnUiThread {
+                DownloadBroadcastEvent.CancelDownload -> activity?.runOnUiThread {
                     TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(localID)
                     if (vm.sharedMediasMap.containsKey(localID)) {
                         notifyItemChanged(vm.sharedMediasMap[localID])
                     }
                 }
-                DownloadBroadcastEvent.OpenFile -> requireActivity().runOnUiThread {
+                DownloadBroadcastEvent.OpenFile -> activity?.runOnUiThread {
                     val message: TAPMessageModel? = intent.getParcelableExtra(MESSAGE)
                     val fileUri: Uri? = intent.getParcelableExtra(FILE_URI)
                     vm.openedFileMessage = message
@@ -472,7 +463,8 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         if (!TAPUtils.openFile(instanceKey, context, fileUri, TAPUtils.getMimeTypeFromMessage(message))) {
                             showDownloadFileDialog()
                         }
-                    } else {
+                    }
+                    else {
                         showDownloadFileDialog()
                     }
                 }
@@ -481,7 +473,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     }
 
     private fun notifyItemChanged(mediaMessage: TAPMessageModel?) {
-        requireActivity().runOnUiThread {
+        activity?.runOnUiThread {
             sharedMediaAdapter?.notifyItemChanged(vm.sharedMediaAdapterItems.indexOf(mediaMessage))
         }
     }
@@ -505,20 +497,23 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         vb.progressCircular.visibility = View.VISIBLE
     }
 
-    private fun hideLoading() {
+    fun hideLoading() {
         vb.progressCircular.visibility = View.GONE
     }
 
     private fun startFileDownload(message: TAPMessageModel?) {
         if (!TAPUtils.hasPermissions(context, *TAPUtils.getStoragePermissions(true))) {
             // Request storage permission
-            vm.pendingDownloadMessage = message
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                TAPUtils.getStoragePermissions(true),
-                TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
-            )
-        } else {
+            activity?.let {
+                vm.pendingDownloadMessage = message
+                ActivityCompat.requestPermissions(
+                    it,
+                    TAPUtils.getStoragePermissions(true),
+                    PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
+                )
+            }
+        }
+        else {
             // Download file
             vm.pendingDownloadMessage = null
             TAPFileDownloadManager.getInstance(instanceKey).downloadMessageFile(message)

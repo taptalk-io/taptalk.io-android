@@ -1,12 +1,16 @@
 package io.taptalk.TapTalk.View.Adapter
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.text.util.Linkify
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -14,6 +18,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
@@ -27,6 +32,7 @@ import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
 import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Interface.TapSharedMediaInterface
@@ -39,6 +45,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import java.util.*
 
 
@@ -326,10 +333,57 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
     inner class LinkViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {
         private val tvLink: TextView = itemView.findViewById(R.id.tv_link)
         override fun onBind(item: TAPMessageModel?, position: Int) {
-            if (null == item?.data || item.data?.get(URL) == null) {
+            if (null == item?.data) {
                 return
             }
-            tvLink.text = item.data?.get(URL) as String
+            val urls = item.data?.get(URLS) as ArrayList<String>?
+            val url = item.data?.get(URL) as String?
+            if (!urls.isNullOrEmpty()) {
+                val urlsString = StringBuilder("")
+                for (urlLoop in urls) {
+                    if (urlsString.isNotEmpty()) {
+                        urlsString.append("\n")
+                    }
+                    urlsString.append(urlLoop)
+                }
+                tvLink.text = urlsString
+            }
+            else if (!url.isNullOrEmpty()) {
+                tvLink.text = item.data?.get(URL) as String
+            }
+            else {
+                tvLink.text = ""
+            }
+
+            val movementMethod = TAPBetterLinkMovementMethod.newInstance()
+                .setOnLinkClickListener { textView: TextView?, clickedUrl: String?, originalText: String? ->
+                    if (null != clickedUrl) {
+                        if (itemView.context != null) {
+                            if (itemView.context is TAPBaseActivity) {
+                                val activity = itemView.context as TAPBaseActivity
+                                val instanceKey = activity.instanceKey
+                                TAPUtils.openUrl(instanceKey, activity, clickedUrl)
+                            }
+                            else if (itemView.context is Activity) {
+                                TAPUtils.openUrl(itemView.context as Activity, clickedUrl)
+                            }
+                        }
+                        return@setOnLinkClickListener true
+                    }
+                    false
+                }
+                .setOnLinkLongClickListener { textView: TextView?, clickedUrl: String?, originalText: String? ->
+                    val clipboard = itemView.context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText(clickedUrl, clickedUrl)
+                    clipboard.setPrimaryClip(clip)
+                    Toast.makeText(itemView.context, "Link Copied", Toast.LENGTH_SHORT).show()
+                    true
+                }
+            tvLink.movementMethod = movementMethod
+            tvLink.isClickable = false
+            tvLink.isLongClickable = false
+            Linkify.addLinks(tvLink, Linkify.WEB_URLS)
+
             itemView.setOnClickListener {
                 listener.onLinkClicked(item)
             }

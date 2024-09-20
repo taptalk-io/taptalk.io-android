@@ -607,14 +607,20 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         )
                         menuItems.add(menuStarredMessages)
                     }
-                    val menuSharedMedia = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_SHARED_MEDIA,
-                        getString(R.string.tap_shared_media),
-                        R.drawable.tap_ic_attach_orange,
-                        R.color.tapIconChatProfileMenuSharedMedia,
-                        R.color.tapChatProfileMenuLabelColor
-                    )
-                    menuItems.add(menuSharedMedia)
+                    if (TapUI.getInstance(instanceKey).isSharedMediaMenuEnabled &&
+                        (TapUI.getInstance(instanceKey).isSharedMediaMediasTabVisible ||
+                         TapUI.getInstance(instanceKey).isSharedMediaLinksTabVisible ||
+                         TapUI.getInstance(instanceKey).isSharedMediaDocumentsTabVisible)
+                    ) {
+                        val menuSharedMedia = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_SHARED_MEDIA,
+                            getString(R.string.tap_shared_media),
+                            R.drawable.tap_ic_attach_orange,
+                            R.color.tapIconChatProfileMenuSharedMedia,
+                            R.color.tapChatProfileMenuLabelColor
+                        )
+                        menuItems.add(menuSharedMedia)
+                    }
                     if (TapUI.getInstance(instanceKey).isGroupInCommonMenuEnabled) {
                         val menuGroupInCommon = TapChatProfileItemModel(
                             ChatProfileMenuType.MENU_GROUP_IN_COMMON,
@@ -729,14 +735,20 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         )
                         menuItems.add(menuStarredMessages)
                     }
-                    val menuSharedMedia = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_SHARED_MEDIA,
-                        getString(R.string.tap_shared_media),
-                        R.drawable.tap_ic_attach_orange,
-                        R.color.tapIconChatProfileMenuSharedMedia,
-                        R.color.tapChatProfileMenuLabelColor
-                    )
-                    menuItems.add(menuSharedMedia)
+                    if (TapUI.getInstance(instanceKey).isSharedMediaMenuEnabled &&
+                        (TapUI.getInstance(instanceKey).isSharedMediaMediasTabVisible ||
+                         TapUI.getInstance(instanceKey).isSharedMediaLinksTabVisible ||
+                         TapUI.getInstance(instanceKey).isSharedMediaDocumentsTabVisible)
+                    ) {
+                        val menuSharedMedia = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_SHARED_MEDIA,
+                            getString(R.string.tap_shared_media),
+                            R.drawable.tap_ic_attach_orange,
+                            R.color.tapIconChatProfileMenuSharedMedia,
+                            R.color.tapChatProfileMenuLabelColor
+                        )
+                        menuItems.add(menuSharedMedia)
+                    }
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
                         TapUI.getInstance(instanceKey).isReportButtonInGroupProfileVisible) {
                         // Report group
@@ -795,14 +807,20 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         )
                         menuItems.add(menuStarredMessages)
                     }
-                    val menuSharedMedia = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_SHARED_MEDIA,
-                        getString(R.string.tap_shared_media),
-                        R.drawable.tap_ic_attach_orange,
-                        R.color.tapIconChatProfileMenuSharedMedia,
-                        R.color.tapChatProfileMenuLabelColor
-                    )
-                    menuItems.add(menuSharedMedia)
+                    if (TapUI.getInstance(instanceKey).isSharedMediaMenuEnabled &&
+                        (TapUI.getInstance(instanceKey).isSharedMediaMediasTabVisible ||
+                         TapUI.getInstance(instanceKey).isSharedMediaLinksTabVisible ||
+                         TapUI.getInstance(instanceKey).isSharedMediaDocumentsTabVisible)
+                    ) {
+                        val menuSharedMedia = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_SHARED_MEDIA,
+                            getString(R.string.tap_shared_media),
+                            R.drawable.tap_ic_attach_orange,
+                            R.color.tapIconChatProfileMenuSharedMedia,
+                            R.color.tapChatProfileMenuLabelColor
+                        )
+                        menuItems.add(menuSharedMedia)
+                    }
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible ||
                         TapUI.getInstance(instanceKey).isReportButtonInGroupProfileVisible) {
                         // Report group
@@ -840,14 +858,20 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
                     menuItems.add(menuStarredMessages)
                 }
-                val menuSharedMedia = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_SHARED_MEDIA,
-                    getString(R.string.tap_shared_media),
-                    R.drawable.tap_ic_attach_orange,
-                    R.color.tapIconChatProfileMenuSharedMedia,
-                    R.color.tapChatProfileMenuLabelColor
-                )
-                menuItems.add(menuSharedMedia)
+                if (TapUI.getInstance(instanceKey).isSharedMediaMenuEnabled &&
+                    (TapUI.getInstance(instanceKey).isSharedMediaMediasTabVisible ||
+                     TapUI.getInstance(instanceKey).isSharedMediaLinksTabVisible ||
+                     TapUI.getInstance(instanceKey).isSharedMediaDocumentsTabVisible)
+                ) {
+                    val menuSharedMedia = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_SHARED_MEDIA,
+                        getString(R.string.tap_shared_media),
+                        R.drawable.tap_ic_attach_orange,
+                        R.color.tapIconChatProfileMenuSharedMedia,
+                        R.color.tapChatProfileMenuLabelColor
+                    )
+                    menuItems.add(menuSharedMedia)
+                }
                 if (TapUI.getInstance(instanceKey).isGroupInCommonMenuEnabled) {
                     val menuGroupInCommon = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_GROUP_IN_COMMON,
