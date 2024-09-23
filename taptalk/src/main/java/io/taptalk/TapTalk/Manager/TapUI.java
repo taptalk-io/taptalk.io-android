@@ -156,6 +156,10 @@ public class TapUI {
     private boolean isMarkAsReadRoomListSwipeMenuDisabled;
     private boolean isMarkAsUnreadRoomListSwipeMenuDisabled;
     private boolean isStarMessageMenuDisabled;
+    private boolean isSharedMediaMenuDisabled;
+    private boolean isSharedMediaMediasTabHidden;
+    private boolean isSharedMediaLinksTabHidden;
+    private boolean isSharedMediaDocumentsTabHidden;
     private boolean isSendVoiceNoteMenuDisabled;
     private boolean isEditMessageMenuDisabled;
     private boolean isDeleteAccountButtonVisible;
@@ -899,6 +903,62 @@ public class TapUI {
             return;
         }
         isStarMessageMenuDisabled = !isEnabled;
+    }
+
+    public boolean isSharedMediaMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isSharedMediaMenuDisabled;
+    }
+
+    public void setSharedMediaMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isSharedMediaMenuDisabled = !isEnabled;
+    }
+
+    public boolean isSharedMediaMediasTabVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isSharedMediaMediasTabHidden;
+    }
+
+    public void setSharedMediaMediasTabVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isSharedMediaMediasTabHidden = !isVisible;
+    }
+
+    public boolean isSharedMediaLinksTabVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isSharedMediaLinksTabHidden;
+    }
+
+    public void setSharedMediaLinksTabVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isSharedMediaLinksTabHidden = !isVisible;
+    }
+
+    public boolean isSharedMediaDocumentsTabVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isSharedMediaDocumentsTabHidden;
+    }
+
+    public void setSharedMediaDocumentsTabVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isSharedMediaDocumentsTabHidden = !isVisible;
     }
 
     public boolean isCopyMessageMenuDisabled() {

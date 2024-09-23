@@ -1,12 +1,19 @@
 package io.taptalk.TapTalk.View.Adapter
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.text.TextPaint
+import android.text.style.ClickableSpan
+import android.text.util.Linkify
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -14,8 +21,10 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.text.toSpannable
 import androidx.core.widget.ImageViewCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.RequestManager
@@ -27,6 +36,7 @@ import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
 import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Interface.TapSharedMediaInterface
@@ -39,6 +49,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import java.util.*
 
 
@@ -130,7 +141,8 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 tvMediaInfo.visibility = View.GONE
                 flProgress.visibility = View.GONE
                 vThumbnailOverlay.visibility = View.GONE
-            } else {
+            }
+            else {
                 tvMediaInfo.visibility = View.VISIBLE
                 flProgress.visibility = View.VISIBLE
                 vThumbnailOverlay.visibility = View.VISIBLE
@@ -153,8 +165,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 if (message.type == TYPE_VIDEO && null != message.data) {
                     val duration = message.data!![MessageData.DURATION] as Number?
                     if (null != duration) {
-                        tvMediaInfo.text =
-                            TAPUtils.getMediaDurationString(duration.toInt(), duration.toInt())
+                        tvMediaInfo.text = TAPUtils.getMediaDurationString(duration.toInt(), duration.toInt())
                         tvMediaInfo.visibility = View.VISIBLE
                         vThumbnailOverlay.visibility = View.VISIBLE
                     }
@@ -254,8 +265,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
             else {
                 // Show small thumbnail
                 val size = message.data!![MessageData.SIZE] as Number?
-                val videoSize =
-                    if (null == size) "" else TAPUtils.getStringSizeLengthFile(size.toLong())
+                val videoSize = if (null == size || size.toLong() <= 0L) "" else TAPUtils.getStringSizeLengthFile(size.toLong())
                 rcivThumbnail.setImageDrawable(thumbnail)
                 if (null == downloadProgressValue) {
                     // Show media requires download
@@ -265,22 +275,10 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                         listener.onMediaClicked(message, rcivThumbnail, isMediaReady)
                     }
                     tvMediaInfo.text = videoSize
-                    ivButtonProgress.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            itemView.context,
-                            R.drawable.tap_ic_download_orange
-                        )
-                    )
-                    ImageViewCompat.setImageTintList(
-                        ivButtonProgress,
-                        ColorStateList.valueOf(
-                            ContextCompat.getColor(
-                                itemView.context,
-                                R.color.tapIconFileUploadDownloadWhite
-                            )
-                        )
-                    )
-                } else {
+                    ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_download_orange))
+                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.tapIconFileUploadDownloadWhite)))
+                }
+                else {
                     // Media is downloading
                     isMediaReady = false
                     pbProgress.max = 100
@@ -293,21 +291,8 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                     //    tvMediaInfo.setText(TAPUtils.getFileDisplayProgress(item, downloadProgressBytes));
                     //}
                     tvMediaInfo.text = videoSize
-                    ivButtonProgress.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            itemView.context,
-                            R.drawable.tap_ic_cancel_white
-                        )
-                    )
-                    ImageViewCompat.setImageTintList(
-                        ivButtonProgress,
-                        ColorStateList.valueOf(
-                            ContextCompat.getColor(
-                                itemView.context,
-                                R.color.tapIconFileCancelUploadDownloadWhite
-                            )
-                        )
-                    )
+                    ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_cancel_white))
+                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.tapIconFileCancelUploadDownloadWhite)))
                     clContainer.setOnClickListener {
                         listener.onCancelDownloadClicked(message)
                     }
@@ -326,10 +311,58 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
     inner class LinkViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {
         private val tvLink: TextView = itemView.findViewById(R.id.tv_link)
         override fun onBind(item: TAPMessageModel?, position: Int) {
-            if (null == item?.data || item.data?.get(URL) == null) {
+            if (null == item?.data) {
                 return
             }
-            tvLink.text = item.data?.get(URL) as String
+            val urls = item.data?.get(URLS) as ArrayList<String>?
+            val url = item.data?.get(URL) as String?
+            if (!urls.isNullOrEmpty()) {
+                val urlsString = StringBuilder("")
+                for (urlLoop in urls) {
+                    if (urlsString.isNotEmpty()) {
+                        urlsString.append("\n")
+                    }
+                    urlsString.append(urlLoop)
+                }
+                tvLink.text = urlsString
+            }
+            else if (!url.isNullOrEmpty()) {
+                tvLink.text = item.data?.get(URL) as String
+            }
+            else {
+                tvLink.text = ""
+            }
+
+            val movementMethod = TAPBetterLinkMovementMethod.newInstance()
+                .setOnLinkClickListener { textView: TextView?, clickedUrl: String?, originalText: String? ->
+                    if (null != clickedUrl) {
+                        if (itemView.context != null) {
+                            if (itemView.context is TAPBaseActivity) {
+                                val activity = itemView.context as TAPBaseActivity
+                                val instanceKey = activity.instanceKey
+                                TAPUtils.openUrl(instanceKey, activity, clickedUrl)
+                            }
+                            else if (itemView.context is Activity) {
+                                TAPUtils.openUrl(itemView.context as Activity, clickedUrl)
+                            }
+                        }
+                        return@setOnLinkClickListener true
+                    }
+                    false
+                }
+                .setOnLinkLongClickListener { textView: TextView?, clickedUrl: String?, originalText: String? ->
+                    val clipboard = itemView.context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText(clickedUrl, clickedUrl)
+                    clipboard.setPrimaryClip(clip)
+                    Toast.makeText(itemView.context, "Link Copied", Toast.LENGTH_SHORT).show()
+                    true
+                }
+            tvLink.movementMethod = movementMethod
+            tvLink.isClickable = false
+            tvLink.isLongClickable = false
+            Linkify.addLinks(tvLink, Linkify.WEB_URLS)
+            TAPUtils.removeUnderline(tvLink)
+
             itemView.setOnClickListener {
                 listener.onLinkClicked(item)
             }
@@ -338,7 +371,6 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 true
             }
         }
-
     }
 
     inner class DocumentViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {
@@ -369,7 +401,8 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 )
                 pbProgress.visibility = View.GONE
                 itemView.setOnClickListener { downloadFile(item) }
-            } else if ((null == downloadProgressPercent) && (null != fileUri ||
+            }
+            else if ((null == downloadProgressPercent) && (null != fileUri ||
                         TAPFileDownloadManager.getInstance(instanceKey)
                             .checkPhysicalFileExists(item))
             ) {
@@ -383,7 +416,8 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 )
                 pbProgress.visibility = View.GONE
                 itemView.setOnClickListener { openFile(item) }
-            } else if (null == downloadProgressPercent) {
+            }
+            else if (null == downloadProgressPercent) {
                 // File is not downloaded
                 tvFileInfo.text = TAPUtils.getFileDisplaySizeAndDate(itemView.context, item)
                 if (TAPFileDownloadManager.getInstance(instanceKey).failedDownloads.contains(item.localID)) {
@@ -393,7 +427,8 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                             R.drawable.tap_ic_retry_white
                         )
                     )
-                } else {
+                }
+                else {
                     rcivImage.setImageDrawable(
                         ContextCompat.getDrawable(
                             itemView.context,
@@ -403,7 +438,8 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 }
                 pbProgress.visibility = View.GONE
                 itemView.setOnClickListener { downloadFile(item) }
-            } else {
+            }
+            else {
                 // File is downloading or uploading
                 rcivImage.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -454,11 +490,13 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
             if (bindingAdapterPosition == 0) {
                 vTopSeparator.visibility = View.GONE
                 vTopGap.visibility = View.GONE
-            } else {
+            }
+            else {
                 if (items[absoluteAdapterPosition - 1].type == TYPE_IMAGE || items[absoluteAdapterPosition - 1].type == TYPE_VIDEO) {
                     vTopSeparator.visibility = View.VISIBLE
                     vTopGap.visibility = View.GONE
-                } else {
+                }
+                else {
                     vTopSeparator.visibility = View.GONE
                     vTopGap.visibility = View.VISIBLE
                 }

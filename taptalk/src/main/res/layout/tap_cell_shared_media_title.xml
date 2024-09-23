@@ -40,7 +40,6 @@
         android:id="@+id/v_separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginBottom="2dp"
         android:background="@color/tapTransparentBlack1910"
         app:layout_constraintBottom_toBottomOf="parent" />
 
