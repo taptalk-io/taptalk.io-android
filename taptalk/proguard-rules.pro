@@ -126,6 +126,7 @@
 -keep class io.** { *; }
 
 # Retrofit
+-keep class retrofit2.** { *; }
 -keepattributes Signature, InnerClasses, EnclosingMethod
 -keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
 -keepattributes AnnotationDefault
@@ -151,10 +152,13 @@
 -keep,allowobfuscation,allowshrinking class io.reactivex.rxjava3.core.Single
 
 # okhttp3
+-keep class com.squareup.okhttp.** { *; }
+-keep interface com.squareup.okhttp.** { *; }
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 -dontwarn org.codehaus.mojo.animal_sniffer.*
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
-
 
 # rxjava
 -keep class rx.schedulers.Schedulers {
