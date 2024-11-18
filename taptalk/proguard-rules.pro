@@ -127,7 +127,7 @@
 
 # Retrofit
 -keep class retrofit2.** { *; }
--keepattributes Signature, InnerClasses, EnclosingMethod
+-keepattributes Signature, *Annotation*, InnerClasses, EnclosingMethod
 -keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
 -keepattributes AnnotationDefault
 -keepclassmembers,allowshrinking,allowobfuscation interface * {
@@ -159,6 +159,12 @@
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 -dontwarn org.codehaus.mojo.animal_sniffer.*
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
+
+# json
+-keep class com.fasterxml.** { *; }
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
+-dontwarn org.w3c.dom.bootstrap.DOMImplementationRegistry
 
 # rxjava
 -keep class rx.schedulers.Schedulers {
