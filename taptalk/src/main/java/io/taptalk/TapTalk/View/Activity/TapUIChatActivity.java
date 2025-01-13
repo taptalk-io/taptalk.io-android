@@ -5606,6 +5606,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             // All loaded messages are hidden, load more from database
                             loadMessagesFromDatabase();
                         }
+                        else if (models.isEmpty() && STATE.DONE != state) {
+                            // Fetch older messages from API
+                            showLoadingOlderMessagesIndicator();
+                            fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
+                        }
                         else if (messageAdapter.getItemCount() <= 0) {
                             // Chat is empty
                             hideLoadingOlderMessagesIndicator();
@@ -5645,11 +5650,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             else {
                                 loadInitialsToProfilePicture(civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                             }
-                        }
-                        else if (models.isEmpty() && STATE.DONE != state) {
-                            // Fetch older messages from API
-                            showLoadingOlderMessagesIndicator();
-                            fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
                         }
                     }
                     else {
