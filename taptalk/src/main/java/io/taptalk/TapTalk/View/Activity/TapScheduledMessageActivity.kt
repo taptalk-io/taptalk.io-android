@@ -393,13 +393,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
     }
 
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<String?>,
-        grantResults: IntArray
+        permissions: Array<out String>,
+        grantResults: IntArray,
+        deviceId: Int
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
         if (TAPUtils.allPermissionsGranted(grantResults)) {
             when (requestCode) {
                 PermissionRequest.PERMISSION_CAMERA_CAMERA, PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> vm.cameraImageUri =

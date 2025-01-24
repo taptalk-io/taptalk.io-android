@@ -2,13 +2,23 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TapUI;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 
@@ -18,6 +28,7 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         instanceKey = getIntent().getStringExtra(INSTANCE_KEY);
@@ -63,6 +74,21 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
                     }
                 }
             }
+        }
+
+        final ViewGroup contentView = this.findViewById(android.R.id.content);
+        if (contentView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(contentView, new OnApplyWindowInsetsListener() {
+                @NonNull
+                @Override
+                public WindowInsetsCompat onApplyWindowInsets(@NonNull View view, @NonNull WindowInsetsCompat insets) {
+                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                    view.setPadding(0, systemBars.top, 0, navigationBars.bottom);
+                    view.setBackgroundColor(ContextCompat.getColor(TAPBaseActivity.this, R.color.tapWhite));
+                    return insets;
+                }
+            });
         }
     }
 
