@@ -1,11 +1,15 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -28,7 +32,6 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         instanceKey = getIntent().getStringExtra(INSTANCE_KEY);
@@ -76,20 +79,7 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
             }
         }
 
-        final ViewGroup contentView = this.findViewById(android.R.id.content);
-        if (contentView != null) {
-            ViewCompat.setOnApplyWindowInsetsListener(contentView, new OnApplyWindowInsetsListener() {
-                @NonNull
-                @Override
-                public WindowInsetsCompat onApplyWindowInsets(@NonNull View view, @NonNull WindowInsetsCompat insets) {
-                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                    Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
-                    view.setPadding(0, systemBars.top, 0, navigationBars.bottom);
-                    view.setBackgroundColor(ContextCompat.getColor(TAPBaseActivity.this, R.color.tapWhite));
-                    return insets;
-                }
-            });
-        }
+        applyWindowInsets();
     }
 
     @Override
@@ -103,5 +93,40 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
         super.onPause();
         TAPUtils.dismissKeyboard(this);
         TapUI.getInstance(instanceKey).setCurrentForegroundTapTalkActivity(null);
+    }
+
+    /**
+     * Handle Edge-to-Edge for Android 15 (VANILLA_ICE_CREAM) / SDK 35
+     */
+
+    public void applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, R.color.tapWhite));
+    }
+
+    public void applyWindowInsets(@ColorInt int insetBackgroundColor) {
+        final ViewGroup contentView = this.findViewById(android.R.id.content);
+        if (contentView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(contentView, new OnApplyWindowInsetsListener() {
+                @NonNull
+                @Override
+                public WindowInsetsCompat onApplyWindowInsets(@NonNull View view, @NonNull WindowInsetsCompat insets) {
+                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                    view.setPadding(0, systemBars.top, 0, navigationBars.bottom);
+                    GradientDrawable gradient = new GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[] {
+                            insetBackgroundColor,
+                            insetBackgroundColor,
+                            Color.TRANSPARENT,
+                            Color.TRANSPARENT
+                        }
+                    );
+                    gradient.setCornerRadius(0f);
+                    view.setBackground(gradient);
+                    return insets;
+                }
+            });
+        }
     }
 }

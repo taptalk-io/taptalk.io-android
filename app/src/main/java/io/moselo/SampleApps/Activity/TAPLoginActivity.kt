@@ -155,6 +155,10 @@ class TAPLoginActivity : TAPBaseActivity() {
         }
     }
 
+    override fun applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapColorPrimary))
+    }
+
     /**=============================================================================================
      * Initialization
     ==============================================================================================*/
