@@ -83,7 +83,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
     @Override
     public void applyWindowInsets() {
-        applyWindowInsets(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapCharcoal));
+        applyWindowInsets(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1940));
     }
 
     private void receiveIntent() {

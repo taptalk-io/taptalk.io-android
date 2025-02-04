@@ -171,6 +171,11 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         updateVideoViewParams();
     }
 
+    @Override
+    public void applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, R.color.tapTransparentBlack1940));
+    }
+
     private void initViewModel() {
         vm = new ViewModelProvider(this).get(TAPVideoPlayerViewModel.class);
         String uriString = getIntent().getStringExtra(URI);

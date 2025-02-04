@@ -106,6 +106,11 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
     }
 
+    @Override
+    public void applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, R.color.tapColorPrimaryLight));
+    }
+
     private void initView() {
         cvResult = findViewById(R.id.cv_result);
         ivLoading = findViewById(R.id.iv_loading);

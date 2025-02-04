@@ -10,10 +10,11 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.databinding.TapActivityWebBrowserBinding
 
-class TAPWebBrowserActivity : AppCompatActivity() {
+class TAPWebBrowserActivity : TAPBaseActivity() {
 
     private lateinit var vb: TapActivityWebBrowserBinding
     companion object {
@@ -91,5 +92,9 @@ class TAPWebBrowserActivity : AppCompatActivity() {
             super.onBackPressed()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
         }
+    }
+
+    override fun applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, R.color.tapColorPrimary))
     }
 }
