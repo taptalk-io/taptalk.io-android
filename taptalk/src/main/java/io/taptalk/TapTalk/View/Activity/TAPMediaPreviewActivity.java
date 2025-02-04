@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -78,6 +79,11 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         setContentView(R.layout.tap_activity_media_preview);
         receiveIntent();
         initView();
+    }
+
+    @Override
+    public void applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapCharcoal));
     }
 
     private void receiveIntent() {
