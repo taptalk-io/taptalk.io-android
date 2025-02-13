@@ -166,6 +166,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
     }
 
+    override fun applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapColorPrimary))
+    }
+
     private fun initViewModel() {
         vm = ViewModelProvider(this, TAPRegisterViewModel.TAPRegisterViewModelFactory(application, instanceKey)).get(TAPRegisterViewModel::class.java)
         vm.countryID = intent.getIntExtra(COUNTRY_ID, 1)

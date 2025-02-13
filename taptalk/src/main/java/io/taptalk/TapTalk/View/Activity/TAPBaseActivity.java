@@ -115,7 +115,12 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
                     Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
                     boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
                     int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-                    view.setPadding(0, systemBars.top, 0, imeVisible ? imeHeight : navigationBars.bottom);
+                    view.setPadding(
+                        navigationBars.left,
+                        systemBars.top,
+                        navigationBars.right,
+                        imeVisible ? imeHeight : navigationBars.bottom
+                    );
                     GradientDrawable gradient = new GradientDrawable(
                         GradientDrawable.Orientation.TOP_BOTTOM,
                         new int[] {
