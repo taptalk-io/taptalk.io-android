@@ -187,14 +187,17 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_chat)
+        vb = TapActivityChatBinding.inflate(layoutInflater)
+        setContentView(vb.root)
+
         vb.tvRoomName.text = getString(R.string.tap_scheduled_message)
         vb.clRoomStatus.isVisible = false
         vb.ivVoiceNote.isVisible = false
         vb.flConnectionStatus.isVisible = false
         linkHandler = Handler(mainLooper)
-        if (initViewModel())
+        if (initViewModel()) {
             initView()
+        }
         registerBroadcastManager()
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener)
         TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener)

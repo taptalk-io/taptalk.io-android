@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="tap_horizontal_edge_margin">60dp</dimen>
+    <dimen name="tap_horizontal_edge_margin_24">60dp</dimen>
+</resources>

@@ -1,3 +1,5 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="tap_horizontal_edge_margin">16dp</dimen>
+    <dimen name="tap_horizontal_edge_margin_24">24dp</dimen>
 </resources>
