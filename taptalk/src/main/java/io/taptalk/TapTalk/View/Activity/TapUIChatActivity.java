@@ -1139,11 +1139,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
         customNavigationBarFragment = TAPChatManager.getInstance(instanceKey).getChatRoomCustomNavigationBar(this, vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel());
         if (null != customNavigationBarFragment) {
             // Show custom navigation bar
-            getSupportFragmentManager().beginTransaction().add(R.id.custom_action_bar_fragment_container, customNavigationBarFragment).commit();
             getSupportFragmentManager()
-                    .beginTransaction()
-                    .show(customNavigationBarFragment)
-                    .commit();
+                .beginTransaction()
+                .remove(customNavigationBarFragment)
+                .add(R.id.custom_action_bar_fragment_container, customNavigationBarFragment)
+                .commit();
+            getSupportFragmentManager()
+                .beginTransaction()
+                .show(customNavigationBarFragment)
+                .commit();
             customNavigationBarFragmentContainerView.setVisibility(View.VISIBLE);
             clActionBar.setVisibility(View.GONE);
 
@@ -1236,6 +1240,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
             messageAnimator.setSupportsChangeAnimations(false);
         }
         rvMessageList.setItemAnimator(null);
+        if (endlessScrollListener != null) {
+            rvMessageList.removeOnScrollListener(endlessScrollListener);
+        }
+        rvMessageList.removeOnScrollListener(messageListScrollListener);
         rvMessageList.addOnScrollListener(messageListScrollListener);
 //        OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL); FIXME: 8 Apr 2020 DISABLED OVERSCROLL DECORATOR
 
@@ -1330,8 +1338,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             lockChatRoom();
         }
 
-        if (vm.getMessageModels().size() == 0) {
+        if (vm.getMessageModels().isEmpty()) {
             getAllUnreadMessage();
+        }
+        else {
+            showMessageList();
         }
 
         LayoutTransition containerTransition = clContainer.getLayoutTransition();
@@ -2131,9 +2142,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         cvEmptySavedMessages.setVisibility(View.GONE);
         clEmptyChat.setVisibility(View.GONE);
 
-        if (rvMessageList.getVisibility() != View.VISIBLE) {
+//        if (rvMessageList.getVisibility() != View.VISIBLE) {
             rvMessageList.setVisibility(View.VISIBLE);
-        }
+//        }
 
 //        flMessageList.post(() -> {
 //            TAPMessageModel message = messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition());

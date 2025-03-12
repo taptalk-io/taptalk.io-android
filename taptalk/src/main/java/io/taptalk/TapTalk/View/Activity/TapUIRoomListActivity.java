@@ -104,7 +104,11 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
     private void initView() {
 //        fRoomList = (TapUIMainRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
         fRoomList = TapUIMainRoomListFragment.newInstance(instanceKey);
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_room_list, fRoomList).commit();
+        getSupportFragmentManager()
+            .beginTransaction()
+            .remove(fRoomList)
+            .add(R.id.fragment_room_list, fRoomList)
+            .commit();
         showRoomList();
         requestForAutoStartPermission();
     }

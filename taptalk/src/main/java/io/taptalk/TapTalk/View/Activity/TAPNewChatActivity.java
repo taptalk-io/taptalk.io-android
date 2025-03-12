@@ -212,6 +212,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void setupMenuButtons() {
+        vm.getMenuButtonList().clear();
         if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
                 TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
             TapContactListModel menuAddNewContact = new TapContactListModel(
