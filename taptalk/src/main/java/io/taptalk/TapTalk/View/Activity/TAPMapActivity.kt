@@ -7,7 +7,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
-import android.location.*
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -16,7 +20,6 @@ import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -26,9 +29,14 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdate
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.libraries.places.api.Places
@@ -48,10 +56,12 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.TAPLocationItem
-import io.taptalk.TapTalk.View.Adapter.TAPSearchLocationAdapter
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Adapter.TAPSearchLocationAdapter
+import io.taptalk.TapTalk.ViewModel.TapMapPickerViewModel
 import io.taptalk.TapTalk.databinding.TapActivityMapBinding
-import java.util.*
+import java.util.Arrays
+import java.util.Locale
 
 class TAPMapActivity : TAPBaseActivity(),
     OnMapReadyCallback,
@@ -64,28 +74,13 @@ class TAPMapActivity : TAPBaseActivity(),
     private lateinit var vb: TapActivityMapBinding
     private lateinit var placesClient: PlacesClient
 
-    private var longitude: Double = 0.0
-    private var latitude: Double = 0.0
-    private var count: Int = 0
-    private var isFirstTriggered = true
-    private var isSearch: Boolean = true
-    private var isSameKeyword: Boolean = false
-    private var isCurrentLocationInitialized: Boolean = false
-    private var fetchingCurrentLocationCount = 0
-    private var currentLongitude: Double = 0.0
-    private var currentLatitude: Double = 0.0
-    private var currentAddress = ""
-    private var postalCode = ""
-    private var locationManager: LocationManager? = null
-    private var centerOfMap: LatLng? = null
-    private var googleMap: GoogleMap? = null
-    private var geoCoder: Geocoder? = null
-    private var addresses = mutableListOf<Address>()
-    private var locationList = mutableListOf<TAPLocationItem>()
-    private var adapter: TAPSearchLocationAdapter? = null
-    private var timer: CountDownTimer? = null
+    private val vm : TapMapPickerViewModel by lazy {
+        ViewModelProvider(this)[TapMapPickerViewModel::class.java]
+    }
 
-    private var PERMISSIONS = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+    private var adapter: TAPSearchLocationAdapter? = null
+
+    private val PERMISSIONS = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
 
     companion object {
         private val JAKARTA: LatLng = LatLng(-6.175403, 106.827114)
@@ -104,27 +99,29 @@ class TAPMapActivity : TAPBaseActivity(),
         vb = TapActivityMapBinding.inflate(layoutInflater)
         setContentView(vb.root)
 
-        latitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LATITUDE, 0.0)
-        longitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LONGITUDE, 0.0)
-        currentAddress = intent.getStringExtra(TAPDefaultConstant.Location.LOCATION_NAME) ?: ""
+        vm.isCurrentLocationInitialized = false
+        vm.latitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LATITUDE, 0.0)
+        vm.longitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LONGITUDE, 0.0)
+        vm.currentAddress = intent.getStringExtra(TAPDefaultConstant.Location.LOCATION_NAME) ?: ""
 
         try {
             placesClient = Places.createClient(this)
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
-        geoCoder = Geocoder(this, Locale.getDefault())
+        vm.geoCoder = Geocoder(this, Locale.getDefault())
 
         vb.ivButtonBack.setOnClickListener(this)
         vb.ivCurrentLocation.setOnClickListener(this)
         vb.tvClear.setOnClickListener(this)
 
         if (Places.isInitialized()) {
+            vb.etKeyword.removeTextChangedListener(textWatcher)
             vb.etKeyword.addTextChangedListener(textWatcher)
             vb.etKeyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
                     vb.rlSearch.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
-                    if (!TAPUtils.isListEmpty(locationList) && vb.etKeyword.text.isNotEmpty())
+                    if (!TAPUtils.isListEmpty(vm.locationList) && vb.etKeyword.text.isNotEmpty())
                         vb.cvSearchResult.visibility = View.VISIBLE
                 }
                 else {
@@ -145,7 +142,7 @@ class TAPMapActivity : TAPBaseActivity(),
             vb.rlSearch.visibility = View.GONE
         }
 
-        adapter = TAPSearchLocationAdapter(locationList, generalListener)
+        adapter = TAPSearchLocationAdapter(vm.locationList, generalListener)
         vb.recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         vb.recyclerView.adapter = adapter
 
@@ -155,7 +152,7 @@ class TAPMapActivity : TAPBaseActivity(),
     override fun onResume() {
         super.onResume()
 
-        if (!isCurrentLocationInitialized) {
+        if (!vm.isCurrentLocationInitialized) {
             val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
             mapFragment.getMapAsync(this)
         }
@@ -167,14 +164,14 @@ class TAPMapActivity : TAPBaseActivity(),
 
     override fun onStop() {
         super.onStop()
-        timer?.cancel()
+        vm.timer?.cancel()
     }
 
     @SuppressLint("MissingPermission")
     override fun onDestroy() {
-        if (null != locationManager) {
-            locationManager?.removeUpdates(this)
-            locationManager = null
+        if (null != vm.locationManager) {
+            vm.locationManager?.removeUpdates(this)
+            vm.locationManager = null
         }
         super.onDestroy()
     }
@@ -201,7 +198,7 @@ class TAPMapActivity : TAPBaseActivity(),
                         ) {
                             return
                         }
-                        googleMap?.isMyLocationEnabled = true
+                        vm.googleMap?.isMyLocationEnabled = true
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -212,22 +209,22 @@ class TAPMapActivity : TAPBaseActivity(),
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
-        googleMap = map
+        vm.googleMap = map
         val latLng: LatLng?
-        if (0.0 == longitude && 0.0 == latitude && 0.0 == currentLongitude && 0.0 == currentLatitude) {
+        if (0.0 == vm.longitude && 0.0 == vm.latitude && 0.0 == vm.currentLongitude && 0.0 == vm.currentLatitude) {
             // Location of Monumen Nasional Indonesia
-            longitude = 106.827114
-            latitude = -6.175403
-            latLng = LatLng(latitude, longitude)
-            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
-        } else if (0.0 == longitude && 0.0 == latitude) {
-            latLng = LatLng(currentLatitude, currentLongitude)
-            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
+            vm.longitude = 106.827114
+            vm.latitude = -6.175403
+            latLng = LatLng(vm.latitude, vm.longitude)
+            vm.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
+        } else if (0.0 == vm.longitude && 0.0 == vm.latitude) {
+            latLng = LatLng(vm.currentLatitude, vm.currentLongitude)
+            vm.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
         }
         else {
-            latLng = LatLng(latitude, longitude)
-            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
-            isCurrentLocationInitialized = true
+            latLng = LatLng(vm.latitude, vm.longitude)
+            vm.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
+            vm.isCurrentLocationInitialized = true
         }
 
         try {
@@ -236,20 +233,20 @@ class TAPMapActivity : TAPBaseActivity(),
             ) {
                 return
             }
-            googleMap?.isMyLocationEnabled = true
+            vm.googleMap?.isMyLocationEnabled = true
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        googleMap?.uiSettings?.isMyLocationButtonEnabled = false
-        googleMap?.setOnCameraMoveListener(this)
-        googleMap?.setOnCameraIdleListener(this)
+        vm.googleMap?.uiSettings?.isMyLocationButtonEnabled = false
+        vm.googleMap?.setOnCameraMoveListener(this)
+        vm.googleMap?.setOnCameraIdleListener(this)
     }
 
     override fun onCameraMove() {
-        centerOfMap = googleMap?.cameraPosition?.target
-        latitude = centerOfMap?.latitude ?: 0.0
-        longitude = centerOfMap?.longitude ?: 0.0
+        vm.centerOfMap = vm.googleMap?.cameraPosition?.target
+        vm.latitude = vm.centerOfMap?.latitude ?: 0.0
+        vm.longitude = vm.centerOfMap?.longitude ?: 0.0
         disableSendButton()
         vb.ivLocation.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
         vb.ivLocation.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
@@ -268,7 +265,7 @@ class TAPMapActivity : TAPBaseActivity(),
         vb.ivLocation.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
 
         vb.cvSearchResult.visibility = View.GONE
-        isSearch = !isSameKeyword
+        vm.isSearch = !vm.isSameKeyword
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
@@ -285,11 +282,11 @@ class TAPMapActivity : TAPBaseActivity(),
     }
 
     override fun onLocationChanged(location: Location) {
-        currentLatitude = location.latitude
-        currentLongitude = location.longitude
-        if (isFirstTriggered) {
+        vm.currentLatitude = location.latitude
+        vm.currentLongitude = location.longitude
+        if (vm.isFirstTriggered) {
             moveToCurrentLocation()
-            isFirstTriggered = false;
+            vm.isFirstTriggered = false;
         }
     }
 
@@ -315,8 +312,8 @@ class TAPMapActivity : TAPBaseActivity(),
                     requestPermissions(this, PERMISSIONS, PERMISSION_LOCATION)
                 }
                 else {
-                    if (fetchingCurrentLocationCount > 1) {
-                        fetchingCurrentLocationCount = 1
+                    if (vm.fetchingCurrentLocationCount > 1) {
+                        vm.fetchingCurrentLocationCount = 1
                     }
                     moveToCurrentLocation()
                 }
@@ -325,7 +322,7 @@ class TAPMapActivity : TAPBaseActivity(),
                 vb.etKeyword.setText("")
                 vb.tvClear.visibility = View.GONE
                 vb.cvSearchResult.visibility = View.GONE
-                locationList.clear()
+                vm.locationList.clear()
             }
         }
     }
@@ -333,19 +330,20 @@ class TAPMapActivity : TAPBaseActivity(),
     private val generalListener = object : TAPGeneralListener<TAPLocationItem>() {
         override fun onClick(position: Int, item: TAPLocationItem?) {
             TAPUtils.dismissKeyboard(this@TAPMapActivity)
-            if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(vb.etKeyword.text.toString()))
-                isSameKeyword = true
+            if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(vb.etKeyword.text.toString())) {
+                vm.isSameKeyword = true
+            }
             vb.etKeyword.setText(item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString())
             val placeID: String = item?.prediction?.placeId ?: "0"
             val placeFields: MutableList<Place.Field> = Arrays.asList(Place.Field.LAT_LNG)
             val request: FetchPlaceRequest = FetchPlaceRequest.builder(placeID, placeFields).build()
             placesClient.fetchPlace(request).addOnSuccessListener(this@TAPMapActivity) { p0 ->
                 val place = p0?.place
-                latitude = place?.latLng?.latitude ?: 0.0
-                longitude = place?.latLng?.longitude ?: 0.0
-                centerOfMap = place?.latLng
-                val curr: LatLng = LatLng(latitude, longitude)
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
+                vm.latitude = place?.latLng?.latitude ?: 0.0
+                vm.longitude = place?.latLng?.longitude ?: 0.0
+                vm.centerOfMap = place?.latLng
+                val curr: LatLng = LatLng(vm.latitude, vm.longitude)
+                vm.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
                 getGeoCoderAddress()
                 vb.ivLocation.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
                 vb.ivLocation.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
@@ -358,48 +356,48 @@ class TAPMapActivity : TAPBaseActivity(),
 
     @SuppressLint("MissingPermission")
     private fun getLocation() {
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (locationManager?.allProviders?.contains(LocationManager.GPS_PROVIDER) == true) {
+        vm.locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (vm.locationManager?.allProviders?.contains(LocationManager.GPS_PROVIDER) == true) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
             ) {
                 return
             }
-            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0.toLong(), 0.toFloat(), this)
+            vm.locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0.toLong(), 0.toFloat(), this)
         }
-        else if (locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
-            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0.toLong(), 0.toFloat(), this)
+        else if (vm.locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
+            vm.locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0.toLong(), 0.toFloat(), this)
         }
 
-        val netLocation: Location? = locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        val netLocation: Location? = vm.locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
         if (null != netLocation) {
             onLocationChanged(netLocation)
         }
 
-        val mobileLocation: Location? = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        val mobileLocation: Location? = vm.locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         if (null != mobileLocation) {
             onLocationChanged(mobileLocation)
         }
 
-        if (netLocation == null && mobileLocation == null && fetchingCurrentLocationCount > 0) {
+        if (netLocation == null && mobileLocation == null && vm.fetchingCurrentLocationCount > 0) {
             moveToCurrentLocation()
         }
     }
 
     private fun getGeoCoderAddress() {
         try {
-            addresses = geoCoder?.getFromLocation(latitude, longitude, 1) ?: mutableListOf()
+            vm.addresses = vm.geoCoder?.getFromLocation(vm.latitude, vm.longitude, 1) ?: mutableListOf()
         }
         catch (e: Exception) {
             e.printStackTrace()
         }
 
-        if (!TAPUtils.isListEmpty(addresses)) {
-            val address: Address = addresses[0]
+        if (!TAPUtils.isListEmpty(vm.addresses)) {
+            val address: Address = vm.addresses[0]
             try {
-                currentAddress = address.getAddressLine(0)
-                postalCode = address.postalCode
-                vb.tvLocation.text = currentAddress
+                vm.currentAddress = address.getAddressLine(0)
+                vm.postalCode = address.postalCode
+                vb.tvLocation.text = vm.currentAddress
                 enableSendButton()
             }
             catch (e: Exception) {
@@ -416,7 +414,7 @@ class TAPMapActivity : TAPBaseActivity(),
 
     private val textWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
-            timer = object : CountDownTimer(300, 1000) {
+            vm.timer = object : CountDownTimer(300, 1000) {
                 override fun onFinish() {
                     if (!"".equals(vb.etKeyword.text.toString().trim())) {
                         val token = AutocompleteSessionToken.newInstance()
@@ -430,30 +428,30 @@ class TAPMapActivity : TAPBaseActivity(),
                         try {
                             placesClient.findAutocompletePredictions(request)
                             .addOnSuccessListener { p0 ->
-                                if (!TAPUtils.isListEmpty(locationList))
-                                    locationList.clear()
+                                if (!TAPUtils.isListEmpty(vm.locationList))
+                                    vm.locationList.clear()
 
                                 p0?.autocompletePredictions?.forEach { prediction ->
                                     val item = TAPLocationItem()
                                     item.prediction = prediction
                                     item.myReturnType = TAPLocationItem.MyReturnType.MIDDLE
-                                    locationList.add(item)
+                                    vm.locationList.add(item)
                                 }
 
-                                if (!TAPUtils.isListEmpty(locationList) && 1 == locationList.size) {
-                                    locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
-                                    adapter?.items = locationList
-                                    vb.cvSearchResult.visibility = if (isSearch) View.VISIBLE else View.GONE
+                                if (!TAPUtils.isListEmpty(vm.locationList) && 1 == vm.locationList.size) {
+                                    vm.locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
+                                    adapter?.items = vm.locationList
+                                    vb.cvSearchResult.visibility = if (vm.isSearch) View.VISIBLE else View.GONE
                                 }
-                                else if (!TAPUtils.isListEmpty(locationList)) {
-                                    locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
-                                    locationList[locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
+                                else if (!TAPUtils.isListEmpty(vm.locationList)) {
+                                    vm.locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
+                                    vm.locationList[vm.locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
 
-                                    if (5 < locationList.size) {
-                                        locationList.subList(0, 5)
+                                    if (5 < vm.locationList.size) {
+                                        vm.locationList.subList(0, 5)
                                     }
-                                    adapter?.items = locationList
-                                    vb.cvSearchResult.visibility = if (isSearch) View.VISIBLE else View.GONE
+                                    adapter?.items = vm.locationList
+                                    vb.cvSearchResult.visibility = if (vm.isSearch) View.VISIBLE else View.GONE
                                 }
                             }
                             .addOnFailureListener { e ->
@@ -473,12 +471,12 @@ class TAPMapActivity : TAPBaseActivity(),
         }
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            timer?.cancel()
+            vm.timer?.cancel()
         }
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            isSameKeyword = false
-            isSearch = true
+            vm.isSameKeyword = false
+            vm.isSearch = true
             vb.cvSearchResult.visibility = View.GONE
             if (vb.etKeyword.text.toString().isNotEmpty()) {
                 vb.tvClear.visibility = View.VISIBLE
@@ -500,7 +498,7 @@ class TAPMapActivity : TAPBaseActivity(),
     }
 
     private fun moveToCurrentLocation() {
-        if (!locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
+        if (!vm.locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
             TapTalkDialog.Builder(this)
                     .setTitle(getString(R.string.tap_location_disabled))
                     .setDialogType(TapTalkDialog.DialogType.DEFAULT)
@@ -513,26 +511,26 @@ class TAPMapActivity : TAPBaseActivity(),
                     .setSecondaryButtonListener { }
                     .show()
         }
-        else if (currentLatitude != 0.0 || currentLongitude != 0.0) {
-            latitude = currentLatitude
-            longitude = currentLongitude
-            centerOfMap = LatLng(currentLatitude, currentLongitude)
-            fetchingCurrentLocationCount = 0
-            val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap ?: return, 16.toFloat())
-            googleMap?.animateCamera(locations)
+        else if (vm.currentLatitude != 0.0 || vm.currentLongitude != 0.0) {
+            vm.latitude = vm.currentLatitude
+            vm.longitude = vm.currentLongitude
+            vm.centerOfMap = LatLng(vm.currentLatitude, vm.currentLongitude)
+            vm.fetchingCurrentLocationCount = 0
+            val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(vm.centerOfMap ?: return, 16.toFloat())
+            vm.googleMap?.animateCamera(locations)
         }
-        else if (fetchingCurrentLocationCount <= 5) {
-            if (fetchingCurrentLocationCount == 0) {
+        else if (vm.fetchingCurrentLocationCount <= 5) {
+            if (vm.fetchingCurrentLocationCount == 0) {
                 Toast.makeText(this, getString(R.string.tap_fetching_current_location), Toast.LENGTH_SHORT).show()
             }
 
-            fetchingCurrentLocationCount++
+            vm.fetchingCurrentLocationCount++
             Handler(Looper.getMainLooper()).postDelayed({
                 getLocation()
             }, 5000L)
         }
         else {
-            fetchingCurrentLocationCount = 0
+            vm.fetchingCurrentLocationCount = 0
             Toast.makeText(this, getString(R.string.tap_unable_to_obtain_current_location), Toast.LENGTH_SHORT).show()
         }
     }
@@ -549,10 +547,10 @@ class TAPMapActivity : TAPBaseActivity(),
 
     private fun sendLocation() {
         val intent = Intent()
-        intent.putExtra(TAPDefaultConstant.Location.LATITUDE, latitude)
-        intent.putExtra(TAPDefaultConstant.Location.LONGITUDE, longitude)
-        intent.putExtra(TAPDefaultConstant.Location.LOCATION_NAME, currentAddress)
-        intent.putExtra(TAPDefaultConstant.Location.POSTAL_CODE, postalCode)
+        intent.putExtra(TAPDefaultConstant.Location.LATITUDE, vm.latitude)
+        intent.putExtra(TAPDefaultConstant.Location.LONGITUDE, vm.longitude)
+        intent.putExtra(TAPDefaultConstant.Location.LOCATION_NAME, vm.currentAddress)
+        intent.putExtra(TAPDefaultConstant.Location.POSTAL_CODE, vm.postalCode)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
