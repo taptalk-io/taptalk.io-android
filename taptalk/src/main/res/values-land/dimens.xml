@@ -1,4 +1,3 @@
 <resources>
-    <dimen name="tap_horizontal_edge_margin">60dp</dimen>
-    <dimen name="tap_horizontal_edge_margin_24">60dp</dimen>
+    <dimen name="tap_map_address_container_height">64dp</dimen>
 </resources>

@@ -43,7 +43,6 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private lateinit var vb: TapActivityGroupMembersBinding
     var adapter: TAPGroupMemberAdapter? = null
-    var instanceKey: String = ""
     var isSearchActive: Boolean = false
     var isSelectionMode: Boolean = false
     var isUpdateMember: Boolean = false
