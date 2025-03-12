@@ -8,13 +8,35 @@
 
     <ImageView
         android:id="@+id/iv_qr_code"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_marginTop="40dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:maxWidth="300dp"
+        android:maxHeight="300dp"
+        app:layout_constraintDimensionRatio="1"
+        android:layout_marginTop="@dimen/tap_show_qr_code_vertical_margin"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="@dimen/tap_show_qr_code_vertical_margin"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintBottom_toTopOf="@id/tv_scan_qr_code"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@color/tapWhiteF3" />
+
+    <TextView
+        android:id="@+id/tv_scan_qr_code"
+        style="@style/tapInfoLabelBodyStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="15dp"
+        android:gravity="center"
+        android:text="@string/tap_scan_qr_code_guide"
+        app:layout_constraintBottom_toTopOf="@id/btn_scan_qr_code"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_scan_qr_code"
@@ -28,20 +50,6 @@
         android:gravity="center"
         android:text="@string/tap_scan_qr_code"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_scan_qr_code"
-        style="@style/tapInfoLabelBodyStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="15dp"
-        android:gravity="center"
-        android:text="@string/tap_scan_qr_code_guide"
-        app:layout_constraintBottom_toTopOf="@id/btn_scan_qr_code"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

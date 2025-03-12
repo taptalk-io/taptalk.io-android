@@ -1,3 +1,4 @@
 <resources>
     <dimen name="tap_map_address_container_height">64dp</dimen>
+    <dimen name="tap_show_qr_code_vertical_margin">8dp</dimen>
 </resources>
