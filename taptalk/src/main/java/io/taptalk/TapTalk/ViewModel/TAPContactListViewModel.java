@@ -319,4 +319,10 @@ public class TAPContactListViewModel extends AndroidViewModel {
             getSelectedContactsIds().remove(contactModel.getUser().getUserID());
         }
     }
+
+    public void clearSelectedContacts() {
+        getSelectedContactList().clear();
+        getSelectedContacts().clear();
+        getSelectedContactsIds().clear();
+    }
 }

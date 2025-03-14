@@ -23,10 +23,10 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            app:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavigationBarBackButton" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -44,14 +44,14 @@
 
         <TextView
             android:id="@+id/tv_edit_save_btn"
+            style="@style/tapClickableLabelStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:background="@color/tapIconTransparentBackgroundBackButton"
+            android:gravity="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:background="@color/tapIconTransparentBackgroundBackButton"
             android:text="@string/tap_edit"
-            android:gravity="center"
-            style="@style/tapClickableLabelStyle"
             app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -60,20 +60,20 @@
         android:id="@+id/iv_empty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="105dp"
+        android:layout_marginTop="@dimen/tap_empty_blocked_contacts_top_margin"
         android:src="@drawable/tap_img_empty_blocked_contacts"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
 
     <TextView
         android:id="@+id/tv_title_empty"
+        style="@style/tapActionSheetDefaultLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/tap_empty_blocked_contacts_wording"
-        style="@style/tapActionSheetDefaultLabelStyle"
-        app:layout_constraintTop_toBottomOf="@id/iv_empty"
+        app:layout_constraintEnd_toEndOf="@id/iv_empty"
         app:layout_constraintStart_toStartOf="@id/iv_empty"
-        app:layout_constraintEnd_toEndOf="@id/iv_empty" />
+        app:layout_constraintTop_toBottomOf="@id/iv_empty" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/g_empty_state"
@@ -87,12 +87,12 @@
         android:id="@+id/rv_blocked_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
 
     <include
         android:id="@+id/ll_loading"
         layout="@layout/tap_layout_circle_loading"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
