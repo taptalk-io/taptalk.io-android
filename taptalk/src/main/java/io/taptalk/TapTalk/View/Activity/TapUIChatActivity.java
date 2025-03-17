@@ -554,125 +554,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         checkInitSocket();
     }
 
-    private void getStarredMessageIds() {
-        isStarredIdsLoaded = false;
-        TapCoreMessageManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
-            @Override
-            public void onSuccess(@NonNull ArrayList<String> arrayList) {
-                super.onSuccess(arrayList);
-                isStarredIdsLoaded = true;
-                vm.setStarredMessageIds(arrayList);
-                messageAdapter.setStarredMessageIds(arrayList);
-                if (isPinnedIdsLoaded) {
-                    messageAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
-                super.onError(errorCode, errorMessage);
-                isStarredIdsLoaded = true;
-                if (isPinnedIdsLoaded) {
-                    messageAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-    }
-
-    private void getPinnedMessageIds() {
-        isPinnedIdsLoaded = false;
-        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessageIDs(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
-            @Override
-            public void onSuccess(@NonNull ArrayList<String> arrayList) {
-                super.onSuccess(arrayList);
-                isPinnedIdsLoaded = true;
-                vm.setPinnedMessageIds(arrayList);
-                messageAdapter.setPinnedMessageIds(arrayList);
-                clPinnedIndicator.setSize(vm.getPinnedMessageIds().size());
-                if (isStarredIdsLoaded) {
-                    messageAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
-                super.onError(errorCode, errorMessage);
-                isPinnedIdsLoaded = true;
-                if (isStarredIdsLoaded) {
-                    messageAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-
-    }
-
-    private void getPinnedMessages(String messageId) {
-        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessages(vm.getRoom().getRoomID(), pageNumber, PAGE_SIZE, new TapCoreGetOlderMessageListener() {
-            @Override
-            public void onSuccess(List<TAPMessageModel> messages, Boolean hasMoreData) {
-                super.onSuccess(messages, hasMoreData);
-                TAPMessageModel newestPinnedMessage = null;
-                TAPMessageModel shownMessage = null;
-                if (pageNumber == 1) {
-                    if (!messages.isEmpty()) {
-                        newestPinnedMessage = messages.get(0);
-                        vm.setPinnedMessages(messages);
-                        shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
-                    } else {
-                        vm.clearPinnedMessages();
-                    }
-                    TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), newestPinnedMessage);
-                } else {
-                    if (!messages.isEmpty()) {
-                        for (int messageIndex = 0; messageIndex < messages.size(); messageIndex++)  {
-                            if (!vm.getPinnedMessages().contains(messages.get(messageIndex))) {
-                                vm.addPinnedMessage(messages.get(messageIndex));
-                            }
-                        }
-                        if (!messageId.isEmpty()) {
-                            runOnUiThread(() -> {
-                                for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
-                                    if (vm.getPinnedMessages().get(index).getMessageID() != null && vm.getPinnedMessages().get(index).getMessageID().equals(messageId)) {
-                                        vm.addPinnedMessageId(index, messageId);
-                                        messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
-                                            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(vm.getPinnedMessages().get(index).getLocalID())));
-                                        break;
-                                    }
-                                }
-                            });
-                        }
-                    }
-                    shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
-                }
-                hasLoadMore = hasMoreData;
-                if (hasLoadMore) {
-                    pageNumber++;
-                }
-                isLoadPinnedMessages = false;
-                setPinnedMessage(shownMessage);
-            }
-        });
-    }
-
-    private void checkInitSocket() {
-        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
-            if (!TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
-                TapTalk.connect(instanceKey, new TapCommonListener() {
-                    @Override
-                    public void onSuccess(String successMessage) {
-                        super.onSuccess(successMessage);
-                    }
-
-                    @Override
-                    public void onError(String errorCode, String errorMessage) {
-                        super.onError(errorCode, errorMessage);
-                        Log.e(TAG, errorMessage);
-                    }
-                });
-            }
-        }
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -1082,10 +963,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private boolean initViewModel() {
-        vm = new ViewModelProvider(this,
-                new TAPChatViewModel.TAPChatViewModelFactory(
-                        getApplication(), instanceKey))
-                .get(TAPChatViewModel.class);
+        vm = new ViewModelProvider(this, new TAPChatViewModel.TAPChatViewModelFactory(getApplication(), instanceKey)).get(TAPChatViewModel.class);
         if (null == vm.getRoom()) {
             vm.setRoom(getIntent().getParcelableExtra(ROOM));
         }
@@ -1103,8 +981,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Updated 2020/02/10
-        if (TYPE_PERSONAL != vm.getRoom().getType() &&
-                TAPGroupManager.Companion.getInstance(instanceKey).checkIsRoomDataAvailable(vm.getRoom().getRoomID())) {
+        if (TYPE_PERSONAL != vm.getRoom().getType() && TAPGroupManager.Companion.getInstance(instanceKey).checkIsRoomDataAvailable(vm.getRoom().getRoomID())) {
             TAPRoomModel room = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(vm.getRoom().getRoomID());
             if (null != room && null != room.getName() && !room.getName().isEmpty()) {
                 vm.setRoom(room);
@@ -1465,6 +1342,25 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivToBottom.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             ivMentionAnchor.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             clUnreadButton.setBackground(getDrawable(R.drawable.tap_bg_white_rounded_8dp_ripple));
+        }
+    }
+
+    private void checkInitSocket() {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
+            if (!TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
+                TapTalk.connect(instanceKey, new TapCommonListener() {
+                    @Override
+                    public void onSuccess(String successMessage) {
+                        super.onSuccess(successMessage);
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        super.onError(errorCode, errorMessage);
+                        Log.e(TAG, errorMessage);
+                    }
+                });
+            }
         }
     }
 
@@ -6388,6 +6284,106 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //            }
 //        }).start();
 //    }
+
+    private void getStarredMessageIds() {
+        isStarredIdsLoaded = false;
+        TapCoreMessageManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
+            @Override
+            public void onSuccess(@NonNull ArrayList<String> arrayList) {
+                super.onSuccess(arrayList);
+                isStarredIdsLoaded = true;
+                vm.setStarredMessageIds(arrayList);
+                messageAdapter.setStarredMessageIds(arrayList);
+                if (isPinnedIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                isStarredIdsLoaded = true;
+                if (isPinnedIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    private void getPinnedMessageIds() {
+        isPinnedIdsLoaded = false;
+        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessageIDs(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
+            @Override
+            public void onSuccess(@NonNull ArrayList<String> arrayList) {
+                super.onSuccess(arrayList);
+                isPinnedIdsLoaded = true;
+                vm.setPinnedMessageIds(arrayList);
+                messageAdapter.setPinnedMessageIds(arrayList);
+                clPinnedIndicator.setSize(vm.getPinnedMessageIds().size());
+                if (isStarredIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                isPinnedIdsLoaded = true;
+                if (isStarredIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+    }
+
+    private void getPinnedMessages(String messageId) {
+        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessages(vm.getRoom().getRoomID(), pageNumber, PAGE_SIZE, new TapCoreGetOlderMessageListener() {
+            @Override
+            public void onSuccess(List<TAPMessageModel> messages, Boolean hasMoreData) {
+                super.onSuccess(messages, hasMoreData);
+                TAPMessageModel newestPinnedMessage = null;
+                TAPMessageModel shownMessage = null;
+                if (pageNumber == 1) {
+                    if (!messages.isEmpty()) {
+                        newestPinnedMessage = messages.get(0);
+                        vm.setPinnedMessages(messages);
+                        shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
+                    } else {
+                        vm.clearPinnedMessages();
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), newestPinnedMessage);
+                } else {
+                    if (!messages.isEmpty()) {
+                        for (int messageIndex = 0; messageIndex < messages.size(); messageIndex++)  {
+                            if (!vm.getPinnedMessages().contains(messages.get(messageIndex))) {
+                                vm.addPinnedMessage(messages.get(messageIndex));
+                            }
+                        }
+                        if (!messageId.isEmpty()) {
+                            runOnUiThread(() -> {
+                                for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
+                                    if (vm.getPinnedMessages().get(index).getMessageID() != null && vm.getPinnedMessages().get(index).getMessageID().equals(messageId)) {
+                                        vm.addPinnedMessageId(index, messageId);
+                                        messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(vm.getPinnedMessages().get(index).getLocalID())));
+                                        break;
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
+                }
+                hasLoadMore = hasMoreData;
+                if (hasLoadMore) {
+                    pageNumber++;
+                }
+                isLoadPinnedMessages = false;
+                setPinnedMessage(shownMessage);
+            }
+        });
+    }
 
     private TAPDefaultDataView<TAPAddContactResponse> addContactView = new TAPDefaultDataView<TAPAddContactResponse>() {
         @Override

@@ -291,12 +291,12 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         }
         runOnUiThread(() -> {
             try {
-                if (vm.getVideoUri() != null) {
-                    videoView.setVideoURI(vm.getVideoUri());
-                }
                 videoView.setOnPreparedListener(onPreparedListener);
                 videoView.setOnCompletionListener(onCompletionListener);
                 videoView.setOnErrorListener(onErrorListener);
+                if (vm.getVideoUri() != null) {
+                    videoView.setVideoURI(vm.getVideoUri());
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();

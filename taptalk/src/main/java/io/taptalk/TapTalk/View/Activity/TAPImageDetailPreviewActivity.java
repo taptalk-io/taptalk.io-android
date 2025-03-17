@@ -106,6 +106,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
             if (null != image) {
                 runOnUiThread(() -> {
                     tivImageDetail.setImageDrawable(image);
+                    tivImageDetail.setZoom(1f);
                     supportStartPostponedEnterTransition();
                 });
             } else {
@@ -125,6 +126,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
                                 @Override
                                 public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                     image = resource;
+                                    tivImageDetail.setZoom(1f);
                                     supportStartPostponedEnterTransition();
                                     return false;
                                 }
@@ -171,6 +173,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         tivImageDetail.setZoom(1f);
         supportFinishAfterTransition();
     }
