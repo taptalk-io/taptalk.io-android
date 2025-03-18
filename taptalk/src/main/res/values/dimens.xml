@@ -3,4 +3,6 @@
     <dimen name="tap_map_address_container_height">96dp</dimen>
     <dimen name="tap_show_qr_code_vertical_margin">40dp</dimen>
     <dimen name="tap_empty_blocked_contacts_top_margin">105dp</dimen>
+    <dimen name="tap_empty_starred_messages_top_margin">98dp</dimen>
+    <dimen name="tap_empty_groups_in_common_top_margin">124dp</dimen>
 </resources>
