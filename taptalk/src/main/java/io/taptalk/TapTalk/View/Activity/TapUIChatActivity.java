@@ -792,6 +792,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
             }
         }
+        else {
+            switch (requestCode) {
+                case FORWARD_MESSAGE:
+                    if (vm.isSelectState()) {
+                        hideSelectState();
+                    }
+                    break;
+            }
+        }
     }
 
     @Override

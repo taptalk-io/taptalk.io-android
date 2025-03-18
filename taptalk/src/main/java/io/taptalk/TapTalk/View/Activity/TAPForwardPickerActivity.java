@@ -6,6 +6,7 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -89,17 +90,15 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     public void onBackPressed() {
         if (etSearch.getVisibility() == View.VISIBLE) {
             showToolbar();
-        } else {
+        }
+        else {
             super.onBackPressed();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
         }
     }
 
     private void initViewModel() {
-        vm = new ViewModelProvider(this,
-                new TAPSearchChatViewModel.TAPSearchChatViewModelFactory(
-                        getApplication(), instanceKey))
-                .get(TAPSearchChatViewModel.class);
+        vm = new ViewModelProvider(this, new TAPSearchChatViewModel.TAPSearchChatViewModelFactory(getApplication(), instanceKey)).get(TAPSearchChatViewModel.class);
         vm.setSelectedMessages(getIntent().getParcelableArrayListExtra(MESSAGE));
     }
 
@@ -112,6 +111,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         etSearch = findViewById(R.id.et_search);
         rvForwardList = findViewById(R.id.rv_forward_list);
 
+        etSearch.removeTextChangedListener(searchTextWatcher);
         etSearch.addTextChangedListener(searchTextWatcher);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
@@ -124,13 +124,15 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         rvForwardList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvForwardList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
-        rvForwardList.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                TAPUtils.dismissKeyboard(TAPForwardPickerActivity.this);
-            }
-        });
+        rvForwardList.removeOnScrollListener(onScrollListener);
+        rvForwardList.addOnScrollListener(onScrollListener);
+
+        if (vm.getSearchKeyword() != null && !vm.getSearchKeyword().isEmpty()) {
+            showSearchBar();
+        }
+        else {
+            showToolbar();
+        }
     }
 
     private void showToolbar() {
@@ -165,7 +167,8 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         if (vm.getSearchKeyword().isEmpty()) {
             showRecentChats();
             ivButtonClearText.setVisibility(View.GONE);
-        } else {
+        }
+        else {
             TAPDataManager.getInstance(instanceKey).searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
             ivButtonClearText.setVisibility(View.VISIBLE);
         }
@@ -180,13 +183,13 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
-                if (null != entities && entities.size() > 0) {
+                vm.clearRecentSearches();
+                if (null != entities && !entities.isEmpty()) {
                     TAPSearchChatModel recentTitleItem = new TAPSearchChatModel(SECTION_TITLE);
                     recentTitleItem.setSectionTitle(getString(R.string.tap_recent_chats));
                     vm.addRecentSearches(recentTitleItem);
 
                     boolean isSavedMessagesExist = false;
-                    String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
                     ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
                     for (TAPMessageEntity entity : entities) {
                         if (entity.getRoomDeleted() == null || !entity.getRoomDeleted()) {
@@ -209,8 +212,9 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                         }
                     }
                     if (!isSavedMessagesExist && TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
-                        TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
                         // Add saved messages to search result
+                        TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
+                        String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
                         String savedMessagesRoomID = String.format("%s-%s", myId, myId);
                         TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
                         savedMessagesRoom.setRoom(room);
@@ -232,7 +236,15 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
     }
 
-    private TextWatcher searchTextWatcher = new TextWatcher() {
+    private final RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            TAPUtils.dismissKeyboard(TAPForwardPickerActivity.this);
+        }
+    };
+
+    private final TextWatcher searchTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -251,7 +263,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         }
     };
 
-    private TapTalkRoomListInterface roomListInterface = new TapTalkRoomListInterface() {
+    private final TapTalkRoomListInterface roomListInterface = new TapTalkRoomListInterface() {
         @Override
         public void onRoomSelected(TAPRoomModel roomModel) {
             if (TAPUtils.isSavedMessagesRoom(roomModel.getRoomID(), instanceKey)) {
@@ -266,10 +278,10 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         }
     };
 
-    private TAPDatabaseListener<TAPMessageEntity> roomSearchListener = new TAPDatabaseListener<TAPMessageEntity>() {
+    private final TAPDatabaseListener<TAPMessageEntity> roomSearchListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
-            if (entities.size() > 0) {
+            if (!entities.isEmpty()) {
                 TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
@@ -309,17 +321,18 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                     adapter.setItems(vm.getSearchResults(), false);
                     TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
                 });
-            } else {
+            }
+            else {
                 TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
             }
         }
     };
 
-    private TAPDatabaseListener<TAPUserModel> contactSearchListener = new TAPDatabaseListener<TAPUserModel>() {
+    private final TAPDatabaseListener<TAPUserModel> contactSearchListener = new TAPDatabaseListener<TAPUserModel>() {
         @Override
         public void onSelectFinished(List<TAPUserModel> entities) {
-            if (entities.size() > 0) {
-                if (vm.getSearchResults().size() == 0) {
+            if (!entities.isEmpty()) {
+                if (vm.getSearchResults().isEmpty()) {
                     TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                     sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                     vm.addSearchResult(sectionTitleChatsAndContacts);
@@ -346,7 +359,8 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                 }
                 vm.getSearchResults().get(vm.getSearchResults().size() - 1).setLastInSection(true);
                 runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
-            } else if (vm.getSearchResults().size() == 0) {
+            }
+            else if (vm.getSearchResults().isEmpty()) {
                 setEmptyState();
             }
         }

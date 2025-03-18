@@ -279,6 +279,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
 
             // Load avatar
+            glide.clear(civAvatar);
             if (null != user && (null != user.getDeleted() && user.getDeleted() > 0L)) {
                 // Deleted user
                 glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
@@ -325,7 +326,6 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
                 // Show initial
-                glide.clear(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getName())));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
                 tvAvatarLabel.setText(TAPUtils.getInitials(room.getName(), room.getType() == TYPE_PERSONAL ? 2 : 1));
