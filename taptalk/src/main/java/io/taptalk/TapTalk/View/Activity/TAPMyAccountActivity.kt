@@ -71,6 +71,8 @@ import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapProfilePicturePagerAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
+import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel.ViewState.EDIT
+import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel.ViewState.VIEW
 import io.taptalk.TapTalk.databinding.TapActivityMyAccountBinding
 
 class TAPMyAccountActivity : TAPBaseActivity() {
@@ -92,8 +94,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private val stateInvalid = -1
     private val stateEmpty = -2
 
-    private var state: ViewState = ViewState.VIEW
-
     companion object {
         fun start(
                 context: Context,
@@ -105,9 +105,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             if (context is Activity) {
                 context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
             }
-        }
-        enum class ViewState {
-            VIEW, EDIT
         }
         const val MAX_PHOTO_SIZE = 10
     }
@@ -139,7 +136,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
         }
-        else if (ViewState.EDIT == state) {
+        else if (EDIT == vm.state) {
             if (vm.myUserModel.bio != vb.etBio.text.toString()) {
                 TapTalkDialog.Builder(this)
                     .setTitle(getString(R.string.tap_you_have_unsaved_changes))
@@ -244,7 +241,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         vb.tvCountryCode.text = String.format("+%s", vm.myUserModel.countryCallingCode)
         vb.etMobileNumber.setText(TAPUtils.beautifyPhoneNumber(vm.myUserModel.phone, false))
         vb.etEmailAddress.setText(vm.myUserModel.email)
-        showViewState()
+
+        if (vm.state == EDIT) {
+            showEditState()
+        }
+        else {
+            showViewState()
+        }
+        
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
             vb.clBasicInfo.gBio.visibility = View.VISIBLE
             setProfileInformation(vb.clBasicInfo.tvBioView, vb.clBasicInfo.gBio, vm.myUserModel.bio)
@@ -308,7 +312,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun showViewState() {
-        state = ViewState.VIEW
+        vm.state = VIEW
         TAPUtils.dismissKeyboard(this)
         vb.tvTitle.text = vm.myUserModel.fullname
         vb.tvEditProfilePicture.visibility = View.VISIBLE
@@ -329,7 +333,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun showEditState() {
-        state = ViewState.EDIT
+        vm.state = EDIT
         vb.tvTitle.text = getString(R.string.tap_account_details)
         vb.tvEditSaveBtn.setOnClickListener {
                 saveProfile()
@@ -447,7 +451,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         vb.tabLayout.visibility = View.GONE
         vb.tvProfilePictureLabel.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
         vb.tvProfilePictureLabel.visibility = View.VISIBLE
-        if (state == ViewState.EDIT) {
+        if (vm.state == EDIT) {
             vb.tvEditProfilePicture.visibility = View.GONE
         }
         else {
