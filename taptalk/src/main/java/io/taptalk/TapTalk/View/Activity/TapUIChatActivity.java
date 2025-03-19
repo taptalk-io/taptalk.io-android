@@ -1229,6 +1229,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
         else {
             showMessageList();
+            updateMessageDecoration();
         }
 
         LayoutTransition containerTransition = clContainer.getLayoutTransition();

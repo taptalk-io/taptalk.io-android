@@ -196,6 +196,9 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
                 }
             })
         }
+
+        updateMessageDecoration()
+        checkMessageList()
     }
 
     private fun loadMessagesFromApi() {
@@ -293,7 +296,7 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
     private fun updateMessageDecoration() {
         // Update decoration for the top item in recycler view
         runOnUiThread {
-            if (vb.rvStarredMessages.itemDecorationCount > 0) {
+            while (vb.rvStarredMessages.itemDecorationCount > 0) {
                 vb.rvStarredMessages.removeItemDecorationAt(0)
             }
             vb.rvStarredMessages.addItemDecoration(

@@ -641,6 +641,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             vb.ivChatMenuArea.visibility = View.GONE
         }
         showAttachmentButton()
+
+        if (vm.messageModels.isNotEmpty()) {
+            showMessageList()
+            updateMessageDecoration()
+        }
         
         val containerTransition: LayoutTransition = vb.clContainer.layoutTransition
         containerTransition.addTransitionListener(containerTransitionListener)
