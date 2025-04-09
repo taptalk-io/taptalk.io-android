@@ -359,6 +359,8 @@ class TAPLoginActivity : TAPBaseActivity() {
                             otpCode,
                             object : TAPDefaultDataView<TAPLoginOTPVerifyResponse?>() {
                                 override fun onSuccess(response: TAPLoginOTPVerifyResponse?) {
+                                    TAPDataManager.getInstance(instanceKey).saveMyCountryCode(vm?.countryCallingID)
+                                    TAPDataManager.getInstance(instanceKey).saveMyCountryFlagUrl(vm?.countryFlagUrl)
                                     if (response?.isRegistered == true) {
                                         TapTalk.authenticateWithAuthTicket(
                                             instanceKey,
@@ -377,7 +379,8 @@ class TAPLoginActivity : TAPBaseActivity() {
                                                     showErrorSnackbar(errorMessage)
                                                 }
                                             })
-                                    } else {
+                                    }
+                                    else {
                                         continueToRegister()
                                     }
                                 }
@@ -1394,6 +1397,8 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun onVerificationSuccess(response: TAPLoginOTPVerifyResponse?) {
+        TAPDataManager.getInstance(instanceKey).saveMyCountryCode(vm?.countryCallingID)
+        TAPDataManager.getInstance(instanceKey).saveMyCountryFlagUrl(vm?.countryFlagUrl)
         if (response?.isRegistered == true && !response.ticket.isNullOrEmpty()) {
             // Login
             authenticateTapTalk(response.ticket)
