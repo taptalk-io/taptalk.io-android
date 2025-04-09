@@ -728,7 +728,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
-        private String cacheKey;
+//        private String cacheKey;
 
         ImageVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -872,7 +872,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void setImageData(TAPMessageModel item, int position) {
 //            rcivImageBody.setImageDrawable(null);
-            cacheKey = null;
+//            cacheKey = null;
 
             if (null == item.getData()) {
                 return;
@@ -1009,7 +1009,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     // Load image from URL
                     String finalImageUrl = imageUrl;
                     activity.runOnUiThread(() -> {
-                        cacheKey = TAPUtils.getUriKeyFromUrl(finalImageUrl);
+//                        cacheKey = TAPUtils.getUriKeyFromUrl(finalImageUrl);
                         glide.clear(rcivImageBody);
                         glide.load(finalImageUrl)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
@@ -1058,7 +1058,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                        } else {
 //                            flBubble.setForeground(bubbleOverlayLeft);
 //                        }
-                        cacheKey = TAPUtils.getUriKeyFromUrl(imageUri);
+//                        cacheKey = TAPUtils.getUriKeyFromUrl(imageUri);
                         glide.clear(rcivImageBody);
                         glide.load(imageUri)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
@@ -1082,9 +1082,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                 fixImageOrVideoViewSize(obtainedItem, rcivImageBody, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
                 clContainer.requestLayout();
-                if (cacheKey != null && !cacheKey.isEmpty() && resource instanceof BitmapDrawable) {
-                    TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(cacheKey, (BitmapDrawable) resource);
-                }
+//                if (cacheKey != null && !cacheKey.isEmpty() && resource instanceof BitmapDrawable) {
+//                    TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(cacheKey, (BitmapDrawable) resource);
+//                }
                 return false;
             }
         };
