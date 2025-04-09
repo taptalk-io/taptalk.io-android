@@ -69,10 +69,8 @@ public class TapUIMainRoomListFragment extends Fragment {
         fSearchFragment = TapUISearchChatFragment.newInstance(instanceKey);
         getChildFragmentManager()
             .beginTransaction()
-            .remove(fRoomList)
-            .remove(fSearchFragment)
-            .add(R.id.fragment_room_list, fRoomList)
-            .add(R.id.fragment_search_chat, fSearchFragment)
+            .replace(R.id.fragment_room_list, fRoomList)
+            .replace(R.id.fragment_search_chat, fSearchFragment)
             .commit();
 
         showRoomList();

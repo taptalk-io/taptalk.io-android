@@ -1027,8 +1027,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Show custom navigation bar
             getSupportFragmentManager()
                 .beginTransaction()
-                .remove(customNavigationBarFragment)
-                .add(R.id.custom_action_bar_fragment_container, customNavigationBarFragment)
+                .replace(R.id.custom_action_bar_fragment_container, customNavigationBarFragment)
                 .commit();
             getSupportFragmentManager()
                 .beginTransaction()
