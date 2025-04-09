@@ -103,7 +103,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        finish();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 

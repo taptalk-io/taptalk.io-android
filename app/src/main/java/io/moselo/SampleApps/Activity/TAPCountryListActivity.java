@@ -81,7 +81,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
             hideSearchBar();
         } else {
             TAPUtils.dismissKeyboard(this);
-            super.onBackPressed();
+            finish();
         }
     }
 

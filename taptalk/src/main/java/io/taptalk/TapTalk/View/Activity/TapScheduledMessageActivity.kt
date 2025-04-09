@@ -211,7 +211,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        finish()
         if (vb.rvCustomKeyboard.isVisible) {
             hideKeyboards()
         }

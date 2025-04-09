@@ -164,7 +164,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             showToolbar();
         }
         else {
-            super.onBackPressed();
+            finish();
             if (vm.getGroupAction() == CREATE_GROUP) {
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }

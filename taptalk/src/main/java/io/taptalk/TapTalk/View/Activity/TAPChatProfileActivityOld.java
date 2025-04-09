@@ -193,7 +193,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
         if (vm.isApiCallOnProgress()) {
             return;
         }
-        super.onBackPressed();
+        finish();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 

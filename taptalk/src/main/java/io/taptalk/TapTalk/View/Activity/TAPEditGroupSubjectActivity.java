@@ -191,7 +191,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             return;
         }
         if (vm.getGroupAction() == EDIT_GROUP) {
-            super.onBackPressed();
+            finish();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
         } else {
             Intent intent = new Intent();

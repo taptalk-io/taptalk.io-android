@@ -493,7 +493,7 @@ class TAPMapActivity : TAPBaseActivity(),
             vb.etKeyword.clearFocus()
         }
         else {
-            super.onBackPressed()
+            finish()
         }
     }
 

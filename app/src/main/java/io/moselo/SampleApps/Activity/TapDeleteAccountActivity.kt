@@ -104,7 +104,7 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
 
     override fun onBackPressed() {
         if (supportFragmentManager.fragments.isEmpty()) {
-            super.onBackPressed()
+            finish()
             overridePendingTransition(
                 io.taptalk.TapTalk.R.anim.tap_stay,
                 io.taptalk.TapTalk.R.anim.tap_slide_right

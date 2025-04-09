@@ -123,7 +123,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             showPopupDiscardChanges()
             return
         }
-        super.onBackPressed()
+        finish()
         overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_down)
     }
 

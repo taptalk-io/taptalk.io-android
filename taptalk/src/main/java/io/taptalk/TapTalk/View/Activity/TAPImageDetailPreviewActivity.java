@@ -173,7 +173,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        finish();
         tivImageDetail.setZoom(1f);
         supportFinishAfterTransition();
     }

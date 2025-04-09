@@ -106,7 +106,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        finish()
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
     }
 

@@ -80,7 +80,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        finish()
         when {
             vm.isSearchActive -> {
                 showToolbar()

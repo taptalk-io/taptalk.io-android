@@ -150,7 +150,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         if (vm.isSelecting) {
             showToolbar()
         } else {
-            super.onBackPressed()
+            finish()
             overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_right)
         }
     }

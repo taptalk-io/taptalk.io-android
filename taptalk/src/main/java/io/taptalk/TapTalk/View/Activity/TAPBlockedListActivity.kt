@@ -91,7 +91,7 @@ class TAPBlockedListActivity : TAPBaseActivity() {
             adapter?.setViewState()
             vb.tvEditSaveBtn.text = getString(R.string.tap_edit)
         } else {
-            super.onBackPressed()
+            finish()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
         }
     }
