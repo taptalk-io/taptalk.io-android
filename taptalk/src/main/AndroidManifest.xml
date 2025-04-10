@@ -33,118 +33,92 @@
 
         <activity
             android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
+            android:launchMode="singleTask"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPMapActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapUIChatActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
+            android:launchMode="singleTask"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupSubjectActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPMediaPreviewActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
+            android:launchMode="singleTask"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity"
             android:configChanges="orientation|screenSize"
-            android:exported="true"
-            android:screenOrientation="sensor" />
+            android:exported="true" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapPinnedMessagesActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapSharedMediaActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapScheduledMessageActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapReportActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapMessageInfoActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapGroupsInCommonActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true"/>
     </application>
 
 </manifest>

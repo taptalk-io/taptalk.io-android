@@ -96,8 +96,7 @@
 
         <activity
             android:name="io.moselo.SampleApps.Activity.MainActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -121,32 +120,26 @@
         </activity>
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPLandingActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPLoginActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPCountryListActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TapDevLandingActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPShareOptionsActivity"
             android:clearTaskOnLaunch="true"
             android:exported="true"
-            android:noHistory="true"
-            android:screenOrientation="portrait">
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -163,8 +156,7 @@
         </activity>
         <activity
             android:name="io.moselo.SampleApps.Activity.TapDeleteAccountActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
     </application>
 
 </manifest>
