@@ -240,7 +240,7 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void initViewModel() {
         activity = getActivity();
-        if (null == activity) {
+        if (null == activity || null == getContext()) {
             return;
         }
 
@@ -693,7 +693,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void reloadLocalDataAndUpdateUILogic(boolean isAnimated) {
-        if (activity == null || activity.isFinishing()) {
+        if (null == getContext() || activity == null || activity.isFinishing()) {
             return;
         }
         activity.runOnUiThread(() -> {
