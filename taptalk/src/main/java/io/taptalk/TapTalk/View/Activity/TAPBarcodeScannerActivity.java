@@ -48,9 +48,15 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
     public void onBackPressed() {
         if (ScanState.SHOW == state) {
             showScanner();
-        } else {
-            finish();
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+        }
+        else {
+            try {
+                super.onBackPressed();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

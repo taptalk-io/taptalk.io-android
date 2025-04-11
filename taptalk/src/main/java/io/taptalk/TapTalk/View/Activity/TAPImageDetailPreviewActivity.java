@@ -173,9 +173,14 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
-        tivImageDetail.setZoom(1f);
-        supportFinishAfterTransition();
+        try {
+            super.onBackPressed();
+            tivImageDetail.setZoom(1f);
+            supportFinishAfterTransition();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

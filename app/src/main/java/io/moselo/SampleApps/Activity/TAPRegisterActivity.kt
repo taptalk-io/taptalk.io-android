@@ -123,8 +123,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
             showPopupDiscardChanges()
             return
         }
-        finish()
-        overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_down)
+        try {
+            super.onBackPressed()
+            overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_down)
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

@@ -134,7 +134,12 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (vb.layoutLoginVerificationStatus.ivVerificationStatusLoading?.visibility == View.VISIBLE) {
             return
         }
-        finish()
+        try {
+            super.onBackPressed()
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onDestroy() {

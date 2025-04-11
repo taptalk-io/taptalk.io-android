@@ -111,9 +111,15 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     public void onBackPressed() {
         if (etSearch.getVisibility() == View.VISIBLE) {
             showToolbar();
-        } else {
-            finish();
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+        }
+        else {
+            try {
+                super.onBackPressed();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

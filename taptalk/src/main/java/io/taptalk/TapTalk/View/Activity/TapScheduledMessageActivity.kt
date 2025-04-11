@@ -58,6 +58,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.TIME
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Location
@@ -70,6 +71,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_SCHEDULED_MESSAGES
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction
@@ -163,10 +165,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             instanceKey: String?,
             room: TAPRoomModel
         ) {
-            val intent = Intent(context, TapScheduledMessageActivity::class.java)
-            intent.putExtra(INSTANCE_KEY, instanceKey)
-            intent.putExtra(ROOM, room)
-            context.startActivityForResult(intent, RequestCode.OPEN_SCHEDULED_MESSAGES)
+            start(context, instanceKey, room, null, null)
         }
 
         fun start(
@@ -180,8 +179,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             intent.putExtra(INSTANCE_KEY, instanceKey)
             intent.putExtra(ROOM, room)
             intent.putExtra(MESSAGE, message)
-            intent.putExtra(Extras.TIME, scheduledTime)
-            context.startActivityForResult(intent, RequestCode.OPEN_SCHEDULED_MESSAGES)
+            intent.putExtra(TIME, scheduledTime)
+            context.startActivityForResult(intent, OPEN_SCHEDULED_MESSAGES)
+            context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
         }
     }
 
@@ -202,7 +202,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener)
         TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener)
         textMessage = intent.getStringExtra(MESSAGE)
-        textTime = intent.getLongExtra(Extras.TIME, -1)
+        textTime = intent.getLongExtra(TIME, -1)
     }
 
     override fun onResume() {
@@ -211,7 +211,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
     }
 
     override fun onBackPressed() {
-        finish()
+        try {
+            super.onBackPressed()
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
         if (vb.rvCustomKeyboard.isVisible) {
             hideKeyboards()
         }

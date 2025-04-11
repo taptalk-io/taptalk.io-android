@@ -136,8 +136,13 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
-        overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
+        try {
+            super.onBackPressed();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

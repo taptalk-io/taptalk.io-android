@@ -493,7 +493,13 @@ class TAPMapActivity : TAPBaseActivity(),
             vb.etKeyword.clearFocus()
         }
         else {
-            finish()
+            try {
+                super.onBackPressed()
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

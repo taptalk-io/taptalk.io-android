@@ -80,26 +80,30 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     override fun onBackPressed() {
-        finish()
-        when {
-            vm.isSearchActive -> {
-                showToolbar()
+        try {
+            when {
+                vm.isSearchActive -> {
+                    showToolbar()
+                }
+                vm.isSelectionMode -> {
+                    if (vm.searchKeyword.isNotEmpty()) vb.etSearch.setText("")
+                    cancelSelectionMode(true)
+                }
+                vm.isUpdateMember -> {
+                    val intent = Intent()
+                    intent.putExtra(ROOM, vm.groupData)
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                    overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+                }
+                else -> {
+                    super.onBackPressed()
+                    overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+                }
             }
-            vm.isSelectionMode -> {
-                if (vm.searchKeyword.isNotEmpty()) vb.etSearch.setText("")
-                cancelSelectionMode(true)
-            }
-            vm.isUpdateMember -> {
-                val intent = Intent()
-                intent.putExtra(ROOM, vm.groupData)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
-            }
-            else -> {
-                finish()
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
-            }
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

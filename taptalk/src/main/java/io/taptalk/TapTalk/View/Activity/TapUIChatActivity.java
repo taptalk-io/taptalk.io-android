@@ -628,8 +628,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                 }
                 setResult(RESULT_OK);
-                finish();
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+                try {
+                    super.onBackPressed();
+                    overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         if (gScheduleMessage.getVisibility() == View.VISIBLE) {

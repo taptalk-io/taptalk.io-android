@@ -190,23 +190,29 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         if (vm.isLoading()) {
             return;
         }
-        if (vm.getGroupAction() == EDIT_GROUP) {
-            finish();
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
-        } else {
-            Intent intent = new Intent();
-            if (null != vm.getGroupData().getName()) {
-                intent.putExtra(GROUP_NAME, vm.getGroupData().getName());
+        try {
+            if (vm.getGroupAction() == EDIT_GROUP) {
+                super.onBackPressed();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
             }
-            if (null != vm.getGroupData().getImageURL()) {
-                intent.putExtra(GROUP_IMAGE, vm.getGroupData().getImageURL());
+            else {
+                Intent intent = new Intent();
+                if (null != vm.getGroupData().getName()) {
+                    intent.putExtra(GROUP_NAME, vm.getGroupData().getName());
+                }
+                if (null != vm.getGroupData().getImageURL()) {
+                    intent.putExtra(GROUP_IMAGE, vm.getGroupData().getImageURL());
+                }
+                if (null != vm.getRoomImageUri()) {
+                    intent.putExtra(URI, vm.getRoomImageUri());
+                }
+                setResult(RESULT_CANCELED, intent);
+                finish();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }
-            if (null != vm.getRoomImageUri()) {
-                intent.putExtra(URI, vm.getRoomImageUri());
-            }
-            setResult(RESULT_CANCELED, intent);
-            finish();
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

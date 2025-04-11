@@ -164,12 +164,17 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             showToolbar();
         }
         else {
-            finish();
-            if (vm.getGroupAction() == CREATE_GROUP) {
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+            try {
+                super.onBackPressed();
+                if (vm.getGroupAction() == CREATE_GROUP) {
+                    overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+                }
+                else if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
+                    overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+                }
             }
-            else if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+            catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

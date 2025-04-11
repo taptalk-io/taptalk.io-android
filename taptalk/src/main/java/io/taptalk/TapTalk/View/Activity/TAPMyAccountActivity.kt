@@ -154,8 +154,13 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             }
         }
         else {
-            finish()
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
+            try {
+                super.onBackPressed()
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

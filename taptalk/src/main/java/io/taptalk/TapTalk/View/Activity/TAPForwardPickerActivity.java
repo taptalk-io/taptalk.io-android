@@ -92,8 +92,13 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
             showToolbar();
         }
         else {
-            finish();
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+            try {
+                super.onBackPressed();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
