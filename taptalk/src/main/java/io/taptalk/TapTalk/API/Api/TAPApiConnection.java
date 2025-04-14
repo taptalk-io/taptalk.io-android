@@ -117,8 +117,13 @@ public class TAPApiConnection {
         builder.addInterceptor(loggingInterceptor);
         builder.addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Pair<SSLSocketFactory, X509TrustManager> factoryManager = TapTalkTrustFactory.Companion.getTrustFactoryManager(TapTalk.appContext);
-            builder.sslSocketFactory(factoryManager.getFirst(), factoryManager.getSecond());
+            TapTalkTrustFactory.Companion trustFactory = TapTalkTrustFactory.Companion;
+            if (trustFactory != null) {
+                Pair<SSLSocketFactory, X509TrustManager> factoryManager = trustFactory.getTrustFactoryManager(TapTalk.appContext);
+                if (factoryManager != null && factoryManager.getFirst() != null && factoryManager.getSecond() != null) {
+                    builder.sslSocketFactory(factoryManager.getFirst(), factoryManager.getSecond());
+                }
+            }
         }
         return builder.build();
     }
@@ -135,8 +140,13 @@ public class TAPApiConnection {
         builder.addInterceptor(loggingInterceptor);
         builder.addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Pair<SSLSocketFactory, X509TrustManager> factoryManager = TapTalkTrustFactory.Companion.getTrustFactoryManager(TapTalk.appContext);
-            builder.sslSocketFactory(factoryManager.getFirst(), factoryManager.getSecond());
+            TapTalkTrustFactory.Companion trustFactory = TapTalkTrustFactory.Companion;
+            if (trustFactory != null) {
+                Pair<SSLSocketFactory, X509TrustManager> factoryManager = trustFactory.getTrustFactoryManager(TapTalk.appContext);
+                if (factoryManager != null && factoryManager.getFirst() != null && factoryManager.getSecond() != null) {
+                    builder.sslSocketFactory(factoryManager.getFirst(), factoryManager.getSecond());
+                }
+            }
         }
         return builder.build();
     }
@@ -152,8 +162,13 @@ public class TAPApiConnection {
         builder.retryOnConnectionFailure(true);
         builder.addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(instanceKey, headerAuth));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Pair<SSLSocketFactory, X509TrustManager> factoryManager = TapTalkTrustFactory.Companion.getTrustFactoryManager(TapTalk.appContext);
-            builder.sslSocketFactory(factoryManager.getFirst(), factoryManager.getSecond());
+            TapTalkTrustFactory.Companion trustFactory = TapTalkTrustFactory.Companion;
+            if (trustFactory != null) {
+                Pair<SSLSocketFactory, X509TrustManager> factoryManager = trustFactory.getTrustFactoryManager(TapTalk.appContext);
+                if (factoryManager != null && factoryManager.getFirst() != null && factoryManager.getSecond() != null) {
+                    builder.sslSocketFactory(factoryManager.getFirst(), factoryManager.getSecond());
+                }
+            }
         }
         return builder.build();
     }
