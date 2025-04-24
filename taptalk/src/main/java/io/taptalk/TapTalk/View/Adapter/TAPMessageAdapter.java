@@ -1214,6 +1214,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TAPMessageModel obtainedItem;
         private Uri videoUri;
         private Drawable thumbnail;
+        private Drawable emptyThumbnail = ContextCompat.getDrawable(itemView.getContext(), io.taptalk.TapTalk.R.drawable.tap_bg_grey_e4);
 
         VideoVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -1342,7 +1343,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                         item.getData().get(THUMBNAIL))));
                 if (thumbnail.getIntrinsicHeight() <= 0) {
                     // Set placeholder image if thumbnail fails to load
-                    thumbnail = ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_grey_e4);
+                    thumbnail = emptyThumbnail;
                 }
             }
 
@@ -1464,14 +1465,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         // Get full-size thumbnail from Uri
                         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                         try {
-//                            Uri parsedUri = TAPFileUtils.parseFileUri(videoUri);
-//                            retriever.setDataSource(itemView.getContext(), parsedUri);
                             retriever.setDataSource(itemView.getContext(), videoUri);
                             videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
                             TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(key, videoThumbnail);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            videoThumbnail = (BitmapDrawable) thumbnail;
+                            if (thumbnail != null && thumbnail != emptyThumbnail) {
+                                videoThumbnail = (BitmapDrawable) thumbnail;
+                            }
                         }
                     }
                     // Load full-size thumbnail from cache
