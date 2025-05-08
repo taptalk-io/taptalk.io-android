@@ -191,6 +191,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -680,7 +681,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                     }
                     if (!galleryMediaPreviews.isEmpty()) {
-                        openMediaPreviewPage(galleryMediaPreviews);
+                        ArrayList<TAPMediaPreviewModel> filteredGalleryMediaPreviews = new ArrayList<>();
+                        for (TAPMediaPreviewModel media : galleryMediaPreviews) {
+                            if (media.getType() == TYPE_IMAGE || media.getType() == TYPE_VIDEO) {
+                                filteredGalleryMediaPreviews.add(media);
+                            }
+                        }
+                        if (filteredGalleryMediaPreviews.isEmpty()) {
+                            Toast.makeText(TapUIChatActivity.this, getString(R.string.tap_error_invalid_file_format)).show();
+                        }
+                        else {
+                            openMediaPreviewPage(filteredGalleryMediaPreviews);
+                        }
                     }
                     break;
                 case SEND_MEDIA_FROM_PREVIEW:
