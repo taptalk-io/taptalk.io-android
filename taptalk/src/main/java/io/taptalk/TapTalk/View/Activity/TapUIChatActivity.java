@@ -688,7 +688,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             }
                         }
                         if (filteredGalleryMediaPreviews.isEmpty()) {
-                            Toast.makeText(TapUIChatActivity.this, getString(R.string.tap_error_invalid_file_format)).show();
+                            Toast.makeText(TapUIChatActivity.this, getString(R.string.tap_error_invalid_file_format), Toast.LENGTH_SHORT).show();
                         }
                         else {
                             openMediaPreviewPage(filteredGalleryMediaPreviews);
