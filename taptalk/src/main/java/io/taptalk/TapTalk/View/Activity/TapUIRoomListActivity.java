@@ -5,16 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.orhanobut.hawk.Hawk;
-
 import io.taptalk.TapTalk.Helper.TAPAutoStartPermission;
+import io.taptalk.TapTalk.Helper.TapPreferenceUtils;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
@@ -167,9 +163,9 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
 
     //This is for Sample Apps
     private void requestForAutoStartPermission() {
-        if (!Hawk.contains(AUTO_START_PERMISSION)) {
-            TAPAutoStartPermission.getInstance().showPermissionRequest(instanceKey, this);
-            Hawk.put(AUTO_START_PERMISSION, true);
+        if (!TapPreferenceUtils.checkPreferenceKeyAvailable(AUTO_START_PERMISSION)) {
+            TAPAutoStartPermission.getInstance().showPermissionRequest("", this);
+            TapPreferenceUtils.saveBooleanPreference(AUTO_START_PERMISSION, true);
         }
     }
 }
