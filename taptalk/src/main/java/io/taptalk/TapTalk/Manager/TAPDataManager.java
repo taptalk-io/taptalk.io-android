@@ -57,6 +57,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.orhanobut.hawk.Hawk;
 
 import java.io.File;
@@ -78,6 +79,7 @@ import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapPreferenceUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
@@ -186,42 +188,43 @@ public class TAPDataManager {
      */
 
     private void saveBooleanPreference(String key, boolean bool) {
-        Hawk.put(instanceKey + key, bool);
+        TapPreferenceUtils.saveBooleanPreference(instanceKey + key, bool);
     }
 
     private void saveStringPreference(String key, String string) {
-        Hawk.put(instanceKey + key, string);
+        TapPreferenceUtils.saveStringPreference(instanceKey + key, string);
     }
 
     private void saveFloatPreference(String key, Float flt) {
-        Hawk.put(instanceKey + key, flt);
+        TapPreferenceUtils.saveFloatPreference(instanceKey + key, flt);
     }
 
     private void saveLongTimestampPreference(String key, Long timestamp) {
-        Hawk.put(instanceKey + key, timestamp);
+        TapPreferenceUtils.saveLongPreference(instanceKey + key, timestamp);
     }
 
     private Boolean getBooleanPreference(String key) {
-        return Hawk.get(instanceKey + key, false);
+        return TapPreferenceUtils.getBooleanPreference(instanceKey + key);
     }
 
     private String getStringPreference(String key) {
-        return Hawk.get(instanceKey + key, "");
+        return TapPreferenceUtils.getStringPreference(instanceKey + key);
     }
 
     private Float getFloatPreference(String key) {
-        return Hawk.get(instanceKey + key, null);
+        return TapPreferenceUtils.getFloatPreference(instanceKey + key);
     }
 
     private Long getLongTimestampPreference(String key) {
-        return Hawk.get(instanceKey + key, 0L);
+        return TapPreferenceUtils.getLongPreference(instanceKey + key);
     }
 
     private Boolean checkPreferenceKeyAvailable(String key) {
-        return Hawk.contains(instanceKey + key);
+        return TapPreferenceUtils.checkPreferenceKeyAvailable(instanceKey + key);
     }
 
     private void removePreference(String key) {
+        TapPreferenceUtils.removePreference(key);
         Hawk.delete(instanceKey + key);
     }
 
@@ -266,31 +269,176 @@ public class TAPDataManager {
 //        removeCustomizedAppearance();
     }
 
+    public void migratePreferences() {
+        if (Hawk.count() > 0) {
+            if (Hawk.contains(instanceKey + CORE)) {
+                saveCoreConfigs(Hawk.get(instanceKey + CORE));
+                Hawk.delete(instanceKey + CORE);
+            }
+            if (Hawk.contains(instanceKey + PROJECT)) {
+                saveProjectConfigs(Hawk.get(instanceKey + PROJECT));
+                Hawk.delete(instanceKey + PROJECT);
+            }
+            if (Hawk.contains(instanceKey + CUSTOM)) {
+                saveProjectConfigs(Hawk.get(instanceKey + CUSTOM));
+                Hawk.delete(instanceKey + CUSTOM);
+            }
+            if (Hawk.contains(instanceKey + K_COUNTRY_LIST)) {
+                saveCountryList(Hawk.get(instanceKey + K_COUNTRY_LIST));
+                Hawk.delete(instanceKey + K_COUNTRY_LIST);
+            }
+            if (Hawk.contains(instanceKey + LAST_CALL_COUNTRY_TIMESTAMP)) {
+                saveLastCallCountryTimestamp(Hawk.get(instanceKey + LAST_CALL_COUNTRY_TIMESTAMP));
+                Hawk.delete(instanceKey + LAST_CALL_COUNTRY_TIMESTAMP);
+            }
+            if (Hawk.contains(instanceKey + K_USER)) {
+                saveActiveUser(Hawk.get(instanceKey + K_USER));
+                Hawk.delete(instanceKey + K_USER);
+
+
+                TAPUserModel usr = getActiveUser();
+                Log.e(">>>>>>>>>>>>>>>>>>", "migratePreferences active user: " + (usr != null ? usr.getFullname() : "user null"));
+            }
+            if (Hawk.contains(instanceKey + K_AUTH_TICKET)) {
+                saveAuthTicket(Hawk.get(instanceKey + K_AUTH_TICKET));
+                Hawk.delete(instanceKey + K_AUTH_TICKET);
+            }
+            if (Hawk.contains(instanceKey + K_ACCESS_TOKEN)) {
+                saveAccessToken(Hawk.get(instanceKey + K_ACCESS_TOKEN));
+                Hawk.delete(instanceKey + K_ACCESS_TOKEN);
+            }
+            if (Hawk.contains(instanceKey + K_ACCESS_TOKEN_EXPIRY)) {
+                saveAccessTokenExpiry(Hawk.get(instanceKey + K_ACCESS_TOKEN_EXPIRY));
+                Hawk.delete(instanceKey + K_ACCESS_TOKEN_EXPIRY);
+            }
+            if (Hawk.contains(instanceKey + K_REFRESH_TOKEN)) {
+                saveRefreshToken(Hawk.get(instanceKey + K_REFRESH_TOKEN));
+                Hawk.delete(instanceKey + K_REFRESH_TOKEN);
+            }
+            if (Hawk.contains(instanceKey + K_REFRESH_TOKEN_EXPIRY)) {
+                saveRefreshTokenExpiry(Hawk.get(instanceKey + K_REFRESH_TOKEN_EXPIRY));
+                Hawk.delete(instanceKey + K_REFRESH_TOKEN_EXPIRY);
+            }
+            if (Hawk.contains(instanceKey + K_LAST_UPDATED)) {
+                TapPreferenceUtils.savePreference(instanceKey + K_LAST_UPDATED, Hawk.get(instanceKey + K_LAST_UPDATED));
+                Hawk.delete(instanceKey + K_LAST_UPDATED);
+            }
+            if (Hawk.contains(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME)) {
+                TapPreferenceUtils.savePreference(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, Hawk.get(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME));
+                Hawk.delete(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME);
+            }
+            if (Hawk.contains(instanceKey + K_GROUP_DATA_MAP)) {
+                saveRoomDataMap(Hawk.get(instanceKey + K_GROUP_DATA_MAP));
+                Hawk.delete(instanceKey + K_GROUP_DATA_MAP);
+            }
+            if (Hawk.contains(instanceKey + IS_PERMISSION_SYNC_ASKED)) {
+                saveContactSyncPermissionAsked(Hawk.get(instanceKey + IS_PERMISSION_SYNC_ASKED));
+                Hawk.delete(instanceKey + IS_PERMISSION_SYNC_ASKED);
+            }
+            if (Hawk.contains(instanceKey + IS_CONTACT_SYNC_ALLOWED_BY_USER)) {
+                saveContactSyncAllowedByUser(Hawk.get(instanceKey + IS_CONTACT_SYNC_ALLOWED_BY_USER));
+                Hawk.delete(instanceKey + IS_CONTACT_SYNC_ALLOWED_BY_USER);
+            }
+            if (Hawk.contains(instanceKey + K_CHAT_ROOM_CONTACT_ACTION)) {
+                TapPreferenceUtils.savePreference(instanceKey + K_CHAT_ROOM_CONTACT_ACTION, Hawk.get(instanceKey + K_CHAT_ROOM_CONTACT_ACTION));
+                Hawk.delete(instanceKey + K_CHAT_ROOM_CONTACT_ACTION);
+            }
+            if (Hawk.contains(instanceKey + K_BLOCKED_USER)) {
+                saveBlockedUserIds(Hawk.get(instanceKey + K_BLOCKED_USER));
+                Hawk.delete(instanceKey + K_BLOCKED_USER);
+            }
+            if (Hawk.contains(instanceKey + K_UNREAD_ROOM_LIST)) {
+                saveUnreadRoomIDs(Hawk.get(instanceKey + K_UNREAD_ROOM_LIST));
+                Hawk.delete(instanceKey + K_UNREAD_ROOM_LIST);
+            }
+            if (Hawk.contains(instanceKey + K_MUTED_ROOM_LIST)) {
+                saveMutedRoomIDs(Hawk.get(instanceKey + K_MUTED_ROOM_LIST));
+                Hawk.delete(instanceKey + K_MUTED_ROOM_LIST);
+            }
+            if (Hawk.contains(instanceKey + K_STARRED_MESSAGE)) {
+                TapPreferenceUtils.savePreference(instanceKey + K_STARRED_MESSAGE, Hawk.get(instanceKey + K_STARRED_MESSAGE));
+                Hawk.delete(instanceKey + K_STARRED_MESSAGE);
+            }
+            if (Hawk.contains(instanceKey + K_PINNED_MESSAGE_IDS)) {
+                TapPreferenceUtils.savePreference(instanceKey + K_PINNED_MESSAGE_IDS, Hawk.get(instanceKey + K_PINNED_MESSAGE_IDS));
+                Hawk.delete(instanceKey + K_PINNED_MESSAGE_IDS);
+            }
+            if (Hawk.contains(instanceKey + MY_COUNTRY_CODE)) {
+                saveMyCountryCode(Hawk.get(instanceKey + MY_COUNTRY_CODE));
+                Hawk.delete(instanceKey + MY_COUNTRY_CODE);
+            }
+            if (Hawk.contains(instanceKey + MY_COUNTRY_FLAG_URL)) {
+                saveMyCountryFlagUrl(Hawk.get(instanceKey + MY_COUNTRY_FLAG_URL));
+                Hawk.delete(instanceKey + MY_COUNTRY_FLAG_URL);
+            }
+            if (Hawk.contains(instanceKey + K_IS_ROOM_LIST_SETUP_FINISHED)) {
+                setRoomListSetupFinished();
+                Hawk.delete(instanceKey + K_IS_ROOM_LIST_SETUP_FINISHED);
+            }
+            if (Hawk.contains(instanceKey + K_FILE_PATH_MAP)) {
+                saveFileProviderPathMap(Hawk.get(instanceKey + K_FILE_PATH_MAP));
+                Hawk.delete(instanceKey + K_FILE_PATH_MAP);
+            }
+            if (Hawk.contains(instanceKey + K_FILE_URI_MAP)) {
+                saveFileMessageUriMap(Hawk.get(instanceKey + K_FILE_URI_MAP));
+                Hawk.delete(instanceKey + K_FILE_URI_MAP);
+            }
+            if (Hawk.contains(instanceKey + K_MEDIA_VOLUME)) {
+                saveMediaVolumePreference(Hawk.get(instanceKey + K_MEDIA_VOLUME));
+                Hawk.delete(instanceKey + K_MEDIA_VOLUME);
+            }
+            if (Hawk.contains(instanceKey + K_FIREBASE_TOKEN)) {
+                saveFirebaseToken(Hawk.get(instanceKey + K_FIREBASE_TOKEN));
+                Hawk.delete(instanceKey + K_FIREBASE_TOKEN);
+            }
+            if (Hawk.contains(instanceKey + K_LAST_DELETE_TIMESTAMP)) {
+                saveLastDeleteTimestamp(Hawk.get(instanceKey + K_LAST_DELETE_TIMESTAMP));
+                Hawk.delete(instanceKey + K_LAST_DELETE_TIMESTAMP);
+            }
+            if (Hawk.contains(instanceKey + K_NOTIFICATION_MESSAGE_MAP)) {
+                saveNotificationMessageMap(Hawk.get(instanceKey + K_NOTIFICATION_MESSAGE_MAP));
+                Hawk.delete(instanceKey + K_NOTIFICATION_MESSAGE_MAP);
+            }
+            if (Hawk.contains(instanceKey + APP_ID)) {
+                saveApplicationID(Hawk.get(instanceKey + APP_ID));
+                Hawk.delete(instanceKey + APP_ID);
+            }
+            if (Hawk.contains(instanceKey + APP_SECRET)) {
+                saveApplicationSecret(Hawk.get(instanceKey + APP_SECRET));
+                Hawk.delete(instanceKey + APP_SECRET);
+            }
+            if (Hawk.contains(instanceKey + USER_AGENT)) {
+                saveUserAgent(Hawk.get(instanceKey + USER_AGENT));
+                Hawk.delete(instanceKey + USER_AGENT);
+            }
+        }
+    }
+
     /**
      * PROJECT CONFIGS
      */
     public Map<String, String> getCoreConfigs() {
-        return Hawk.get(instanceKey + CORE, new HashMap<>());
+        return TapPreferenceUtils.getPreference(instanceKey + CORE, new TypeReference<>() {}, new HashMap<>());
     }
 
     public void saveCoreConfigs(Map<String, String> coreProjectConfigs) {
-        Hawk.put(instanceKey + CORE, coreProjectConfigs);
+        TapPreferenceUtils.savePreference(instanceKey + CORE, coreProjectConfigs);
     }
 
     public Map<String, String> getProjectConfigs() {
-        return Hawk.get(instanceKey + PROJECT, new HashMap<>());
+        return TapPreferenceUtils.getPreference(instanceKey + PROJECT, new TypeReference<>() {}, new HashMap<>());
     }
 
     public void saveProjectConfigs(Map<String, String> coreProjectConfigs) {
-        Hawk.put(instanceKey + PROJECT, coreProjectConfigs);
+        TapPreferenceUtils.savePreference(instanceKey + PROJECT, coreProjectConfigs);
     }
 
     public Map<String, String> getCustomConfigs() {
-        return Hawk.get(instanceKey + CUSTOM, new HashMap<>());
+        return TapPreferenceUtils.getPreference(instanceKey + CUSTOM, new TypeReference<>() {}, new HashMap<>());
     }
 
     public void saveCustomConfigs(Map<String, String> coreProjectConfigs) {
-        Hawk.put(instanceKey + CUSTOM, coreProjectConfigs);
+        TapPreferenceUtils.savePreference(instanceKey + CUSTOM, coreProjectConfigs);
     }
 
     public void removeConfigs() {
@@ -303,11 +451,11 @@ public class TAPDataManager {
      * COUNTRY LIST
      */
     public ArrayList<TAPCountryListItem> getCountryList() {
-        return Hawk.get(instanceKey + K_COUNTRY_LIST, new ArrayList<>());
+        return TapPreferenceUtils.getPreference(instanceKey + K_COUNTRY_LIST, new TypeReference<>() {}, new ArrayList<>());
     }
 
     public void saveCountryList(ArrayList<TAPCountryListItem> countries) {
-        Hawk.put(instanceKey + K_COUNTRY_LIST, countries);
+        TapPreferenceUtils.savePreference(instanceKey + K_COUNTRY_LIST, countries);
     }
 
     public void removeCountryList() {
@@ -337,11 +485,11 @@ public class TAPDataManager {
     }
 
     public TAPUserModel getActiveUser() {
-        return Hawk.get(instanceKey + K_USER, null);
+        return TapPreferenceUtils.getPreference(instanceKey + K_USER, new TypeReference<>() {});
     }
 
     public void saveActiveUser(TAPUserModel user) {
-        Hawk.put(instanceKey + K_USER, user);
+        TapPreferenceUtils.savePreference(instanceKey + K_USER, user);
         TAPChatManager.getInstance(instanceKey).setActiveUser(user);
     }
 
@@ -440,7 +588,7 @@ public class TAPDataManager {
     }
 
     private HashMap<String, Long> getLastUpdatedMessageTimestampMap() {
-        return Hawk.get(instanceKey + K_LAST_UPDATED, null);
+        return TapPreferenceUtils.getPreference(instanceKey + K_LAST_UPDATED, new TypeReference<>() {});
     }
 
     private void saveLastUpdatedMessageTimestampMap(String roomID, long lastUpdated) {
@@ -450,7 +598,7 @@ public class TAPDataManager {
         else tempLastUpdated = new LinkedHashMap<>();
 
         tempLastUpdated.put(roomID, lastUpdated);
-        Hawk.put(instanceKey + K_LAST_UPDATED, tempLastUpdated);
+        TapPreferenceUtils.savePreference(instanceKey + K_LAST_UPDATED, tempLastUpdated);
     }
 
     private void removeLastUpdatedMessageTimestampMap() {
@@ -462,11 +610,11 @@ public class TAPDataManager {
      */
 
     public void saveLastRoomMessageDeleteTime() {
-        Hawk.put(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, System.currentTimeMillis());
+        TapPreferenceUtils.savePreference(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, System.currentTimeMillis());
     }
 
     public Long getLastRoomMessageDeleteTime() {
-        return Hawk.get(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, null);
+        return TapPreferenceUtils.getPreference(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, new TypeReference<>() {});
     }
 
     private void removeLastRoomMessageDeleteTime() {
@@ -481,20 +629,23 @@ public class TAPDataManager {
         if (roomID == null || message == null) {
             return;
         }
-        HashMap<String, TAPMessageModel> newestPinnedMessages = Hawk.get(instanceKey + K_PINNED_MESSAGE, null);
+        HashMap<String, TAPMessageModel> newestPinnedMessages = TapPreferenceUtils.getPreference(instanceKey + K_PINNED_MESSAGE, new TypeReference<>() {});
         if (newestPinnedMessages == null) {
             newestPinnedMessages = new LinkedHashMap<>();
         }
         newestPinnedMessages.put(roomID, message);
-        Hawk.put(instanceKey + K_PINNED_MESSAGE, newestPinnedMessages);
+        TapPreferenceUtils.savePreference(instanceKey + K_PINNED_MESSAGE, newestPinnedMessages);
 
     }
 
     public TAPMessageModel getNewestPinnedMessage(String roomID) {
-        HashMap<String, TAPMessageModel> newestPinnedMessages = Hawk.get(instanceKey + K_PINNED_MESSAGE, null);
+        HashMap<String, TAPMessageModel> newestPinnedMessages = TapPreferenceUtils.getPreference(instanceKey + K_PINNED_MESSAGE, new TypeReference<>() {});
         if (newestPinnedMessages != null) {
             return newestPinnedMessages.get(roomID);
-        } else return null;
+        }
+        else {
+            return null;
+        }
     }
 
     private void removeNewestPinnedMessage() {
@@ -506,11 +657,11 @@ public class TAPDataManager {
      */
 
     public HashMap<String, Long> getUserLastActivityMap() {
-        return Hawk.get(instanceKey + K_USER_LAST_ACTIVITY);
+        return TapPreferenceUtils.getPreference(instanceKey + K_USER_LAST_ACTIVITY, new TypeReference<>() {}, new HashMap<>());
     }
 
     public void saveUserLastActivityMap(HashMap<String, Long> userLastActivityMap) {
-        Hawk.put(instanceKey + K_USER_LAST_ACTIVITY, userLastActivityMap);
+        TapPreferenceUtils.savePreference(instanceKey + K_USER_LAST_ACTIVITY, userLastActivityMap);
     }
 
     public void removeUserLastActivityMap() {
@@ -521,11 +672,11 @@ public class TAPDataManager {
      * SAVE GROUP DATA
      */
     public HashMap<String, TAPRoomModel> getRoomDataMap() {
-        return Hawk.get(instanceKey + K_GROUP_DATA_MAP);
+        return TapPreferenceUtils.getPreference(instanceKey + K_GROUP_DATA_MAP, new TypeReference<>() {}, new HashMap<>());
     }
 
     public void saveRoomDataMap(HashMap<String, TAPRoomModel> roomDataMap) {
-        Hawk.put(instanceKey + K_GROUP_DATA_MAP, roomDataMap);
+        TapPreferenceUtils.savePreference(instanceKey + K_GROUP_DATA_MAP, roomDataMap);
     }
 
     public void removeRoomDataMap() {
@@ -533,7 +684,7 @@ public class TAPDataManager {
     }
 
     public boolean isRoomDataMapAvailable() {
-        return Hawk.contains(instanceKey + K_GROUP_DATA_MAP) && null != Hawk.get(instanceKey + K_GROUP_DATA_MAP);
+        return Hawk.contains(instanceKey + K_GROUP_DATA_MAP) && null != getRoomDataMap();
     }
 
     /**
@@ -569,7 +720,7 @@ public class TAPDataManager {
      */
 
     private HashMap<String, Boolean> getChatRoomContactActionsMap() {
-        return Hawk.get(instanceKey + K_CHAT_ROOM_CONTACT_ACTION, new HashMap<>());
+        return TapPreferenceUtils.getPreference(instanceKey + K_CHAT_ROOM_CONTACT_ACTION, new TypeReference<>() {}, new HashMap<>());
     }
 
     public boolean isChatRoomContactActionDismissed(String roomID) {
@@ -580,7 +731,7 @@ public class TAPDataManager {
     public void saveChatRoomContactActionDismissed(String roomID) {
         HashMap<String, Boolean> map = getChatRoomContactActionsMap();
         map.put(roomID, true);
-        Hawk.put(instanceKey + K_CHAT_ROOM_CONTACT_ACTION, map);
+        TapPreferenceUtils.savePreference(instanceKey + K_CHAT_ROOM_CONTACT_ACTION, map);
     }
 
     public void removeChatRoomContactActionDismissed() {
@@ -589,11 +740,11 @@ public class TAPDataManager {
 
 
     public ArrayList<String> getBlockedUserIds() {
-        return Hawk.get(instanceKey + K_BLOCKED_USER, new ArrayList<>());
+        return TapPreferenceUtils.getPreference(instanceKey + K_BLOCKED_USER, new TypeReference<>() {}, new ArrayList<>());
     }
 
     public void saveBlockedUserIds(ArrayList<String> BlockedUserIds) {
-        Hawk.put(instanceKey + K_BLOCKED_USER, BlockedUserIds);
+        TapPreferenceUtils.savePreference(instanceKey + K_BLOCKED_USER, BlockedUserIds);
     }
 
     public boolean isBlockedUserIdsEmpty() {
@@ -610,11 +761,11 @@ public class TAPDataManager {
      */
 
     public ArrayList<String> getUnreadRoomIDs() {
-        return Hawk.get(instanceKey + K_UNREAD_ROOM_LIST, new ArrayList<>());
+        return TapPreferenceUtils.getPreference(instanceKey + K_UNREAD_ROOM_LIST, new TypeReference<>() {}, new ArrayList<>());
     }
 
     public void saveUnreadRoomIDs(ArrayList<String> unreadRoomIDs) {
-        Hawk.put(instanceKey + K_UNREAD_ROOM_LIST, unreadRoomIDs);
+        TapPreferenceUtils.savePreference(instanceKey + K_UNREAD_ROOM_LIST, unreadRoomIDs);
     }
 
     public boolean isUnreadRoomIDsEmpty() {
@@ -632,11 +783,11 @@ public class TAPDataManager {
     }
 
     public HashMap<String, Long> getMutedRoomIDs() {
-        return Hawk.get(instanceKey + K_MUTED_ROOM_LIST, new HashMap<>());
+        return TapPreferenceUtils.getPreference(instanceKey + K_MUTED_ROOM_LIST, new TypeReference<>() {}, new HashMap<>());
     }
 
     public void saveMutedRoomIDs(HashMap<String, Long> mutedRoomIDs) {
-        Hawk.put(instanceKey + K_MUTED_ROOM_LIST, mutedRoomIDs);
+        TapPreferenceUtils.savePreference(instanceKey + K_MUTED_ROOM_LIST, mutedRoomIDs);
     }
 
     public boolean isMutedRoomIDsEmpty() {
@@ -648,11 +799,11 @@ public class TAPDataManager {
     }
 
     public ArrayList<String> getPinnedRoomIDs() {
-        return Hawk.get(instanceKey + K_PINNED_ROOM_LIST, new ArrayList<>());
+        return TapPreferenceUtils.getPreference(instanceKey + K_PINNED_ROOM_LIST, new TypeReference<>() {}, new ArrayList<>());
     }
 
     public void savePinnedRoomIDs(ArrayList<String> pinnedRoomIDs) {
-        Hawk.put(instanceKey + K_PINNED_ROOM_LIST, pinnedRoomIDs);
+        TapPreferenceUtils.savePreference(instanceKey + K_PINNED_ROOM_LIST, pinnedRoomIDs);
     }
 
     public boolean isPinnedRoomIDsEmpty() {
@@ -674,26 +825,26 @@ public class TAPDataManager {
      */
 
     public void saveStarredMessageIds(String roomID, ArrayList<String> messageIds) {
-        HashMap<String, ArrayList<String>> starredMessageIdMap = Hawk.get(instanceKey + K_STARRED_MESSAGE, null);
+        HashMap<String, ArrayList<String>> starredMessageIdMap = TapPreferenceUtils.getPreference(instanceKey + K_STARRED_MESSAGE, new TypeReference<>() {});
         if (starredMessageIdMap == null) {
             starredMessageIdMap = new LinkedHashMap<>();
         }
         starredMessageIdMap.put(roomID, messageIds);
-        Hawk.put(instanceKey + K_STARRED_MESSAGE, starredMessageIdMap);
+        TapPreferenceUtils.savePreference(instanceKey + K_STARRED_MESSAGE, starredMessageIdMap);
     }
 
     public ArrayList<String> getStarredMessageIds(String roomID) {
-        HashMap<String, ArrayList<String>> starredMessageIdMap = Hawk.get(instanceKey + K_STARRED_MESSAGE, null);
+        HashMap<String, ArrayList<String>> starredMessageIdMap = TapPreferenceUtils.getPreference(instanceKey + K_STARRED_MESSAGE, new TypeReference<>() {});
         if (starredMessageIdMap != null) {
             return starredMessageIdMap.get(roomID);
         } else return null;
     }
 
     public void removeStarredMessageIds(String roomID) {
-        HashMap<String, ArrayList<String>> starredMessageIdMap = Hawk.get(instanceKey + K_STARRED_MESSAGE, null);
+        HashMap<String, ArrayList<String>> starredMessageIdMap = TapPreferenceUtils.getPreference(instanceKey + K_STARRED_MESSAGE, new TypeReference<>() {});
         if (starredMessageIdMap != null) {
             starredMessageIdMap.remove(roomID);
-            Hawk.put(instanceKey + K_STARRED_MESSAGE, starredMessageIdMap);
+            TapPreferenceUtils.savePreference(instanceKey + K_STARRED_MESSAGE, starredMessageIdMap);
         }
     }
 
@@ -706,26 +857,26 @@ public class TAPDataManager {
      */
 
     public void savePinnedMessageIds(String roomID, ArrayList<String> messageIds) {
-        HashMap<String, ArrayList<String>> pinnedMessageIdMap = Hawk.get(instanceKey + K_PINNED_MESSAGE_IDS, null);
+        HashMap<String, ArrayList<String>> pinnedMessageIdMap = TapPreferenceUtils.getPreference(instanceKey + K_PINNED_MESSAGE_IDS, new TypeReference<>() {});
         if (pinnedMessageIdMap == null) {
             pinnedMessageIdMap = new LinkedHashMap<>();
         }
         pinnedMessageIdMap.put(roomID, messageIds);
-        Hawk.put(instanceKey + K_PINNED_MESSAGE_IDS, pinnedMessageIdMap);
+        TapPreferenceUtils.savePreference(instanceKey + K_PINNED_MESSAGE_IDS, pinnedMessageIdMap);
     }
 
     public ArrayList<String> getPinnedMessageIds(String roomID) {
-        HashMap<String, ArrayList<String>> pinnedMessageIdMap = Hawk.get(instanceKey + K_PINNED_MESSAGE_IDS, null);
+        HashMap<String, ArrayList<String>> pinnedMessageIdMap = TapPreferenceUtils.getPreference(instanceKey + K_PINNED_MESSAGE_IDS, new TypeReference<>() {});
         if (pinnedMessageIdMap != null) {
             return pinnedMessageIdMap.get(roomID);
         } else return null;
     }
 
     public void removePinnedMessageIds(String roomID) {
-        HashMap<String, ArrayList<String>> pinnedMessageIdMap = Hawk.get(instanceKey + K_PINNED_MESSAGE_IDS, null);
+        HashMap<String, ArrayList<String>> pinnedMessageIdMap = TapPreferenceUtils.getPreference(instanceKey + K_PINNED_MESSAGE_IDS, new TypeReference<>() {});
         if (pinnedMessageIdMap != null) {
             pinnedMessageIdMap.remove(roomID);
-            Hawk.put(instanceKey + K_PINNED_MESSAGE_IDS, pinnedMessageIdMap);
+            TapPreferenceUtils.savePreference(instanceKey + K_PINNED_MESSAGE_IDS, pinnedMessageIdMap);
         }
     }
 
@@ -781,11 +932,11 @@ public class TAPDataManager {
      * FILE PROVIDER PATH
      */
     public HashMap<String, String> getFileProviderPathMap() {
-        return Hawk.get(instanceKey + K_FILE_PATH_MAP, null);
+        return TapPreferenceUtils.getPreference(instanceKey + K_FILE_PATH_MAP, new TypeReference<>() {});
     }
 
     public void saveFileProviderPathMap(HashMap<String, String> fileProviderPathMap) {
-        Hawk.put(instanceKey + K_FILE_PATH_MAP, fileProviderPathMap);
+        TapPreferenceUtils.savePreference(instanceKey + K_FILE_PATH_MAP, fileProviderPathMap);
     }
 
     public void removeFileProviderPathMap() {
@@ -796,11 +947,11 @@ public class TAPDataManager {
      * FILE URI CACHE
      */
     public HashMap<String, HashMap<String, String>> getFileMessageUriMap() {
-        return Hawk.get(instanceKey + K_FILE_URI_MAP, null);
+        return TapPreferenceUtils.getPreference(instanceKey + K_FILE_URI_MAP, new TypeReference<>() {});
     }
 
     public void saveFileMessageUriMap(HashMap<String, HashMap<String, String>> fileUriMap) {
-        Hawk.put(instanceKey + K_FILE_URI_MAP, fileUriMap);
+        TapPreferenceUtils.savePreference(instanceKey + K_FILE_URI_MAP, fileUriMap);
     }
 
     public void removeFileMessageUriMap() {
@@ -963,19 +1114,19 @@ public class TAPDataManager {
      */
 
 //    public void setCustomizedFontSize(String size) {
-//        Hawk.put(instanceKey + FONT_SIZE, size);
+//        TapPreferenceUtils.savePreference(instanceKey + FONT_SIZE, size);
 //    }
 //
 //    public String getCustomizedFontSize() {
-//        return Hawk.get(instanceKey + FONT_SIZE, FONT_MEDIUM);
+//        return TapPreferenceUtils.getPreference(instanceKey + FONT_SIZE, FONT_MEDIUM);
 //    }
 //
 //    public void setCustomizedBackgroundColor(String color) {
-//        Hawk.put(instanceKey + BACKGROUND_COLOR, color);
+//        TapPreferenceUtils.savePreference(instanceKey + BACKGROUND_COLOR, color);
 //    }
 //
 //    public String getCustomizedBackgroundColor() {
-//        return Hawk.get(instanceKey + BACKGROUND_COLOR);
+//        return TapPreferenceUtils.getPreference(instanceKey + BACKGROUND_COLOR);
 //    }
 //
 //    public void setCustomizedBackgroundImage(String base64) {
@@ -987,11 +1138,11 @@ public class TAPDataManager {
 //    }
 //
 //    public void setCustomizedBubbleColor(String color) {
-//        Hawk.put(instanceKey + BUBBLE_COLOR, color);
+//        TapPreferenceUtils.savePreference(instanceKey + BUBBLE_COLOR, color);
 //    }
 //
 //    public String getCustomizedBubbleColor() {
-//        return Hawk.get(instanceKey + BUBBLE_COLOR);
+//        return TapPreferenceUtils.getPreference(instanceKey + BUBBLE_COLOR);
 //    }
 //
 //    public void removeCustomizedAppearance() {

@@ -223,6 +223,7 @@ public class TapTalk implements LifecycleObserver {
                 Hawk.init(appContext).build();
             }
         }
+        TAPDataManager.getInstance(instanceKey).migratePreferences();
 
         this.implementationType = type;
 
