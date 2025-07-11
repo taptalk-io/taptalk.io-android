@@ -39,6 +39,24 @@ public class TapPreferenceUtils {
         return false;
     }
 
+    private static String getEncryptedKey(String key) {
+        if (key == null || key.isEmpty()) {
+            return "";
+        }
+        String appendKey = "TapTalkPreferenceKey" + key + "Appended";
+        try {
+            String encryptedKey = TAPEncryptorManager.getInstance().simpleEncrypt(appendKey, key);
+            Log.e(">>>>>>>", "getEncryptedKey appendKey: " + appendKey);
+            Log.e(">>>>>>>", "getEncryptedKey encryptedKey: " + encryptedKey);
+            return encryptedKey;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            Log.e(">>>>>>>", "getEncryptedKey exception: " + e.getMessage());
+            return key;
+        }
+    }
+
     public static void savePreference(String key, Object preferenceData) {
         Log.e(">>>>>>>", "savePreference key: " + key);
         if (isSavePreferenceParamsInvalid(key, preferenceData)) {
@@ -47,7 +65,7 @@ public class TapPreferenceUtils {
         try {
             String dataString = TAPUtils.toJsonString(preferenceData);
             String encrypted = TAPEncryptorManager.getInstance().encrypt(dataString, key);
-            getSharedPreferences().edit().putString(key, encrypted).apply();
+            getSharedPreferences().edit().putString(getEncryptedKey(key), encrypted).apply();
             Log.e(">>>>>>>", "savePreference dataString: " + dataString);
             Log.e(">>>>>>>", "savePreference encrypted: " + encrypted);
         }
@@ -64,7 +82,7 @@ public class TapPreferenceUtils {
         }
         try {
             String encrypted = TAPEncryptorManager.getInstance().encrypt(preferenceData, key);
-            getSharedPreferences().edit().putString(key, encrypted).apply();
+            getSharedPreferences().edit().putString(getEncryptedKey(key), encrypted).apply();
             Log.e(">>>>>>>", "saveStringPreference preferenceData: " + preferenceData);
             Log.e(">>>>>>>", "saveStringPreference encrypted: " + encrypted);
         }
@@ -96,7 +114,7 @@ public class TapPreferenceUtils {
             return;
         }
         try {
-            getSharedPreferences().edit().putBoolean(key, preferenceData).apply();
+            getSharedPreferences().edit().putBoolean(getEncryptedKey(key), preferenceData).apply();
             Log.e(">>>>>>>", "saveBooleanPreference preferenceData: " + preferenceData);
         }
         catch (Exception e) {
@@ -105,13 +123,13 @@ public class TapPreferenceUtils {
         }
     }
 
-    private Boolean checkPreferenceKeyAvailable(String key) {
+    public static Boolean checkPreferenceKeyAvailable(String key) {
         Log.e(">>>>>>>", "checkPreferenceKeyAvailable key: " + key);
         if (isContextOrKeyEmpty(key)) {
             Log.e(">>>>>>>", "checkPreferenceKeyAvailable: return " + key + TapTalk.appContext);
             return false;
         }
-        return getSharedPreferences().contains(key);
+        return getSharedPreferences().contains(getEncryptedKey(key));
     }
 
     public static <T> T getPreference(TypeReference<T> type, String key) {
@@ -121,7 +139,7 @@ public class TapPreferenceUtils {
             return null;
         }
         try {
-            String encrypted = getSharedPreferences().getString(key, "");
+            String encrypted = getSharedPreferences().getString(getEncryptedKey(key), "");
             Log.e(">>>>>>>", "getPreference encrypted: " + encrypted);
             if (encrypted.isEmpty()) {
                 return null;
@@ -144,7 +162,7 @@ public class TapPreferenceUtils {
             return "";
         }
         try {
-            String encrypted = getSharedPreferences().getString(key, "");
+            String encrypted = getSharedPreferences().getString(getEncryptedKey(key), "");
             Log.e(">>>>>>>", "getStringPreference encrypted: " + encrypted);
             if (encrypted.isEmpty()) {
                 return "";
@@ -195,7 +213,7 @@ public class TapPreferenceUtils {
             return false;
         }
         try {
-            boolean preferenceData = getSharedPreferences().getBoolean(key, false);
+            boolean preferenceData = getSharedPreferences().getBoolean(getEncryptedKey(key), false);
             Log.e(">>>>>>>", "getBooleanPreference preferenceData: " + preferenceData);
             return preferenceData;
         }
@@ -212,7 +230,7 @@ public class TapPreferenceUtils {
             return;
         }
         Log.e(">>>>>>>", "removePreference: " + key);
-        getSharedPreferences().edit().remove(key).apply();
+        getSharedPreferences().edit().remove(getEncryptedKey(key)).apply();
     }
 
     public static void removeAllPreferences() {
