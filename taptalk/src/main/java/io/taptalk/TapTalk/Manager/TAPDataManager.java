@@ -684,7 +684,7 @@ public class TAPDataManager {
     }
 
     public boolean isRoomDataMapAvailable() {
-        return Hawk.contains(instanceKey + K_GROUP_DATA_MAP) && null != getRoomDataMap();
+        return TapPreferenceUtils.checkPreferenceKeyAvailable(instanceKey + K_GROUP_DATA_MAP) && null != getRoomDataMap();
     }
 
     /**
