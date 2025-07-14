@@ -127,6 +127,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -149,6 +150,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1252,6 +1254,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         containerTransition.addTransitionListener(containerTransitionListener);
 
         etChat.addTextChangedListener(chatWatcher);
+        etChat.setOnEditorActionListener(chatEditorListener);
         etChat.setOnFocusChangeListener(chatFocusChangeListener);
 
 //        sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
@@ -4799,6 +4802,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void afterTextChanged(Editable s) {
             sendTypingEmit(s.length() > 0);
+        }
+    };
+
+    private TextView.OnEditorActionListener chatEditorListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+            TAPUtils.dismissKeyboard(TapUIChatActivity.this, etChat);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                etChat.clearFocus();
+            }
+            return true;
         }
     };
 
