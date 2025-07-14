@@ -183,7 +183,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         when (resultCode) {
             Activity.RESULT_OK -> {
                 when (requestCode) {
-                    PICK_PROFILE_IMAGE_CAMERA, PICK_PROFILE_IMAGE_GALLERY -> {
+                    PICK_PROFILE_IMAGE_CAMERA -> {
+                        if (vm.profilePictureUri == null || !TAPFileUtils.getMimeTypeFromUri(this, vm.profilePictureUri).contains("image")) {
+                            Toast.makeText(this, getString(R.string.tap_error_invalid_file_format), Toast.LENGTH_SHORT).show()
+                            return
+                        }
+                        reloadProfilePicture(vm.profilePictureUri)
+                    }
+                    PICK_PROFILE_IMAGE_GALLERY -> {
                         val uri = intent?.data
                         if (uri == null || !TAPFileUtils.getMimeTypeFromUri(this, uri).contains("image")) {
                             Toast.makeText(this, getString(R.string.tap_error_invalid_file_format), Toast.LENGTH_SHORT).show()
