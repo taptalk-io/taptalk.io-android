@@ -60,8 +60,8 @@ import java.util.TimerTask
 class TAPLoginActivity : TAPBaseActivity() {
 
     private lateinit var vb: TapActivityLoginBinding
-    private lateinit var countryListAdapter: TAPCountryListAdapter
-    private lateinit var redirectTimer: CountDownTimer
+    private var countryListAdapter: TAPCountryListAdapter? = null
+    private var redirectTimer: CountDownTimer? = null
     private var vm: TAPLoginViewModel? = null
 
     private val defaultCallingCode = "62"
@@ -181,7 +181,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         vb.layoutLoginInput.etPhoneNumber.addTextChangedListener(phoneTextWatcher)
 
         try {
-            countryListAdapter = TAPCountryListAdapter(setupDataForRecycler(""), countryPickInterface)
+            countryListAdapter = TAPCountryListAdapter(setupDataForRecycler(vb.layoutLoginCountryList.etSearchCountryList.text.toString()), countryPickInterface)
             vb.layoutLoginCountryList.rvCountryList.adapter = countryListAdapter
             vb.layoutLoginCountryList.rvCountryList.setHasFixedSize(true)
             vb.layoutLoginCountryList.rvCountryList.layoutManager = LinearLayoutManager(
@@ -211,7 +211,21 @@ class TAPLoginActivity : TAPBaseActivity() {
         vb.layoutLoginOtp.etOtpCode.addTextChangedListener(otpTextWatcher)
         vb.layoutLoginOtp.etOtpCode.setOnEditorActionListener(otpEditorListener)
 
-        showPhoneNumberInputView()
+        if (vm?.activeView == TAPLoginViewModel.ActiveView.COUNTRY_LIST) {
+            showCountryListView()
+        }
+        else if (vm?.activeView == TAPLoginViewModel.ActiveView.WHATSAPP_VERIFICATION) {
+            showVerificationView()
+        }
+        else if (vm?.activeView == TAPLoginViewModel.ActiveView.OTP) {
+            showOtpView()
+        }
+        else if (vm?.activeView == TAPLoginViewModel.ActiveView.VERIFICATION_STATUS) {
+            showVerificationStatusView()
+        }
+        else {
+            showPhoneNumberInputView()
+        }
 
         if (BuildConfig.BUILD_TYPE == "dev") {
             vb.layoutLoginInput.llButtonOtp.setOnLongClickListener(devPhoneNumberLongClickListener)
@@ -481,7 +495,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                 countryRecycleItem.countryInitial = countryInitial
                 if (vm?.selectedCountryID == country.countryID) {
                     countryRecycleItem.isSelected = true
-                    countryListAdapter.selectedItem = countryRecycleItem
+                    countryListAdapter?.selectedItem = countryRecycleItem
                 }
                 else {
                     countryRecycleItem.isSelected = false
@@ -552,7 +566,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     TAPDataManager.getInstance(instanceKey).saveCountryList(vm?.countryListItems)
 
                     runOnUiThread {
-                        searchCountry("")
+                        searchCountry(vb.layoutLoginCountryList.etSearchCountryList.text.toString())
                         vb.layoutLoginInput.etPhoneNumber.visibility = View.VISIBLE
                         vb.layoutLoginInput.tvPhoneNumber.visibility = View.VISIBLE
                         vb.layoutLoginInput.cvCountryFlag.visibility = View.VISIBLE
@@ -585,8 +599,8 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun searchCountry(countryKeyword: String?) {
-        countryListAdapter.items = setupDataForRecycler(countryKeyword ?: "")
-        if (countryListAdapter.items.size == 0) {
+        countryListAdapter?.items = setupDataForRecycler(countryKeyword ?: "")
+        if ((countryListAdapter?.items?.size ?: 0) == 0) {
             showCountryListEmptyState()
         }
         else {
@@ -677,6 +691,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showPhoneNumberInputView() {
         runOnUiThread {
+            vm?.activeView = TAPLoginViewModel.ActiveView.PHONE_INPUT
             showViewWithAnimation(vb.layoutLoginInput.svLoginPhoneNumberInput)
             hideViewWithAnimation(vb.layoutLoginCountryList.clCountryListContainer)
             hideViewWithAnimation(vb.layoutLoginWhatsappVerification.svWhatsappVerification)
@@ -687,6 +702,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showCountryListView() {
         runOnUiThread {
+            vm?.activeView = TAPLoginViewModel.ActiveView.COUNTRY_LIST
             showViewWithAnimation(vb.layoutLoginCountryList.clCountryListContainer)
             hideViewWithAnimation(vb.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
             hideViewWithAnimation(vb.layoutLoginWhatsappVerification.svWhatsappVerification)
@@ -697,6 +713,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showVerificationView() {
         runOnUiThread {
+            vm?.activeView = TAPLoginViewModel.ActiveView.WHATSAPP_VERIFICATION
             showViewWithAnimation(vb.layoutLoginWhatsappVerification.svWhatsappVerification)
             hideViewWithAnimation(vb.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
             hideViewWithAnimation(vb.layoutLoginCountryList.clCountryListContainer)
@@ -707,6 +724,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showOtpView() {
         runOnUiThread {
+            vm?.activeView = TAPLoginViewModel.ActiveView.OTP
             showViewWithAnimation(vb.layoutLoginOtp.svOtpVerification)
             hideViewWithAnimation(vb.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
             hideViewWithAnimation(vb.layoutLoginCountryList.clCountryListContainer)
@@ -717,6 +735,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showVerificationStatusView() {
         runOnUiThread {
+            vm?.activeView = TAPLoginViewModel.ActiveView.VERIFICATION_STATUS
             showViewWithAnimation(vb.layoutLoginVerificationStatus.clVerificationStatusContainer)
             hideViewWithAnimation(vb.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
             hideViewWithAnimation(vb.layoutLoginCountryList.clCountryListContainer)
@@ -832,9 +851,10 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun startRedirectTimer() {
-        if (this::redirectTimer.isInitialized) {
-            redirectTimer.cancel()
-        }
+//        if (this::redirectTimer.isInitialized) {
+//            redirectTimer.cancel()
+//        }
+        redirectTimer?.cancel()
         redirectTimer = object : CountDownTimer(3000L, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
                 vb.layoutLoginVerificationStatus.tvVerificationStatusRedirectTimer.text = String.format(getString(R.string.tap_format_redirect_seconds), (millisUntilFinished / 1000L).toInt() + 1)
@@ -844,7 +864,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                 vb.layoutLoginVerificationStatus.llButtonContinueToHome.callOnClick()
             }
         }
-        redirectTimer.start()
+        redirectTimer?.start()
     }
 
     private fun validatePhoneNumber(): Boolean {
@@ -1373,9 +1393,10 @@ class TAPLoginActivity : TAPBaseActivity() {
     ==============================================================================================*/
 
     private fun continueToHome() {
-        if (this::redirectTimer.isInitialized) {
-            redirectTimer.cancel()
-        }
+//        if (this::redirectTimer.isInitialized) {
+//            redirectTimer.cancel()
+//        }
+        redirectTimer?.cancel()
         TAPApiManager.getInstance(instanceKey).isLoggedOut = false
         if (BuildConfig.DEBUG) {
             TapDevLandingActivity.start(this, instanceKey)
@@ -1387,9 +1408,10 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun continueToRegister() {
-        if (this::redirectTimer.isInitialized) {
-            redirectTimer.cancel()
-        }
+//        if (this::redirectTimer.isInitialized) {
+//            redirectTimer.cancel()
+//        }
+        redirectTimer?.cancel()
         TAPRegisterActivity.start(
             this,
             instanceKey,

@@ -10,7 +10,15 @@ import java.util.Timer
 
 class TAPLoginViewModel(application: Application) : AndroidViewModel(application) {
 
+    enum class ActiveView {
+        PHONE_INPUT,
+        COUNTRY_LIST,
+        WHATSAPP_VERIFICATION,
+        OTP,
+        VERIFICATION_STATUS,
+    }
 
+    var activeView: ActiveView = ActiveView.PHONE_INPUT
     var countryIsoCode = "id"
     var phoneNumber = "0"
     var phoneNumberWithCode = "0"
