@@ -193,7 +193,6 @@ import org.jsoup.nodes.Element;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -527,7 +526,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         linkHandler = new Handler();
         bindViews();
         initRoom();
-        registerBroadcastManager();
+        registerDownloadBroadcastReceiver();
         TAPChatManager.getInstance(instanceKey).triggerChatRoomOpened(this, vm.getRoom(), vm.getOtherUserModel());
     }
 
@@ -537,6 +536,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         isArrowButtonTapped = false;
         TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(this);
+        registerUIBroadcastReceiver();
         etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft(vm.getRoom().getRoomID()));
         checkForwardLayout(vm.getQuotedMessage(), vm.getForwardedMessages(), vm.getQuoteAction());
 
@@ -564,6 +564,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         sendTypingEmit(false);
         TAPChatManager.getInstance(instanceKey).deleteActiveRoom();
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(null);
+        TAPBroadcastManager.unregister(this, uiBroadcastReceiver);
     }
 
     @Override
@@ -585,7 +586,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
         LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent);
 
-        TAPBroadcastManager.unregister(this, broadcastReceiver);
+        TAPBroadcastManager.unregister(this, downloadBroadcastReceiver);
         TAPChatManager.getInstance(instanceKey).updateUnreadCountInRoomList(TAPChatManager.getInstance(instanceKey).getOpenRoom());
         TAPChatManager.getInstance(instanceKey).setOpenRoom(null); // Reset open room
         TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
@@ -1519,25 +1520,34 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener);
     }
 
-    private void registerBroadcastManager() {
-        TAPBroadcastManager.register(this, broadcastReceiver,
-                UploadProgressLoading,
-                UploadProgressFinish,
-                UploadFailed,
-                UploadCancelled,
-                DownloadProgressLoading,
-                DownloadFinish,
-                DownloadFailed,
-                DownloadFile,
-                OpenFile,
-                CancelDownload,
-                PlayPauseVoiceNote,
-                LongPressChatBubble,
-                LongPressEmail,
-                LongPressLink,
-                LongPressPhone,
-                LongPressMention,
-                LinkPreviewImageLoaded
+    private void registerDownloadBroadcastReceiver() {
+        TAPBroadcastManager.register(
+            this,
+            downloadBroadcastReceiver,
+            UploadProgressLoading,
+            UploadProgressFinish,
+            UploadFailed,
+            UploadCancelled,
+            DownloadProgressLoading,
+            DownloadFinish,
+            DownloadFailed,
+            DownloadFile
+        );
+    }
+
+    private void registerUIBroadcastReceiver() {
+        TAPBroadcastManager.register(
+            this,
+            uiBroadcastReceiver,
+            OpenFile,
+            CancelDownload,
+            PlayPauseVoiceNote,
+            LongPressChatBubble,
+            LongPressEmail,
+            LongPressLink,
+            LongPressPhone,
+            LongPressMention,
+            LinkPreviewImageLoaded
         );
     }
 
@@ -5206,7 +5216,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 .show());
     }
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver uiBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -5220,74 +5230,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 message = intent.getParcelableExtra(MESSAGE);
             }
             switch (action) {
-                case UploadProgressLoading:
-                    localID = intent.getStringExtra(UploadLocalID);
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
-                    }
-                    break;
-                case UploadProgressFinish:
-                    localID = intent.getStringExtra(UploadLocalID);
-                    TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
-                    if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadImageData) &&
-                            intent.getSerializableExtra(UploadImageData) instanceof HashMap) {
-                        // Set image data
-                        messageModel.setData((HashMap<String, Object>) intent.getSerializableExtra(UploadImageData));
-                    } else if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadFileData) &&
-                            intent.getSerializableExtra(UploadFileData) instanceof HashMap) {
-                        // Put file data
-                        messageModel.putData((HashMap<String, Object>) intent.getSerializableExtra(UploadFileData));
-                    }
-                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
-                    break;
-                case UploadFailed:
-                    localID = intent.getStringExtra(UploadLocalID);
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
-                        failedMessageModel.setIsFailedSend(true);
-                        failedMessageModel.setIsSending(false);
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
-                    }
-                    break;
-                case UploadCancelled:
-                    localID = intent.getStringExtra(UploadLocalID);
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        TAPMessageModel cancelledMessageModel = vm.getMessagePointer().get(localID);
-                        vm.delete(localID);
-                        int itemPos = messageAdapter.getItems().indexOf(cancelledMessageModel);
-
-                        TAPFileUploadManager.getInstance(instanceKey).cancelUpload(TapUIChatActivity.this, cancelledMessageModel,
-                                vm.getRoom().getRoomID());
-
-                        vm.removeFromUploadingList(localID);
-                        vm.removeMessagePointer(localID);
-                        messageAdapter.removeMessageAt(itemPos);
-                    }
-                    break;
-                case DownloadProgressLoading:
-                case DownloadFinish:
-                    localID = intent.getStringExtra(DownloadLocalID);
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
-                    }
-                    break;
-                case DownloadFailed:
-                    localID = intent.getStringExtra(DownloadLocalID);
-                    TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(localID);
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
-                    }
-                    break;
-                case DownloadFile:
-                    startFileDownload(intent.getParcelableExtra(MESSAGE));
-                    break;
-                case CancelDownload:
-                    localID = intent.getStringExtra(DownloadLocalID);
-                    TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(localID);
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
-                    }
-                    break;
                 case OpenFile:
                     if (message != null && message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
                         fileUri = intent.getParcelableExtra(FILE_URI);
@@ -5411,6 +5353,93 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (vm.isOnBottom() && rvMessageList.getScrollState() == SCROLL_STATE_IDLE) {
                         // Scroll recycler to bottom
                         rvMessageList.scrollToPosition(0);
+                    }
+                    break;
+            }
+        }
+    };
+
+    private BroadcastReceiver downloadBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (null == action) {
+                return;
+            }
+            String localID;
+            Uri fileUri;
+            TAPMessageModel message = null;
+            if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
+                message = intent.getParcelableExtra(MESSAGE);
+            }
+            TAPRoomModel activeRoom = TAPChatManager.getInstance(instanceKey).getActiveRoom();
+            switch (action) {
+                case UploadProgressLoading:
+                    localID = intent.getStringExtra(UploadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
+                    break;
+                case UploadProgressFinish:
+                    localID = intent.getStringExtra(UploadLocalID);
+                    TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
+                    if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadImageData) &&
+                            intent.getSerializableExtra(UploadImageData) instanceof HashMap) {
+                        // Set image data
+                        messageModel.setData((HashMap<String, Object>) intent.getSerializableExtra(UploadImageData));
+                    } else if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadFileData) &&
+                            intent.getSerializableExtra(UploadFileData) instanceof HashMap) {
+                        // Put file data
+                        messageModel.putData((HashMap<String, Object>) intent.getSerializableExtra(UploadFileData));
+                    }
+                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
+                    break;
+                case UploadFailed:
+                    localID = intent.getStringExtra(UploadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
+                        failedMessageModel.setIsFailedSend(true);
+                        failedMessageModel.setIsSending(false);
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
+                    }
+                    break;
+                case UploadCancelled:
+                    localID = intent.getStringExtra(UploadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        TAPMessageModel cancelledMessageModel = vm.getMessagePointer().get(localID);
+                        vm.delete(localID);
+                        int itemPos = messageAdapter.getItems().indexOf(cancelledMessageModel);
+
+                        TAPFileUploadManager.getInstance(instanceKey).cancelUpload(TapUIChatActivity.this, cancelledMessageModel,
+                                vm.getRoom().getRoomID());
+
+                        vm.removeFromUploadingList(localID);
+                        vm.removeMessagePointer(localID);
+                        messageAdapter.removeMessageAt(itemPos);
+                    }
+                    break;
+                case DownloadProgressLoading:
+                case DownloadFinish:
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
+                    break;
+                case DownloadFailed:
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(localID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
+                    break;
+                case DownloadFile:
+                    startFileDownload(intent.getParcelableExtra(MESSAGE));
+                    break;
+                case CancelDownload:
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(localID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
                     break;
             }
