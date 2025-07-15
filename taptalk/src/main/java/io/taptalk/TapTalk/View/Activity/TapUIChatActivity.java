@@ -1366,12 +1366,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
             });
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            llButtonDeleteChat.setBackground(getDrawable(R.drawable.tap_bg_button_destructive_ripple));
-            ivButtonAttach.setBackground(getDrawable(R.drawable.tap_bg_chat_composer_attachment_ripple));
-            ivToBottom.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
-            ivMentionAnchor.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
-            clUnreadButton.setBackground(getDrawable(R.drawable.tap_bg_white_rounded_8dp_ripple));
+        llButtonDeleteChat.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_destructive_ripple));
+        ivButtonAttach.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_attachment_ripple));
+        ivToBottom.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_scroll_to_bottom_ripple));
+        ivMentionAnchor.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_scroll_to_bottom_ripple));
+        clUnreadButton.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_white_rounded_8dp_ripple));
+
+        if (vm.isOnBottom() &&
+            rvMessageList.getScrollState() == SCROLL_STATE_IDLE &&
+            messageAdapter.getItemCount() > 0
+        ) {
+            rvMessageList.scrollToPosition(0);
         }
     }
 
