@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<Long>, private val defaultTimestamp: Long?) : BottomSheetDialogFragment() {
+class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<Long>?, private val defaultTimestamp: Long?) : BottomSheetDialogFragment() {
 
     private lateinit var vb : TapFragmentTimePickerBottomSheetBinding
     private lateinit var currentDate : Date
@@ -25,8 +25,8 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
     private val fullSdf = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
     private val dates = arrayOfNulls<String>(365)
     private val hours = arrayOf(
-        "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",
-        "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"
+        "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
+        "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"
     )
     private val minutes = arrayOf(
         "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
@@ -36,16 +36,24 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
         "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59"
     )
 
+    constructor() : this(null, null)
+
     constructor(listener: TAPGeneralListener<Long>) : this(listener, null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (listener == null) {
+            dismiss()
+        }
+
         currentDate = Date()
         currentCal = Calendar.getInstance()
         if (defaultTimestamp != null) {
             defaultDate = Date(defaultTimestamp)
             currentCal.timeInMillis = defaultTimestamp
-        } else {
+        }
+        else {
             defaultDate = currentDate
         }
         val currentHour = currentCal.get(Calendar.HOUR_OF_DAY)
@@ -54,7 +62,8 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
             val date = Date(currentDate.time.plus(TimeUnit.DAYS.toMillis(1)))
             dates[0] = sdf.format(date)
             1
-        } else {
+        }
+        else {
             dates[0] = getString(R.string.tap_today)
             0
         }
@@ -111,7 +120,7 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
         }
         vb.btnSend.text = getTimeResult()
         vb.btnSend.setOnClickListener {
-            listener.onClick(0, getScheduledTime())
+            listener?.onClick(0, getScheduledTime())
             dismiss()
         }
     }
