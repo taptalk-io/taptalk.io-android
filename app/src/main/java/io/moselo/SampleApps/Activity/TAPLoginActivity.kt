@@ -1404,6 +1404,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         else {
             TapUIRoomListActivity.start(this, instanceKey)
         }
+        TAPDataManager.getInstance(instanceKey).checkAndRequestAutoStartPermission(this)
         finish()
     }
 

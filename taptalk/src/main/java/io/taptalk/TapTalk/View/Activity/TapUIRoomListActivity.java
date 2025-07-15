@@ -14,6 +14,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.AUTO_START_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
@@ -22,7 +23,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 public class TapUIRoomListActivity extends TAPBaseActivity {
 
     private static final String TAG = TapUIRoomListActivity.class.getSimpleName();
-    public static final String AUTO_START_PERMISSION = "kAutoStartPermission";
     private TapUIMainRoomListFragment fRoomList;
     private boolean isResumed;
 
@@ -105,7 +105,6 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
             .replace(R.id.fragment_room_list, fRoomList)
             .commit();
         showRoomList();
-        requestForAutoStartPermission();
     }
 
     private void redirectToChatActivity(Intent intent) {
@@ -159,13 +158,5 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
     @Override
     public void onBackPressed() {
         fRoomList.onBackPressed();
-    }
-
-    //This is for Sample Apps
-    private void requestForAutoStartPermission() {
-        if (!TapPreferenceUtils.checkPreferenceKeyAvailable(AUTO_START_PERMISSION)) {
-            TAPAutoStartPermission.getInstance().showPermissionRequest("", this);
-            TapPreferenceUtils.saveBooleanPreference(AUTO_START_PERMISSION, true);
-        }
     }
 }

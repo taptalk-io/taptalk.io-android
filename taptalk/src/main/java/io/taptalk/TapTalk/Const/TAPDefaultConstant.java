@@ -531,6 +531,7 @@ public class TAPDefaultConstant {
     public static final String K_PINNED_MESSAGE_IDS = "kTAPPinnedMessageIDs";
     public static final String K_BLOCKED_USER = "kTAPBlockedUser";
     public static final String K_MESSAGE_READ_COUNT = "kTAPMessageReadCount";
+    public static final String AUTO_START_PERMISSION = "kAutoStartPermission";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 

@@ -677,6 +677,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun finishRegisterAndOpenRoomList() {
         TapUIRoomListActivity.start(this, instanceKey)
+        TAPDataManager.getInstance(instanceKey).checkAndRequestAutoStartPermission(this)
         finish()
     }
 

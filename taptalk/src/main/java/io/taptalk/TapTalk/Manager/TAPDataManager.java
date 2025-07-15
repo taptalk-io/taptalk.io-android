@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.AUTO_START_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_AGENT;
@@ -78,6 +79,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
+import io.taptalk.TapTalk.Helper.TAPAutoStartPermission;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapPreferenceUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -124,6 +126,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import okhttp3.ResponseBody;
 
 public class TAPDataManager {
@@ -294,10 +297,6 @@ public class TAPDataManager {
             if (Hawk.contains(instanceKey + K_USER)) {
                 saveActiveUser(Hawk.get(instanceKey + K_USER));
                 Hawk.delete(instanceKey + K_USER);
-
-
-                TAPUserModel usr = getActiveUser();
-                Log.e(">>>>>>>>>>>>>>>>>>", "migratePreferences active user: " + (usr != null ? usr.getFullname() : "user null"));
             }
             if (Hawk.contains(instanceKey + K_AUTH_TICKET)) {
                 saveAuthTicket(Hawk.get(instanceKey + K_AUTH_TICKET));
@@ -410,6 +409,10 @@ public class TAPDataManager {
             if (Hawk.contains(instanceKey + USER_AGENT)) {
                 saveUserAgent(Hawk.get(instanceKey + USER_AGENT));
                 Hawk.delete(instanceKey + USER_AGENT);
+            }
+            if (Hawk.contains(AUTO_START_PERMISSION)) {
+                TapPreferenceUtils.saveBooleanPreference(AUTO_START_PERMISSION, Hawk.get(AUTO_START_PERMISSION));
+                Hawk.delete(AUTO_START_PERMISSION);
             }
         }
     }
@@ -1107,6 +1110,17 @@ public class TAPDataManager {
 
     public void removeUserAgent() {
         removePreference(instanceKey + USER_AGENT);
+    }
+
+    /**
+     * AUTOSTART
+     */
+
+    public void checkAndRequestAutoStartPermission(Context context) {
+        if (!TapPreferenceUtils.checkPreferenceKeyAvailable(AUTO_START_PERMISSION)) {
+            TAPAutoStartPermission.getInstance().showPermissionRequest(instanceKey, context);
+            TapPreferenceUtils.saveBooleanPreference(AUTO_START_PERMISSION, true);
+        }
     }
 
     /**
