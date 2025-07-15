@@ -120,7 +120,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
-import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.Companion.newInstance
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType
 import io.taptalk.TapTalk.View.BottomSheet.TapTimePickerBottomSheetFragment
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel
@@ -663,17 +663,20 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         vb.ivAttach.setOnClickListener { openAttachMenu() }
         vb.ivSendArea.setOnClickListener {
             hideKeyboards()
-            if (vm.quoteAction != null && vm.quotedMessage != null) {
-                buildAndSendTextOrLinkMessage(vb.etChat.text.toString().trim { it <= ' ' }, vm.quotedMessage.created)
-            }
-            else {
-                val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
-                    override fun onClick(position: Int, item: Long?) {
-                        super.onClick(position, item)
-                        buildAndSendTextOrLinkMessage(vb.etChat.text.toString().trim { it <= ' ' }, item)
-                    }
-                })
-                timePicker.show(supportFragmentManager, "")
+            val text = vb.etChat.text.toString().trim { it <= ' ' }
+            if (text.isNotEmpty()) {
+                if (vm.quoteAction != null && vm.quotedMessage != null) {
+                    buildAndSendTextOrLinkMessage(text, vm.quotedMessage.created)
+                }
+                else {
+                    val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
+                        override fun onClick(position: Int, item: Long?) {
+                            super.onClick(position, item)
+                            buildAndSendTextOrLinkMessage(text, item)
+                        }
+                    })
+                    timePicker.show(supportFragmentManager, "")
+                }
             }
         }
         vb.ivToBottom.setOnClickListener { scrollToBottom() }
@@ -2750,7 +2753,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     if (null != intent.getParcelableExtra(MESSAGE) &&
                         intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
                     ) {
-                        val chatBubbleBottomSheet = newInstance(
+                        val chatBubbleBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey,
                             LongPressType.SCHEDULED_TYPE,
                             (intent.getParcelableExtra<Parcelable>(MESSAGE) as TAPMessageModel?)!!,
@@ -2764,7 +2767,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     if (null != intent.getStringExtra(URL_MESSAGE) &&
                         null != intent.getStringExtra(COPY_MESSAGE)
                     ) {
-                        val linkBottomSheet = newInstance(
+                        val linkBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey, LongPressType.LINK_TYPE,
                             intent.getParcelableExtra(MESSAGE),
                             intent.getStringExtra(COPY_MESSAGE)!!,
@@ -2781,7 +2784,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         null != intent.getParcelableExtra(MESSAGE) &&
                         intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
                     ) {
-                        val emailBottomSheet = newInstance(
+                        val emailBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey, LongPressType.EMAIL_TYPE,
                             intent.getParcelableExtra(MESSAGE),
                             intent.getStringExtra(COPY_MESSAGE)!!,
@@ -2798,7 +2801,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         null != intent.getParcelableExtra(MESSAGE) &&
                         intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
                     ) {
-                        val phoneBottomSheet = newInstance(
+                        val phoneBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey, LongPressType.PHONE_TYPE,
                             intent.getParcelableExtra(MESSAGE),
                             intent.getStringExtra(COPY_MESSAGE)!!,
@@ -2815,7 +2818,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         null != intent.getParcelableExtra(MESSAGE) &&
                         intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
                     ) {
-                        val mentionBottomSheet = newInstance(
+                        val mentionBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey, LongPressType.MENTION_TYPE,
                             intent.getParcelableExtra(MESSAGE)!!,
                             intent.getStringExtra(COPY_MESSAGE)!!,
@@ -2829,7 +2832,6 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
         }
     }
-
 
     private fun startFileDownload(message: TAPMessageModel?) {
         if (!TAPUtils.hasPermissions(this, *TAPUtils.getStoragePermissions(true))) {
