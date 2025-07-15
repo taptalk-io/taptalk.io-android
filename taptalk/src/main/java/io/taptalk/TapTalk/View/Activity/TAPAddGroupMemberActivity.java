@@ -331,7 +331,6 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // Selected members adapter
-        Log.e(">>>>>>>>>", "Selected members adapter: " + vm.getSelectedContactList().size());
         selectedMembersAdapter = new TapSelectedGroupMemberAdapter(instanceKey, vm.getSelectedContactList(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -444,96 +443,98 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     private void updateFilteredContacts(String searchKeyword) {
-        vm.getAdapterItems().clear();
-        vm.getFilteredContacts().clear();
-        vm.getContactSearchResult().clear();
-        vm.getNonContactSearchResult().clear();
-        vm.getContactListSearchResult().clear();
-        vm.getNonContactListSearchResult().clear();
-        vm.setContactQueryFinished(false);
-        vm.setNonContactQueryFinished(false);
+        runOnUiThread(() -> {
+            vm.getAdapterItems().clear();
+            vm.getFilteredContacts().clear();
+            vm.getContactSearchResult().clear();
+            vm.getNonContactSearchResult().clear();
+            vm.getContactListSearchResult().clear();
+            vm.getNonContactListSearchResult().clear();
+            vm.setContactQueryFinished(false);
+            vm.setNonContactQueryFinished(false);
 
-        if (searchKeyword.isEmpty()) {
-            // Show all contacts
-            vm.getFilteredContacts().addAll(vm.getContactList());
-            vm.getAdapterItems().addAll(vm.getSeparatedContactList());
-            vm.setNeedToCallGetUserApi(false);
-            if (vm.getAdapterItems().isEmpty()) {
-                tvInfoEmptyContact.setText(getString(R.string.tap_contact_list_empty));
-                if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
-                        TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
-                    tvButtonEmptyContact.setText(getString(R.string.tap_add_new_contact));
-                    tvButtonEmptyContact.setVisibility(View.VISIBLE);
-                    llEmptyContact.setOnClickListener(v -> openNewContactActivity());
+            if (searchKeyword.isEmpty()) {
+                // Show all contacts
+                vm.getFilteredContacts().addAll(vm.getContactList());
+                vm.getAdapterItems().addAll(vm.getSeparatedContactList());
+                vm.setNeedToCallGetUserApi(false);
+                if (vm.getAdapterItems().isEmpty()) {
+                    tvInfoEmptyContact.setText(getString(R.string.tap_contact_list_empty));
+                    if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
+                            TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
+                        tvButtonEmptyContact.setText(getString(R.string.tap_add_new_contact));
+                        tvButtonEmptyContact.setVisibility(View.VISIBLE);
+                        llEmptyContact.setOnClickListener(v -> openNewContactActivity());
+                    }
+                    else {
+                        tvButtonEmptyContact.setVisibility(View.GONE);
+                    }
+                    llEmptyContact.setVisibility(View.VISIBLE);
+                    rvContactList.setVisibility(View.GONE);
                 }
                 else {
-                    tvButtonEmptyContact.setVisibility(View.GONE);
+                    llEmptyContact.setVisibility(View.GONE);
+                    rvContactList.setVisibility(View.VISIBLE);
                 }
-                llEmptyContact.setVisibility(View.VISIBLE);
-                rvContactList.setVisibility(View.GONE);
+                contactListAdapter.setItems(vm.getAdapterItems());
             }
             else {
-                llEmptyContact.setVisibility(View.GONE);
-                rvContactList.setVisibility(View.VISIBLE);
+                // Show filtered contacts
+                vm.setNeedToCallGetUserApi(true);
+
+                ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
+
+                // Search matching contacts from database
+                TAPDataManager.getInstance(instanceKey).searchContactsByNameAndUsername(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
+                    @Override
+                    public void onSelectFinished(List<TAPUserModel> entities) {
+                        if (null != entities && !entities.isEmpty()) {
+                            for (TAPUserModel contact : entities) {
+                                if (vm.getContactListPointer().containsKey(contact.getUserID()) &&
+                                    !vm.getExistingMembers().contains(contact) &&
+                                    !blockedUserIDs.contains(contact.getUserID())
+                                ) {
+                                    vm.getContactSearchResult().add(contact);
+                                    vm.getContactListSearchResult().add(vm.getContactListPointer().get(contact.getUserID()));
+                                    if (searchKeyword.equalsIgnoreCase(contact.getUsername())) {
+                                        vm.setNeedToCallGetUserApi(false);
+                                    }
+                                }
+                            }
+                        }
+                        vm.setContactQueryFinished(true);
+                        if (vm.isNonContactQueryFinished()) {
+                            showFilteredContactFromDatabaseAndCallApi();
+                        }
+                    }
+                });
+
+                // Search matching non-contact users from database
+                TAPDataManager.getInstance(instanceKey).searchNonContactUsersFromDatabase(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
+                    @Override
+                    public void onSelectFinished(List<TAPUserModel> entities) {
+                        if (null != entities && !entities.isEmpty()) {
+                            for (TAPUserModel user : entities) {
+                                if (vm.getContactListPointer().containsKey(user.getUserID()) &&
+                                    !vm.getExistingMembers().contains(user) &&
+                                    !blockedUserIDs.contains(user.getUserID())
+                                ) {
+                                    vm.getNonContactSearchResult().add(user);
+                                    vm.getNonContactListSearchResult().add(vm.getContactListPointer().get(user.getUserID()));
+                                    if (searchKeyword.equalsIgnoreCase(user.getUsername())) {
+                                        vm.setNeedToCallGetUserApi(false);
+                                    }
+                                }
+                            }
+                        }
+                        vm.setNonContactQueryFinished(true);
+                        if (vm.isContactQueryFinished()) {
+                            showFilteredContactFromDatabaseAndCallApi();
+                        }
+                    }
+                });
             }
-            contactListAdapter.setItems(vm.getAdapterItems());
-        }
-        else {
-            // Show filtered contacts
-            vm.setNeedToCallGetUserApi(true);
-
-            ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
-
-            // Search matching contacts from database
-            TAPDataManager.getInstance(instanceKey).searchContactsByNameAndUsername(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
-                @Override
-                public void onSelectFinished(List<TAPUserModel> entities) {
-                    if (null != entities && !entities.isEmpty()) {
-                        for (TAPUserModel contact : entities) {
-                            if (vm.getContactListPointer().containsKey(contact.getUserID()) &&
-                                !vm.getExistingMembers().contains(contact) &&
-                                !blockedUserIDs.contains(contact.getUserID())
-                            ) {
-                                vm.getContactSearchResult().add(contact);
-                                vm.getContactListSearchResult().add(vm.getContactListPointer().get(contact.getUserID()));
-                                if (searchKeyword.equalsIgnoreCase(contact.getUsername())) {
-                                    vm.setNeedToCallGetUserApi(false);
-                                }
-                            }
-                        }
-                    }
-                    vm.setContactQueryFinished(true);
-                    if (vm.isNonContactQueryFinished()) {
-                        showFilteredContactFromDatabaseAndCallApi();
-                    }
-                }
-            });
-
-            // Search matching non-contact users from database
-            TAPDataManager.getInstance(instanceKey).searchNonContactUsersFromDatabase(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
-                @Override
-                public void onSelectFinished(List<TAPUserModel> entities) {
-                    if (null != entities && !entities.isEmpty()) {
-                        for (TAPUserModel user : entities) {
-                            if (vm.getContactListPointer().containsKey(user.getUserID()) &&
-                                !vm.getExistingMembers().contains(user) &&
-                                !blockedUserIDs.contains(user.getUserID())
-                            ) {
-                                vm.getNonContactSearchResult().add(user);
-                                vm.getNonContactListSearchResult().add(vm.getContactListPointer().get(user.getUserID()));
-                                if (searchKeyword.equalsIgnoreCase(user.getUsername())) {
-                                    vm.setNeedToCallGetUserApi(false);
-                                }
-                            }
-                        }
-                    }
-                    vm.setNonContactQueryFinished(true);
-                    if (vm.isContactQueryFinished()) {
-                        showFilteredContactFromDatabaseAndCallApi();
-                    }
-                }
-            });
-        }
+        });
     }
 
     private synchronized void showFilteredContactFromDatabaseAndCallApi() {

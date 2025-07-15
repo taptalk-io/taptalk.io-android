@@ -526,7 +526,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         linkHandler = new Handler();
         bindViews();
         initRoom();
-        registerDownloadBroadcastReceiver();
+        registerBackgroundBroadcastReceiver();
         TAPChatManager.getInstance(instanceKey).triggerChatRoomOpened(this, vm.getRoom(), vm.getOtherUserModel());
     }
 
@@ -536,7 +536,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         isArrowButtonTapped = false;
         TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(this);
-        registerUIBroadcastReceiver();
+        registerForegroundBroadcastReceiver();
         etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft(vm.getRoom().getRoomID()));
         checkForwardLayout(vm.getQuotedMessage(), vm.getForwardedMessages(), vm.getQuoteAction());
 
@@ -564,7 +564,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         sendTypingEmit(false);
         TAPChatManager.getInstance(instanceKey).deleteActiveRoom();
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(null);
-        TAPBroadcastManager.unregister(this, uiBroadcastReceiver);
+        TAPBroadcastManager.unregister(this, foregroundBroadcastReceiver);
     }
 
     @Override
@@ -586,7 +586,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
         LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent);
 
-        TAPBroadcastManager.unregister(this, downloadBroadcastReceiver);
+        TAPBroadcastManager.unregister(this, backgroundBroadcastReceiver);
         TAPChatManager.getInstance(instanceKey).updateUnreadCountInRoomList(TAPChatManager.getInstance(instanceKey).getOpenRoom());
         TAPChatManager.getInstance(instanceKey).setOpenRoom(null); // Reset open room
         TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
@@ -1520,25 +1520,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener);
     }
 
-    private void registerDownloadBroadcastReceiver() {
+    private void registerForegroundBroadcastReceiver() {
         TAPBroadcastManager.register(
             this,
-            downloadBroadcastReceiver,
-            UploadProgressLoading,
-            UploadProgressFinish,
-            UploadFailed,
-            UploadCancelled,
-            DownloadProgressLoading,
-            DownloadFinish,
-            DownloadFailed,
-            DownloadFile
-        );
-    }
-
-    private void registerUIBroadcastReceiver() {
-        TAPBroadcastManager.register(
-            this,
-            uiBroadcastReceiver,
+            foregroundBroadcastReceiver,
             OpenFile,
             CancelDownload,
             PlayPauseVoiceNote,
@@ -1548,6 +1533,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
             LongPressPhone,
             LongPressMention,
             LinkPreviewImageLoaded
+        );
+    }
+
+    private void registerBackgroundBroadcastReceiver() {
+        TAPBroadcastManager.register(
+            this,
+            backgroundBroadcastReceiver,
+            UploadProgressLoading,
+            UploadProgressFinish,
+            UploadFailed,
+            UploadCancelled,
+            DownloadProgressLoading,
+            DownloadFinish,
+            DownloadFailed,
+            DownloadFile
         );
     }
 
@@ -5216,14 +5216,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 .show());
     }
 
-    private final BroadcastReceiver uiBroadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver foregroundBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (null == action) {
                 return;
             }
-            String localID;
             Uri fileUri;
             TAPMessageModel message = null;
             if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
@@ -5359,7 +5358,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     };
 
-    private BroadcastReceiver downloadBroadcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver backgroundBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -5367,12 +5366,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 return;
             }
             String localID;
-            Uri fileUri;
-            TAPMessageModel message = null;
-            if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                message = intent.getParcelableExtra(MESSAGE);
-            }
-            TAPRoomModel activeRoom = TAPChatManager.getInstance(instanceKey).getActiveRoom();
             switch (action) {
                 case UploadProgressLoading:
                     localID = intent.getStringExtra(UploadLocalID);
