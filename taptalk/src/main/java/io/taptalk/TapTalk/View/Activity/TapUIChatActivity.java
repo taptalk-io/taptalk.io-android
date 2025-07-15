@@ -6472,22 +6472,26 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         @Override
                         public void onSuccess(String successMessage) {
                             super.onSuccess(successMessage);
-                            hideDeleteRoomLoading();
-                            vm.setDeleteGroup(true);
-                            closeActivity();
+                            runOnUiThread(() -> {
+                                hideDeleteRoomLoading();
+                                vm.setDeleteGroup(true);
+                                closeActivity();
+                            });
                         }
 
                         @Override
                         public void onError(String errorCode, String errorMessage) {
                             super.onError(errorCode, errorMessage);
-                            hideDeleteRoomLoading();
-                            new TapTalkDialog(new TapTalkDialog.Builder(TapUIChatActivity.this)
+                            runOnUiThread(() -> {
+                                hideDeleteRoomLoading();
+                                new TapTalkDialog(new TapTalkDialog.Builder(TapUIChatActivity.this)
                                     .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                                     .setTitle(getString(R.string.tap_fail_delete_chatroom))
                                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                     .setPrimaryButtonListener(v -> {})
                                     .setCancelable(false))
                                     .show();
+                            });
                         }
                     });
                 })
@@ -6497,17 +6501,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
     };
 
     private void showDeleteRoomLoading() {
-        tvDeleteChat.setVisibility(View.GONE);
-        ivDelete.setVisibility(View.GONE);
-        pbDelete.setVisibility(View.VISIBLE);
-        llButtonDeleteChat.setEnabled(false);
+        runOnUiThread(() -> {
+            tvDeleteChat.setVisibility(View.GONE);
+            ivDelete.setVisibility(View.GONE);
+            pbDelete.setVisibility(View.VISIBLE);
+            llButtonDeleteChat.setEnabled(false);
+        });
     }
 
     private void hideDeleteRoomLoading() {
-        tvDeleteChat.setVisibility(View.VISIBLE);
-        ivDelete.setVisibility(View.VISIBLE);
-        pbDelete.setVisibility(View.GONE);
-        llButtonDeleteChat.setEnabled(true);
+        runOnUiThread(() -> {
+            tvDeleteChat.setVisibility(View.VISIBLE);
+            ivDelete.setVisibility(View.VISIBLE);
+            pbDelete.setVisibility(View.GONE);
+            llButtonDeleteChat.setEnabled(true);
+        });
     }
 
     private class DeleteRoomAsync extends AsyncTask<String, Void, Void> {

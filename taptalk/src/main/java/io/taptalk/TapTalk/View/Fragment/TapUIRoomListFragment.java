@@ -313,13 +313,15 @@ public class TapUIRoomListFragment extends Fragment {
                     return;
                 }
                 activity.runOnUiThread(() -> {
-                    int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
                     updatePinnedRooms(room.getRoomID(), false);
                     updateRoomUnreadMark(room.getRoomID(), false);
                     updateMutedRooms(room.getRoomID(), false);
-                    vm.getRoomList().remove(index);
                     vm.getRoomPointer().remove(room.getRoomID());
-                    adapter.notifyItemRemoved(index);
+                    int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(room.getRoomID()));
+                    if (index >= 0 && index < vm.getRoomList().size()) {
+                        vm.getRoomList().remove(index);
+                        adapter.notifyItemRemoved(index);
+                    }
                 });
             }
 
@@ -1494,22 +1496,26 @@ public class TapUIRoomListFragment extends Fragment {
                             @Override
                             public void onSuccess(String successMessage) {
                                 super.onSuccess(successMessage);
-                                hideDeleteRoomLoading();
-                                updatePinnedRooms(roomId, false);
-                                updateRoomUnreadMark(roomId, false);
+                                activity.runOnUiThread(() -> {
+                                    hideDeleteRoomLoading();
+                                    updatePinnedRooms(roomId, false);
+                                    updateRoomUnreadMark(roomId, false);
+                                });
                             }
 
                             @Override
                             public void onError(String errorCode, String errorMessage) {
                                 super.onError(errorCode, errorMessage);
-                                hideDeleteRoomLoading();
-                                new TapTalkDialog(new TapTalkDialog.Builder(activity)
+                                activity.runOnUiThread(() -> {
+                                    hideDeleteRoomLoading();
+                                    new TapTalkDialog(new TapTalkDialog.Builder(activity)
                                         .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                                         .setTitle(getString(R.string.tap_fail_delete_chatroom))
                                         .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                         .setPrimaryButtonListener(v -> {})
                                         .setCancelable(false))
                                         .show();
+                                });
                             }
                         });
                     })
