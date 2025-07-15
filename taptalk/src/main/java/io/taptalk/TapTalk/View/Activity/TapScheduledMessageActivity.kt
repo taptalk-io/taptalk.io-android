@@ -90,7 +90,6 @@ import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Listener.TAPSocketListener
 import io.taptalk.TapTalk.Listener.TapCommonListener
-import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener
 import io.taptalk.TapTalk.Manager.TAPCacheManager
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPConnectionManager
@@ -696,6 +695,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
         vb.ivAttach.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_attachment_ripple)
         vb.ivToBottom.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_scroll_to_bottom_ripple)
+
+        if (vm.isOnBottom &&
+            vb.rvMessageList.scrollState == RecyclerView.SCROLL_STATE_IDLE &&
+            messageAdapter.itemCount > 0
+        ) {
+            vb.rvMessageList.scrollToPosition(0)
+        }
     }
 
     private fun showAttachmentButton() {
