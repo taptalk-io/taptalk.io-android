@@ -261,7 +261,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             showViewState()
         }
         
-        if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
+        if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible) {
             vb.clBasicInfo.gBio.visibility = View.VISIBLE
             setProfileInformation(vb.clBasicInfo.tvBioView, vb.clBasicInfo.gBio, vm.myUserModel.bio)
             if (!vm.myUserModel.bio.isNullOrEmpty()) {
@@ -277,12 +277,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         else {
             vb.clBasicInfo.gMobileNumber.visibility = View.VISIBLE
             vb.clBasicInfo.tvMobileNumberView.text = TAPUtils.beautifyPhoneNumber(String.format("%s %s", vm.myUserModel.countryCallingCode, vm.myUserModel.phone), true)
-        }
-        if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
-            vb.btnBlockedContacts.clContainer.visibility = View.VISIBLE
-        }
-        else {
-            vb.btnBlockedContacts.clContainer.visibility = View.GONE
         }
         setProfileInformation(vb.clBasicInfo.tvUsernameView, vb.clBasicInfo.gUsername, vm.myUserModel.username)
         setProfileInformation(vb.clBasicInfo.tvEmailView, vb.clBasicInfo.gEmail, vm.myUserModel.email)
@@ -341,6 +335,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         vb.etBio.setText(vm.myUserModel.bio)
         if (TapUI.getInstance(instanceKey).isBlockUserMenuEnabled) {
             vb.btnBlockedContacts.clContainer.visibility = View.VISIBLE
+        }
+        else {
+            vb.btnBlockedContacts.clContainer.visibility = View.GONE
         }
     }
 
