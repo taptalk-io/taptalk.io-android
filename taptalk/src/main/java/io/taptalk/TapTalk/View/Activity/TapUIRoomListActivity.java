@@ -5,25 +5,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import io.taptalk.TapTalk.Helper.TAPAutoStartPermission;
-import io.taptalk.TapTalk.Helper.TapPreferenceUtils;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
 import io.taptalk.TapTalk.Manager.TapCoreChatRoomManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
+import io.taptalk.TapTalk.ViewModel.TapMainRoomListViewModel;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.AUTO_START_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+
+import androidx.lifecycle.ViewModelProvider;
 
 public class TapUIRoomListActivity extends TAPBaseActivity {
 
     private static final String TAG = TapUIRoomListActivity.class.getSimpleName();
     private TapUIMainRoomListFragment fRoomList;
+    private TapMainRoomListViewModel vm;
     private boolean isResumed;
 
     public static void start(
@@ -79,6 +79,7 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_room_list);
+        vm = new ViewModelProvider(this).get(TapMainRoomListViewModel.class);
         initView();
     }
 
@@ -98,8 +99,7 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
     }
 
     private void initView() {
-//        fRoomList = (TapUIMainRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
-        fRoomList = TapUIMainRoomListFragment.newInstance(instanceKey);
+        fRoomList = TapUIMainRoomListFragment.newInstance(instanceKey, vm);
         getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragment_room_list, fRoomList)
@@ -120,10 +120,8 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
                 TAPRoomModel localRoom = TapCoreChatRoomManager.getInstance(instanceKey).getLocalChatRoomData(roomID);
                 if (localRoom != null) {
                     runOnUiThread(() -> TapUI.getInstance(instanceKey).openChatRoomWithRoomModel(this, localRoom));
-//                    Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: open room from local data");
                 }
                 else {
-//                    Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: start fetch API");
                     runOnUiThread(() -> loadingToast.show());
                     TapCoreChatRoomManager.getInstance(instanceKey).getChatRoomData(roomID, new TapCoreGetRoomListener() {
                         @Override
@@ -132,7 +130,6 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
                                 loadingToast.cancel();
                                 TapUI.getInstance(instanceKey).openChatRoomWithRoomModel(TapUIRoomListActivity.this, room);
                             });
-//                            Log.e(">>>>>>>>>>>>>>", "redirectToChatActivity: open room from API");
                         }
 
                         @Override

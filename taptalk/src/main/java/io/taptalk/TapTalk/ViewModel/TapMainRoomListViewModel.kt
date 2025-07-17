@@ -9,4 +9,5 @@ class TapMainRoomListViewModel : ViewModel() {
     }
 
     var state = RoomListState.STATE_ROOM_LIST
+    var searchKeyword = ""
 }
