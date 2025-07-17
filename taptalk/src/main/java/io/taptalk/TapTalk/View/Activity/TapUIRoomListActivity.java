@@ -27,25 +27,25 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
     private boolean isResumed;
 
     public static void start(
-            Context context,
-            String instanceKey
+        Context context,
+        String instanceKey
     ) {
         start(context, instanceKey, null);
     }
 
     public static void start(
-            Context context,
-            String instanceKey,
-            TAPRoomModel room
+        Context context,
+        String instanceKey,
+        TAPRoomModel room
     ) {
         start(context, instanceKey, room, false);
     }
 
     public static void start(
-            Context context,
-            String instanceKey,
-            TAPRoomModel room,
-            boolean flagNewTask
+        Context context,
+        String instanceKey,
+        TAPRoomModel room,
+        boolean flagNewTask
     ) {
         Intent intent = new Intent(context, TapUIRoomListActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);

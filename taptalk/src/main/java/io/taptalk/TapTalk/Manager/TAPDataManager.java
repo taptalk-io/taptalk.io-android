@@ -414,6 +414,7 @@ public class TAPDataManager {
                 TapPreferenceUtils.saveBooleanPreference(AUTO_START_PERMISSION, Hawk.get(AUTO_START_PERMISSION));
                 Hawk.delete(AUTO_START_PERMISSION);
             }
+            Hawk.deleteAll();
         }
     }
 

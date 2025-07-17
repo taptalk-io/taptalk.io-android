@@ -1,5 +1,8 @@
 package io.taptalk.TapTalk.View.Fragment;
 
+import static io.taptalk.TapTalk.ViewModel.TapMainRoomListViewModel.RoomListState.STATE_ROOM_LIST;
+import static io.taptalk.TapTalk.ViewModel.TapMainRoomListViewModel.RoomListState.STATE_SEARCH_CHAT;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,9 +11,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.ViewModel.TAPVideoPlayerViewModel;
+import io.taptalk.TapTalk.ViewModel.TapMainRoomListViewModel;
 
 public class TapUIMainRoomListFragment extends Fragment {
 
@@ -18,13 +24,9 @@ public class TapUIMainRoomListFragment extends Fragment {
 
     private String instanceKey = "";
 
-    private enum RoomListState {
-        STATE_SEARCH_CHAT, STATE_ROOM_LIST
-    }
-
     private TapUIRoomListFragment fRoomList;
     private TapUISearchChatFragment fSearchFragment;
-    private RoomListState state = RoomListState.STATE_ROOM_LIST;
+    private TapMainRoomListViewModel vm;
 
     public TapUIMainRoomListFragment() {
         // Required empty public constructor
@@ -45,6 +47,7 @@ public class TapUIMainRoomListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        vm = new ViewModelProvider(this).get(TapMainRoomListViewModel.class);
     }
 
     @Override
@@ -73,11 +76,16 @@ public class TapUIMainRoomListFragment extends Fragment {
             .replace(R.id.fragment_search_chat, fSearchFragment)
             .commit();
 
-        showRoomList();
+        if (vm.getState() == STATE_SEARCH_CHAT) {
+            showSearchChat();
+        }
+        else {
+            showRoomList();
+        }
     }
 
     public void showRoomList() {
-        state = RoomListState.STATE_ROOM_LIST;
+        vm.setState(STATE_ROOM_LIST);
         getChildFragmentManager()
                 .beginTransaction()
                 .show(fRoomList)
@@ -86,7 +94,7 @@ public class TapUIMainRoomListFragment extends Fragment {
     }
 
     public void showSearchChat() {
-        state = RoomListState.STATE_SEARCH_CHAT;
+        vm.setState(STATE_SEARCH_CHAT);
         getChildFragmentManager()
                 .beginTransaction()
                 .show(fSearchFragment)
@@ -95,11 +103,12 @@ public class TapUIMainRoomListFragment extends Fragment {
     }
 
     public void onBackPressed() {
-        switch (state) {
+        switch (vm.getState()) {
             case STATE_ROOM_LIST:
                 if (null != fRoomList && fRoomList.isSelecting()) {
                     fRoomList.cancelSelection();
-                } else if (null != getActivity()) {
+                }
+                else if (null != getActivity()) {
 //                    getActivity().finish();
                     TAPChatManager.getInstance(instanceKey).triggerCloseRoomListButtonTapped(getActivity());
                 }
