@@ -8,12 +8,24 @@ import androidx.preference.PreferenceManager;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.orhanobut.hawk.Hawk;
 
+import java.util.HashMap;
+
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 
 public class TapPreferenceUtils {
 
     private static final String TAG = TapPreferenceUtils.class.getSimpleName();
+    private static TapPreferenceUtils instance;
     private static SharedPreferences sharedPreferences;
+    private static HashMap<String, String> encryptedKeys = new HashMap<>();
+    private static HashMap<String, Object> decryptedPreferences = new HashMap<>();
+
+    public static TapPreferenceUtils getInstance() {
+        if (null == instance) {
+            instance = new TapPreferenceUtils();
+        }
+        return instance;
+    }
 
     private static SharedPreferences getSharedPreferences() {
         if (sharedPreferences == null) {
@@ -41,9 +53,14 @@ public class TapPreferenceUtils {
         if (key == null || key.isEmpty()) {
             return "";
         }
+        if (encryptedKeys.containsKey(key)) {
+            return encryptedKeys.get(key);
+        }
         String appendKey = "TapTalkPreferenceKey" + key + "Appended";
         try {
-            return TAPEncryptorManager.getInstance().simpleEncrypt(appendKey, key);
+            String encryptedKey = TAPEncryptorManager.getInstance().simpleEncrypt(appendKey, key);
+            encryptedKeys.put(key, encryptedKey);
+            return encryptedKey;
         }
         catch (Exception e) {
             Log.e(TAG, "getEncryptedKey: " + e.getMessage());
@@ -55,6 +72,7 @@ public class TapPreferenceUtils {
         if (isSavePreferenceParamsInvalid(key, preferenceData)) {
             return;
         }
+        decryptedPreferences.put(key, preferenceData);
         try {
             String dataString = TAPUtils.toJsonString(preferenceData);
             String encrypted = TAPEncryptorManager.getInstance().encrypt(dataString, key);
@@ -69,6 +87,7 @@ public class TapPreferenceUtils {
         if (isSavePreferenceParamsInvalid(key, preferenceData)) {
             return;
         }
+        decryptedPreferences.put(key, preferenceData);
         try {
             String encrypted = TAPEncryptorManager.getInstance().encrypt(preferenceData, key);
             getSharedPreferences().edit().putString(getEncryptedKey(key), encrypted).apply();
@@ -96,6 +115,7 @@ public class TapPreferenceUtils {
         if (isSavePreferenceParamsInvalid(key, preferenceData)) {
             return;
         }
+        decryptedPreferences.put(key, preferenceData);
         try {
             getSharedPreferences().edit().putBoolean(getEncryptedKey(key), preferenceData).apply();
         }
@@ -112,7 +132,27 @@ public class TapPreferenceUtils {
         if (Hawk.contains(key)) {
             return true;
         }
+        if (decryptedPreferences.containsKey(key)) {
+            return true;
+        }
         return getSharedPreferences().contains(getEncryptedKey(key));
+    }
+
+    private static <T> T getFromSharedPreferences(String key, TypeReference<T> type, T defaultValue) {
+        try {
+            String encrypted = getSharedPreferences().getString(getEncryptedKey(key), "");
+            if (encrypted.isEmpty()) {
+                return defaultValue;
+            }
+            String dataString = TAPEncryptorManager.getInstance().decrypt(encrypted, key);
+            T decryptedData = TAPUtils.fromJSON(type, dataString);
+            decryptedPreferences.put(key, decryptedData);
+            return decryptedData;
+        }
+        catch (Exception e) {
+            Log.e(TAG, "getPreference: " + e.getMessage());
+            return defaultValue;
+        }
     }
 
     public static <T> T getPreference(String key, TypeReference<T> type) {
@@ -123,27 +163,27 @@ public class TapPreferenceUtils {
         if (isContextOrKeyEmpty(key)) {
             return defaultValue;
         }
+        if (decryptedPreferences.containsKey(key)) {
+            try {
+                return (T) decryptedPreferences.get(key);
+            }
+            catch (Exception e) {
+                return getFromSharedPreferences(key, type, defaultValue);
+            }
+        }
         // TODO: Remove when migration is over
         if (!checkPreferenceKeyAvailable(key) && Hawk.contains(key)) {
             return Hawk.get(key, defaultValue);
         }
-        try {
-            String encrypted = getSharedPreferences().getString(getEncryptedKey(key), "");
-            if (encrypted.isEmpty()) {
-                return defaultValue;
-            }
-            String dataString = TAPEncryptorManager.getInstance().decrypt(encrypted, key);
-            return TAPUtils.fromJSON(type, dataString);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "getPreference: " + e.getMessage());
-            return defaultValue;
-        }
+        return getFromSharedPreferences(key, type, defaultValue);
     }
 
     public static String getStringPreference(String key) {
         if (isContextOrKeyEmpty(key)) {
             return "";
+        }
+        if (decryptedPreferences.containsKey(key) && decryptedPreferences.get(key) instanceof String) {
+            return (String) decryptedPreferences.get(key);
         }
         // TODO: Remove when migration is over
         if (!checkPreferenceKeyAvailable(key) && Hawk.contains(key)) {
@@ -154,7 +194,9 @@ public class TapPreferenceUtils {
             if (encrypted.isEmpty()) {
                 return "";
             }
-            return TAPEncryptorManager.getInstance().decrypt(encrypted, key);
+            String decryptedData = TAPEncryptorManager.getInstance().decrypt(encrypted, key);
+            decryptedPreferences.put(key, decryptedData);
+            return decryptedData;
         }
         catch (Exception e) {
             Log.e(TAG, "getStringPreference: " + e.getMessage());
@@ -192,12 +234,17 @@ public class TapPreferenceUtils {
         if (isContextOrKeyEmpty(key)) {
             return false;
         }
+        if (decryptedPreferences.containsKey(key) && decryptedPreferences.get(key) instanceof Boolean) {
+            return (Boolean) decryptedPreferences.get(key);
+        }
         // TODO: Remove when migration is over
         if (!checkPreferenceKeyAvailable(key) && Hawk.contains(key)) {
             return Hawk.get(key, false);
         }
         try {
-            return getSharedPreferences().getBoolean(getEncryptedKey(key), false);
+            Boolean decryptedData = getSharedPreferences().getBoolean(getEncryptedKey(key), false);
+            decryptedPreferences.put(key, decryptedData);
+            return decryptedData;
         }
         catch (Exception e) {
             Log.e(TAG, "getBooleanPreference: " + e.getMessage());
@@ -209,6 +256,7 @@ public class TapPreferenceUtils {
         if (isContextOrKeyEmpty(key)) {
             return;
         }
+        decryptedPreferences.remove(key);
         getSharedPreferences().edit().remove(getEncryptedKey(key)).apply();
     }
 
@@ -216,6 +264,7 @@ public class TapPreferenceUtils {
         if (TapTalk.appContext == null) {
             return;
         }
+        decryptedPreferences.clear();
         getSharedPreferences().edit().clear().apply();
     }
 }
