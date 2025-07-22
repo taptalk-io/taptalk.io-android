@@ -4,6 +4,7 @@ import android.app.Activity.RESULT_OK
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -103,8 +104,14 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
             DownloadBroadcastEvent.OpenFile,
             DownloadBroadcastEvent.CancelDownload
         )
-        sharedMediaAdapter = TapSharedMediaAdapter(vm.instanceKey, vm.sharedMediaAdapterItems, glide, sharedMediaAdapterListener)
-        sharedMediaGlm = object : GridLayoutManager(context, 3) {
+        sharedMediaAdapter = TapSharedMediaAdapter(vm.instanceKey, requireContext(), vm.sharedMediaAdapterItems, glide, sharedMediaAdapterListener)
+        val span = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            5
+        }
+        else {
+            3
+        }
+        sharedMediaGlm = object : GridLayoutManager(context, span) {
             override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
                 try {
                     super.onLayoutChildren(recycler, state)
@@ -120,7 +127,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                     1
                 }
                 else {
-                    3
+                    span
                 }
             }
         }
@@ -132,6 +139,10 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
 
         vb.recyclerView.layoutManager = sharedMediaGlm
         vb.recyclerView.adapter = sharedMediaAdapter
+        if (vm.type == TYPE_MEDIA) {
+            val horizontalPadding = TAPUtils.dpToPx(16)
+            vb.recyclerView.setPadding(horizontalPadding, 0, horizontalPadding, 0)
+        }
         if (vm.sharedMedias.isEmpty()) {
             vb.recyclerView.visibility = View.GONE
             vb.gEmptySharedMedia.visibility = View.VISIBLE

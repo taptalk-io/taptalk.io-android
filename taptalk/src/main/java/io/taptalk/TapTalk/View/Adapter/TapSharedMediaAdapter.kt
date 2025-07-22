@@ -3,9 +3,11 @@ package io.taptalk.TapTalk.View.Adapter
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -52,11 +54,21 @@ import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import java.util.*
 
+class TapSharedMediaAdapter(
+    private val instanceKey: String,
+    private val context: Context,
+    private val mediaItems: List<TAPMessageModel>,
+    private val glide: RequestManager,
+    private val listener: TapSharedMediaInterface
+) : TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>>() {
 
-class TapSharedMediaAdapter(private val instanceKey: String, private val mediaItems: List<TAPMessageModel>, private val glide: RequestManager, private val listener: TapSharedMediaInterface) : TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>>() {
-
-    private var gridWidth : Int = (TAPUtils.getScreenWidth() - TAPUtils.dpToPx(34)) / 3
-    private var dateSeparators : HashMap<String, TAPMessageModel> = linkedMapOf()
+    private var gridWidth = if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        (TAPUtils.getScreenWidth() - TAPUtils.dpToPx(34)) / 5
+    }
+    else {
+        (TAPUtils.getScreenWidth() - TAPUtils.dpToPx(34)) / 3
+    }
+    private var dateSeparators: HashMap<String, TAPMessageModel> = linkedMapOf()
 
     init {
         setItems(mediaItems, true)
@@ -109,19 +121,6 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
             val downloadProgressValue = TAPFileDownloadManager.getInstance(instanceKey)
                 .getDownloadProgressPercent(message.localID)
             clContainer.layoutParams.width = gridWidth
-            if (clContainer.layoutParams is MarginLayoutParams) {
-                // Update left/right margin per item
-                val currentDate = TAPTimeFormatter.formatMonth(message.created)
-                val params = clContainer.layoutParams as MarginLayoutParams
-                val itemPosition = bindingAdapterPosition - (items.indexOf(dateSeparators[currentDate]) + 1)
-                when (itemPosition % 3) {
-                    0 -> params.leftMargin = TAPUtils.dpToPx(14)
-                    1 -> params.leftMargin = TAPUtils.dpToPx(5)
-                    2 -> params.leftMargin = TAPUtils.dpToPx(-4)
-                }
-                clContainer.layoutParams = params
-                clContainer.requestLayout()
-            }
             rcivThumbnail.setImageDrawable(null)
 
             thumbnail = BitmapDrawable(
