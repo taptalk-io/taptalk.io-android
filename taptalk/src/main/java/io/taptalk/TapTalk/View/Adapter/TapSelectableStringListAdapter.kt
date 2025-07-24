@@ -7,13 +7,18 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.R
 
-class TapSelectableStringListAdapter(selectableStrings: List<String>, private val onClickListener: TAPGeneralListener<String>) : TAPBaseAdapter<String, TAPBaseViewHolder<String>>() {
+class TapSelectableStringListAdapter(
+    selectableStrings: List<String>,
+    private val onClickListener: TAPGeneralListener<String>,
+    selectedOption: String
+) : TAPBaseAdapter<String, TAPBaseViewHolder<String>>() {
 
     private var selectedText : String = ""
     private var isEnabled = true
 
     init {
         items = selectableStrings
+        selectedText = selectedOption
     }
 
     override fun onCreateViewHolder(
