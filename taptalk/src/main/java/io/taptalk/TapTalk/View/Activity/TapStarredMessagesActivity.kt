@@ -156,7 +156,6 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
         vb.ivButtonBack.setOnClickListener { onBackPressed() }
 
         updateMessageDecoration()
-        checkMessageList()
     }
 
     private fun loadMessagesFromApi() {
@@ -167,13 +166,10 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
                 pageNumber,
                 PAGE_SIZE,
                 object : TapCoreGetOlderMessageListener() {
-                    override fun onSuccess(
-                        messages: MutableList<TAPMessageModel>?,
-                        hasMoreData: Boolean?
-                    ) {
-                        super.onSuccess(messages, hasMoreData)
-                        if (hasMoreData != null)
+                    override fun onSuccess(messages: MutableList<TAPMessageModel>?, hasMoreData: Boolean?) {
+                        if (hasMoreData != null) {
                             vm.isHasMoreData = hasMoreData
+                        }
                         hideLoadingOlderMessagesIndicator()
                         pageNumber++
                         if (!messages.isNullOrEmpty()) {
@@ -231,20 +227,8 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
             while (vb.rvStarredMessages.itemDecorationCount > 0) {
                 vb.rvStarredMessages.removeItemDecorationAt(0)
             }
-            vb.rvStarredMessages.addItemDecoration(
-                TAPVerticalDecoration(
-                    0,
-                    TAPUtils.dpToPx(16),
-                    messageAdapter.itemCount - 1
-                )
-            )
-            vb.rvStarredMessages.addItemDecoration(
-                TAPVerticalDecoration(
-                    TAPUtils.dpToPx(16),
-                    0,
-                    0
-                )
-            )
+            vb.rvStarredMessages.addItemDecoration(TAPVerticalDecoration(0, TAPUtils.dpToPx(16), messageAdapter.itemCount - 1))
+            vb.rvStarredMessages.addItemDecoration(TAPVerticalDecoration(TAPUtils.dpToPx(16), 0, 0))
         }
     }
 
@@ -264,12 +248,12 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
 
     private fun showEmptyState() {
         vb.rvStarredMessages.visibility = View.GONE
-        vb.gEmptyStarredMessages.visibility = View.VISIBLE
+        vb.llEmptyStarredMessages.visibility = View.VISIBLE
     }
 
     private fun hideEmptyState() {
         vb.rvStarredMessages.visibility = View.VISIBLE
-        vb.gEmptyStarredMessages.visibility = View.GONE
+        vb.llEmptyStarredMessages.visibility = View.GONE
     }
 
     private val chatListener = object : TAPChatListener() {
