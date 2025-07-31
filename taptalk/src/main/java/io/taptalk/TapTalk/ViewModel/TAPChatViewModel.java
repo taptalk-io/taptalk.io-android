@@ -33,6 +33,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
@@ -86,6 +87,19 @@ public class TAPChatViewModel extends AndroidViewModel {
     private boolean isSelectState;
     private HashMap<String, String> linkHashMap;
     private String currentLinkPreviewUrl = "";
+
+    // Voice Note State
+    public enum RECORDING_STATE {
+        DEFAULT, HOLD_RECORD, LOCKED_RECORD, FINISH, PLAY, PAUSE
+    }
+    private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
+
+    // Star and Pin Messages
+    private boolean isStarredIdsLoaded = false;
+    private boolean isPinnedIdsLoaded = false;
+    private boolean isLoadPinnedMessages = false;
+    private boolean hasMorePinnedMessages = false;
+    private int pinnedMessagesPageNumber = 1;
 
     public static class TAPChatViewModelFactory implements ViewModelProvider.Factory {
         private Application application;
@@ -846,5 +860,53 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setCurrentLinkPreviewUrl(String currentLinkPreviewUrl) {
         this.currentLinkPreviewUrl = currentLinkPreviewUrl;
+    }
+
+    public RECORDING_STATE getRecordingState() {
+        return recordingState;
+    }
+
+    public void setRecordingState(RECORDING_STATE recordingState) {
+        this.recordingState = recordingState;
+    }
+
+    public boolean isStarredIdsLoaded() {
+        return isStarredIdsLoaded;
+    }
+
+    public void setStarredIdsLoaded(boolean starredIdsLoaded) {
+        isStarredIdsLoaded = starredIdsLoaded;
+    }
+
+    public boolean isPinnedIdsLoaded() {
+        return isPinnedIdsLoaded;
+    }
+
+    public void setPinnedIdsLoaded(boolean pinnedIdsLoaded) {
+        isPinnedIdsLoaded = pinnedIdsLoaded;
+    }
+
+    public boolean isLoadPinnedMessages() {
+        return isLoadPinnedMessages;
+    }
+
+    public void setLoadPinnedMessages(boolean loadPinnedMessages) {
+        isLoadPinnedMessages = loadPinnedMessages;
+    }
+
+    public boolean isHasMorePinnedMessages() {
+        return hasMorePinnedMessages;
+    }
+
+    public void setHasMorePinnedMessages(boolean hasMorePinnedMessages) {
+        this.hasMorePinnedMessages = hasMorePinnedMessages;
+    }
+
+    public int getPinnedMessagesPageNumber() {
+        return pinnedMessagesPageNumber;
+    }
+
+    public void setPinnedMessagesPageNumber(int pinnedMessagesPageNumber) {
+        this.pinnedMessagesPageNumber = pinnedMessagesPageNumber;
     }
 }

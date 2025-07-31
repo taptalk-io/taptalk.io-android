@@ -115,6 +115,12 @@ import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.LINK_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.MENTION_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.PHONE_TYPE;
+import static io.taptalk.TapTalk.ViewModel.TAPChatViewModel.RECORDING_STATE.DEFAULT;
+import static io.taptalk.TapTalk.ViewModel.TAPChatViewModel.RECORDING_STATE.FINISH;
+import static io.taptalk.TapTalk.ViewModel.TAPChatViewModel.RECORDING_STATE.HOLD_RECORD;
+import static io.taptalk.TapTalk.ViewModel.TAPChatViewModel.RECORDING_STATE.LOCKED_RECORD;
+import static io.taptalk.TapTalk.ViewModel.TAPChatViewModel.RECORDING_STATE.PAUSE;
+import static io.taptalk.TapTalk.ViewModel.TAPChatViewModel.RECORDING_STATE.PLAY;
 
 import android.Manifest;
 import android.animation.LayoutTransition;
@@ -424,25 +430,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     // Scroll state
     private enum STATE {WORKING, LOADED, DONE}
-    // Voice Note State
-    private enum RECORDING_STATE {
-        DEFAULT, HOLD_RECORD, LOCKED_RECORD, FINISH, PLAY, PAUSE
-    }
+    private TapUIChatActivity.STATE state = TapUIChatActivity.STATE.LOADED;
 
     // Saved Messages
     private boolean isLastMessageNeedRefresh = false;
     private boolean isArrowButtonTapped = false;
-
-    private STATE state = STATE.LOADED;
-    private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
-
-    // Star and Pin Messages
-    private boolean isStarredIdsLoaded = true;
-    private boolean isPinnedIdsLoaded = true;
-    private boolean isLoadPinnedMessages = true;
-    private boolean hasLoadMore = false;
     private final static int PAGE_SIZE = 50;
-    private int pageNumber = 1;
 
     /**
      * =========================================================================================== *
@@ -798,7 +791,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             scrollToMessage(message.getLocalID());
                         }
                         if (intent.getBooleanExtra(IS_NEED_REFRESH, false)) {
-                            pageNumber = 1;
+                            vm.setPinnedMessagesPageNumber(1);
                             getPinnedMessages("");
                         }
                     }
@@ -860,7 +853,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPUtils.openLocationPicker(TapUIChatActivity.this, instanceKey);
                     break;
                 case PERMISSION_RECORD_AUDIO:
-                    showTooltip();
+                    startRecording();
                     break;
             }
         }
@@ -1277,7 +1270,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivForward.setOnClickListener(v -> forwardMessages());
         ibPinnedMessages.setOnClickListener(v -> TapPinnedMessagesActivity.Companion.start(this, instanceKey, vm.getRoom()));
         clPinnedMessage.setOnClickListener(v -> {
-            if (!isLoadPinnedMessages) {
+            if (!vm.isLoadPinnedMessages()) {
                 pinnedMessageLayoutOnClick();
             }
         });
@@ -1352,7 +1345,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.addPinnedMessageId(newestMessage.getMessageID());
                 setPinnedMessage(TAPDataManager.getInstance(instanceKey).getNewestPinnedMessage(vm.getRoom().getRoomID()));
             } else {
-                isLoadPinnedMessages = false;
+                vm.setLoadPinnedMessages(false);
             }
         }
 
@@ -1377,6 +1370,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
             messageAdapter.getItemCount() > 0
         ) {
             rvMessageList.scrollToPosition(0);
+        }
+
+        // Restore recording state
+        if (vm.getRecordingState() == LOCKED_RECORD) {
+            setLockedRecordingState();
+            audioManager.getRecordingTime().observe(TapUIChatActivity.this, s -> tvRecordTime.setText(s));
+        }
+        else if (vm.getRecordingState() == HOLD_RECORD) {
+            setHoldRecordingState();
+        }
+        else if (vm.getRecordingState() == FINISH) {
+            setFinishedRecordingState();
+        }
+        else if (vm.getRecordingState() == PLAY) {
+            setPlayingState();
+        }
+        else if (vm.getRecordingState() == PAUSE) {
+            setPausedState();
         }
     }
 
@@ -2517,9 +2528,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vm.increasePinnedMessageIndex(1);
         clPinnedIndicator.select(vm.getPinnedMessageIndex());
         setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
-        int indexLimit = PAGE_SIZE * (pageNumber - 1) - PAGE_SIZE / 2;
-        if (vm.getPinnedMessageIndex() >= indexLimit && hasLoadMore && vm.getPinnedMessages().size() <= PAGE_SIZE * pageNumber) {
-            isLoadPinnedMessages = true;
+        int indexLimit = PAGE_SIZE * (vm.getPinnedMessagesPageNumber() - 1) - PAGE_SIZE / 2;
+        if (vm.getPinnedMessageIndex() >= indexLimit && vm.isHasMorePinnedMessages() && vm.getPinnedMessages().size() <= PAGE_SIZE * vm.getPinnedMessagesPageNumber()) {
+            vm.setLoadPinnedMessages(true);
             getPinnedMessages("");
         }
     }
@@ -2650,8 +2661,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivVoiceNote.setVisibility(View.GONE);
         clSwipeVoiceNote.setVisibility(View.VISIBLE);
         ivVoiceNoteControl.setVisibility(View.VISIBLE);
-        recordingState = RECORDING_STATE.LOCKED_RECORD;
-
+        vm.setRecordingState(LOCKED_RECORD);
     }
 
     private void setHoldRecordingState() {
@@ -2660,12 +2670,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
         setSendButtonDisabled();
         clVoiceNote.setVisibility(View.VISIBLE);
         clSwipeVoiceNote.setVisibility(View.VISIBLE);
-        recordingState = RECORDING_STATE.HOLD_RECORD;
+        vm.setRecordingState(HOLD_RECORD);
     }
 
-    private void setDefaultState() {
+    private void setDefaultRecordingState() {
         etChat.setVisibility(View.VISIBLE);
-        recordingState = RECORDING_STATE.DEFAULT;
+        vm.setRecordingState(DEFAULT);
         etChat.setText(etChat.getText().toString());
         ivVoiceNote.setVisibility(View.VISIBLE);
         showAttachmentButton();
@@ -2681,7 +2691,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void setFinishedRecordingState() {
         seekBar.setVisibility(View.VISIBLE);
-        recordingState = RECORDING_STATE.FINISH;
+        vm.setRecordingState(FINISH);
+        hideChatField();
+        setSendButtonDisabled();
+        ivVoiceNote.setVisibility(View.GONE);
+        clSwipeVoiceNote.setVisibility(View.VISIBLE);
+        ivVoiceNoteControl.setVisibility(View.VISIBLE);
         seekBar.setEnabled(false);
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
         ivVoiceNoteControl.setTranslationX(0f);
@@ -2689,14 +2704,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void setPlayingState() {
-        recordingState = RECORDING_STATE.PLAY;
+        vm.setRecordingState(PLAY);
+        hideChatField();
+        setSendButtonDisabled();
+        ivVoiceNote.setVisibility(View.GONE);
+        clSwipeVoiceNote.setVisibility(View.VISIBLE);
+        ivVoiceNoteControl.setVisibility(View.VISIBLE);
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_pause_orange));
         ivVoiceNoteControl.setTranslationX(TAPUtils.dpToPx(getResources(), -2f));
         ivVoiceNoteControl.setTranslationY(TAPUtils.dpToPx(getResources(), 2f));
     }
 
     private void setPausedState() {
-        recordingState = RECORDING_STATE.PAUSE;
+        vm.setRecordingState(PAUSE);
+        hideChatField();
+        setSendButtonDisabled();
+        ivVoiceNote.setVisibility(View.GONE);
+        clSwipeVoiceNote.setVisibility(View.VISIBLE);
+        ivVoiceNoteControl.setVisibility(View.VISIBLE);
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
         ivVoiceNoteControl.setTranslationX(0f);
         ivVoiceNoteControl.setTranslationY(0f);
@@ -2741,7 +2766,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void stopRecording() {
-        if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD) {
+        if (vm.getRecordingState() == HOLD_RECORD || vm.getRecordingState() == LOCKED_RECORD) {
             audioManager.stopRecording();
         }
     }
@@ -2758,7 +2783,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             vm.setMediaPlayer(null);
         }
         seekBar.setProgress(0);
-        setDefaultState();
+        setDefaultRecordingState();
     }
 
     private void resumeVoiceNote() {
@@ -2791,7 +2816,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void onVoiceNoteControlClick() {
-        switch (recordingState) {
+        switch (vm.getRecordingState()) {
             case PLAY:
                 pauseVoiceNote();
                 break;
@@ -2812,7 +2837,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void showFinishedRecording() {
-        if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD || recordingState == RECORDING_STATE.FINISH) {
+        if (vm.getRecordingState() == HOLD_RECORD || vm.getRecordingState() == LOCKED_RECORD || vm.getRecordingState() == FINISH) {
             if (audioManager.getRecordingSeconds() < 1) {
                 removeRecording();
             } else {
@@ -2943,7 +2968,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private OnSwipeTouchListener swipeTouchListener = new OnSwipeTouchListener(TapUIChatActivity.this) {
         @Override
         public boolean onSwipeLeft() {
-            setDefaultState();
+            setDefaultRecordingState();
             return true;
         }
 
@@ -4066,7 +4091,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void buildAndSendTextMessage() {
         String message = etChat.getText().toString().trim();
-        if (recordingState == RECORDING_STATE.FINISH || recordingState == RECORDING_STATE.PLAY || recordingState == RECORDING_STATE.PAUSE) {
+        if (vm.getRecordingState() == FINISH || vm.getRecordingState() == PLAY || vm.getRecordingState() == PAUSE) {
             //send voice note
             TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
             vm.setPausedPosition(0);
@@ -4078,8 +4103,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.setMediaPlayer(null);
             }
             seekBar.setProgress(0);
-            setDefaultState();
-        } else if (recordingState == RECORDING_STATE.DEFAULT) {
+            setDefaultRecordingState();
+        } else if (vm.getRecordingState() == DEFAULT) {
             if (vm.getQuotedMessage() != null && vm.getQuoteAction() == EDIT) {
                 // edit message
                 TAPMessageModel messageModel = vm.getQuotedMessage();
@@ -4751,7 +4776,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (recordingState == RECORDING_STATE.DEFAULT) {
+            if (vm.getRecordingState() == DEFAULT) {
                 if (s.length() > 0 && s.toString().trim().length() > 0) {
                     if (TapUI.getInstance(instanceKey).isLinkPreviewInMessageEnabled()) {
                         // Delay 0.3 sec before url check
@@ -6353,15 +6378,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //    }
 
     private void getStarredMessageIds() {
-        isStarredIdsLoaded = false;
+        if (vm.isStarredIdsLoaded()) {
+            return;
+        }
+//        vmsetStarredIdsLoaded(false);
         TapCoreMessageManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
             @Override
             public void onSuccess(@NonNull ArrayList<String> arrayList) {
                 super.onSuccess(arrayList);
-                isStarredIdsLoaded = true;
+                vm.setStarredIdsLoaded(true);
                 vm.setStarredMessageIds(arrayList);
                 messageAdapter.setStarredMessageIds(arrayList);
-                if (isPinnedIdsLoaded) {
+                if (vm.isPinnedIdsLoaded()) {
                     messageAdapter.notifyDataSetChanged();
                 }
             }
@@ -6369,8 +6397,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
                 super.onError(errorCode, errorMessage);
-                isStarredIdsLoaded = true;
-                if (isPinnedIdsLoaded) {
+                vm.setStarredIdsLoaded(true);
+                if (vm.isPinnedIdsLoaded()) {
                     messageAdapter.notifyDataSetChanged();
                 }
             }
@@ -6378,16 +6406,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void getPinnedMessageIds() {
-        isPinnedIdsLoaded = false;
+        if (vm.isPinnedIdsLoaded()) {
+            return;
+        }
+//        vm.setPinnedIdsLoaded(false);
         TapCoreMessageManager.getInstance(instanceKey).getPinnedMessageIDs(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
             @Override
             public void onSuccess(@NonNull ArrayList<String> arrayList) {
                 super.onSuccess(arrayList);
-                isPinnedIdsLoaded = true;
+                vm.setPinnedIdsLoaded(true);
                 vm.setPinnedMessageIds(arrayList);
                 messageAdapter.setPinnedMessageIds(arrayList);
                 clPinnedIndicator.setSize(vm.getPinnedMessageIds().size());
-                if (isStarredIdsLoaded) {
+                if (vm.isStarredIdsLoaded()) {
                     messageAdapter.notifyDataSetChanged();
                 }
             }
@@ -6395,8 +6426,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
                 super.onError(errorCode, errorMessage);
-                isPinnedIdsLoaded = true;
-                if (isStarredIdsLoaded) {
+                vm.setPinnedIdsLoaded(true);
+                if (vm.isStarredIdsLoaded()) {
                     messageAdapter.notifyDataSetChanged();
                 }
             }
@@ -6405,13 +6436,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void getPinnedMessages(String messageId) {
-        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessages(vm.getRoom().getRoomID(), pageNumber, PAGE_SIZE, new TapCoreGetOlderMessageListener() {
+        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessages(vm.getRoom().getRoomID(), vm.getPinnedMessagesPageNumber(), PAGE_SIZE, new TapCoreGetOlderMessageListener() {
             @Override
             public void onSuccess(List<TAPMessageModel> messages, Boolean hasMoreData) {
                 super.onSuccess(messages, hasMoreData);
                 TAPMessageModel newestPinnedMessage = null;
                 TAPMessageModel shownMessage = null;
-                if (pageNumber == 1) {
+                if (vm.getPinnedMessagesPageNumber() == 1) {
                     if (!messages.isEmpty()) {
                         newestPinnedMessage = messages.get(0);
                         vm.setPinnedMessages(messages);
@@ -6442,11 +6473,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
                 }
-                hasLoadMore = hasMoreData;
-                if (hasLoadMore) {
-                    pageNumber++;
+                vm.setHasMorePinnedMessages(hasMoreData);
+                if (vm.isHasMorePinnedMessages()) {
+                    vm.setPinnedMessagesPageNumber(vm.getPinnedMessagesPageNumber() + 1);
                 }
-                isLoadPinnedMessages = false;
+                vm.setLoadPinnedMessages(false);
                 setPinnedMessage(shownMessage);
             }
         });
