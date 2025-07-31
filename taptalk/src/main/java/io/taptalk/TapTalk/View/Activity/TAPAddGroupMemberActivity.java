@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -84,10 +82,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     private TAPContactListViewModel vm;
 
     // Create new group
-    public static void start(
-            Context context,
-            String instanceKey
-    ) {
+    public static void start(Context context, String instanceKey) {
         Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         intent.putExtra(GROUP_ACTION, CREATE_GROUP);
@@ -99,10 +94,10 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
     // Add group member
     public static void start(
-            Activity context,
-            String instanceKey,
-            String roomID,
-            ArrayList<TAPUserModel> groupMembers
+        Activity context,
+        String instanceKey,
+        String roomID,
+        ArrayList<TAPUserModel> groupMembers
     ) {
         Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
@@ -181,10 +176,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
     private void initViewModel() {
         TAPUserModel myUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
-        vm = new ViewModelProvider(this,
-                new TAPContactListViewModel.TAPContactListViewModelFactory(
-                        getApplication(), instanceKey))
-                .get(TAPContactListViewModel.class);
+        vm = new ViewModelProvider(this, new TAPContactListViewModel.TAPContactListViewModelFactory(getApplication(), instanceKey)).get(TAPContactListViewModel.class);
 
         vm.setGroupAction(getIntent().getIntExtra(GROUP_ACTION, CREATE_GROUP));
 
@@ -341,22 +333,20 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         etSearch.setOnEditorActionListener(searchEditorListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        ivButtonSearch.setOnClickListener(v -> showSearchBar());
+        ivButtonSearch.setOnClickListener(v -> showSearchBar(true));
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
         if (vm.getGroupAction() == CREATE_GROUP) {
             tvTitle.setText(getString(R.string.tap_new_group));
             ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
-            ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
-                    getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavigationBarBackButton)));
+            ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavigationBarBackButton)));
             tvButtonText.setText(getString(R.string.tap_continue));
             flButtonContinue.setOnClickListener(v -> openGroupSubjectActivity());
         }
         else if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
             tvTitle.setText(getString(R.string.tap_add_members));
             ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
-            ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
-                    getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarCloseButton)));
+            ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarCloseButton)));
             tvButtonText.setText(getString(R.string.tap_add_members));
             flButtonContinue.setOnClickListener(v -> startAddMemberProcess());
         }
@@ -374,8 +364,11 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             showSelectedGroupMembers();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            flButtonContinue.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+        if (vm.isSelecting()) {
+            showSearchBar(false);
+        }
+        else {
+            showToolbar();
         }
     }
 
@@ -404,7 +397,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         ((TransitionDrawable) clActionBar.getBackground()).reverseTransition(SHORT_ANIMATION_TIME);
     }
 
-    private void showSearchBar() {
+    private void showSearchBar(boolean showKeyboard) {
         vm.setSelecting(true);
         if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
             ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
@@ -412,7 +405,9 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
         ivButtonSearch.setVisibility(View.GONE);
-        TAPUtils.showKeyboard(this, etSearch);
+        if (showKeyboard) {
+            TAPUtils.showKeyboard(this, etSearch);
+        }
         ((TransitionDrawable) clActionBar.getBackground()).startTransition(SHORT_ANIMATION_TIME);
     }
 
@@ -560,11 +555,25 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
         }
 
-        runOnUiThread(() -> {
-            llEmptyContact.setVisibility(View.GONE);
-            rvContactList.setVisibility(View.VISIBLE);
-            contactListAdapter.setItems(vm.getAdapterItems());
-        });
+        if (vm.getAdapterItems().isEmpty()) {
+            runOnUiThread(() -> {
+                tvInfoEmptyContact.setText(String.format(getString(R.string.tap_format_s_no_result_found_for), etSearch.getText().toString()));
+                tvButtonEmptyContact.setText(getString(R.string.tap_try_different_search));
+                llEmptyContact.setOnClickListener(v -> {
+                    TAPUtils.showKeyboard(TAPAddGroupMemberActivity.this, etSearch);
+                    etSearch.setSelection(etSearch.getText().length());
+                });
+                llEmptyContact.setVisibility(View.VISIBLE);
+                rvContactList.setVisibility(View.GONE);
+            });
+        }
+        else {
+            runOnUiThread(() -> {
+                llEmptyContact.setVisibility(View.GONE);
+                rvContactList.setVisibility(View.VISIBLE);
+                contactListAdapter.setItems(vm.getAdapterItems());
+            });
+        }
     }
 
     private void openNewContactActivity() {
