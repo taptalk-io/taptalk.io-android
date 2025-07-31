@@ -78,10 +78,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private TapContactListAdapter adapter;
     private TAPContactListViewModel vm;
 
-    public static void start(
-            Context context,
-            String instanceKey
-    ) {
+    public static void start(Context context, String instanceKey) {
         Intent intent = new Intent(context, TAPNewChatActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         context.startActivity(intent);
@@ -136,7 +133,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                     syncContactList(true);
                     break;
             }
-        } else {
+        }
+        else {
             switch (requestCode) {
                 case PERMISSION_READ_CONTACT:
                     flSync.setVisibility(View.VISIBLE);
@@ -146,10 +144,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = new ViewModelProvider(this,
-                new TAPContactListViewModel.TAPContactListViewModelFactory(
-                        getApplication(), instanceKey))
-                .get(TAPContactListViewModel.class);
+        vm = new ViewModelProvider(this, new TAPContactListViewModel.TAPContactListViewModelFactory(getApplication(), instanceKey)).get(TAPContactListViewModel.class);
         setupMenuButtons();
         // Set up listener for Live Data
         vm.getContactListLive().observe(this, userModels -> {
@@ -186,6 +181,14 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         if (TapUI.getInstance(instanceKey).isAddContactDisabled()) {
             ivButtonSearch.setVisibility(View.INVISIBLE);
         }
+        else {
+            if (vm.isSelecting()) {
+                showSearchBar(false);
+            }
+            else {
+                showToolbar();
+            }
+        }
 
         adapter = new TapContactListAdapter(instanceKey, vm.getSeparatedContactList(), contactListListener);
         rvContactList.setAdapter(adapter);
@@ -195,7 +198,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
-        ivButtonSearch.setOnClickListener(v -> showSearchBar());
+        ivButtonSearch.setOnClickListener(v -> showSearchBar(true));
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
         llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactListWhenSyncButtonClicked());
 
@@ -211,10 +214,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 TAPUtils.dismissKeyboard(TAPNewChatActivity.this);
             }
         });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            llButtonSync.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
-        }
     }
 
     private void setupMenuButtons() {
@@ -245,6 +244,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void showToolbar() {
+        vm.setSelecting(false);
         TAPUtils.dismissKeyboard(this);
         ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
         tvTitle.setVisibility(View.VISIBLE);
@@ -254,12 +254,15 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         ((TransitionDrawable) clActionBar.getBackground()).reverseTransition(SHORT_ANIMATION_TIME);
     }
 
-    private void showSearchBar() {
+    private void showSearchBar(boolean showKeyboard) {
+        vm.setSelecting(true);
         ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
         ivButtonSearch.setVisibility(View.GONE);
-        TAPUtils.showKeyboard(this, etSearch);
+        if (showKeyboard) {
+            TAPUtils.showKeyboard(this, etSearch);
+        }
         ((TransitionDrawable) clActionBar.getBackground()).startTransition(SHORT_ANIMATION_TIME);
     }
 
@@ -273,7 +276,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         if (searchKeyword.isEmpty()) {
             showMenuButtonsAndContactList();
             ivButtonClearText.setVisibility(View.GONE);
-        } else {
+        }
+        else {
             showFilteredContacts(searchKeyword);
             ivButtonClearText.setVisibility(View.VISIBLE);
         }
@@ -325,7 +329,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                     getString(R.string.tap_cant_find_contact),
                     getString(R.string.tap_view_blocked_contacts)
             ));
-        } else {
+        }
+        else {
             vm.getInfoLabelItem().setActionId(INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS);
             vm.getInfoLabelItem().setTitle(getString(R.string.tap_cant_find_contact));
             vm.getInfoLabelItem().setButtonText(getString(R.string.tap_view_blocked_contacts));
@@ -339,7 +344,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                     getString(R.string.tap_cant_find_person),
                     getString(R.string.tap_add_new_contact)
             ));
-        } else {
+        }
+        else {
             vm.getInfoLabelItem().setActionId(INFO_LABEL_ID_ADD_NEW_CONTACT);
             vm.getInfoLabelItem().setTitle(getString(R.string.tap_cant_find_person));
             vm.getInfoLabelItem().setButtonText(getString(R.string.tap_add_new_contact));
@@ -355,10 +361,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             showSyncContactPermissionDialog();
             TAPContactManager.getInstance(instanceKey).setAndSaveContactSyncPermissionAsked(true);
             TAPContactManager.getInstance(instanceKey).setAndSaveContactSyncAllowedByUser(false);
-        } else if (!TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS) ||
+        }
+        else if (!TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS) ||
                 !TAPContactManager.getInstance(instanceKey).isContactSyncAllowedByUser()) {
             runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
-        } else if (TAPContactManager.getInstance(instanceKey).isContactSyncAllowedByUser()) {
+        }
+        else if (TAPContactManager.getInstance(instanceKey).isContactSyncAllowedByUser()) {
             syncContactList(false);
         }
     }
@@ -366,7 +374,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private void permissionCheckAndGetContactListWhenSyncButtonClicked() {
         if (!TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             showSyncContactPermissionDialog();
-        } else {
+        }
+        else {
             syncContactList(true);
         }
     }
@@ -388,7 +397,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private void openQRScanner() {
         if (TAPUtils.hasPermissions(TAPNewChatActivity.this, Manifest.permission.CAMERA)) {
             TAPBarcodeScannerActivity.start(TAPNewChatActivity.this, instanceKey);
-        } else {
+        }
+        else {
             ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
         }
     }
@@ -524,7 +534,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             llConnectionStatus.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_status_connected));
             if (0 == contactSynced) {
                 tvConnectionStatus.setText(getString(R.string.tap_all_contacts_synced));
-            } else {
+            }
+            else {
                 tvConnectionStatus.setText(String.format(getString(R.string.tap_format_d_synced_contacts), contactSynced));
             }
             ivConnectionStatus.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
