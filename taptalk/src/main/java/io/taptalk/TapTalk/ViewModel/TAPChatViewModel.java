@@ -83,7 +83,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Uri voiceUri;
     private MediaPlayer mediaPlayer;
     private Timer durationTimer;
-    private int duration, pausedPosition, pinnedMessageIndex;
+    private int duration, currentMediaPlayerPosition, pausedPosition, pinnedMessageIndex;
     private boolean isSelectState;
     private HashMap<String, String> linkHashMap;
     private String currentLinkPreviewUrl = "";
@@ -742,6 +742,14 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public int getCurrentMediaPlayerPosition() {
+        return currentMediaPlayerPosition;
+    }
+
+    public void setCurrentMediaPlayerPosition(int currentMediaPlayerPosition) {
+        this.currentMediaPlayerPosition = currentMediaPlayerPosition;
     }
 
     public int getPausedPosition() {
