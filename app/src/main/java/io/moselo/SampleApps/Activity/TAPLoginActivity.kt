@@ -1,6 +1,7 @@
 package io.moselo.SampleApps.Activity
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -24,6 +25,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import io.moselo.SampleApps.Adapter.TAPCountryListAdapter
@@ -31,8 +33,10 @@ import io.moselo.SampleApps.SampleApplication
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
+import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapCustomSnackbarView
@@ -51,6 +55,10 @@ import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel
+import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel.ActiveView.COUNTRY_LIST
+import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel.ActiveView.OTP
+import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel.ActiveView.VERIFICATION_STATUS
+import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel.ActiveView.WHATSAPP_VERIFICATION
 import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
 import io.taptalk.TapTalkSample.databinding.TapActivityLoginBinding
@@ -68,6 +76,14 @@ class TAPLoginActivity : TAPBaseActivity() {
     private val defaultCountryID = 1
 
     companion object {
+
+        const val VERIFICATION_STATUS_BROADCAST_ACTION = "tapBroadcastActionLoginVerification"
+        const val VERIFICATION_STATUS_BROADCAST_EXTRA = "verificationStatus"
+        const val VERIFICATION_STATUS_LOADING = "loading"
+        const val VERIFICATION_STATUS_SUCCESS_LOGIN = "successLogin"
+        const val VERIFICATION_STATUS_SUCCESS_REGISTER = "successRegister"
+        const val VERIFICATION_STATUS_ERROR = "error"
+
         @JvmStatic
         @JvmOverloads
         fun start(
@@ -95,6 +111,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         initViewModel()
         initView()
         initCountryList()
+        registerBroadcastReceiver()
         TAPUtils.checkAndRequestNotificationPermission(this)
 
         if (application != null && application is SampleApplication) {
@@ -109,11 +126,6 @@ class TAPLoginActivity : TAPBaseActivity() {
             checkWhatsAppVerification(true)
         }
     }
-
-//    override fun onPause() {
-//        super.onPause()
-//        vm?.checkVerificationTimer?.cancel()
-//    }
 
     override fun onBackPressed() {
         if (vb.layoutLoginCountryList.clCountryListContainer.visibility == View.VISIBLE ||
@@ -147,6 +159,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (application != null && application is SampleApplication) {
             (application as SampleApplication).loginActivityExists = false
         }
+        unregisterBroadcastReceiver()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -211,17 +224,50 @@ class TAPLoginActivity : TAPBaseActivity() {
         vb.layoutLoginOtp.etOtpCode.addTextChangedListener(otpTextWatcher)
         vb.layoutLoginOtp.etOtpCode.setOnEditorActionListener(otpEditorListener)
 
-        if (vm?.activeView == TAPLoginViewModel.ActiveView.COUNTRY_LIST) {
+        if (vm?.activeView == COUNTRY_LIST) {
             showCountryListView()
         }
-        else if (vm?.activeView == TAPLoginViewModel.ActiveView.WHATSAPP_VERIFICATION) {
+        else if (vm?.activeView == WHATSAPP_VERIFICATION) {
             showVerificationView()
+            vb.layoutLoginWhatsappVerification.tvVerificationPhoneNumber.text = TAPUtils.beautifyPhoneNumber(String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber), true)
+            if (vm?.isShowingQR == true) {
+                showQR()
+            }
         }
-        else if (vm?.activeView == TAPLoginViewModel.ActiveView.OTP) {
+        else if (vm?.activeView == OTP) {
             showOtpView()
+            setupOtpView(false)
+            if (vm?.otpChannel == "whatsapp") {
+                vb.layoutLoginOtp.tvOtpDescription.text = getString(R.string.tap_otp_verification_whatsapp_description)
+                vb.layoutLoginOtp.ivOtpIcon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, io.taptalk.TapTalk.R.drawable.tap_ic_whatsapp))
+            }
+            else {
+                vb.layoutLoginOtp.tvOtpDescription.text = getString(R.string.tap_otp_verification_sms_description)
+                vb.layoutLoginOtp.ivOtpIcon.setImageDrawable(ContextCompat.getDrawable(this@TAPLoginActivity, R.drawable.tap_ic_sms_circle))
+            }
+            vb.layoutLoginOtp.tvOtpPhoneNumber.text = TAPUtils.beautifyPhoneNumber(String.format("+%s %s", vm?.countryCallingID, vm?.phoneNumber), true)
+            Handler(Looper.getMainLooper()).postDelayed({ showOtpTimer() }, 2000)
         }
-        else if (vm?.activeView == TAPLoginViewModel.ActiveView.VERIFICATION_STATUS) {
-            showVerificationStatusView()
+        else if (vm?.activeView == VERIFICATION_STATUS) {
+            when (vm?.verificationStatus) {
+                VERIFICATION_STATUS_LOADING -> {
+                    showVerificationLoading()
+                }
+                VERIFICATION_STATUS_SUCCESS_LOGIN -> {
+                    showVerificationSuccess()
+                    vb.layoutLoginVerificationStatus.llButtonContinueToHome.setOnClickListener { continueToHome() }
+                }
+                VERIFICATION_STATUS_SUCCESS_REGISTER -> {
+                    showVerificationSuccess()
+                    vb.layoutLoginVerificationStatus.llButtonContinueToHome.setOnClickListener { continueToRegister() }
+                }
+                VERIFICATION_STATUS_ERROR -> {
+                    showVerificationError()
+                }
+                else -> {
+                    showVerificationStatusView()
+                }
+            }
         }
         else {
             showPhoneNumberInputView()
@@ -702,7 +748,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showCountryListView() {
         runOnUiThread {
-            vm?.activeView = TAPLoginViewModel.ActiveView.COUNTRY_LIST
+            vm?.activeView = COUNTRY_LIST
             showViewWithAnimation(vb.layoutLoginCountryList.clCountryListContainer)
             hideViewWithAnimation(vb.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
             hideViewWithAnimation(vb.layoutLoginWhatsappVerification.svWhatsappVerification)
@@ -713,7 +759,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showVerificationView() {
         runOnUiThread {
-            vm?.activeView = TAPLoginViewModel.ActiveView.WHATSAPP_VERIFICATION
+            vm?.activeView = WHATSAPP_VERIFICATION
             showViewWithAnimation(vb.layoutLoginWhatsappVerification.svWhatsappVerification)
             hideViewWithAnimation(vb.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
             hideViewWithAnimation(vb.layoutLoginCountryList.clCountryListContainer)
@@ -724,7 +770,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showOtpView() {
         runOnUiThread {
-            vm?.activeView = TAPLoginViewModel.ActiveView.OTP
+            vm?.activeView = OTP
             showViewWithAnimation(vb.layoutLoginOtp.svOtpVerification)
             hideViewWithAnimation(vb.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
             hideViewWithAnimation(vb.layoutLoginCountryList.clCountryListContainer)
@@ -735,7 +781,7 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun showVerificationStatusView() {
         runOnUiThread {
-            vm?.activeView = TAPLoginViewModel.ActiveView.VERIFICATION_STATUS
+            vm?.activeView = VERIFICATION_STATUS
             showViewWithAnimation(vb.layoutLoginVerificationStatus.clVerificationStatusContainer)
             hideViewWithAnimation(vb.layoutLoginInput.svLoginPhoneNumberInput, phoneInputHiddenTranslation)
             hideViewWithAnimation(vb.layoutLoginCountryList.clCountryListContainer)
@@ -761,6 +807,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     vb.layoutLoginWhatsappVerification.tvVerificationDescription.text = getString(R.string.tap_whatsapp_verification_qr_description)
                     vb.layoutLoginWhatsappVerification.tvButtonChangeNumber.text = getString(io.taptalk.TapTalk.R.string.tap_back)
                     vb.layoutLoginWhatsappVerification.llButtonVerify.setOnClickListener(checkVerificationClickListener)
+                    vm?.isShowingQR = true
                 }
             }
             catch (e: Exception) {
@@ -779,6 +826,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             vb.layoutLoginWhatsappVerification.tvVerificationDescription.text = getString(R.string.tap_whatsapp_verification_description)
             vb.layoutLoginWhatsappVerification.tvButtonChangeNumber.text = getString(R.string.tap_change_phone_number)
             vb.layoutLoginWhatsappVerification.llButtonVerify.setOnClickListener(openWhatsAppClickListener)
+            vm?.isShowingQR = false
         }
     }
 
@@ -796,6 +844,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             vb.layoutLoginVerificationStatus.tvVerificationStatusTitle.text = getString(io.taptalk.TapTalk.R.string.tap_loading_dots)
             vb.layoutLoginVerificationStatus.tvVerificationStatusDescription.text = getString(R.string.tap_verification_loading_description)
             showVerificationStatusView()
+            vm?.verificationStatus = VERIFICATION_STATUS_LOADING
         }
     }
 
@@ -833,6 +882,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             vb.layoutLoginVerificationStatus.ivVerificationStatusImage.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_verification_error)
             vb.layoutLoginVerificationStatus.ivVerificationStatusImage.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_cancel_white))
             showVerificationStatusView()
+            vm?.verificationStatus = VERIFICATION_STATUS_ERROR
         }
     }
 
@@ -847,13 +897,11 @@ class TAPLoginActivity : TAPBaseActivity() {
             vb.layoutLoginVerificationStatus.llButtonRetryVerification.visibility = View.GONE
             vb.layoutLoginVerificationStatus.tvVerificationStatusTitle.text = ""
             vb.layoutLoginVerificationStatus.tvVerificationStatusDescription.text = ""
+            vm?.verificationStatus = ""
         }
     }
 
     private fun startRedirectTimer() {
-//        if (this::redirectTimer.isInitialized) {
-//            redirectTimer.cancel()
-//        }
         redirectTimer?.cancel()
         redirectTimer = object : CountDownTimer(3000L, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
@@ -988,7 +1036,6 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun checkWhatsAppVerification(resetAttempt: Boolean) {
-        //vm?.isCheckWhatsAppVerificationPending = false
         if (resetAttempt) {
             vm?.checkVerificationAttempts = 0
         }
@@ -1003,11 +1050,10 @@ class TAPLoginActivity : TAPBaseActivity() {
                 }
 
                 override fun onError(error: TAPErrorModel?) {
-                    //vm?.isCheckWhatsAppVerificationPending = true
                     vm?.checkVerificationAttempts = (vm?.checkVerificationAttempts ?: 0) + 1
 
                     if ((vm?.checkVerificationAttempts ?: 0) >= 5) {
-                        showVerificationError()
+                        sendVerificationErrorBroadcast()
                     }
                     else {
                         vm?.checkVerificationTimer?.cancel()
@@ -1031,9 +1077,11 @@ class TAPLoginActivity : TAPBaseActivity() {
      * OTP Verification
     ==============================================================================================*/
 
-    private fun setupOtpView() {
+    private fun setupOtpView(clearText: Boolean = true) {
         runOnUiThread {
-            clearOtpEditText()
+            if (clearText) {
+                clearOtpEditText()
+            }
             setupTimer()
             Handler(Looper.getMainLooper()).postDelayed({
                 vb.layoutLoginOtp.etOtpCode.requestFocus()
@@ -1111,6 +1159,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     vb.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
                     vb.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
+                    vb.layoutLoginOtp.tvOtpFilled1.text = String.format("%s", s[0])
                     vb.layoutLoginOtp.tvOtpFilled2.text = String.format("%s", s[1])
                     vb.layoutLoginOtp.tvOtpFilled3.text = ""
                     vb.layoutLoginOtp.tvOtpFilled4.text = ""
@@ -1125,6 +1174,8 @@ class TAPLoginActivity : TAPBaseActivity() {
                     vb.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
                     vb.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
+                    vb.layoutLoginOtp.tvOtpFilled1.text = String.format("%s", s[0])
+                    vb.layoutLoginOtp.tvOtpFilled2.text = String.format("%s", s[1])
                     vb.layoutLoginOtp.tvOtpFilled3.text = String.format("%s", s[2])
                     vb.layoutLoginOtp.tvOtpFilled4.text = ""
                     vb.layoutLoginOtp.tvOtpFilled5.text = ""
@@ -1138,6 +1189,9 @@ class TAPLoginActivity : TAPBaseActivity() {
                     vb.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
                     vb.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
 
+                    vb.layoutLoginOtp.tvOtpFilled1.text = String.format("%s", s[0])
+                    vb.layoutLoginOtp.tvOtpFilled2.text = String.format("%s", s[1])
+                    vb.layoutLoginOtp.tvOtpFilled3.text = String.format("%s", s[2])
                     vb.layoutLoginOtp.tvOtpFilled4.text = String.format("%s", s[3])
                     vb.layoutLoginOtp.tvOtpFilled5.text = ""
                     vb.layoutLoginOtp.tvOtpFilled6.text = ""
@@ -1150,10 +1204,19 @@ class TAPLoginActivity : TAPBaseActivity() {
                     vb.layoutLoginOtp.vPointer5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, io.taptalk.TapTalk.R.color.tapTransparentBlack1940))
                     vb.layoutLoginOtp.vPointer6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
 
+                    vb.layoutLoginOtp.tvOtpFilled1.text = String.format("%s", s[0])
+                    vb.layoutLoginOtp.tvOtpFilled2.text = String.format("%s", s[1])
+                    vb.layoutLoginOtp.tvOtpFilled3.text = String.format("%s", s[2])
+                    vb.layoutLoginOtp.tvOtpFilled4.text = String.format("%s", s[3])
                     vb.layoutLoginOtp.tvOtpFilled5.text = String.format("%s", s[4])
                     vb.layoutLoginOtp.tvOtpFilled6.text = ""
                 }
                 6 -> {
+                    vb.layoutLoginOtp.tvOtpFilled1.text = String.format("%s", s[0])
+                    vb.layoutLoginOtp.tvOtpFilled2.text = String.format("%s", s[1])
+                    vb.layoutLoginOtp.tvOtpFilled3.text = String.format("%s", s[2])
+                    vb.layoutLoginOtp.tvOtpFilled4.text = String.format("%s", s[3])
+                    vb.layoutLoginOtp.tvOtpFilled5.text = String.format("%s", s[4])
                     vb.layoutLoginOtp.tvOtpFilled6.text = String.format("%s", s[5])
                     verifyOtp()
                 }
@@ -1180,6 +1243,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         if (textView.text.length >= 6) {
             verifyOtp()
         }
+        TAPUtils.dismissKeyboard(this, textView)
         true
     }
 
@@ -1300,6 +1364,7 @@ class TAPLoginActivity : TAPBaseActivity() {
                     vm?.verification = response?.verification
                     vm?.otpID = response?.otpID ?: 0L
                     vm?.otpKey = response?.otpKey
+                    vm?.otpChannel = response?.channel
                     if (response?.isSuccess == true) {
                         if (response.channel == "whatsapp") {
                             vb.layoutLoginOtp.tvOtpDescription.text = getString(R.string.tap_otp_verification_whatsapp_description)
@@ -1392,10 +1457,43 @@ class TAPLoginActivity : TAPBaseActivity() {
      * Authentication
     ==============================================================================================*/
 
+    private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == VERIFICATION_STATUS_BROADCAST_ACTION) {
+                val status = intent.getStringExtra(VERIFICATION_STATUS_BROADCAST_EXTRA) ?: return
+                vm?.verificationStatus = status
+                when (status) {
+                    VERIFICATION_STATUS_LOADING -> {
+                        showVerificationLoading()
+                    }
+                    VERIFICATION_STATUS_SUCCESS_LOGIN -> {
+                        showVerificationSuccess()
+                        vb.layoutLoginVerificationStatus.llButtonContinueToHome.setOnClickListener { continueToHome() }
+                    }
+                    VERIFICATION_STATUS_SUCCESS_REGISTER -> {
+                        showVerificationSuccess()
+                        vb.layoutLoginVerificationStatus.llButtonContinueToHome.setOnClickListener { continueToRegister() }
+                    }
+                    VERIFICATION_STATUS_ERROR -> {
+                        showVerificationError()
+                    }
+                    else -> {
+                        showVerificationStatusView()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun registerBroadcastReceiver() {
+        TAPBroadcastManager.register(this, broadcastReceiver, VERIFICATION_STATUS_BROADCAST_ACTION)
+    }
+
+    private fun unregisterBroadcastReceiver() {
+        TAPBroadcastManager.unregister(this, broadcastReceiver)
+    }
+
     private fun continueToHome() {
-//        if (this::redirectTimer.isInitialized) {
-//            redirectTimer.cancel()
-//        }
         redirectTimer?.cancel()
         TAPApiManager.getInstance(instanceKey).isLoggedOut = false
         if (BuildConfig.DEBUG) {
@@ -1409,9 +1507,6 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private fun continueToRegister() {
-//        if (this::redirectTimer.isInitialized) {
-//            redirectTimer.cancel()
-//        }
         redirectTimer?.cancel()
         TAPRegisterActivity.start(
             this,
@@ -1433,14 +1528,15 @@ class TAPLoginActivity : TAPBaseActivity() {
         }
         else {
             // Register
-            showVerificationSuccess()
-            vb.layoutLoginVerificationStatus.llButtonContinueToHome.setOnClickListener { continueToRegister() }
+            val intent = Intent(VERIFICATION_STATUS_BROADCAST_ACTION)
+            intent.putExtra(VERIFICATION_STATUS_BROADCAST_EXTRA, VERIFICATION_STATUS_SUCCESS_REGISTER)
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
         }
     }
 
     private fun authenticateTapTalk(ticket: String?) {
         if (ticket.isNullOrEmpty()) {
-            showVerificationError()
+            sendVerificationErrorBroadcast()
             return
         }
         TapTalk.authenticateWithAuthTicket(
@@ -1449,14 +1545,21 @@ class TAPLoginActivity : TAPBaseActivity() {
             true,
             object : TapCommonListener() {
                 override fun onSuccess(successMessage: String?) {
-                    showVerificationSuccess()
-                    vb.layoutLoginVerificationStatus.llButtonContinueToHome.setOnClickListener { continueToHome() }
+                    val intent = Intent(VERIFICATION_STATUS_BROADCAST_ACTION)
+                    intent.putExtra(VERIFICATION_STATUS_BROADCAST_EXTRA, VERIFICATION_STATUS_SUCCESS_LOGIN)
+                    LocalBroadcastManager.getInstance(this@TAPLoginActivity).sendBroadcast(intent)
                 }
 
                 override fun onError(errorCode: String?, errorMessage: String?) {
-                    showVerificationError()
+                    sendVerificationErrorBroadcast()
                 }
             }
         )
+    }
+
+    private fun sendVerificationErrorBroadcast() {
+        val intent = Intent(VERIFICATION_STATUS_BROADCAST_ACTION)
+        intent.putExtra(VERIFICATION_STATUS_BROADCAST_EXTRA, VERIFICATION_STATUS_ERROR)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 }
