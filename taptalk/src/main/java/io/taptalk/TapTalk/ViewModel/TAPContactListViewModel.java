@@ -299,7 +299,9 @@ public class TAPContactListViewModel extends AndroidViewModel {
     }
 
     public void addSelectedContact(TAPUserModel user) {
-        getSelectedContactList().add(new TapContactListModel(user, TYPE_SELECTED_GROUP_MEMBER));
+        TapContactListModel contactList = new TapContactListModel(user, TYPE_SELECTED_GROUP_MEMBER);
+        contactList.setSelected(true);
+        getSelectedContactList().add(contactList);
         getSelectedContacts().add(user);
         getSelectedContactsIds().add(user.getUserID());
     }
@@ -314,6 +316,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void removeSelectedContact(TapContactListModel contactModel) {
         getSelectedContactList().remove(contactModel);
+        contactModel.setSelected(false);
         if (null != contactModel.getUser()) {
             getSelectedContacts().remove(contactModel.getUser());
             getSelectedContactsIds().remove(contactModel.getUser().getUserID());

@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import com.bumptech.glide.Glide;
@@ -207,10 +206,12 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                     item.setSelected(!item.isSelected());
                     if (user.getUserID().equals(myID)) {
                         return;
-                    } else if (null != listener) {
+                    }
+                    else if (null != listener) {
                         if (item.isSelected()) {
                             listener.onContactSelected(item);
-                        } else {
+                        }
+                        else {
                             listener.onContactDeselected(item);
                         }
                         notifyItemChanged(position);

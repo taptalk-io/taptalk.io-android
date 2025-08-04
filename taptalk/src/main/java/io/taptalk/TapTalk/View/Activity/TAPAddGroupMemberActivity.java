@@ -190,22 +190,24 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         TAPDataManager.getInstance(instanceKey).getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(List<TAPUserModel> entities) {
+                vm.getAdapterItems().clear();
                 vm.setContactList(entities);
                 vm.getContactList().removeAll(vm.getExistingMembers());
                 vm.getFilteredContacts().addAll(vm.getContactList());
                 vm.setSeparatedContactList(TAPUtils.generateContactListForRecycler(vm.getContactList(), TYPE_SELECTABLE_CONTACT_LIST, vm.getContactListPointer(), vm.getSelectedContactsIds()));
                 updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
 
-                if (!TAPUtils.isListEmpty(vm.getSelectedContactList())) {
+                if (!TAPUtils.isListEmpty(vm.getSelectedContactsIds())) {
                     List<String> selectedContactIDs = new ArrayList<>(vm.getSelectedContactsIds());
                     vm.clearSelectedContacts();
                     if (vm.getGroupAction() == CREATE_GROUP && !vm.getSelectedContacts().contains(myUser)) {
                         // Add self as selected group member
                         vm.addSelectedContact(myUser);
                     }
-                    for (TapContactListModel contact : vm.getSeparatedContactList()) {
-                        if (contact.getUser() != null && selectedContactIDs.contains(contact.getUser().getUserID())) {
-                            vm.addSelectedContact(contact);
+                    for (String contactID : selectedContactIDs) {
+                        TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(contactID);
+                        if (user != null && !user.getUserID().equals(myUser.getUserID())) {
+                            vm.addSelectedContact(user);
                         }
                     }
                 }
@@ -222,9 +224,12 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                     public void onSelectFinished(List<TAPUserModel> entities) {
                         for (TAPUserModel user : entities) {
                             ArrayList<String> blockedUserIDs = TAPDataManager.getInstance(instanceKey).getBlockedUserIds();
-                            if (null != user.getUserID() && !user.getUserID().isEmpty() &&
-                                    null != user.getFullname() && !user.getFullname().isEmpty() &&
-                                    !blockedUserIDs.contains(user.getUserID())
+                            if (null != user.getUserID() &&
+                                !user.getUserID().isEmpty() &&
+                                null != user.getFullname() &&
+                                !user.getFullname().isEmpty() &&
+                                !vm.getContactListPointer().containsKey(user.getUserID()) &&
+                                !blockedUserIDs.contains(user.getUserID())
                             ) {
                                 TapContactListModel filteredContact = new TapContactListModel(user, TYPE_SELECTABLE_CONTACT_LIST);
                                 vm.getContactListPointer().put(user.getUserID(), filteredContact);
@@ -242,9 +247,12 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         listener = new TapContactListListener() {
             @Override
             public boolean onContactSelected(TapContactListModel contact) {
+                if (contact == null || contact.getUser() == null) {
+                    return false;
+                }
                 TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
-                if (!vm.getSelectedContactList().contains(contact)) {
+                if (!vm.getSelectedContactsIds().contains(contact.getUser().getUserID())) {
                     if (vm.getSelectedContactList().size() + vm.getInitialGroupSize() >= TAPGroupManager.Companion.getInstance(instanceKey).getGroupMaxParticipants()) {
                         // Member count exceeds limit
                         contact.setSelected(false);
@@ -280,12 +288,29 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
             @Override
             public void onContactDeselected(TapContactListModel contact) {
+                if (contact == null || contact.getUser() == null) {
+                    return;
+                }
                 TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
-                int index = vm.getSelectedContactList().indexOf(contact);
-                vm.removeSelectedContact(contact);
+                int index = -1;
+                for (int i = 0; i < new ArrayList<>(vm.getSelectedContactList()).size(); i++) {
+                    TapContactListModel loopContactList = vm.getSelectedContactList().get(i);
+                    if (loopContactList.getUser() != null && contact.getUser().getUserID().equals(loopContactList.getUser().getUserID())) {
+                        index = i;
+                        vm.removeSelectedContact(loopContactList);
+                        break;
+                    }
+                }
                 selectedMembersAdapter.notifyItemRemoved(index);
                 new Handler().post(waitAnimationsToFinishRunnable);
-                contactListAdapter.notifyDataSetChanged();
+                for (int i = 0; i < new ArrayList<>(contactListAdapter.getItems()).size(); i++) {
+                    TapContactListModel loopContactList = contactListAdapter.getItems().get(i);
+                    if (loopContactList.getUser() != null && contact.getUser().getUserID().equals(loopContactList.getUser().getUserID())) {
+                        loopContactList.setSelected(false);
+                        contactListAdapter.notifyItemChanged(i);
+                        break;
+                    }
+                }
                 showSelectedGroupMembers();
             }
         };
@@ -686,6 +711,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             if (!vm.getContactListPointer().containsKey(userResponse.getUserID())) {
                 // Add user response to pointer
                 TapContactListModel contactListResponse = new TapContactListModel(userResponse, TYPE_SELECTABLE_CONTACT_LIST);
+                contactListResponse.setSelected(vm.getSelectedContactsIds().contains(userResponse.getUserID()));
                 vm.getContactListPointer().put(userResponse.getUserID(), contactListResponse);
             }
 
