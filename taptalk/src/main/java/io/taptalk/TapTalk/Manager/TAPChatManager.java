@@ -245,11 +245,7 @@ public class TAPChatManager {
                 case kSocketNewMessage:
                 case kSocketUpdateMessage:
                 case kSocketDeleteMessage:
-                    receiveMessageFromSocket(TAPUtils.fromJSON(
-                            new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {
-                            },
-                            emitData).getData(),
-                            eventName);
+                    receiveMessageFromSocket(TAPUtils.fromJSON(new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {}, emitData).getData(), eventName);
                     break;
                 case kSocketOpenMessage:
                     break;
@@ -366,6 +362,12 @@ public class TAPChatManager {
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         chatListener.onGetScheduledMessageList();
                     }
+                    HashMap<String, Object> scheduledMessageMap = TAPUtils.fromJSON(new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {}, emitData).getData();
+                    TAPMessageModel scheduledMessage = TAPEncryptorManager.getInstance().decryptMessage(scheduledMessageMap);
+                    if (scheduledMessage == null) {
+                        return;
+                    }
+                    TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(scheduledMessage));
                     break;
                 case kSocketBlockUser:
                     TAPEmitModel<TAPOnlineStatusModel> blockUserEmit = TAPUtils

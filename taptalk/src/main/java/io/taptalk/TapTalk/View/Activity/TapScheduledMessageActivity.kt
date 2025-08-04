@@ -23,6 +23,7 @@ import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
@@ -818,10 +819,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
 
         override fun onSuccess(response: TapGetScheduledMessageListResponse?) {
-            super.onSuccess(response)
+            vm.messageModels.clear()
+            messageAdapter.clearItems()
+            vm.dateSeparators.clear()
             if (response?.items?.isNotEmpty() == true) {
-                messageAdapter.clearItems()
-                vm.dateSeparators.clear()
                 var previousModel : TapScheduledMessageModel? = null
 
                 for (scheduledMessage in response.items) {
@@ -1026,9 +1027,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(
                     message.forwardFrom!!.userID,
                     object : TAPDefaultDataView<TAPGetUserResponse?>() {
-                        fun onSuccess(response: TAPGetUserResponse) {
-                            super.onSuccess(response)
-                            TAPContactManager.getInstance(instanceKey).updateUserData(response.user)
+                        override fun onSuccess(response: TAPGetUserResponse?) {
+                            response?.user?.let {
+                                TAPContactManager.getInstance(instanceKey).updateUserData(it)
+                            }
                             messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[message.localID]))
                         }
                     })

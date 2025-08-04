@@ -2912,8 +2912,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 String currentTimeString = TAPUtils.getMediaDurationString(vm.getMediaPlayer().getCurrentPosition(), vm.getMediaPlayer().getDuration());
                 tvRecordTime.setText(currentTimeString);
                 vm.setCurrentMediaPlayerPosition(vm.getMediaPlayer().getCurrentPosition());
-                if (vm.getCurrentMediaPlayerPosition() % 1000 == 0) {
-                }
             }
             catch (Exception e) {
                 Log.e(TAG, "onProgressChanged: " + e.getMessage());
