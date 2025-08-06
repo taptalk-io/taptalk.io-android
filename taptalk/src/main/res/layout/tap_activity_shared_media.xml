@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="56dp"
         android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground"
@@ -20,8 +20,8 @@
 
         <ImageView
             android:id="@+id/iv_button_back"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
@@ -36,8 +36,8 @@
             style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="?attr/actionBarSize"
-            android:layout_marginRight="?attr/actionBarSize"
+            android:layout_marginEnd="56dp"
+            android:layout_marginRight="56dp"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
