@@ -31,7 +31,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.BuildConfig
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.CLEAR_ROOM_LIST
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID
@@ -40,7 +40,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.RELOAD_PROFILE_PICTURE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_CAMERA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_GALLERY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed

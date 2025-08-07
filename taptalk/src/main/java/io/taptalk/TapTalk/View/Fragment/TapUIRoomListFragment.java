@@ -1,15 +1,15 @@
 package io.taptalk.TapTalk.View.Fragment;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.CLEAR_ROOM_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.CLEAR_ROOM_LIST_BADGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_REFRESH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.OPEN_CHAT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REFRESH_TOKEN_RENEWED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.RELOAD_PROFILE_PICTURE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
@@ -1366,7 +1366,7 @@ public class TapUIRoomListFragment extends Fragment {
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
-            vm.getRoomPointer().clear();
+//            vm.getRoomPointer().clear();
             HashMap<Integer, TAPRoomListModel> pinnedRooms = new HashMap<>();
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);

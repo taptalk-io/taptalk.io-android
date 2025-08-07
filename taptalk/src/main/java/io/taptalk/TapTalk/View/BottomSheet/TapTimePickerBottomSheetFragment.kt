@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.R
@@ -13,7 +14,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<Long>?, private val defaultTimestamp: Long?) : BottomSheetDialogFragment() {
+class TapTimePickerBottomSheetFragment(
+    private val listener: TAPGeneralListener<Long>?,
+    private val defaultTimestamp: Long?
+) : BottomSheetDialogFragment() {
 
     private lateinit var vb : TapFragmentTimePickerBottomSheetBinding
     private lateinit var currentDate : Date
@@ -123,6 +127,12 @@ class TapTimePickerBottomSheetFragment(private val listener: TAPGeneralListener<
             listener?.onClick(0, getScheduledTime())
             dismiss()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val behavior = BottomSheetBehavior.from(requireView().parent as View)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     override fun show(manager: FragmentManager, tag: String?) {

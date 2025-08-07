@@ -23,7 +23,6 @@ import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
@@ -68,7 +67,20 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.OPEN_CHAT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_ATTACHMENT_BOTTOM_SHEET
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMention
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
@@ -77,6 +89,10 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter
@@ -198,7 +214,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (initViewModel()) {
             initView()
         }
-        registerBroadcastManager()
+        registerBackgroundBroadcastManager()
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener)
         TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener)
         textMessage = intent.getStringExtra(MESSAGE)
@@ -208,6 +224,12 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
     override fun onResume() {
         super.onResume()
         getScheduledMessages()
+        registerForegroundBroadcastReceiver()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        TAPBroadcastManager.unregister(this, foregroundBroadcastReceiver)
     }
 
     override fun onBackPressed() {
@@ -225,7 +247,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        TAPBroadcastManager.unregister(this, broadcastReceiver)
+        TAPBroadcastManager.unregister(this, backgroundBroadcastReceiver)
         TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener)
         TAPConnectionManager.getInstance(instanceKey).removeSocketListener(socketListener)
         TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads() // Remove failed download list from active room
@@ -732,25 +754,34 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         vb.ivSchedule.visibility = View.GONE
     }
 
-    private fun registerBroadcastManager() {
+    private fun registerBackgroundBroadcastManager() {
         TAPBroadcastManager.register(
-            this, broadcastReceiver,
-            UploadBroadcastEvent.UploadProgressLoading,
-            UploadBroadcastEvent.UploadProgressFinish,
-            UploadBroadcastEvent.UploadFailed,
-            UploadBroadcastEvent.UploadCancelled,
-            DownloadBroadcastEvent.DownloadProgressLoading,
-            DownloadBroadcastEvent.DownloadFinish,
-            DownloadBroadcastEvent.DownloadFailed,
-            DownloadBroadcastEvent.DownloadFile,
-            DownloadBroadcastEvent.OpenFile,
-            DownloadBroadcastEvent.CancelDownload,
-            DownloadBroadcastEvent.PlayPauseVoiceNote,
-            LongPressBroadcastEvent.LongPressChatBubble,
-            LongPressBroadcastEvent.LongPressEmail,
-            LongPressBroadcastEvent.LongPressLink,
-            LongPressBroadcastEvent.LongPressPhone,
-            LongPressBroadcastEvent.LongPressMention
+            this,
+            backgroundBroadcastReceiver,
+            UploadProgressLoading,
+            UploadProgressFinish,
+            UploadFailed,
+            UploadCancelled,
+            DownloadProgressLoading,
+            DownloadFinish,
+            DownloadFailed,
+            DownloadFile,
+        )
+    }
+
+    private fun registerForegroundBroadcastReceiver() {
+        TAPBroadcastManager.register(
+            this,
+            foregroundBroadcastReceiver,
+            OpenFile,
+            CancelDownload,
+            PlayPauseVoiceNote,
+            LongPressChatBubble,
+            LongPressEmail,
+            LongPressLink,
+            LongPressPhone,
+            LongPressMention,
+            REOPEN_ATTACHMENT_BOTTOM_SHEET
         )
     }
 
@@ -2657,19 +2688,19 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
     }
 
-    private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    private val backgroundBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action ?: return
             val localID: String?
             val fileUri: Uri?
             when (action) {
-                UploadBroadcastEvent.UploadProgressLoading -> {
+                UploadProgressLoading -> {
                     localID = intent.getStringExtra(UploadBroadcastEvent.UploadLocalID)
                     if (vm.messagePointer.containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[localID]))
                     }
                 }
-                UploadBroadcastEvent.UploadProgressFinish -> {
+                UploadProgressFinish -> {
                     localID = intent.getStringExtra(UploadBroadcastEvent.UploadLocalID)
                     val messageModel = vm.messagePointer[localID]
                     if (vm.messagePointer.containsKey(localID) && intent.hasExtra(
@@ -2691,7 +2722,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     }
                     messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(messageModel))
                 }
-                UploadBroadcastEvent.UploadFailed -> {
+                UploadFailed -> {
                     localID = intent.getStringExtra(UploadBroadcastEvent.UploadLocalID)
                     if (vm.messagePointer.containsKey(localID)) {
                         val failedMessageModel = vm.messagePointer[localID]
@@ -2700,7 +2731,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(failedMessageModel))
                     }
                 }
-                UploadBroadcastEvent.UploadCancelled -> {
+                UploadCancelled -> {
                     localID = intent.getStringExtra(UploadBroadcastEvent.UploadLocalID)
                     if (vm.messagePointer.containsKey(localID)) {
                         val cancelledMessageModel = vm.messagePointer[localID]
@@ -2715,30 +2746,40 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         messageAdapter.removeMessageAt(itemPos)
                     }
                 }
-                DownloadBroadcastEvent.DownloadProgressLoading, DownloadBroadcastEvent.DownloadFinish -> {
+                DownloadProgressLoading, DownloadFinish -> {
                     localID = intent.getStringExtra(DownloadBroadcastEvent.DownloadLocalID)
                     if (vm.messagePointer.containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[localID]))
                     }
                 }
-                DownloadBroadcastEvent.DownloadFailed -> {
+                DownloadFailed -> {
                     localID = intent.getStringExtra(DownloadBroadcastEvent.DownloadLocalID)
                     TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(localID)
                     if (vm.messagePointer.containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[localID]))
                     }
                 }
-                DownloadBroadcastEvent.DownloadFile -> startFileDownload(
+                DownloadFile -> startFileDownload(
                     intent.getParcelableExtra(MESSAGE)
                 )
-                DownloadBroadcastEvent.CancelDownload -> {
+                CancelDownload -> {
                     localID = intent.getStringExtra(DownloadBroadcastEvent.DownloadLocalID)
                     TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(localID)
                     if (vm.messagePointer.containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[localID]))
                     }
                 }
-                DownloadBroadcastEvent.OpenFile -> {
+            }
+        }
+    }
+
+    private val foregroundBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action ?: return
+            val localID: String?
+            val fileUri: Uri?
+            when (action) {
+                OpenFile -> {
                     val message = intent.getParcelableExtra<TAPMessageModel>(MESSAGE)
                     fileUri = intent.getParcelableExtra(MessageData.FILE_URI)
                     vm.openedFileMessage = message
@@ -2757,7 +2798,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         showDownloadFileDialog()
                     }
                 }
-                LongPressBroadcastEvent.LongPressChatBubble -> {
+                LongPressChatBubble -> {
                     if (null != intent.getParcelableExtra(MESSAGE) &&
                         intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
                     ) {
@@ -2771,7 +2812,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 }
-                LongPressBroadcastEvent.LongPressLink -> {
+                LongPressLink -> {
                     if (null != intent.getStringExtra(URL_MESSAGE) &&
                         null != intent.getStringExtra(COPY_MESSAGE)
                     ) {
@@ -2786,7 +2827,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 }
-                LongPressBroadcastEvent.LongPressEmail -> {
+                LongPressEmail -> {
                     if (null != intent.getStringExtra(URL_MESSAGE) &&
                         null != intent.getStringExtra(COPY_MESSAGE) &&
                         null != intent.getParcelableExtra(MESSAGE) &&
@@ -2803,7 +2844,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 }
-                LongPressBroadcastEvent.LongPressPhone -> {
+                LongPressPhone -> {
                     if (null != intent.getStringExtra(URL_MESSAGE) &&
                         null != intent.getStringExtra(COPY_MESSAGE) &&
                         null != intent.getParcelableExtra(MESSAGE) &&
@@ -2820,7 +2861,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 }
-                LongPressBroadcastEvent.LongPressMention -> {
+                LongPressMention -> {
                     if (null != intent.getStringExtra(URL_MESSAGE) &&
                         null != intent.getStringExtra(COPY_MESSAGE) &&
                         null != intent.getParcelableExtra(MESSAGE) &&
@@ -2836,6 +2877,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         mentionBottomSheet.show(supportFragmentManager, "")
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
+                }
+                REOPEN_ATTACHMENT_BOTTOM_SHEET -> {
+                    openAttachMenu()
                 }
             }
         }

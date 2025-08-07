@@ -3,8 +3,9 @@ package io.taptalk.TapTalk.View.Activity;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_ATTACHMENT_BOTTOM_SHEET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.CLEAR_ROOM_LIST_BADGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
@@ -63,7 +64,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.OPEN_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -76,7 +77,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.EDIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
@@ -1491,19 +1492,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showAttachmentButton() {
         // Show / hide attachment button
         if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
-                TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
-                TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
-                TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
+            TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
         ) {
             ivButtonAttach.setVisibility(View.GONE);
-        } else {
+        }
+        else {
             ivButtonAttach.setVisibility(View.VISIBLE);
         }
 
         // Show / hide scheduled message button
         if (TapUI.getInstance(instanceKey).isScheduledMessageFeatureEnabled()) {
             ivSchedule.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else {
             ivSchedule.setVisibility(View.GONE);
         }
 
@@ -1562,7 +1565,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
             LongPressLink,
             LongPressPhone,
             LongPressMention,
-            LinkPreviewImageLoaded
+            LinkPreviewImageLoaded,
+            REOPEN_ATTACHMENT_BOTTOM_SHEET
         );
     }
 
@@ -5429,6 +5433,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         // Scroll recycler to bottom
                         rvMessageList.scrollToPosition(0);
                     }
+                    break;
+                case REOPEN_ATTACHMENT_BOTTOM_SHEET:
+                    runOnUiThread(() -> openAttachMenu());
                     break;
             }
         }
