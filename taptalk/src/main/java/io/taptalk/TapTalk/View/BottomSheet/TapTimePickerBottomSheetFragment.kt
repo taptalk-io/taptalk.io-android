@@ -1,12 +1,17 @@
 package io.taptalk.TapTalk.View.BottomSheet
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_TIME_PICKER_BOTTOM_SHEET
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.databinding.TapFragmentTimePickerBottomSheetBinding
@@ -48,7 +53,14 @@ class TapTimePickerBottomSheetFragment(
         super.onCreate(savedInstanceState)
 
         if (listener == null) {
+            val currentActivity = activity
+            Handler(Looper.getMainLooper()).postDelayed({
+                if (currentActivity != null && !currentActivity.isFinishing) {
+                    LocalBroadcastManager.getInstance(currentActivity).sendBroadcast(Intent(REOPEN_TIME_PICKER_BOTTOM_SHEET))
+                }
+            }, 0L)
             dismiss()
+            return
         }
 
         currentDate = Date()
