@@ -287,6 +287,7 @@ import io.taptalk.TapTalk.View.BottomSheet.TapTimePickerBottomSheetFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.View.Fragment.TapBaseChatRoomCustomNavigationBarFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
+import io.taptalk.TapTalk.ViewModel.TapScheduledMessageViewModel;
 import io.taptalk.TapTalk.databinding.TapActivityChatBinding;
 import rx.Observable;
 import rx.Observer;
@@ -1286,7 +1287,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         cvSchedule.setOnClickListener(v -> {
             hideScheduleMessageButton();
-            TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TAPGeneralListener<>() {
+            // TODO: ViewModel for orientation
+            TapTimePickerBottomSheetFragment timePicker = new TapTimePickerBottomSheetFragment(new TapScheduledMessageViewModel(), new TAPGeneralListener<>() {
                 @Override
                 public void onClick(int position, Long item) {
                     super.onClick(position, item);

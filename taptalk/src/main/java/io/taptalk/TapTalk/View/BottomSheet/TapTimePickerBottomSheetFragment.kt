@@ -14,12 +14,16 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_TIME_PICKER_BOTTOM_SHEET
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.ViewModel.TapScheduledMessageViewModel
 import io.taptalk.TapTalk.databinding.TapFragmentTimePickerBottomSheetBinding
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class TapTimePickerBottomSheetFragment(
+    private val svm: TapScheduledMessageViewModel,
     private val listener: TAPGeneralListener<Long>?,
     private val defaultTimestamp: Long?
 ) : BottomSheetDialogFragment() {
@@ -45,9 +49,9 @@ class TapTimePickerBottomSheetFragment(
         "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59"
     )
 
-    constructor() : this(null, null)
+    constructor() : this(TapScheduledMessageViewModel(), null, null)
 
-    constructor(listener: TAPGeneralListener<Long>) : this(listener, null)
+    constructor(svm: TapScheduledMessageViewModel, listener: TAPGeneralListener<Long>) : this(svm, listener, null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,6 +120,9 @@ class TapTimePickerBottomSheetFragment(
         vb.npHour.maxValue = hours[hours.size-1].toInt()
         vb.npHour.displayedValues = hours
         vb.npHour.value = currentCal.get(Calendar.HOUR_OF_DAY)
+        if (currentCal.get(Calendar.MINUTE) >= 59) {
+            vb.npHour.value += 1
+        }
         vb.npHour.setOnValueChangedListener { _, _, _ ->
             checkTimeValue()
             vb.btnSend.text = getTimeResult()
@@ -172,6 +179,7 @@ class TapTimePickerBottomSheetFragment(
                 vb.npHour.value = currentCal.get(Calendar.HOUR_OF_DAY)
                 vb.npMinute.value = currentCal.get(Calendar.MINUTE) + 1
             }
+            svm.pendingScheduledMessageTime = shownDate.time
         }
     }
 

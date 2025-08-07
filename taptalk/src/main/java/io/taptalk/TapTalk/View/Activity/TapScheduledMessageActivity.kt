@@ -48,10 +48,20 @@ import com.bumptech.glide.request.target.Target
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.OPEN_CHAT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_ATTACHMENT_BOTTOM_SHEET
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_TIME_PICKER_BOTTOM_SHEET
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
@@ -62,26 +72,15 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.TIME
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Location
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.OPEN_CHAT
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_ATTACHMENT_BOTTOM_SHEET
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_TIME_PICKER_BOTTOM_SHEET
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMention
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION
@@ -148,7 +147,6 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPre
 import io.taptalk.TapTalk.View.BottomSheet.TapTimePickerBottomSheetFragment
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel.TAPChatViewModelFactory
-import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
 import io.taptalk.TapTalk.ViewModel.TapScheduledMessageViewModel
 import io.taptalk.TapTalk.databinding.TapActivityChatBinding
 import org.jsoup.Jsoup
@@ -315,8 +313,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     val medias = data?.getParcelableArrayListExtra<TAPMediaPreviewModel>(Extras.MEDIA_PREVIEWS)
                     if (null != medias && 0 < medias.size) {
                         svm.pendingScheduledMessageType = TYPE_IMAGE
+                        svm.pendingScheduledMessageTime = System.currentTimeMillis()
                         svm.pendingScheduledMessageMedias = medias
-                        val timePicker = TapTimePickerBottomSheetFragment(getMediaScheduledMessageListener(medias))
+                        val timePicker = TapTimePickerBottomSheetFragment(svm, getMediaScheduledMessageListener(medias))
                         timePicker.show(supportFragmentManager, "")
                     }
                 }
@@ -330,10 +329,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     val latitude = data?.getDoubleExtra(Location.LATITUDE, 0.0) ?: 0.0
                     val longitude = data?.getDoubleExtra(Location.LONGITUDE, 0.0) ?: 0.0
                     svm.pendingScheduledMessageType = TYPE_LOCATION
+                    svm.pendingScheduledMessageTime = System.currentTimeMillis()
                     svm.pendingScheduledMessageText = address
                     svm.pendingScheduledMessageLatitude = latitude
                     svm.pendingScheduledMessageLongitude = longitude
-                    val timePicker = TapTimePickerBottomSheetFragment(getLocationScheduledMessageListener(address, latitude, longitude))
+                    val timePicker = TapTimePickerBottomSheetFragment(svm, getLocationScheduledMessageListener(address, latitude, longitude))
                     timePicker.show(supportFragmentManager, "")
                 }
                 RequestCode.SEND_FILE -> {
@@ -366,8 +366,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     if (tempFile != null) {
                         if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length())) {
                             svm.pendingScheduledMessageType = TYPE_FILE
+                            svm.pendingScheduledMessageTime = System.currentTimeMillis()
                             svm.pendingScheduledMessageFile = tempFile
-                            val timePicker = TapTimePickerBottomSheetFragment(getFileScheduledMessageListener(tempFile))
+                            val timePicker = TapTimePickerBottomSheetFragment(svm, getFileScheduledMessageListener(tempFile))
                             timePicker.show(supportFragmentManager, "")
                         }
                         else {
@@ -679,8 +680,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 }
                 else {
                     svm.pendingScheduledMessageType = TYPE_TEXT
+                    svm.pendingScheduledMessageTime = System.currentTimeMillis()
                     svm.pendingScheduledMessageText = text
-                    val timePicker = TapTimePickerBottomSheetFragment(getTextScheduledMessageListener(text))
+                    val timePicker = TapTimePickerBottomSheetFragment(svm, getTextScheduledMessageListener(text))
                     timePicker.show(supportFragmentManager, "")
                 }
             }
@@ -1765,8 +1767,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     return
                 }
                 svm.pendingScheduledMessageType = TYPE_UNREAD_MESSAGE_IDENTIFIER
+                svm.pendingScheduledMessageTime = message.created
                 svm.pendingRescheduledMessage = message
-                val timePicker = TapTimePickerBottomSheetFragment(getRescheduledMessageListener(message), message.created)
+                val timePicker = TapTimePickerBottomSheetFragment(svm, getRescheduledMessageListener(message), message.created)
                 timePicker.show(supportFragmentManager, "")
             }
         }
@@ -2867,28 +2870,32 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     openAttachMenu()
                 }
                 REOPEN_TIME_PICKER_BOTTOM_SHEET -> {
-                    // TODO: DEFAULT TIME
                     var listener: TAPGeneralListener<Long>? = null
-                    if (svm.pendingScheduledMessageType == TYPE_TEXT) {
+                    val messageType = svm.pendingScheduledMessageType
+                    if (messageType == TYPE_TEXT) {
                         listener = getTextScheduledMessageListener(svm.pendingScheduledMessageText)
                     }
-                    else if (svm.pendingScheduledMessageType == TYPE_IMAGE && svm.pendingScheduledMessageMedias.isNotEmpty()) {
+                    else if (messageType == TYPE_IMAGE && svm.pendingScheduledMessageMedias.isNotEmpty()) {
                         listener = getMediaScheduledMessageListener(svm.pendingScheduledMessageMedias)
                     }
-                    else if (svm.pendingScheduledMessageType == TYPE_FILE && svm.pendingScheduledMessageFile != null) {
+                    else if (messageType == TYPE_FILE && svm.pendingScheduledMessageFile != null) {
                         listener = getFileScheduledMessageListener(svm.pendingScheduledMessageFile!!)
                     }
-                    else if (svm.pendingScheduledMessageType == TYPE_LOCATION) {
+                    else if (messageType == TYPE_LOCATION) {
                         listener = getLocationScheduledMessageListener(svm.pendingScheduledMessageText, svm.pendingScheduledMessageLatitude, svm.pendingScheduledMessageLongitude)
                     }
-                    else if (svm.pendingScheduledMessageType == TYPE_UNREAD_MESSAGE_IDENTIFIER && svm.pendingRescheduledMessage != null) {
+                    else if (messageType == TYPE_UNREAD_MESSAGE_IDENTIFIER && svm.pendingRescheduledMessage != null) {
                         listener = getRescheduledMessageListener(svm.pendingRescheduledMessage!!)
                     }
                     if (listener != null) {
-                        val timePicker = TapTimePickerBottomSheetFragment(listener)
+                        val timePicker: TapTimePickerBottomSheetFragment = if (System.currentTimeMillis() > svm.pendingScheduledMessageTime) {
+                            TapTimePickerBottomSheetFragment(svm, listener)
+                        }
+                        else {
+                            TapTimePickerBottomSheetFragment(svm, listener, svm.pendingScheduledMessageTime)
+                        }
                         timePicker.show(supportFragmentManager, "")
                     }
-                    svm.pendingScheduledMessageType = 0
                 }
             }
         }
