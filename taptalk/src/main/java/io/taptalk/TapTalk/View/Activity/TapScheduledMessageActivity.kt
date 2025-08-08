@@ -1862,11 +1862,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 data[MessageData.IMAGE] = vm.linkHashMap[MessageData.IMAGE]
                 data[MessageData.TYPE] = vm.linkHashMap[MessageData.TYPE]
                 data[MessageData.URL] = firstUrl
-                TAPChatManager.getInstance(instanceKey).sendLinkMessage(message, data, scheduledTime)
+                TAPChatManager.getInstance(instanceKey).sendLinkMessageWithRoomModel(message, vm.room, data, scheduledTime)
             }
             else {
                 // send message as text
-                TAPChatManager.getInstance(instanceKey).sendTextMessage(message, scheduledTime)
+                TAPChatManager.getInstance(instanceKey).sendTextMessageWithRoomModel(message, vm.room, scheduledTime)
             }
             vb.rvMessageList.post{ scrollToBottom() }
         }
