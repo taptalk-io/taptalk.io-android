@@ -227,7 +227,10 @@ public class TapUIRoomListFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
-        TapTalk.getTapTalkInstance(instanceKey).putGlobalChatListener();
+        TapTalk instance = TapTalk.getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            instance.putGlobalChatListener();
+        }
     }
 
     @Override
@@ -253,7 +256,10 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void initListener() {
-        TapTalk.getTapTalkInstance(instanceKey).removeGlobalChatListener();
+        TapTalk instance = TapTalk.getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            instance.removeGlobalChatListener();
+        }
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
@@ -788,6 +794,9 @@ public class TapUIRoomListFragment extends Fragment {
                             if (!TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(messageRoomID)) {
                                 vm.getRoomList().remove(roomList);
                                 index = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().size();
+                                if (index > vm.getRoomList().size()) {
+                                    index = vm.getRoomList().size();
+                                }
                                 vm.getRoomList().add(index, roomList);
                             }
                             else {
@@ -795,11 +804,12 @@ public class TapUIRoomListFragment extends Fragment {
                             }
 
                             if (null != activity) {
+                                int finalIndex = index;
                                 activity.runOnUiThread(() -> {
                                     llRoomEmpty.setVisibility(View.GONE);
                                     adapter.notifyItemChanged(oldPos);
-                                    if (index != oldPos) {
-                                        adapter.notifyItemMoved(oldPos, index);
+                                    if (finalIndex != oldPos) {
+                                        adapter.notifyItemMoved(oldPos, finalIndex);
                                     }
                                     // Scroll to top
                                     if (llm.findFirstCompletelyVisibleItemPosition() == 0)

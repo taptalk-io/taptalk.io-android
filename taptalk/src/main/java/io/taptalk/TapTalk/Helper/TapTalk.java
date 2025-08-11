@@ -45,6 +45,7 @@ import android.os.Looper;
 import android.provider.Settings;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
@@ -158,7 +159,10 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void setTapTalkSocketConnectionMode(String instanceKey, TapTalkSocketConnectionMode mode) {
-        getTapTalkInstance(instanceKey).socketConnectionMode = mode;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            instance.socketConnectionMode = mode;
+        }
     }
 
     public static TapTalkSocketConnectionMode getTapTalkSocketConnectionMode() {
@@ -166,7 +170,13 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static TapTalkSocketConnectionMode getTapTalkSocketConnectionMode(String instanceKey) {
-        return getTapTalkInstance(instanceKey).socketConnectionMode;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return instance.socketConnectionMode;
+        }
+        else {
+            return TapTalkSocketConnectionMode.DEFAULT;
+        }
     }
 
     public enum TapTalkScreenOrientation {
@@ -175,7 +185,7 @@ public class TapTalk implements LifecycleObserver {
         TapTalkOrientationLandscape // FIXME: 6 February 2019 Activity loads portrait by default then changes to landscape after onCreate
     }
 
-    public static TapTalk getTapTalkInstance(String instanceKey) {
+    public static @Nullable TapTalk getTapTalkInstance(String instanceKey) {
         return getTapTalkInstances().get(instanceKey);
     }
 
@@ -400,7 +410,10 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void setTapTalkCustomUserAgent(String instanceKey, String userAgent) {
-        getTapTalkInstance(instanceKey).tapTalkUserAgent = userAgent;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            instance.tapTalkUserAgent = userAgent;
+        }
     }
 
     private String generateSocketBaseURL(String baseURL) {
@@ -458,8 +471,9 @@ public class TapTalk implements LifecycleObserver {
                     }
                     listener.onSuccess(SUCCESS_MESSAGE_AUTHENTICATE);
 
-                    if (getTapTalkInstance(instanceKey).isRefreshTokenExpired) {
-                        getTapTalkInstance(instanceKey).isRefreshTokenExpired = false;
+                    TapTalk instance = getTapTalkInstance(instanceKey);
+                    if (instance != null && instance.isRefreshTokenExpired) {
+                        instance.isRefreshTokenExpired = false;
                         Intent intent = new Intent(REFRESH_TOKEN_RENEWED);
                         LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                     }
@@ -538,7 +552,10 @@ public class TapTalk implements LifecycleObserver {
         TAPApiManager.getInstance(instanceKey).setLoggedOut(true);
         TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, false);
         TAPChatManager.getInstance(instanceKey).disconnectAfterRefreshTokenExpired();
-        getTapTalkInstance(instanceKey).isRefreshTokenExpired = true;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            instance.isRefreshTokenExpired = true;
+        }
         disconnect(instanceKey);
     }
 
@@ -622,7 +639,11 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return -1;
         }
-        return getTapTalkInstance(instanceKey).clientAppIcon;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return instance.clientAppIcon;
+        }
+        return -1;
     }
 
     public static String getClientAppName() {
@@ -630,7 +651,11 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static String getClientAppName(String instanceKey) {
-        return getTapTalkInstance(instanceKey).clientAppName;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return instance.clientAppName;
+        }
+        return "";
     }
 
     public static TapTalkImplementationType getTapTalkImplementationType() {
@@ -641,7 +666,11 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return null;
         }
-        return getTapTalkInstance(instanceKey).implementationType;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return instance.implementationType;
+        }
+        return TapTalkImplementationType.TapTalkImplementationTypeCombine;
     }
 
     public static void updateApplicationBadgeCount() {
@@ -664,7 +693,11 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return null;
         }
-        return new HashMap<>(getTapTalkInstance(instanceKey).coreConfigs);
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return new HashMap<>(instance.coreConfigs);
+        }
+        return new HashMap<>();
     }
 
     public static Map<String, String> getProjectConfigs() {
@@ -675,7 +708,11 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return null;
         }
-        return new HashMap<>(getTapTalkInstance(instanceKey).projectConfigs);
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return new HashMap<>(instance.projectConfigs);
+        }
+        return new HashMap<>();
     }
 
     public static Map<String, String> getCustomConfigs() {
@@ -686,7 +723,11 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return null;
         }
-        return new HashMap<>(getTapTalkInstance(instanceKey).customConfigs);
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return new HashMap<>(instance.customConfigs);
+        }
+        return new HashMap<>();
     }
 
     public static void refreshRemoteConfigs(TapCommonListener listener) {
@@ -697,12 +738,15 @@ public class TapTalk implements LifecycleObserver {
         TapCoreProjectConfigsManager.getInstance(instanceKey).getProjectConfigs(new TapCoreProjectConfigsListener() {
             @Override
             public void onSuccess(TapConfigs config) {
-                getTapTalkInstance(instanceKey).coreConfigs = config.getCoreConfigs();
-                getTapTalkInstance(instanceKey).projectConfigs = config.getProjectConfigs();
-                getTapTalkInstance(instanceKey).customConfigs = config.getCustomConfigs();
-                TAPDataManager.getInstance(instanceKey).saveCoreConfigs(getTapTalkInstance(instanceKey).coreConfigs);
-                TAPDataManager.getInstance(instanceKey).saveProjectConfigs(getTapTalkInstance(instanceKey).projectConfigs);
-                TAPDataManager.getInstance(instanceKey).saveCustomConfigs(getTapTalkInstance(instanceKey).customConfigs);
+                TapTalk instance = getTapTalkInstance(instanceKey);
+                if (instance != null) {
+                    instance.coreConfigs = config.getCoreConfigs();
+                    instance.projectConfigs = config.getProjectConfigs();
+                    instance.customConfigs = config.getCustomConfigs();
+                    TAPDataManager.getInstance(instanceKey).saveCoreConfigs(instance.coreConfigs);
+                    TAPDataManager.getInstance(instanceKey).saveProjectConfigs(instance.projectConfigs);
+                    TAPDataManager.getInstance(instanceKey).saveCustomConfigs(instance.customConfigs);
+                }
                 if (null != listener) {
                     listener.onSuccess(SUCCESS_MESSAGE_REFRESH_CONFIG);
                 }
@@ -745,7 +789,10 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return;
         }
-        getTapTalkInstance(instanceKey).isAutoContactSyncDisabled = !enabled;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            instance.isAutoContactSyncDisabled = !enabled;
+        }
     }
 
     public static boolean isAutoContactSyncEnabled() {
@@ -756,7 +803,11 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return false;
         }
-        return !getTapTalkInstance(instanceKey).isAutoContactSyncDisabled;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return !instance.isAutoContactSyncDisabled;
+        }
+        return true;
     }
 
     public static void setImageCompressionQuality(int imageCompressionQuality) {
@@ -764,14 +815,17 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void setImageCompressionQuality(String instanceKey, int imageCompressionQuality) {
-        if (imageCompressionQuality > 100) {
-            getTapTalkInstance(instanceKey).imageCompressionQuality = 100;
-        }
-        else if (imageCompressionQuality < 10) {
-            getTapTalkInstance(instanceKey).imageCompressionQuality = 10;
-        }
-        else {
-            getTapTalkInstance(instanceKey).imageCompressionQuality = imageCompressionQuality;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            if (imageCompressionQuality > 100) {
+                instance.imageCompressionQuality = 100;
+            }
+            else if (imageCompressionQuality < 10) {
+                instance.imageCompressionQuality = 10;
+            }
+            else {
+                instance.imageCompressionQuality = imageCompressionQuality;
+            }
         }
     }
 
@@ -780,7 +834,11 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static int getImageCompressionQuality(String instanceKey) {
-        return getTapTalkInstance(instanceKey).imageCompressionQuality;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return instance.imageCompressionQuality;
+        }
+        return DEFAULT_IMAGE_COMPRESSION_QUALITY;
     }
 
     public static void setMaxCaptionLength(int maxCaptionLength) {
@@ -788,7 +846,10 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void setMaxCaptionLength(String instanceKey, int maxCaptionLength) {
-        getTapTalkInstance(instanceKey).maxCaptionLength = Math.max(maxCaptionLength, 0);
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            instance.maxCaptionLength = Math.max(maxCaptionLength, 0);
+        }
     }
 
     public static int getMaxCaptionLength() {
@@ -796,7 +857,11 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static int getMaxCaptionLength(String instanceKey) {
-        return getTapTalkInstance(instanceKey).maxCaptionLength;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return instance.maxCaptionLength;
+        }
+        return DEFAULT_MAX_CAPTION_LENGTH;
     }
 
     /**
@@ -1101,7 +1166,11 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return null;
         }
-        return getTapTalkInstance(instanceKey).tapListeners;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return instance.tapListeners;
+        }
+        return new ArrayList<>();
     }
 
     public static String getDeviceId() {
@@ -1116,8 +1185,9 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return;
         }
-        if (!getTapTalkInstance(instanceKey).tapListeners.contains(listener)) {
-            getTapTalkInstance(instanceKey).tapListeners.add(listener);
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null && !instance.tapListeners.contains(listener)) {
+            instance.tapListeners.add(listener);
         }
     }
 
@@ -1129,7 +1199,10 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return;
         }
-        getTapTalkInstance(instanceKey).tapListeners.remove(listener);
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            instance.tapListeners.remove(listener);
+        }
     }
 
     private static void setTapTalkScreenOrientation(TapTalkScreenOrientation orientation) {
@@ -1140,7 +1213,10 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return;
         }
-        getTapTalkInstance(instanceKey).screenOrientation = orientation;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            instance.screenOrientation = orientation;
+        }
     }
 
     private static TapTalkScreenOrientation getTapTalkScreenOrientation() {
@@ -1151,7 +1227,11 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return null;
         }
-        return getTapTalkInstance(instanceKey).screenOrientation;
+        TapTalk instance = getTapTalkInstance(instanceKey);
+        if (instance != null) {
+            return instance.screenOrientation;
+        }
+        return TapTalkOrientationDefault;
     }
 
     // Enable/disable in-app notification after chat fragment goes inactive or to background
