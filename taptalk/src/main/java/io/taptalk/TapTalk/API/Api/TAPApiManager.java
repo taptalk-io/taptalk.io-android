@@ -127,7 +127,6 @@ public class TAPApiManager {
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
-    private boolean isLoggedOut = false; // Flag to prevent unauthorized API call due to refresh token expired
     private boolean isRefreshTokenRunning = false;
 
     public static TAPApiManager getInstance(String instanceKey) {
@@ -155,11 +154,7 @@ public class TAPApiManager {
     }
 
     public boolean isLoggedOut() {
-        return isLoggedOut;
-    }
-
-    public void setLoggedOut(boolean loggedOut) {
-        isLoggedOut = loggedOut;
+        return !TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable();
     }
 
     public static String getApiBaseUrl(String instanceKey) {
@@ -227,7 +222,7 @@ public class TAPApiManager {
         } else if (code == UNAUTHORIZED) {
             Log.e(TAG, String.format(String.format("[Err %s - %s] %s", br.getStatus(), br.getError().getCode(), br.getError().getMessage()), code));
             if (br.getError().getCode().equals(TOKEN_EXPIRED)) {
-                if (!isLoggedOut) {
+                if (!isLoggedOut()) {
                     if (isRefreshTokenRunning) {
                         return raiseApiRefreshTokenRunningException();
                     } else {
@@ -243,7 +238,7 @@ public class TAPApiManager {
                 }
             } else {
 //                AnalyticsManager.getInstance(instanceKey).trackErrorEvent(br.getError().getMessage(), br.getError().getCode(), br.getError().getMessage());
-                if (!isLoggedOut) {
+                if (!isLoggedOut()) {
                     if (isRefreshTokenRunning) {
                         return raiseApiRefreshTokenRunningException();
                     } else {
@@ -259,9 +254,9 @@ public class TAPApiManager {
     }
 
     private Observable validateException(Throwable t) {
-        if (t instanceof TAPApiSessionExpiredException && !isRefreshTokenRunning && !isLoggedOut) {
+        if (t instanceof TAPApiSessionExpiredException && !isRefreshTokenRunning && !isLoggedOut()) {
             return refreshToken();
-        } else if (t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && isRefreshTokenRunning) && !isLoggedOut) {
+        } else if (t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && isRefreshTokenRunning) && !isLoggedOut()) {
             return Observable.just(Boolean.TRUE).delay(1000, TimeUnit.MILLISECONDS);
         } else {
             return Observable.error(t);

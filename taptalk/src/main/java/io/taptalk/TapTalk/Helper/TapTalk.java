@@ -463,7 +463,6 @@ public class TapTalk implements LifecycleObserver {
                     TapCoreContactManager.getInstance(instanceKey).fetchAllUserContactsFromServer(null);
 
                     TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
-                    TAPApiManager.getInstance(instanceKey).setLoggedOut(false);
                     // Run message status scheduler
                     TAPChatManager.getInstance(instanceKey).triggerSaveNewMessage();
                     if (connectOnSuccess && TapTalk.getTapTalkSocketConnectionMode(instanceKey) != TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
@@ -549,7 +548,6 @@ public class TapTalk implements LifecycleObserver {
         TAPDataManager.getInstance(instanceKey).deleteAllPreference();
         TAPDataManager.getInstance(instanceKey).deleteAllFromDatabase();
         TAPDataManager.getInstance(instanceKey).deleteAllManagerData();
-        TAPApiManager.getInstance(instanceKey).setLoggedOut(true);
         TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, false);
         TAPChatManager.getInstance(instanceKey).disconnectAfterRefreshTokenExpired();
         TapTalk instance = getTapTalkInstance(instanceKey);

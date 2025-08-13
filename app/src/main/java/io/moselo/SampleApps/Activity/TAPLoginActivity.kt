@@ -1495,7 +1495,6 @@ class TAPLoginActivity : TAPBaseActivity() {
 
     private fun continueToHome() {
         redirectTimer?.cancel()
-        TAPApiManager.getInstance(instanceKey).isLoggedOut = false
         if (BuildConfig.DEBUG) {
             TapDevLandingActivity.start(this, instanceKey)
         }
