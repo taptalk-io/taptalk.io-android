@@ -162,10 +162,14 @@ class TapReportActivity : TAPBaseActivity() {
             )
         }
 
-        optionsAdapter = TapSelectableStringListAdapter(vm.reportOptions, onClickListener)
+        optionsAdapter = TapSelectableStringListAdapter(vm.reportOptions, onClickListener, vm.selectedReportOption)
         vb.rvOptions.adapter = optionsAdapter
         vb.rvOptions.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         vb.rvOptions.setHasFixedSize(true)
+
+        if (vm.selectedReportOption == vm.reportOptions[vm.reportOptions.size - 1]) {
+            vb.etOther.visibility = View.VISIBLE
+        }
 
         vb.btnSubmit.setOnClickListener {
             if (vm.selectedReportOption.isEmpty()) {
@@ -245,8 +249,13 @@ class TapReportActivity : TAPBaseActivity() {
                 .show()
         }
         else {
-            finish()
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+            try {
+                super.onBackPressed()
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

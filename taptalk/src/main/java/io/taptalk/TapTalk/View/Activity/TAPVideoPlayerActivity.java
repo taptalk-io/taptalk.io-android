@@ -136,8 +136,13 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
+        try {
+            super.onBackPressed();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -169,6 +174,11 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         updateVideoViewParams();
+    }
+
+    @Override
+    public void applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, R.color.tapTransparentBlack1940));
     }
 
     private void initViewModel() {
@@ -286,12 +296,12 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         }
         runOnUiThread(() -> {
             try {
-                if (vm.getVideoUri() != null) {
-                    videoView.setVideoURI(vm.getVideoUri());
-                }
                 videoView.setOnPreparedListener(onPreparedListener);
                 videoView.setOnCompletionListener(onCompletionListener);
                 videoView.setOnErrorListener(onErrorListener);
+                if (vm.getVideoUri() != null) {
+                    videoView.setVideoURI(vm.getVideoUri());
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();

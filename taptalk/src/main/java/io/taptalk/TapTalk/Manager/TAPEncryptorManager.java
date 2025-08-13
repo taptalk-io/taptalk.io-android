@@ -82,6 +82,35 @@ public class TAPEncryptorManager {
         return decrypted;
     }
 
+    public String simpleEncrypt(String textToEncrypt, String id) {
+        if (textToEncrypt.isEmpty() || id.isEmpty()) {
+            return "";
+        }
+        String encrypted = "";
+
+        try {
+            encrypted = AESCrypt.encrypt(String.format("%s%s", TAPUtils.mySubString(ENCRYPTION_KEY, 0, 16), id), textToEncrypt);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "";
+        }
+        return encrypted;
+    }
+
+    public String simpleDecrypt(String textToDecrypt, String id) {
+        if (textToDecrypt.isEmpty() || id.isEmpty()) {
+            return "";
+        }
+        String decrypted = "";
+        try {
+            decrypted = AESCrypt.decrypt(String.format("%s%s", TAPUtils.mySubString(ENCRYPTION_KEY, 0, 16), id), textToDecrypt);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "";
+        }
+        return decrypted;
+    }
+
     public HashMap<String, Object> encryptMessage(TAPMessageModel messageModel) {
         return encryptMessage(messageModel, true);
     }

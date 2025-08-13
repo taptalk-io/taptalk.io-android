@@ -73,7 +73,6 @@ public class TAPLoginActivityOld extends TAPBaseActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REGISTER:
-                    TAPApiManager.getInstance(instanceKey).setLoggedOut(false);
                     if (BuildConfig.DEBUG) {
                         TapDevLandingActivity.Companion.start(TAPLoginActivityOld.this, instanceKey);
                     } else {

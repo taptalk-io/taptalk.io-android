@@ -50,6 +50,9 @@ public class TAPContactManager {
     }
 
     public TAPUserModel getUserData(String userID) {
+        if (userID.equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+            return TAPChatManager.getInstance(instanceKey).getActiveUser();
+        }
         return getUserDataMap().get(userID);
     }
 

@@ -10,6 +10,8 @@ import io.taptalk.TapTalk.Model.TAPRoomModel
 
 class TapSharedMediaViewModel: ViewModel() {
 
+    var instanceKey = ""
+    var type = -1
     var isFinishedLoading = false
     var isLoading = false
     var room: TAPRoomModel? = TAPRoomModel()

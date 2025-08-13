@@ -10,10 +10,11 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.databinding.TapActivityWebBrowserBinding
 
-class TAPWebBrowserActivity : AppCompatActivity() {
+class TAPWebBrowserActivity : TAPBaseActivity() {
 
     private lateinit var vb: TapActivityWebBrowserBinding
     companion object {
@@ -70,6 +71,11 @@ class TAPWebBrowserActivity : AppCompatActivity() {
         val webSettings: WebSettings = vb.webView.settings
         webSettings.javaScriptEnabled = true
         webSettings.domStorageEnabled = true
+        webSettings.databaseEnabled = true
+        webSettings.allowFileAccess = true
+        webSettings.allowContentAccess = true
+        webSettings.allowFileAccessFromFileURLs = true
+        webSettings.allowUniversalAccessFromFileURLs = true
         vb.webView.loadUrl(url)
     }
 
@@ -88,8 +94,17 @@ class TAPWebBrowserActivity : AppCompatActivity() {
             vb.webView.goBack()
         }
         else {
-            super.onBackPressed()
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
+            try {
+                super.onBackPressed()
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
+    }
+
+    override fun applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, R.color.tapColorPrimary))
     }
 }

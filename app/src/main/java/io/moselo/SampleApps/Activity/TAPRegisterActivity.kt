@@ -123,8 +123,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
             showPopupDiscardChanges()
             return
         }
-        super.onBackPressed()
-        overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_down)
+        try {
+            super.onBackPressed()
+            overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_down)
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -164,6 +169,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
                 }
             }
         }
+    }
+
+    override fun applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapColorPrimary))
     }
 
     private fun initViewModel() {
@@ -668,6 +677,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun finishRegisterAndOpenRoomList() {
         TapUIRoomListActivity.start(this, instanceKey)
+        TAPDataManager.getInstance(instanceKey).checkAndRequestAutoStartPermission(this)
         finish()
     }
 

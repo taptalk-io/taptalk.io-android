@@ -155,7 +155,6 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
                     if (vm.getGroupAction() == EDIT_GROUP) {
                         loadGroupImage(vm.getRoomImageUri().toString());
-                        checkEditButtonAvailable();
                     } else {
                         TAPImageURL groupImage = new TAPImageURL();
                         groupImage.setThumbnail(vm.getRoomImageUri().toString());
@@ -190,23 +189,29 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         if (vm.isLoading()) {
             return;
         }
-        if (vm.getGroupAction() == EDIT_GROUP) {
-            super.onBackPressed();
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
-        } else {
-            Intent intent = new Intent();
-            if (null != vm.getGroupData().getName()) {
-                intent.putExtra(GROUP_NAME, vm.getGroupData().getName());
+        try {
+            if (vm.getGroupAction() == EDIT_GROUP) {
+                super.onBackPressed();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
             }
-            if (null != vm.getGroupData().getImageURL()) {
-                intent.putExtra(GROUP_IMAGE, vm.getGroupData().getImageURL());
+            else {
+                Intent intent = new Intent();
+                if (null != vm.getGroupData().getName()) {
+                    intent.putExtra(GROUP_NAME, vm.getGroupData().getName());
+                }
+                if (null != vm.getGroupData().getImageURL()) {
+                    intent.putExtra(GROUP_IMAGE, vm.getGroupData().getImageURL());
+                }
+                if (null != vm.getRoomImageUri()) {
+                    intent.putExtra(URI, vm.getRoomImageUri());
+                }
+                setResult(RESULT_CANCELED, intent);
+                finish();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }
-            if (null != vm.getRoomImageUri()) {
-                intent.putExtra(URI, vm.getRoomImageUri());
-            }
-            setResult(RESULT_CANCELED, intent);
-            finish();
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -281,11 +286,6 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             tvTitle.setText(R.string.tap_group_subject);
             ivButtonClose.setVisibility(View.INVISIBLE);
             flButtonUpdateGroup.setVisibility(View.GONE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
-            } else {
-                flButtonCreateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive));
-            }
             etGroupName.addTextChangedListener(createGroupNameWatcher);
 
             adapter = new TapSelectedGroupMemberAdapter(instanceKey, vm.getAdapterItems());
@@ -307,15 +307,13 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             etGroupName.setText(vm.getGroupData().getName());
         }
 
+        flButtonCreateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple));
+        flButtonUpdateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple));
+        svGroupSubject.getViewTreeObserver().addOnScrollChangedListener(toolbarScrollListener);
+
         civGroupImage.setOnClickListener(v -> showProfilePicturePickerBottomSheet());
         llChangeGroupPicture.setOnClickListener(v -> showProfilePicturePickerBottomSheet());
         flRemoveGroupPicture.setOnClickListener(v -> removeGroupPicture());
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
-            flButtonUpdateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
-            svGroupSubject.getViewTreeObserver().addOnScrollChangedListener(toolbarScrollListener);
-        }
     }
 
     private void loadGroupImage() {
@@ -373,24 +371,9 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         }
     }
 
-    private void checkEditButtonAvailable() {
-        if ((!vm.isGroupPictureChanged() && !vm.isGroupNameChanged()) || etGroupName.getText().toString().trim().length() == 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                flButtonUpdateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
-            } else {
-                flButtonUpdateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive));
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                flButtonUpdateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
-            } else {
-                flButtonUpdateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active));
-            }
-        }
-    }
-
     private void validateAndEditGroupDetails() {
         if (!vm.isGroupPictureChanged() && !vm.isGroupNameChanged()) {
+            Toast.makeText(this, R.string.tap_error_no_changes_found, Toast.LENGTH_SHORT).show();
             return;
         }
         String groupName = etGroupName.getText().toString().trim();
@@ -422,7 +405,6 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             tvGroupPictureLabel.setText(TAPUtils.getInitials(vm.getGroupData().getName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);
-            checkEditButtonAvailable();
         } else {
             ImageViewCompat.setImageTintList(civGroupImage, null);
             civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_group_avatar));
@@ -497,18 +479,9 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0 && s.toString().trim().length() > 0) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
-                } else {
-                    flButtonCreateGroup.setBackground(ContextCompat.getDrawable(TAPEditGroupSubjectActivity.this, R.drawable.tap_bg_button_active));
-                }
                 vm.getGroupData().setName(s.toString());
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
-                } else {
-                    flButtonCreateGroup.setBackground(ContextCompat.getDrawable(TAPEditGroupSubjectActivity.this, R.drawable.tap_bg_button_inactive));
-                }
+            }
+            else {
                 vm.getGroupData().setName("");
             }
         }
@@ -532,7 +505,6 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             } else if (s.length() > 0 && s.toString().equals(vm.getGroupData().getName())) {
                 vm.setGroupNameChanged(false);
             }
-            checkEditButtonAvailable();
         }
 
         @Override

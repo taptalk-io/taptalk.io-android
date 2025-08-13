@@ -48,32 +48,57 @@ import com.bumptech.glide.request.target.Target
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.OPEN_CHAT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_ATTACHMENT_BOTTOM_SHEET
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_TIME_PICKER_BOTTOM_SHEET
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.TIME
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Location
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMention
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_SCHEDULED_MESSAGES
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter
@@ -88,7 +113,6 @@ import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Listener.TAPSocketListener
 import io.taptalk.TapTalk.Listener.TapCommonListener
-import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener
 import io.taptalk.TapTalk.Manager.TAPCacheManager
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPConnectionManager
@@ -118,11 +142,12 @@ import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
-import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.Companion.newInstance
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType
 import io.taptalk.TapTalk.View.BottomSheet.TapTimePickerBottomSheetFragment
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel.TAPChatViewModelFactory
+import io.taptalk.TapTalk.ViewModel.TapScheduledMessageViewModel
 import io.taptalk.TapTalk.databinding.TapActivityChatBinding
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -145,6 +170,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         Glide.with(this)
     }
 
+    private val svm: TapScheduledMessageViewModel by lazy {
+        ViewModelProvider(this)[TapScheduledMessageViewModel::class.java]
+    }
+
     private lateinit var vb: TapActivityChatBinding
     private lateinit var messageAdapter: TAPMessageAdapter
     private lateinit var customKeyboardAdapter: TAPCustomKeyboardAdapter
@@ -163,10 +192,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             instanceKey: String?,
             room: TAPRoomModel
         ) {
-            val intent = Intent(context, TapScheduledMessageActivity::class.java)
-            intent.putExtra(INSTANCE_KEY, instanceKey)
-            intent.putExtra(ROOM, room)
-            context.startActivityForResult(intent, RequestCode.OPEN_SCHEDULED_MESSAGES)
+            start(context, instanceKey, room, null, null)
         }
 
         fun start(
@@ -180,35 +206,51 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             intent.putExtra(INSTANCE_KEY, instanceKey)
             intent.putExtra(ROOM, room)
             intent.putExtra(MESSAGE, message)
-            intent.putExtra(Extras.TIME, scheduledTime)
-            context.startActivityForResult(intent, RequestCode.OPEN_SCHEDULED_MESSAGES)
+            intent.putExtra(TIME, scheduledTime)
+            context.startActivityForResult(intent, OPEN_SCHEDULED_MESSAGES)
+            context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_chat)
+        vb = TapActivityChatBinding.inflate(layoutInflater)
+        setContentView(vb.root)
+
         vb.tvRoomName.text = getString(R.string.tap_scheduled_message)
         vb.clRoomStatus.isVisible = false
         vb.ivVoiceNote.isVisible = false
         vb.flConnectionStatus.isVisible = false
         linkHandler = Handler(mainLooper)
-        if (initViewModel())
+        if (initViewModel()) {
             initView()
-        registerBroadcastManager()
+        }
+        registerBackgroundBroadcastManager()
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener)
         TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener)
         textMessage = intent.getStringExtra(MESSAGE)
-        textTime = intent.getLongExtra(Extras.TIME, -1)
+        textTime = intent.getLongExtra(TIME, -1)
     }
 
     override fun onResume() {
         super.onResume()
         getScheduledMessages()
+        registerForegroundBroadcastReceiver()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        TAPBroadcastManager.unregister(this, foregroundBroadcastReceiver)
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        try {
+            super.onBackPressed()
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
         if (vb.rvCustomKeyboard.isVisible) {
             hideKeyboards()
         }
@@ -216,7 +258,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        TAPBroadcastManager.unregister(this, broadcastReceiver)
+        TAPBroadcastManager.unregister(this, backgroundBroadcastReceiver)
         TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener)
         TAPConnectionManager.getInstance(instanceKey).removeSocketListener(socketListener)
         TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads() // Remove failed download list from active room
@@ -239,7 +281,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     imageCameraUris.add(
                         TAPMediaPreviewModel.Builder(
                             vm.cameraImageUri,
-                            MessageType.TYPE_IMAGE,
+                            TYPE_IMAGE,
                             true
                         )
                     )
@@ -270,36 +312,28 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 RequestCode.SEND_MEDIA_FROM_PREVIEW -> {
                     val medias = data?.getParcelableArrayListExtra<TAPMediaPreviewModel>(Extras.MEDIA_PREVIEWS)
                     if (null != medias && 0 < medias.size) {
-                        val listener: TapCoreSendMessageListener = object : TapCoreSendMessageListener() {}
-                        val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
-                            override fun onClick(position: Int, item: Long?) {
-                                for (media in medias) {
-                                    if (media.type == MessageType.TYPE_IMAGE) {
-                                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption, item)
-                                    }
-                                    else if (media.type == MessageType.TYPE_VIDEO) {
-                                        TAPChatManager.getInstance(instanceKey).createVideoMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption, item)
-                                    }
-                                }
-                            }
-                        })
+                        svm.pendingScheduledMessageType = TYPE_IMAGE
+                        svm.pendingScheduledMessageTime = System.currentTimeMillis()
+                        svm.pendingScheduledMessageMedias = medias
+                        val timePicker = TapTimePickerBottomSheetFragment(svm, getMediaScheduledMessageListener(medias))
                         timePicker.show(supportFragmentManager, "")
                     }
                 }
                 RequestCode.PICK_LOCATION -> {
-                    val address =
-                        if (data?.getStringExtra(Location.LOCATION_NAME) == null) "" else data.getStringExtra(
-                            Location.LOCATION_NAME
-                        )!!
-                    val latitude = data?.getDoubleExtra(Location.LATITUDE, 0.0)
-                    val longitude = data?.getDoubleExtra(Location.LONGITUDE, 0.0)
-                    val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
-                        override fun onClick(position: Int, item: Long?) {
-                            super.onClick(position, item)
-                            TAPChatManager.getInstance(instanceKey)
-                                .sendLocationMessage(vm.room, address, latitude, longitude, item)
-                        }
-                    })
+                    val address = if (data?.getStringExtra(Location.LOCATION_NAME) == null) {
+                        ""
+                    }
+                    else {
+                        data.getStringExtra(Location.LOCATION_NAME) ?: ""
+                    }
+                    val latitude = data?.getDoubleExtra(Location.LATITUDE, 0.0) ?: 0.0
+                    val longitude = data?.getDoubleExtra(Location.LONGITUDE, 0.0) ?: 0.0
+                    svm.pendingScheduledMessageType = TYPE_LOCATION
+                    svm.pendingScheduledMessageTime = System.currentTimeMillis()
+                    svm.pendingScheduledMessageText = address
+                    svm.pendingScheduledMessageLatitude = latitude
+                    svm.pendingScheduledMessageLongitude = longitude
+                    val timePicker = TapTimePickerBottomSheetFragment(svm, getLocationScheduledMessageListener(address, latitude, longitude))
                     timePicker.show(supportFragmentManager, "")
                 }
                 RequestCode.SEND_FILE -> {
@@ -330,21 +364,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 //                    }
 
                     if (tempFile != null) {
-                        if (TAPFileUploadManager.getInstance(instanceKey)
-                                .isSizeAllowedForUpload(tempFile.length())
-                        ) {
-                            val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
-                                override fun onClick(position: Int, item: Long?) {
-                                    super.onClick(position, item)
-                                    TAPChatManager.getInstance(instanceKey)
-                                        .sendFileMessage(
-                                            this@TapScheduledMessageActivity,
-                                            vm.room,
-                                            tempFile,
-                                            item
-                                        )
-                                }
-                            })
+                        if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length())) {
+                            svm.pendingScheduledMessageType = TYPE_FILE
+                            svm.pendingScheduledMessageTime = System.currentTimeMillis()
+                            svm.pendingScheduledMessageFile = tempFile
+                            val timePicker = TapTimePickerBottomSheetFragment(svm, getFileScheduledMessageListener(tempFile))
                             timePicker.show(supportFragmentManager, "")
                         }
                         else {
@@ -393,13 +417,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
     }
 
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<String?>,
-        grantResults: IntArray
+        permissions: Array<out String>,
+        grantResults: IntArray,
+        deviceId: Int
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
         if (TAPUtils.allPermissionsGranted(grantResults)) {
             when (requestCode) {
                 PermissionRequest.PERMISSION_CAMERA_CAMERA, PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> vm.cameraImageUri =
@@ -437,13 +461,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
 
     private fun initViewModel(): Boolean {
-        vm = ViewModelProvider(
-            this,
-            TAPChatViewModelFactory(
-                application, instanceKey
-            )
-        )
-            .get(TAPChatViewModel::class.java)
+        vm = ViewModelProvider(this, TAPChatViewModelFactory(application, instanceKey)).get(TAPChatViewModel::class.java)
         if (null == vm.room) {
             vm.room = intent.getParcelableExtra(ROOM)
         }
@@ -638,6 +656,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             vb.ivChatMenuArea.visibility = View.GONE
         }
         showAttachmentButton()
+
+        if (vm.messageModels.isNotEmpty()) {
+            showMessageList()
+            updateMessageDecoration()
+        }
         
         val containerTransition: LayoutTransition = vb.clContainer.layoutTransition
         containerTransition.addTransitionListener(containerTransitionListener)
@@ -650,17 +673,18 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         vb.ivAttach.setOnClickListener { openAttachMenu() }
         vb.ivSendArea.setOnClickListener {
             hideKeyboards()
-            if (vm.quoteAction != null && vm.quotedMessage != null) {
-                buildAndSendTextOrLinkMessage(vb.etChat.text.toString().trim { it <= ' ' }, vm.quotedMessage.created)
-            }
-            else {
-                val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
-                    override fun onClick(position: Int, item: Long?) {
-                        super.onClick(position, item)
-                        buildAndSendTextOrLinkMessage(vb.etChat.text.toString().trim { it <= ' ' }, item)
-                    }
-                })
-                timePicker.show(supportFragmentManager, "")
+            val text = vb.etChat.text.toString().trim { it <= ' ' }
+            if (text.isNotEmpty()) {
+                if (vm.quoteAction != null && vm.quotedMessage != null) {
+                    buildAndSendTextOrLinkMessage(text, vm.quotedMessage.created)
+                }
+                else {
+                    svm.pendingScheduledMessageType = TYPE_TEXT
+                    svm.pendingScheduledMessageTime = System.currentTimeMillis()
+                    svm.pendingScheduledMessageText = text
+                    val timePicker = TapTimePickerBottomSheetFragment(svm, getTextScheduledMessageListener(text))
+                    timePicker.show(supportFragmentManager, "")
+                }
             }
         }
         vb.ivToBottom.setOnClickListener { scrollToBottom() }
@@ -680,6 +704,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
         vb.ivAttach.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_attachment_ripple)
         vb.ivToBottom.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_scroll_to_bottom_ripple)
+
+        if (vm.isOnBottom &&
+            vb.rvMessageList.scrollState == RecyclerView.SCROLL_STATE_IDLE &&
+            messageAdapter.itemCount > 0
+        ) {
+            vb.rvMessageList.scrollToPosition(0)
+        }
     }
 
     private fun showAttachmentButton() {
@@ -709,25 +740,35 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         vb.ivSchedule.visibility = View.GONE
     }
 
-    private fun registerBroadcastManager() {
+    private fun registerBackgroundBroadcastManager() {
         TAPBroadcastManager.register(
-            this, broadcastReceiver,
-            UploadBroadcastEvent.UploadProgressLoading,
-            UploadBroadcastEvent.UploadProgressFinish,
-            UploadBroadcastEvent.UploadFailed,
-            UploadBroadcastEvent.UploadCancelled,
-            DownloadBroadcastEvent.DownloadProgressLoading,
-            DownloadBroadcastEvent.DownloadFinish,
-            DownloadBroadcastEvent.DownloadFailed,
-            DownloadBroadcastEvent.DownloadFile,
-            DownloadBroadcastEvent.OpenFile,
-            DownloadBroadcastEvent.CancelDownload,
-            DownloadBroadcastEvent.PlayPauseVoiceNote,
-            LongPressBroadcastEvent.LongPressChatBubble,
-            LongPressBroadcastEvent.LongPressEmail,
-            LongPressBroadcastEvent.LongPressLink,
-            LongPressBroadcastEvent.LongPressPhone,
-            LongPressBroadcastEvent.LongPressMention
+            this,
+            backgroundBroadcastReceiver,
+            UploadProgressLoading,
+            UploadProgressFinish,
+            UploadFailed,
+            UploadCancelled,
+            DownloadProgressLoading,
+            DownloadFinish,
+            DownloadFailed,
+            DownloadFile,
+        )
+    }
+
+    private fun registerForegroundBroadcastReceiver() {
+        TAPBroadcastManager.register(
+            this,
+            foregroundBroadcastReceiver,
+            OpenFile,
+            CancelDownload,
+            PlayPauseVoiceNote,
+            LongPressChatBubble,
+            LongPressEmail,
+            LongPressLink,
+            LongPressPhone,
+            LongPressMention,
+            REOPEN_ATTACHMENT_BOTTOM_SHEET,
+            REOPEN_TIME_PICKER_BOTTOM_SHEET
         )
     }
 
@@ -796,10 +837,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
 
         override fun onSuccess(response: TapGetScheduledMessageListResponse?) {
-            super.onSuccess(response)
+            vm.messageModels.clear()
+            messageAdapter.clearItems()
+            vm.dateSeparators.clear()
             if (response?.items?.isNotEmpty() == true) {
-                messageAdapter.clearItems()
-                vm.dateSeparators.clear()
                 var previousModel : TapScheduledMessageModel? = null
 
                 for (scheduledMessage in response.items) {
@@ -899,7 +940,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 return
             }
             vm.delete(message.localID)
-            if (message.type == MessageType.TYPE_IMAGE || message.type == MessageType.TYPE_VIDEO || message.type == MessageType.TYPE_FILE || message.type == MessageType.TYPE_VOICE) {
+            if (message.type == TYPE_IMAGE || message.type == TYPE_VIDEO || message.type == MessageType.TYPE_FILE || message.type == MessageType.TYPE_VOICE) {
                 if (null != message.data && null != message.data!![MessageData.FILE_ID] && null != message.data!![FILE_URL] &&
                     (message.data!![MessageData.FILE_ID] as String?)!!.isNotEmpty() &&
                     (message.data!![FILE_URL] as String?)!!.isNotEmpty()
@@ -1004,9 +1045,10 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(
                     message.forwardFrom!!.userID,
                     object : TAPDefaultDataView<TAPGetUserResponse?>() {
-                        fun onSuccess(response: TAPGetUserResponse) {
-                            super.onSuccess(response)
-                            TAPContactManager.getInstance(instanceKey).updateUserData(response.user)
+                        override fun onSuccess(response: TAPGetUserResponse?) {
+                            response?.user?.let {
+                                TAPContactManager.getInstance(instanceKey).updateUserData(it)
+                            }
                             messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[message.localID]))
                         }
                     })
@@ -1135,7 +1177,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         runOnUiThread {
             vb.clQuoteLayout.visibility = View.VISIBLE
             // Add other quotable message type here
-            if ((message.type == MessageType.TYPE_IMAGE || message.type == MessageType.TYPE_VIDEO) && null != message.data) {
+            if ((message.type == TYPE_IMAGE || message.type == TYPE_VIDEO) && null != message.data) {
                 // Show image quote
                 vb.vQuoteLayoutDecoration.setVisibility(View.GONE)
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
@@ -1186,7 +1228,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 )
                 vb.etChat.setText(message.data!![MessageData.CAPTION].toString())
             }
-            else if (null != message.data && null != message.data!![FILE_URL] && (message.type == MessageType.TYPE_IMAGE || message.type == MessageType.TYPE_VIDEO)
+            else if (null != message.data && null != message.data!![FILE_URL] && (message.type == TYPE_IMAGE || message.type == TYPE_VIDEO)
             ) {
                 // Show image quote from file URL
                 glide.load(message.data!![FILE_URL] as String?)
@@ -1721,12 +1763,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
             override fun onRescheduleMessage(message: TAPMessageModel?) {
                 super.onRescheduleMessage(message)
-                val timePicker = TapTimePickerBottomSheetFragment(object : TAPGeneralListener<Long>() {
-                    override fun onClick(position: Int, item: Long?) {
-                        super.onClick(position, item)
-                        TAPDataManager.getInstance(instanceKey).editScheduledMessageTime(message?.messageID?.toInt(), item, commonView)
-                    }
-                }, message?.created)
+                if (message == null) {
+                    return
+                }
+                svm.pendingScheduledMessageType = TYPE_UNREAD_MESSAGE_IDENTIFIER
+                svm.pendingScheduledMessageTime = message.created
+                svm.pendingRescheduledMessage = message
+                val timePicker = TapTimePickerBottomSheetFragment(svm, getRescheduledMessageListener(message), message.created)
                 timePicker.show(supportFragmentManager, "")
             }
         }
@@ -1784,7 +1827,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 data[MessageData.URL] = vm.linkHashMap[MessageData.URL]
                 messageModel.data = data
             }
-            else if (messageModel.type == MessageType.TYPE_IMAGE || messageModel.type == MessageType.TYPE_VIDEO) {
+            else if (messageModel.type == TYPE_IMAGE || messageModel.type == TYPE_VIDEO) {
                 val data = messageModel.data
                 if (data != null) {
                     data[MessageData.CAPTION] = message
@@ -1819,11 +1862,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 data[MessageData.IMAGE] = vm.linkHashMap[MessageData.IMAGE]
                 data[MessageData.TYPE] = vm.linkHashMap[MessageData.TYPE]
                 data[MessageData.URL] = firstUrl
-                TAPChatManager.getInstance(instanceKey).sendLinkMessage(message, data, scheduledTime)
+                TAPChatManager.getInstance(instanceKey).sendLinkMessageWithRoomModel(message, vm.room, data, scheduledTime)
             }
             else {
                 // send message as text
-                TAPChatManager.getInstance(instanceKey).sendTextMessage(message, scheduledTime)
+                TAPChatManager.getInstance(instanceKey).sendTextMessageWithRoomModel(message, vm.room, scheduledTime)
             }
             vb.rvMessageList.post{ scrollToBottom() }
         }
@@ -1873,7 +1916,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         messageAdapter.items.indexOf(vm.messagePointer[newID])
                     vm.updateMessagePointer(newMessage)
                     messageAdapter.notifyItemChanged(index)
-                    if (MessageType.TYPE_IMAGE == newMessage.type && ownMessage) {
+                    if (TYPE_IMAGE == newMessage.type && ownMessage) {
                         TAPFileUploadManager.getInstance(instanceKey)
                             .removeUploadProgressMap(newMessage.localID)
                     }
@@ -2172,7 +2215,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     caption = caption ?: ""
                     if ((vm.quotedMessage.type == MessageType.TYPE_TEXT || vm.quotedMessage.type == MessageType.TYPE_LINK) &&
                         vm.quotedMessage.body == s.toString() ||
-                        (vm.quotedMessage.type == MessageType.TYPE_IMAGE || vm.quotedMessage.type == MessageType.TYPE_VIDEO) &&
+                        (vm.quotedMessage.type == TYPE_IMAGE || vm.quotedMessage.type == TYPE_VIDEO) &&
                         caption == s.toString()
                     ) {
                         setSendButtonDisabled()
@@ -2211,7 +2254,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 caption = caption ?: ""
                 if (vm.quoteAction == QuoteAction.FORWARD ||
                     vm.quoteAction == QuoteAction.EDIT &&
-                    (vm.quotedMessage.type == MessageType.TYPE_IMAGE || vm.quotedMessage.type == MessageType.TYPE_VIDEO) &&
+                    (vm.quotedMessage.type == TYPE_IMAGE || vm.quotedMessage.type == TYPE_VIDEO) &&
                     caption != s.toString()
                 ) {
                     // Enable send button if message to forward exists
@@ -2393,7 +2436,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         val originalText: String? = if (message.type == MessageType.TYPE_TEXT || message.type == MessageType.TYPE_LINK) {
                 message.body
             }
-            else if ((message.type == MessageType.TYPE_IMAGE || message.type == MessageType.TYPE_VIDEO) && null != message.data) {
+            else if ((message.type == TYPE_IMAGE || message.type == TYPE_VIDEO) && null != message.data) {
                 message.data!![MessageData.CAPTION] as String?
             }
             else if (message.type == MessageType.TYPE_LOCATION && null != message.data) {
@@ -2633,19 +2676,19 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
     }
 
-    private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    private val backgroundBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action ?: return
             val localID: String?
             val fileUri: Uri?
             when (action) {
-                UploadBroadcastEvent.UploadProgressLoading -> {
+                UploadProgressLoading -> {
                     localID = intent.getStringExtra(UploadBroadcastEvent.UploadLocalID)
                     if (vm.messagePointer.containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[localID]))
                     }
                 }
-                UploadBroadcastEvent.UploadProgressFinish -> {
+                UploadProgressFinish -> {
                     localID = intent.getStringExtra(UploadBroadcastEvent.UploadLocalID)
                     val messageModel = vm.messagePointer[localID]
                     if (vm.messagePointer.containsKey(localID) && intent.hasExtra(
@@ -2667,7 +2710,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     }
                     messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(messageModel))
                 }
-                UploadBroadcastEvent.UploadFailed -> {
+                UploadFailed -> {
                     localID = intent.getStringExtra(UploadBroadcastEvent.UploadLocalID)
                     if (vm.messagePointer.containsKey(localID)) {
                         val failedMessageModel = vm.messagePointer[localID]
@@ -2676,7 +2719,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(failedMessageModel))
                     }
                 }
-                UploadBroadcastEvent.UploadCancelled -> {
+                UploadCancelled -> {
                     localID = intent.getStringExtra(UploadBroadcastEvent.UploadLocalID)
                     if (vm.messagePointer.containsKey(localID)) {
                         val cancelledMessageModel = vm.messagePointer[localID]
@@ -2691,30 +2734,40 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         messageAdapter.removeMessageAt(itemPos)
                     }
                 }
-                DownloadBroadcastEvent.DownloadProgressLoading, DownloadBroadcastEvent.DownloadFinish -> {
+                DownloadProgressLoading, DownloadFinish -> {
                     localID = intent.getStringExtra(DownloadBroadcastEvent.DownloadLocalID)
                     if (vm.messagePointer.containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[localID]))
                     }
                 }
-                DownloadBroadcastEvent.DownloadFailed -> {
+                DownloadFailed -> {
                     localID = intent.getStringExtra(DownloadBroadcastEvent.DownloadLocalID)
                     TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(localID)
                     if (vm.messagePointer.containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[localID]))
                     }
                 }
-                DownloadBroadcastEvent.DownloadFile -> startFileDownload(
+                DownloadFile -> startFileDownload(
                     intent.getParcelableExtra(MESSAGE)
                 )
-                DownloadBroadcastEvent.CancelDownload -> {
+                CancelDownload -> {
                     localID = intent.getStringExtra(DownloadBroadcastEvent.DownloadLocalID)
                     TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(localID)
                     if (vm.messagePointer.containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.items.indexOf(vm.messagePointer[localID]))
                     }
                 }
-                DownloadBroadcastEvent.OpenFile -> {
+            }
+        }
+    }
+
+    private val foregroundBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action ?: return
+            val localID: String?
+            val fileUri: Uri?
+            when (action) {
+                OpenFile -> {
                     val message = intent.getParcelableExtra<TAPMessageModel>(MESSAGE)
                     fileUri = intent.getParcelableExtra(MessageData.FILE_URI)
                     vm.openedFileMessage = message
@@ -2733,11 +2786,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         showDownloadFileDialog()
                     }
                 }
-                LongPressBroadcastEvent.LongPressChatBubble -> {
+                LongPressChatBubble -> {
                     if (null != intent.getParcelableExtra(MESSAGE) &&
                         intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
                     ) {
-                        val chatBubbleBottomSheet = newInstance(
+                        val chatBubbleBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey,
                             LongPressType.SCHEDULED_TYPE,
                             (intent.getParcelableExtra<Parcelable>(MESSAGE) as TAPMessageModel?)!!,
@@ -2747,11 +2800,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 }
-                LongPressBroadcastEvent.LongPressLink -> {
+                LongPressLink -> {
                     if (null != intent.getStringExtra(URL_MESSAGE) &&
                         null != intent.getStringExtra(COPY_MESSAGE)
                     ) {
-                        val linkBottomSheet = newInstance(
+                        val linkBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey, LongPressType.LINK_TYPE,
                             intent.getParcelableExtra(MESSAGE),
                             intent.getStringExtra(COPY_MESSAGE)!!,
@@ -2762,13 +2815,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 }
-                LongPressBroadcastEvent.LongPressEmail -> {
+                LongPressEmail -> {
                     if (null != intent.getStringExtra(URL_MESSAGE) &&
                         null != intent.getStringExtra(COPY_MESSAGE) &&
                         null != intent.getParcelableExtra(MESSAGE) &&
                         intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
                     ) {
-                        val emailBottomSheet = newInstance(
+                        val emailBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey, LongPressType.EMAIL_TYPE,
                             intent.getParcelableExtra(MESSAGE),
                             intent.getStringExtra(COPY_MESSAGE)!!,
@@ -2779,13 +2832,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 }
-                LongPressBroadcastEvent.LongPressPhone -> {
+                LongPressPhone -> {
                     if (null != intent.getStringExtra(URL_MESSAGE) &&
                         null != intent.getStringExtra(COPY_MESSAGE) &&
                         null != intent.getParcelableExtra(MESSAGE) &&
                         intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
                     ) {
-                        val phoneBottomSheet = newInstance(
+                        val phoneBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey, LongPressType.PHONE_TYPE,
                             intent.getParcelableExtra(MESSAGE),
                             intent.getStringExtra(COPY_MESSAGE)!!,
@@ -2796,13 +2849,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 }
-                LongPressBroadcastEvent.LongPressMention -> {
+                LongPressMention -> {
                     if (null != intent.getStringExtra(URL_MESSAGE) &&
                         null != intent.getStringExtra(COPY_MESSAGE) &&
                         null != intent.getParcelableExtra(MESSAGE) &&
                         intent.getParcelableExtra<Parcelable>(MESSAGE) is TAPMessageModel
                     ) {
-                        val mentionBottomSheet = newInstance(
+                        val mentionBottomSheet = TAPLongPressActionBottomSheet.newInstance(
                             instanceKey, LongPressType.MENTION_TYPE,
                             intent.getParcelableExtra(MESSAGE)!!,
                             intent.getStringExtra(COPY_MESSAGE)!!,
@@ -2813,10 +2866,40 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                         TAPUtils.dismissKeyboard(this@TapScheduledMessageActivity)
                     }
                 }
+                REOPEN_ATTACHMENT_BOTTOM_SHEET -> {
+                    openAttachMenu()
+                }
+                REOPEN_TIME_PICKER_BOTTOM_SHEET -> {
+                    var listener: TAPGeneralListener<Long>? = null
+                    val messageType = svm.pendingScheduledMessageType
+                    if (messageType == TYPE_TEXT) {
+                        listener = getTextScheduledMessageListener(svm.pendingScheduledMessageText)
+                    }
+                    else if (messageType == TYPE_IMAGE && svm.pendingScheduledMessageMedias.isNotEmpty()) {
+                        listener = getMediaScheduledMessageListener(svm.pendingScheduledMessageMedias)
+                    }
+                    else if (messageType == TYPE_FILE && svm.pendingScheduledMessageFile != null) {
+                        listener = getFileScheduledMessageListener(svm.pendingScheduledMessageFile!!)
+                    }
+                    else if (messageType == TYPE_LOCATION) {
+                        listener = getLocationScheduledMessageListener(svm.pendingScheduledMessageText, svm.pendingScheduledMessageLatitude, svm.pendingScheduledMessageLongitude)
+                    }
+                    else if (messageType == TYPE_UNREAD_MESSAGE_IDENTIFIER && svm.pendingRescheduledMessage != null) {
+                        listener = getRescheduledMessageListener(svm.pendingRescheduledMessage!!)
+                    }
+                    if (listener != null) {
+                        val timePicker: TapTimePickerBottomSheetFragment = if (System.currentTimeMillis() > svm.pendingScheduledMessageTime) {
+                            TapTimePickerBottomSheetFragment(svm, listener)
+                        }
+                        else {
+                            TapTimePickerBottomSheetFragment(svm, listener, svm.pendingScheduledMessageTime)
+                        }
+                        timePicker.show(supportFragmentManager, "")
+                    }
+                }
             }
         }
     }
-
 
     private fun startFileDownload(message: TAPMessageModel?) {
         if (!TAPUtils.hasPermissions(this, *TAPUtils.getStoragePermissions(true))) {
@@ -2891,5 +2974,57 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         else {
             vm.otherUserModel = otherUserModel
         }
+    }
+
+    private fun getTextScheduledMessageListener(text: String): TAPGeneralListener<Long> {
+        val listener = object : TAPGeneralListener<Long>() {
+            override fun onClick(position: Int, item: Long?) {
+                buildAndSendTextOrLinkMessage(text, item)
+            }
+        }
+        return listener
+    }
+
+    private fun getMediaScheduledMessageListener(medias: ArrayList<TAPMediaPreviewModel>): TAPGeneralListener<Long> {
+        val listener = object : TAPGeneralListener<Long>() {
+            override fun onClick(position: Int, item: Long?) {
+                for (media in medias) {
+                    if (media.type == TYPE_IMAGE) {
+                        TAPChatManager.getInstance(instanceKey).createImageMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption, item)
+                    }
+                    else if (media.type == TYPE_VIDEO) {
+                        TAPChatManager.getInstance(instanceKey).createVideoMessageModelAndAddToUploadQueue(this@TapScheduledMessageActivity, vm.room, media.uri, media.caption, item)
+                    }
+                }
+            }
+        }
+        return listener
+    }
+
+    private fun getFileScheduledMessageListener(file: File): TAPGeneralListener<Long> {
+        val listener = object : TAPGeneralListener<Long>() {
+            override fun onClick(position: Int, item: Long?) {
+                TAPChatManager.getInstance(instanceKey).sendFileMessage(this@TapScheduledMessageActivity, vm.room, file, item)
+            }
+        }
+        return listener
+    }
+
+    private fun getLocationScheduledMessageListener(address: String, latitude: Double, longitude: Double): TAPGeneralListener<Long> {
+        val listener = object : TAPGeneralListener<Long>() {
+            override fun onClick(position: Int, item: Long?) {
+                TAPChatManager.getInstance(instanceKey).sendLocationMessage(vm.room, address, latitude, longitude, item)
+            }
+        }
+        return listener
+    }
+
+    private fun getRescheduledMessageListener(message: TAPMessageModel): TAPGeneralListener<Long> {
+        val listener = object : TAPGeneralListener<Long>() {
+            override fun onClick(position: Int, item: Long?) {
+                TAPDataManager.getInstance(instanceKey).editScheduledMessageTime(message.messageID?.toInt() ?: 0, item, commonView)
+            }
+        }
+        return listener
     }
 }

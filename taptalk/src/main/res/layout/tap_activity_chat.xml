@@ -26,7 +26,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_action_bar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="56dp"
             android:animateLayoutChanges="true"
             android:background="@color/tapDefaultNavBarBackgroundColor"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -36,8 +36,8 @@
 
             <ImageView
                 android:id="@+id/iv_button_back"
-                android:layout_width="?attr/actionBarSize"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="16dp"
                 android:src="@drawable/tap_ic_chevron_left_white"
@@ -61,10 +61,10 @@
                 app:layout_constraintStart_toEndOf="@id/iv_button_back"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
-                app:layout_goneMarginEnd="?attr/actionBarSize"
-                app:layout_goneMarginLeft="?attr/actionBarSize"
-                app:layout_goneMarginRight="?attr/actionBarSize"
-                app:layout_goneMarginStart="?attr/actionBarSize"
+                app:layout_goneMarginEnd="56dp"
+                app:layout_goneMarginLeft="56dp"
+                app:layout_goneMarginRight="56dp"
+                app:layout_goneMarginStart="56dp"
                 tools:text="Room Name" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -157,8 +157,8 @@
 
             <io.taptalk.TapTalk.Helper.CircleImageView
                 android:id="@+id/civ_room_image"
-                android:layout_width="?attr/actionBarSize"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:layout_marginEnd="2dp"
                 android:layout_marginRight="2dp"
                 android:padding="12dp"

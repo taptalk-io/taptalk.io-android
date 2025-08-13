@@ -146,7 +146,13 @@ class TapMessageInfoActivity : TAPBaseActivity() {
     }
 
     override fun onBackPressed() {
-        supportFinishAfterTransition()
+        try {
+            super.onBackPressed()
+            supportFinishAfterTransition()
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onResume() {

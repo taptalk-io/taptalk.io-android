@@ -359,6 +359,17 @@ public class TAPDefaultConstant {
         public static final String SUCCESS_MESSAGE_OPEN_ROOM = "Opened chat room successfully";
     }
 
+    public static final class BroadcastEvent {
+        public static final String REFRESH_TOKEN_RENEWED = "kTAPRefreshTokenRenewed";
+        public static final String RELOAD_ROOM_LIST = "kTAPReloadRoomList";
+        public static final String CLEAR_ROOM_LIST = "kTAPClearRoomList";
+        public static final String CLEAR_ROOM_LIST_BADGE = "kTAPClearRoomListBadge";
+        public static final String RELOAD_PROFILE_PICTURE = "kTAPReloadProfilePicture";
+        public static final String OPEN_CHAT = "kTAPOpenChat";
+        public static final String REOPEN_ATTACHMENT_BOTTOM_SHEET = "kTAPReopenAttachmentBottomSheet";
+        public static final String REOPEN_TIME_PICKER_BOTTOM_SHEET = "kTAPReopenTimePickerBottomSheet";
+    }
+
     public static final class UploadBroadcastEvent {
         public static final String UploadProgressLoading = "kTAPUploadProgressLading";
         public static final String UploadProgressFinish = "kTAPUploadProgressFinish";
@@ -531,6 +542,9 @@ public class TAPDefaultConstant {
     public static final String K_PINNED_MESSAGE_IDS = "kTAPPinnedMessageIDs";
     public static final String K_BLOCKED_USER = "kTAPBlockedUser";
     public static final String K_MESSAGE_READ_COUNT = "kTAPMessageReadCount";
+    public static final String AUTO_START_PERMISSION = "kAutoStartPermission";
+    public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
+    public static final String K_COUNTRY_LIST = "kTAPCountryList";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 
@@ -563,14 +577,6 @@ public class TAPDefaultConstant {
 
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";
-    public static final String REFRESH_TOKEN_RENEWED = "kTAPRefreshTokenRenewed";
-    public static final String RELOAD_ROOM_LIST = "kTAPReloadRoomList";
-    public static final String CLEAR_ROOM_LIST = "kTAPClearRoomList";
-    public static final String CLEAR_ROOM_LIST_BADGE = "kTAPClearRoomListBadge";
-    public static final String RELOAD_PROFILE_PICTURE = "kTAPReloadProfilePicture";
-    public static final String OPEN_CHAT = "kTAPOpenChat";
-    public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
-    public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
     public static final String MY_COUNTRY_CODE = "kMyCountryCode";
     public static final String MY_COUNTRY_FLAG_URL = "kMyCountryFlagUrl";

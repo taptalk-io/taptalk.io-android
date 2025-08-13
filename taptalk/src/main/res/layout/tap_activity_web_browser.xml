@@ -10,15 +10,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="56dp"
         android:background="@color/tapColorPrimary"
         android:elevation="2dp"
         app:layout_scrollFlags="scroll|snap|enterAlways">
 
         <ImageView
             android:id="@+id/iv_close_btn"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"

@@ -74,7 +74,19 @@ public class TapLoadingDialog extends Dialog {
         try {
             super.show();
         }
-        catch (WindowManager.BadTokenException e) {
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void dismiss() {
+        if (context instanceof Activity && ((Activity) context).isFinishing()) {
+            return;
+        }
+        try {
+            super.dismiss();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -23,6 +23,11 @@ public class TAPRegisterViewModel extends AndroidViewModel {
     private Uri profilePictureUri;
     private ArrayList<TapPhotosItemModel> profilePictureList;
     private TAPUserModel myUserModel;
+    private ViewState state = ViewState.VIEW;
+
+    public enum ViewState {
+        VIEW, EDIT
+    }
 
     public static class TAPRegisterViewModelFactory implements ViewModelProvider.Factory {
         private Application application;
@@ -164,5 +169,13 @@ public class TAPRegisterViewModel extends AndroidViewModel {
 
     public void setUsernameValid(boolean usernameValid) {
         isUsernameValid = usernameValid;
+    }
+
+    public ViewState getState() {
+        return state;
+    }
+
+    public void setState(ViewState state) {
+        this.state = state;
     }
 }

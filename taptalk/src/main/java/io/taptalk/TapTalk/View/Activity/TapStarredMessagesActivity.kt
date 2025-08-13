@@ -14,6 +14,11 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_STARRED_MESSAGES
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
@@ -26,6 +31,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
+import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter.RoomType.STARRED
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel.TAPChatViewModelFactory
 import io.taptalk.TapTalk.databinding.TapActivityStarredMessagesBinding
@@ -49,9 +55,9 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
         ) {
             if (context is Activity) {
                 val intent = Intent(context, TapStarredMessagesActivity::class.java)
-                intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
-                intent.putExtra(Extras.ROOM, room)
-                context.startActivityForResult(intent, RequestCode.OPEN_STARRED_MESSAGES)
+                intent.putExtra(INSTANCE_KEY, instanceKey)
+                intent.putExtra(ROOM, room)
+                context.startActivityForResult(intent, OPEN_STARRED_MESSAGES)
             }
         }
     }
@@ -72,67 +78,52 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
     private fun initRoom() {
         if (initViewModel()) {
             initView()
-
-        } else if (vm.messageModels.size == 0) {
+        }
+        else if (vm.messageModels.size == 0) {
             initView()
         }
     }
 
     private fun initViewModel(): Boolean {
-        vm = ViewModelProvider(
-            this,
-            TAPChatViewModelFactory(
-                application, instanceKey
-            )
-        )
-            .get(TAPChatViewModel::class.java)
+        vm = ViewModelProvider(this, TAPChatViewModelFactory(application, instanceKey))[TAPChatViewModel::class.java]
         if (null == vm.room) {
-            vm.room = intent.getParcelableExtra(Extras.ROOM)
+            vm.room = intent.getParcelableExtra(ROOM)
         }
         if (null == vm.myUserModel) {
             vm.myUserModel = TAPChatManager.getInstance(instanceKey).activeUser
         }
         if (null == vm.room) {
-            Toast.makeText(
-                TapTalk.appContext,
-                getString(R.string.tap_error_room_not_found),
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(TapTalk.appContext, getString(R.string.tap_error_room_not_found), Toast.LENGTH_SHORT).show()
             finish()
             return false
         }
-        if (null == vm.otherUserModel && RoomType.TYPE_PERSONAL == vm.room.type) {
+        if (null == vm.otherUserModel && TYPE_PERSONAL == vm.room.type) {
             if (TAPUtils.isSavedMessagesRoom(vm.room.roomID, instanceKey)) {
                 vm.otherUserModel = TAPChatManager.getInstance(instanceKey).activeUser
-            } else {
-                vm.otherUserModel =
-                    TAPContactManager.getInstance(instanceKey).getUserData(vm.otherUserID)
+            }
+            else {
+                vm.otherUserModel = TAPContactManager.getInstance(instanceKey).getUserData(vm.otherUserID)
             }
         }
 
         // Updated 2020/02/10
-        if (RoomType.TYPE_PERSONAL != vm.room.type &&
-            getInstance(instanceKey).checkIsRoomDataAvailable(vm.room.roomID)
-        ) {
+        if (TYPE_PERSONAL != vm.room.type && getInstance(instanceKey).checkIsRoomDataAvailable(vm.room.roomID)) {
             val room = getInstance(instanceKey).getGroupData(vm.room.roomID)
             if (null != room && null != room.name && room.name.isNotEmpty()) {
                 vm.room = room
             }
         }
-        if (null != intent.getStringExtra(Extras.JUMP_TO_MESSAGE) && !vm.isInitialAPICallFinished) {
-            vm.tappedMessageLocalID = intent.getStringExtra(Extras.JUMP_TO_MESSAGE)
+        if (null != intent.getStringExtra(JUMP_TO_MESSAGE) && !vm.isInitialAPICallFinished) {
+            vm.tappedMessageLocalID = intent.getStringExtra(JUMP_TO_MESSAGE)
         }
-        return null != vm.myUserModel && (null != vm.otherUserModel || RoomType.TYPE_PERSONAL != vm.room.type)
+        return null != vm.myUserModel && (null != vm.otherUserModel || TYPE_PERSONAL != vm.room.type)
     }
 
     private fun initView() {
         window.setBackgroundDrawable(null)
 
         // Initialize chat message RecyclerView
-
-        // Initialize chat message RecyclerView
-        messageAdapter =
-            TAPMessageAdapter(instanceKey, glide, chatListener, vm, TAPMessageAdapter.RoomType.STARRED)
+        messageAdapter = TAPMessageAdapter(instanceKey, glide, chatListener, vm, STARRED)
         messageAdapter.setMessages(vm.messageModels)
         messageLayoutManager = object : LinearLayoutManager(this, VERTICAL, false) {
             override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
@@ -163,6 +154,8 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
             }
         }
         vb.ivButtonBack.setOnClickListener { onBackPressed() }
+
+        updateMessageDecoration()
     }
 
     private fun loadMessagesFromApi() {
@@ -173,13 +166,10 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
                 pageNumber,
                 PAGE_SIZE,
                 object : TapCoreGetOlderMessageListener() {
-                    override fun onSuccess(
-                        messages: MutableList<TAPMessageModel>?,
-                        hasMoreData: Boolean?
-                    ) {
-                        super.onSuccess(messages, hasMoreData)
-                        if (hasMoreData != null)
+                    override fun onSuccess(messages: MutableList<TAPMessageModel>?, hasMoreData: Boolean?) {
+                        if (hasMoreData != null) {
                             vm.isHasMoreData = hasMoreData
+                        }
                         hideLoadingOlderMessagesIndicator()
                         pageNumber++
                         if (!messages.isNullOrEmpty()) {
@@ -220,7 +210,8 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
                     messageAdapter.removeMessage(vm.getLoadingIndicator(false))
                     if (null != messageAdapter.getItemAt(index)) {
                         messageAdapter.notifyItemChanged(index)
-                    } else {
+                    }
+                    else {
                         messageAdapter.notifyItemRemoved(index)
                     }
                     updateMessageDecoration()
@@ -233,30 +224,19 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
     private fun updateMessageDecoration() {
         // Update decoration for the top item in recycler view
         runOnUiThread {
-            if (vb.rvStarredMessages.itemDecorationCount > 0) {
+            while (vb.rvStarredMessages.itemDecorationCount > 0) {
                 vb.rvStarredMessages.removeItemDecorationAt(0)
             }
-            vb.rvStarredMessages.addItemDecoration(
-                TAPVerticalDecoration(
-                    0,
-                    TAPUtils.dpToPx(16),
-                    messageAdapter.itemCount - 1
-                )
-            )
-            vb.rvStarredMessages.addItemDecoration(
-                TAPVerticalDecoration(
-                    TAPUtils.dpToPx(16),
-                    0,
-                    0
-                )
-            )
+            vb.rvStarredMessages.addItemDecoration(TAPVerticalDecoration(0, TAPUtils.dpToPx(16), messageAdapter.itemCount - 1))
+            vb.rvStarredMessages.addItemDecoration(TAPVerticalDecoration(TAPUtils.dpToPx(16), 0, 0))
         }
     }
 
     private fun checkMessageList() {
         if (messageAdapter.items.isEmpty()) {
             showEmptyState()
-        } else {
+        }
+        else {
             hideEmptyState()
             val starredMessageIds : MutableList<String> = mutableListOf()
             for (item in vm.messageModels) {
@@ -268,12 +248,12 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
 
     private fun showEmptyState() {
         vb.rvStarredMessages.visibility = View.GONE
-        vb.gEmptyStarredMessages.visibility = View.VISIBLE
+        vb.llEmptyStarredMessages.visibility = View.VISIBLE
     }
 
     private fun hideEmptyState() {
         vb.rvStarredMessages.visibility = View.VISIBLE
-        vb.gEmptyStarredMessages.visibility = View.GONE
+        vb.llEmptyStarredMessages.visibility = View.GONE
     }
 
     private val chatListener = object : TAPChatListener() {

@@ -528,11 +528,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
     private val verifyOTPInterface = object : TAPVerifyOTPInterface {
         override fun verifyOTPSuccessToLogin() {
-            TAPApiManager.getInstance((activity as TAPBaseActivity).instanceKey).isLoggedOut = false
             activity?.runOnUiThread {
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryCode(countryCallingCode)
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryFlagUrl(countryFlagUrl)
                 TapUIRoomListActivity.start(context, (activity as TAPBaseActivity).instanceKey)
+                TAPDataManager.getInstance("").checkAndRequestAutoStartPermission(activity)
                 activity?.finish()
             }
         }

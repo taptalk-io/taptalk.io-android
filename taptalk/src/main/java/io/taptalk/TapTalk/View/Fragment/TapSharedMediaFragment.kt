@@ -1,15 +1,12 @@
 package io.taptalk.TapTalk.View.Fragment
 
-import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,21 +19,26 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.VIEW_IN_CHAT
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
-import io.taptalk.TapTalk.Helper.*
+import io.taptalk.TapTalk.Helper.TAPBroadcastManager
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter
+import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
+import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapSharedMediaInterface
-import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
 import io.taptalk.TapTalk.Manager.TAPCacheManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
@@ -46,7 +48,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
-import io.taptalk.TapTalk.Model.TapLongPressMenuItem
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity
@@ -56,7 +57,6 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.SHARED_MEDIA_TYPE
 import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
 import io.taptalk.TapTalk.databinding.TapFragmentSharedMediaBinding
-import java.util.*
 
 class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fragment() {
 
@@ -69,6 +69,9 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
     private var sharedMediaPagingScrollListener: ViewTreeObserver.OnScrollChangedListener? = null
     private lateinit var glide: RequestManager
 
+    // Required empty public constructor
+    constructor() : this("", -1)
+
     companion object {
         fun newInstance(instanceKey: String, type: Int, room : TAPRoomModel?): TapSharedMediaFragment {
             val args = Bundle()
@@ -78,12 +81,19 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
             return fragment
         }
     }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         vb = TapFragmentSharedMediaBinding.inflate(inflater, container, false)
         activity?.let {
             glide = Glide.with(it)
         }
         vm.room = arguments?.getParcelable(ROOM) as TAPRoomModel?
+        if (instanceKey.isNotEmpty()) {
+            vm.instanceKey = instanceKey
+        }
+        if (type >= 0) {
+            vm.type = type
+        }
         TAPBroadcastManager.register(
             context,
             downloadProgressReceiver,
@@ -94,8 +104,14 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
             DownloadBroadcastEvent.OpenFile,
             DownloadBroadcastEvent.CancelDownload
         )
-        sharedMediaAdapter = TapSharedMediaAdapter(instanceKey, vm.sharedMediaAdapterItems, glide, sharedMediaAdapterListener)
-        sharedMediaGlm = object : GridLayoutManager(context, 3) {
+        sharedMediaAdapter = TapSharedMediaAdapter(vm.instanceKey, requireContext(), vm.sharedMediaAdapterItems, glide, sharedMediaAdapterListener)
+        val span = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            5
+        }
+        else {
+            3
+        }
+        sharedMediaGlm = object : GridLayoutManager(context, span) {
             override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
                 try {
                     super.onLayoutChildren(recycler, state)
@@ -111,7 +127,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                     1
                 }
                 else {
-                    3
+                    span
                 }
             }
         }
@@ -120,22 +136,28 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         vb.recyclerView.layoutManager = sharedMediaGlm
         vb.recyclerView.adapter = sharedMediaAdapter
+        if (vm.type == TYPE_MEDIA) {
+            val horizontalPadding = TAPUtils.dpToPx(16)
+            vb.recyclerView.setPadding(horizontalPadding, 0, horizontalPadding, 0)
+        }
+        if (vm.sharedMedias.isEmpty()) {
+            vb.recyclerView.visibility = View.GONE
+            vb.gEmptySharedMedia.visibility = View.VISIBLE
+        }
         if (!vm.isFinishedLoading) {
-            if (vm.sharedMedias.isEmpty()) {
-                vb.recyclerView.visibility = View.GONE
-            }
             Thread {
-                when (type) {
+                when (vm.type) {
                     TYPE_MEDIA -> {
-                        TAPDataManager.getInstance(instanceKey).getRoomMedias(0L, vm.room?.roomID, sharedMediaListener)
+                        TAPDataManager.getInstance(vm.instanceKey).getRoomMedias(0L, vm.room?.roomID, sharedMediaListener)
                     }
                     TYPE_LINK -> {
-                        TAPDataManager.getInstance(instanceKey).getRoomLinks(0L, vm.room?.roomID, sharedMediaListener)
+                        TAPDataManager.getInstance(vm.instanceKey).getRoomLinks(0L, vm.room?.roomID, sharedMediaListener)
                     }
                     TYPE_DOCUMENT -> {
-                        TAPDataManager.getInstance(instanceKey).getRoomFiles(0L, vm.room?.roomID, sharedMediaListener)
+                        TAPDataManager.getInstance(vm.instanceKey).getRoomFiles(0L, vm.room?.roomID, sharedMediaListener)
                     }
                 }
             }.start()
@@ -168,20 +190,19 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                 // Preview image detail
                 TAPImageDetailPreviewActivity.start(
                     context,
-                    instanceKey,
+                    vm.instanceKey,
                     item,
                     ivThumbnail
                 )
             }
             else if (item.type == TYPE_IMAGE) {
                 // Download image
-                TAPFileDownloadManager.getInstance(instanceKey)
-                    .downloadImage(context, item)
+                TAPFileDownloadManager.getInstance(vm.instanceKey).downloadImage(context, item)
                 notifyItemChanged(item)
             }
             else if (item.type == TYPE_VIDEO && isMediaReady && null != item.data) {
                 val videoUri =
-                    TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item)
+                    TAPFileDownloadManager.getInstance(vm.instanceKey).getFileMessageUri(item)
                 if (null == videoUri) {
                     // Prompt download
                     val fileID = item.data!![FILE_ID] as String?
@@ -200,7 +221,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                     // Open video player
                     TAPVideoPlayerActivity.start(
                         context,
-                        instanceKey,
+                        vm.instanceKey,
                         videoUri,
                         item
                     )
@@ -213,7 +234,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
         }
 
         override fun onCancelDownloadClicked(item: TAPMessageModel) {
-            TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(item.localID)
+            TAPFileDownloadManager.getInstance(vm.instanceKey).cancelFileDownload(item.localID)
             notifyItemChanged(item)
         }
 
@@ -226,12 +247,12 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "http://$url"
             }
-            TAPUtils.openUrl(instanceKey, activity, url)
+            TAPUtils.openUrl(vm.instanceKey, activity, url)
         }
 
         override fun onItemLongClicked(item: TAPMessageModel) {
             TAPLongPressActionBottomSheet.newInstance(
-                instanceKey,
+                vm.instanceKey,
                 SHARED_MEDIA_TYPE,
                 item,
                 longPressListener
@@ -259,7 +280,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                         vm.isLoading = true
                         showLoading()
                         Thread {
-                            (activity as TapSharedMediaActivity?)?.getMoreSharedMedias(type)
+                            (activity as TapSharedMediaActivity?)?.getMoreSharedMedias(vm.type)
                         }.start()
                     }
                 }
@@ -281,10 +302,10 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                                             vm.isLoading = true
                                             showSharedMediaLoading()
                                             Thread {
-                                                when (type) {
-                                                    TYPE_MEDIA -> TAPDataManager.getInstance(instanceKey).getRoomMedias(vm.lastTimestamp, vm.room?.roomID, this)
-                                                    TYPE_LINK -> TAPDataManager.getInstance(instanceKey).getRoomLinks(vm.lastTimestamp, vm.room?.roomID, this)
-                                                    TYPE_DOCUMENT -> TAPDataManager.getInstance(instanceKey).getRoomFiles(vm.lastTimestamp, vm.room?.roomID, this)
+                                                when (vm.type) {
+                                                    TYPE_MEDIA -> TAPDataManager.getInstance(vm.instanceKey).getRoomMedias(vm.lastTimestamp, vm.room?.roomID, this)
+                                                    TYPE_LINK -> TAPDataManager.getInstance(vm.instanceKey).getRoomLinks(vm.lastTimestamp, vm.room?.roomID, this)
+                                                    TYPE_DOCUMENT -> TAPDataManager.getInstance(vm.instanceKey).getRoomFiles(vm.lastTimestamp, vm.room?.roomID, this)
                                                 }
                                             }.start()
                                         }
@@ -300,6 +321,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                         activity?.runOnUiThread {
                             vb.recyclerView.visibility = View.VISIBLE
                             vb.recyclerView.viewTreeObserver.removeOnScrollChangedListener(sharedMediaPagingScrollListener)
+                            vb.gEmptySharedMedia.visibility = View.GONE
                             sharedMediaPagingScrollListener = ViewTreeObserver.OnScrollChangedListener {
                                 if (!vm.isRemoteContentFetched &&
                                     (sharedMediaGlm?.findLastVisibleItemPosition() ?: -1) > vm.sharedMedias.size - MAX_ITEMS_PER_PAGE / 2
@@ -309,7 +331,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                                         vm.isLoading = true
                                         showSharedMediaLoading()
                                         Thread {
-                                            (activity as TapSharedMediaActivity?)?.getMoreSharedMedias(type)
+                                            (activity as TapSharedMediaActivity?)?.getMoreSharedMedias(vm.type)
                                         }.start()
                                     }
                                 }
@@ -391,6 +413,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
             sharedMediaAdapter?.setDateSeparators(vm.dateSeparators)
             activity?.runOnUiThread {
                 vb.recyclerView.visibility = View.VISIBLE
+                vb.gEmptySharedMedia.visibility = View.GONE
                 vb.recyclerView.viewTreeObserver.removeOnScrollChangedListener(sharedMediaPagingScrollListener)
                 hideSharedMediaLoading()
                 hideLoading()
@@ -418,7 +441,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
         else {
             // Download file
             vm.pendingDownloadMessage = null
-            TAPFileDownloadManager.getInstance(instanceKey).downloadMessageFile(message)
+            TAPFileDownloadManager.getInstance(vm.instanceKey).downloadMessageFile(message)
         }
         notifyItemChanged(message)
     }
@@ -439,7 +462,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                     }
                 }
                 DownloadBroadcastEvent.DownloadFailed -> activity?.runOnUiThread {
-                    TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(localID)
+                    TAPFileDownloadManager.getInstance(vm.instanceKey).addFailedDownload(localID)
                     if (vm.getSharedMedia(localID) != null) {
                         notifyItemChanged(
                             vm.getSharedMedia(localID)
@@ -450,7 +473,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                     startFileDownload(intent.getParcelableExtra(MESSAGE))
                 }
                 DownloadBroadcastEvent.CancelDownload -> activity?.runOnUiThread {
-                    TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(localID)
+                    TAPFileDownloadManager.getInstance(vm.instanceKey).cancelFileDownload(localID)
                     if (vm.sharedMediasMap.containsKey(localID)) {
                         notifyItemChanged(vm.sharedMediasMap[localID])
                     }
@@ -460,7 +483,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
                     val fileUri: Uri? = intent.getParcelableExtra(FILE_URI)
                     vm.openedFileMessage = message
                     if (null != fileUri && null != message?.data) {
-                        if (!TAPUtils.openFile(instanceKey, context, fileUri, TAPUtils.getMimeTypeFromMessage(message))) {
+                        if (!TAPUtils.openFile(vm.instanceKey, context, fileUri, TAPUtils.getMimeTypeFromMessage(message))) {
                             showDownloadFileDialog()
                         }
                     }
@@ -516,7 +539,7 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
         else {
             // Download file
             vm.pendingDownloadMessage = null
-            TAPFileDownloadManager.getInstance(instanceKey).downloadMessageFile(message)
+            TAPFileDownloadManager.getInstance(vm.instanceKey).downloadMessageFile(message)
         }
     }
 
@@ -529,8 +552,8 @@ class TapSharedMediaFragment(private val instanceKey: String, val type: Int): Fr
             val fileId = vm.openedFileMessage?.data?.get(FILE_ID) as String
             var fileUrl = vm.openedFileMessage?.data?.get(FILE_URL) as String
             fileUrl = TAPUtils.getUriKeyFromUrl(fileUrl)
-            TAPFileDownloadManager.getInstance(instanceKey).removeFileMessageUri(vm.room?.roomID, fileId)
-            TAPFileDownloadManager.getInstance(instanceKey).removeFileMessageUri(vm.room?.roomID, fileUrl)
+            TAPFileDownloadManager.getInstance(vm.instanceKey).removeFileMessageUri(vm.room?.roomID, fileId)
+            TAPFileDownloadManager.getInstance(vm.instanceKey).removeFileMessageUri(vm.room?.roomID, fileUrl)
         }
         notifyItemChanged(vm.openedFileMessage)
         TapTalkDialog.Builder(context)

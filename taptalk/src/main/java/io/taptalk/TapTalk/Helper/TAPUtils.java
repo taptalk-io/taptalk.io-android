@@ -136,7 +136,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.RELOAD_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
@@ -355,10 +355,10 @@ public class TAPUtils {
     }
 
     public static List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type) {
-        return generateContactListForRecycler(contacts, type, null);
+        return generateContactListForRecycler(contacts, type, null, null);
     }
 
-    public static List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type, @Nullable Map<String, TapContactListModel> contactListPointer) {
+    public static List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type, @Nullable Map<String, TapContactListModel> contactListPointer, List<String> selectedContactsIds) {
         List<TapContactListModel> separatedContacts = new ArrayList<>();
         List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
         List<TapContactListModel> filteredContacts = new ArrayList<>();
@@ -366,6 +366,7 @@ public class TAPUtils {
             // Check name is not null
             if (null != contact.getFullname() && !contact.getFullname().isEmpty()) {
                 TapContactListModel filteredContact = new TapContactListModel(contact, type);
+                filteredContact.setSelected(!isListEmpty(selectedContactsIds) && selectedContactsIds.contains(contact.getUserID()));
                 filteredContacts.add(filteredContact);
             }
         }

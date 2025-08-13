@@ -21,10 +21,13 @@ public class MainActivity extends AppCompatActivity {
         if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
             if (BuildConfig.DEBUG) {
                 TapDevLandingActivity.Companion.start(this, instanceKey);
-            } else {
+            }
+            else {
                 TapUIRoomListActivity.start(MainActivity.this, instanceKey);
             }
-        } else {
+            TAPDataManager.getInstance(instanceKey).checkAndRequestAutoStartPermission(this);
+        }
+        else {
             TAPLoginActivity.start(MainActivity.this, instanceKey, false);
         }
 //        AnalyticsManager.getInstance(instanceKey).trackActiveUser();

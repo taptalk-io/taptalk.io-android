@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.taptalk.TapTalkSample">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -46,6 +50,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/tap_network_security_configuration"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -95,8 +100,7 @@
 
         <activity
             android:name="io.moselo.SampleApps.Activity.MainActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -120,32 +124,26 @@
         </activity>
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPLandingActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPLoginActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPCountryListActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TapDevLandingActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPShareOptionsActivity"
             android:clearTaskOnLaunch="true"
             android:exported="true"
-            android:noHistory="true"
-            android:screenOrientation="portrait">
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -162,8 +160,7 @@
         </activity>
         <activity
             android:name="io.moselo.SampleApps.Activity.TapDeleteAccountActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+            android:exported="true" />
     </application>
 
 </manifest>

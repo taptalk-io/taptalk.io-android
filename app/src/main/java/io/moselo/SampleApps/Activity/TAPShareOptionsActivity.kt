@@ -149,9 +149,15 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     override fun onBackPressed() {
         if (vm.isSelecting) {
             showToolbar()
-        } else {
-            super.onBackPressed()
-            overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_right)
+        }
+        else {
+            try {
+                super.onBackPressed()
+                overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_right)
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

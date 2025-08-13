@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -34,6 +36,7 @@ import io.taptalk.TapTalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
@@ -78,6 +81,11 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         setContentView(R.layout.tap_activity_media_preview);
         receiveIntent();
         initView();
+    }
+
+    @Override
+    public void applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, io.taptalk.TapTalk.R.color.tapTransparentBlack1940));
     }
 
     private void receiveIntent() {
@@ -211,6 +219,18 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             TAPMediaPreviewModel preview = TAPUtils.getPreviewFromUri(this, uri, false);
             if (preview != null) {
                 galleryMediaPreviews.add(preview);
+            }
+        }
+        if (!galleryMediaPreviews.isEmpty()) {
+            ArrayList<TAPMediaPreviewModel> filteredGalleryMediaPreviews = new ArrayList<>();
+            for (TAPMediaPreviewModel media : galleryMediaPreviews) {
+                if (media.getType() == TYPE_IMAGE || media.getType() == TYPE_VIDEO) {
+                    filteredGalleryMediaPreviews.add(media);
+                }
+            }
+            if (filteredGalleryMediaPreviews.isEmpty()) {
+                Toast.makeText(TAPMediaPreviewActivity.this, R.string.tap_error_invalid_file_format, Toast.LENGTH_SHORT).show();
+                return;
             }
         }
         medias.addAll(galleryMediaPreviews);

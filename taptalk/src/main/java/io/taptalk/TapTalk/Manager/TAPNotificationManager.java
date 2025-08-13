@@ -288,7 +288,8 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowInAppNotification(Context context, TAPMessageModel newMessageModel) {
-        if (TapTalk.getTapTalkInstance(instanceKey).implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
+        TapTalk instance = TapTalk.getTapTalkInstance(instanceKey);
+        if (instance != null && instance.implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
             if (TapTalk.isForeground) {
                 new NotificationBuilder(context, instanceKey)
                         .setNotificationMessage(newMessageModel)
@@ -316,7 +317,8 @@ public class TAPNotificationManager {
                 UPDATE_USER.equals(newMessageModel.getAction())) {
             TAPContactManager.getInstance(instanceKey).updateUserData(newMessageModel.getUser());
         }
-        if (TapTalk.getTapTalkInstance(instanceKey).implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
+        TapTalk instance = TapTalk.getTapTalkInstance(instanceKey);
+        if (instance != null && instance.implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
             if (!TapTalk.isForeground || (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()
                     && !TAPChatManager.getInstance(instanceKey).getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
                 new NotificationBuilder(context, instanceKey)

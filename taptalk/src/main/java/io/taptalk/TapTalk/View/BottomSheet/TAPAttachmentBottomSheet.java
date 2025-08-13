@@ -1,6 +1,12 @@
 package io.taptalk.TapTalk.View.BottomSheet;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,10 +14,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.libraries.places.api.Places;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
@@ -23,6 +30,7 @@ import io.taptalk.TapTalk.Model.TAPAttachmentModel;
 import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter;
 import io.taptalk.TapTalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BroadcastEvent.REOPEN_ATTACHMENT_BOTTOM_SHEET;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_CAMERA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_DOCUMENT;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_GALLERY;
@@ -73,6 +81,7 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.tapTransparentBottomSheetDialogTheme);
     }
 
     @Override
@@ -84,22 +93,42 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = view.findViewById(R.id.recyclerView);
+
+        if (attachmentListener == null) {
+            Activity activity = getActivity();
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (activity != null && !activity.isFinishing()) {
+                    LocalBroadcastManager.getInstance(activity).sendBroadcast(new Intent(REOPEN_ATTACHMENT_BOTTOM_SHEET));
+                }
+            }, 200L);
+            dismiss();
+            return;
+        }
 
         List<TAPAttachmentModel> attachmentList;
+        recyclerView = view.findViewById(R.id.recyclerView);
         if (imagePosition != -1) {
             attachmentList = createImageOptionsMenu(instanceKey);
             recyclerView.setAdapter(new TAPAttachmentAdapter(instanceKey, imagePosition, attachmentList, attachmentListener, onClickListener));
-        } else {
+        }
+        else {
             if (isImagePickerBottomSheet) {
                 attachmentList = createImagePickerMenu(instanceKey);
-            } else {
+            }
+            else {
                 attachmentList = createAttachMenu(instanceKey);
             }
             recyclerView.setAdapter(new TAPAttachmentAdapter(instanceKey, attachmentList, attachmentListener, onClickListener));
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from((View) requireView().getParent());
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Override

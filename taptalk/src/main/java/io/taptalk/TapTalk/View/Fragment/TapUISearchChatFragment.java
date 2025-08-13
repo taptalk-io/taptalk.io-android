@@ -38,6 +38,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPSearchChatAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPSearchChatViewModel;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.ViewModel.TapMainRoomListViewModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.EMPTY_STATE;
@@ -58,18 +59,20 @@ public class TapUISearchChatFragment extends Fragment {
     private ImageView ivButtonClearText;
     private RecyclerView recyclerView;
 
+    private TapMainRoomListViewModel mainVm;
     private TAPSearchChatViewModel vm;
     private TAPSearchChatAdapter adapter;
 
     public TapUISearchChatFragment() {
     }
 
-    public TapUISearchChatFragment(String instanceKey) {
+    public TapUISearchChatFragment(String instanceKey, @Nullable TapMainRoomListViewModel vm) {
         this.instanceKey = instanceKey;
+        this.mainVm = vm;
     }
 
-    public static TapUISearchChatFragment newInstance(String instanceKey) {
-        TapUISearchChatFragment fragment = new TapUISearchChatFragment(instanceKey);
+    public static TapUISearchChatFragment newInstance(String instanceKey, @Nullable TapMainRoomListViewModel vm) {
+        TapUISearchChatFragment fragment = new TapUISearchChatFragment(instanceKey, vm);
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -91,7 +94,6 @@ public class TapUISearchChatFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initViewModel();
         initView(view);
-        setRecentSearchItemsFromDatabase();
     }
 
     @Override
@@ -139,6 +141,7 @@ public class TapUISearchChatFragment extends Fragment {
             etSearch.setHint(getString(R.string.tap_search_chat_placeholder_chats_only));
         }
 
+        etSearch.removeTextChangedListener(searchTextWatcher);
         etSearch.addTextChangedListener(searchTextWatcher);
 
         adapter = new TAPSearchChatAdapter(instanceKey, vm.getSearchResults(), Glide.with(this));
@@ -167,6 +170,13 @@ public class TapUISearchChatFragment extends Fragment {
             TAPUtils.dismissKeyboard(getActivity());
             return false;
         });
+
+        if (mainVm != null && !mainVm.getSearchKeyword().isEmpty()) {
+            etSearch.setText(mainVm.getSearchKeyword());
+        }
+        else {
+            setRecentSearchItemsFromDatabase();
+        }
     }
 
     private void setRecentSearchItemsFromDatabase() {
@@ -223,6 +233,9 @@ public class TapUISearchChatFragment extends Fragment {
     private void startSearch(String keyword) {
         vm.clearSearchResults();
         vm.setSearchKeyword(keyword.toLowerCase().trim());
+        if (mainVm != null) {
+            mainVm.setSearchKeyword(vm.getSearchKeyword());
+        }
         adapter.setSearchKeyword(vm.getSearchKeyword());
         if (vm.getSearchKeyword().isEmpty()) {
             // Show recent searches if keyword is empty

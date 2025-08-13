@@ -72,7 +72,19 @@ public class TapTalkDialog extends Dialog {
         }
         try {
             super.show();
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void dismiss() {
+        if (context instanceof Activity && ((Activity) context).isFinishing()) {
+            return;
+        }
+        try {
+            super.dismiss();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

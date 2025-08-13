@@ -188,6 +188,7 @@
     <string name="tap_failed_to_load_image">Gagal memuat gambar.</string>
     <string name="tap_failed">Gagal</string>
     <string name="tap_message_send_failed">Gagal mengirim pesan, klik untuk mencoba lagi</string>
+    <string name="tap_error_no_changes_found">Tidak ada perubahan.</string>
     <string name="tap_error_message_group_name_empty">Mohon isi nama grup.</string>
     <string name="tap_internet_connection_lost">Koneksi Internet Terputus</string>
     <string name="tap_please_check_your_connection">Silakan periksa koneksi Anda</string>

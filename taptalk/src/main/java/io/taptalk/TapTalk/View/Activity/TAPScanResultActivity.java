@@ -102,8 +102,18 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
+        try {
+            super.onBackPressed();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void applyWindowInsets() {
+        applyWindowInsets(ContextCompat.getColor(this, R.color.tapColorPrimaryLight));
     }
 
     private void initView() {

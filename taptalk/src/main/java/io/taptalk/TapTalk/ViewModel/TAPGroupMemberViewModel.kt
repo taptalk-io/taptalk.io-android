@@ -16,6 +16,7 @@ class TAPGroupMemberViewModel: ViewModel() {
     var selectedMembers: LinkedHashMap<String?, TAPUserModel?> = linkedMapOf()
     var adminButtonStatus: AdminButtonShowed = AdminButtonShowed.NOT_SHOWED
     var memberCountModel: TAPUserModel? = TAPUserModel("", "")
+    var searchKeyword: String = ""
     var loadingStartText: String = ""
     var loadingEndText: String = ""
 

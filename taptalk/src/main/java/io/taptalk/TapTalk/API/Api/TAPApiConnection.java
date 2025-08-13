@@ -17,6 +17,7 @@ import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
 import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import kotlin.Pair;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -26,6 +27,11 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.MULTIPART_CONTENT_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
+
+import android.os.Build;
+
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
 
 public class TAPApiConnection {
 
@@ -102,44 +108,69 @@ public class TAPApiConnection {
     private OkHttpClient buildHttpTapClient(int headerAuth) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-        return new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .connectTimeout(1, TimeUnit.MINUTES)
-                .readTimeout(1, TimeUnit.MINUTES)
-                .writeTimeout(1, TimeUnit.MINUTES)
-                .retryOnConnectionFailure(true)
-                .addInterceptor(loggingInterceptor)
-                .addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth))
-                .build();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.addNetworkInterceptor(new StethoInterceptor());
+        builder.connectTimeout(1, TimeUnit.MINUTES);
+        builder.readTimeout(1, TimeUnit.MINUTES);
+        builder.writeTimeout(1, TimeUnit.MINUTES);
+        builder.retryOnConnectionFailure(true);
+        builder.addInterceptor(loggingInterceptor);
+        builder.addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            TapTalkTrustFactory.Companion trustFactory = TapTalkTrustFactory.Companion;
+            if (trustFactory != null) {
+                Pair<SSLSocketFactory, X509TrustManager> factoryManager = trustFactory.getTrustFactoryManager(TapTalk.appContext);
+                if (factoryManager != null && factoryManager.getFirst() != null && factoryManager.getSecond() != null) {
+                    builder.sslSocketFactory(factoryManager.getFirst(), factoryManager.getSecond());
+                }
+            }
+        }
+        return builder.build();
     }
 
     private OkHttpClient buildHttpTapUploadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ?
-                HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-        return new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
-                .readTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
-                .writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
-                .retryOnConnectionFailure(true)
-                .addInterceptor(loggingInterceptor)
-                .addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth))
-                .build();
+        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.addNetworkInterceptor(new StethoInterceptor());
+        builder.connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS);
+        builder.readTimeout(timeOutDuration, TimeUnit.MILLISECONDS);
+        builder.writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS);
+        builder.retryOnConnectionFailure(true);
+        builder.addInterceptor(loggingInterceptor);
+        builder.addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            TapTalkTrustFactory.Companion trustFactory = TapTalkTrustFactory.Companion;
+            if (trustFactory != null) {
+                Pair<SSLSocketFactory, X509TrustManager> factoryManager = trustFactory.getTrustFactoryManager(TapTalk.appContext);
+                if (factoryManager != null && factoryManager.getFirst() != null && factoryManager.getSecond() != null) {
+                    builder.sslSocketFactory(factoryManager.getFirst(), factoryManager.getSecond());
+                }
+            }
+        }
+        return builder.build();
     }
 
     private OkHttpClient buildHttpTapDownloadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ?
-                HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-        return new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
-                .readTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
-                .writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
-                .retryOnConnectionFailure(true)
-                .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(instanceKey, headerAuth))
-                .build();
+        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.addNetworkInterceptor(new StethoInterceptor());
+        builder.connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS);
+        builder.readTimeout(timeOutDuration, TimeUnit.MILLISECONDS);
+        builder.writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS);
+        builder.retryOnConnectionFailure(true);
+        builder.addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(instanceKey, headerAuth));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            TapTalkTrustFactory.Companion trustFactory = TapTalkTrustFactory.Companion;
+            if (trustFactory != null) {
+                Pair<SSLSocketFactory, X509TrustManager> factoryManager = trustFactory.getTrustFactoryManager(TapTalk.appContext);
+                if (factoryManager != null && factoryManager.getFirst() != null && factoryManager.getSecond() != null) {
+                    builder.sslSocketFactory(factoryManager.getFirst(), factoryManager.getSecond());
+                }
+            }
+        }
+        return builder.build();
     }
 
     private Retrofit buildApiAdapter(OkHttpClient httpClient, String baseURL) {
