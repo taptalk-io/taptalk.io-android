@@ -68,7 +68,7 @@ public class TapCoreContactManager {
     }
 
     public void addContactListener(TapCoreContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getCoreContactListeners().remove(listener);
@@ -76,7 +76,7 @@ public class TapCoreContactManager {
     }
 
     public void getAllUserContacts(TapCoreGetMultipleContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -100,7 +100,7 @@ public class TapCoreContactManager {
     }
 
     public void fetchAllUserContactsFromServer(TapCoreGetMultipleContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -175,7 +175,7 @@ public class TapCoreContactManager {
     }
 
     public void getUserDataWithUserID(String userID, TapCoreGetContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -207,7 +207,7 @@ public class TapCoreContactManager {
     }
 
     public void getUserDataWithXCUserID(String xcUserID, TapCoreGetContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -239,14 +239,14 @@ public class TapCoreContactManager {
     }
 
     public void saveUserData(TAPUserModel user) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TAPContactManager.getInstance(instanceKey).updateUserData(user);
     }
 
     public void addToTapTalkContactsWithUserID(String userID, TapCoreGetContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -285,7 +285,7 @@ public class TapCoreContactManager {
     }
 
     public void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapCoreGetContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -339,7 +339,7 @@ public class TapCoreContactManager {
     }
 
     public void removeFromTapTalkContacts(String userID, TapCommonListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -382,7 +382,7 @@ public class TapCoreContactManager {
     }
 
     public void updateActiveUserBio(String bio, TapCoreGetContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -418,7 +418,7 @@ public class TapCoreContactManager {
     }
 
     public void reportUser(String userID, String category, boolean isOtherCategory, String reason, TapCommonListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -452,7 +452,7 @@ public class TapCoreContactManager {
     }
 
     public void reportMessage(String messageID, String roomID, String category, boolean isOtherCategory, String reason, TapCommonListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -486,7 +486,7 @@ public class TapCoreContactManager {
     }
 
     public void triggerContactBlocked(TAPUserModel userModel) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         for (TapCoreContactListener listener : getCoreContactListeners()) {
@@ -495,7 +495,7 @@ public class TapCoreContactManager {
     }
 
     public void triggerContactUnblocked(TAPUserModel userModel) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         for (TapCoreContactListener listener : getCoreContactListeners()) {
@@ -504,7 +504,7 @@ public class TapCoreContactManager {
     }
 
     public void blockUser(String userID, TapCoreGetContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -537,7 +537,7 @@ public class TapCoreContactManager {
     }
 
     public void unblockUser(String userID, TapCoreGetContactListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
