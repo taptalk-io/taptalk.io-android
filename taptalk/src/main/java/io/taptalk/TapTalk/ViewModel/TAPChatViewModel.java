@@ -41,7 +41,7 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     private static final String TAG = TAPChatViewModel.class.getSimpleName();
     private String instanceKey = "";
-    private LiveData<List<TAPMessageEntity>> allMessages;
+//    private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, unreadMentions;
     private Map<String, TAPUserModel> roomParticipantsByUsername;
     private Map<String, List<Integer>> messageMentionIndexes;
@@ -119,7 +119,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     public TAPChatViewModel(Application application, String instanceKey) {
         super(application);
         this.instanceKey = instanceKey;
-        allMessages = TAPDataManager.getInstance(instanceKey).getMessagesLiveData();
+//        allMessages = TAPDataManager.getInstance(instanceKey).getMessagesLiveData();
         setOnBottom(true);
     }
 
@@ -131,9 +131,9 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.instanceKey = instanceKey;
     }
 
-    public LiveData<List<TAPMessageEntity>> getAllMessages() {
-        return allMessages;
-    }
+//    public LiveData<List<TAPMessageEntity>> getAllMessages() {
+//        return allMessages;
+//    }
 
     public void delete(String messageLocalID) {
         TAPDataManager.getInstance(instanceKey).deleteFromDatabase(messageLocalID);
@@ -577,12 +577,12 @@ public class TAPChatViewModel extends AndroidViewModel {
         isNeedToShowLoading = needToShowLoading;
     }
 
-    public int getMessageSize() {
-        if (null != allMessages.getValue()) {
-            return allMessages.getValue().size();
-        }
-        return 0;
-    }
+//    public int getMessageSize() {
+//        if (null != allMessages.getValue()) {
+//            return allMessages.getValue().size();
+//        }
+//        return 0;
+//    }
 
     public String getOtherUserID() {
         try {
