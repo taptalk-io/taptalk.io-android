@@ -147,14 +147,16 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         vm = new ViewModelProvider(this, new TAPContactListViewModel.TAPContactListViewModelFactory(getApplication(), instanceKey)).get(TAPContactListViewModel.class);
         setupMenuButtons();
         // Set up listener for Live Data
-        vm.getContactListLive().observe(this, userModels -> {
-            if (null != userModels) {
-                vm.getContactList().clear();
-                vm.getContactList().addAll(userModels);
-                vm.setSeparatedContactList(TAPUtils.generateContactListForRecycler(vm.getContactList(), TYPE_DEFAULT_CONTACT_LIST));
-                startSearch();
-            }
-        });
+        if (vm.getContactListLive() != null) {
+            vm.getContactListLive().observe(this, userModels -> {
+                if (null != userModels) {
+                    vm.getContactList().clear();
+                    vm.getContactList().addAll(userModels);
+                    vm.setSeparatedContactList(TAPUtils.generateContactListForRecycler(vm.getContactList(), TYPE_DEFAULT_CONTACT_LIST));
+                    startSearch();
+                }
+            });
+        }
     }
 
     private void initView() {

@@ -169,7 +169,8 @@ public class TAPTouchImageView extends androidx.appcompat.widget.AppCompatImageV
     @Override
     public void setScaleType(ScaleType type) {
         if (type == ScaleType.FIT_START || type == ScaleType.FIT_END) {
-            throw new UnsupportedOperationException("TouchImageView does not support FIT_START or FIT_END");
+            return;
+            //throw new UnsupportedOperationException("TouchImageView does not support FIT_START or FIT_END");
         }
         if (type == ScaleType.MATRIX) {
             super.setScaleType(ScaleType.MATRIX);
@@ -207,7 +208,8 @@ public class TAPTouchImageView extends androidx.appcompat.widget.AppCompatImageV
      */
     public RectF getZoomedRect() {
         if (mScaleType == ScaleType.FIT_XY) {
-            throw new UnsupportedOperationException("getZoomedRect() not supported with FIT_XY");
+            return new RectF(0, 0, 0, 0);
+            //throw new UnsupportedOperationException("getZoomedRect() not supported with FIT_XY");
         }
         PointF topLeft = transformCoordTouchToBitmap(0, 0, true);
         PointF bottomRight = transformCoordTouchToBitmap(viewWidth, viewHeight, true);
@@ -599,7 +601,7 @@ public class TAPTouchImageView extends androidx.appcompat.widget.AppCompatImageV
                 //
                 // FIT_START and FIT_END not supported
                 //
-                throw new UnsupportedOperationException("TouchImageView does not support FIT_START or FIT_END");
+                //throw new UnsupportedOperationException("TouchImageView does not support FIT_START or FIT_END");
 
         }
 
