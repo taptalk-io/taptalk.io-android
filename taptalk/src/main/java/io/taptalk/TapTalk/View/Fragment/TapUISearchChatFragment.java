@@ -181,6 +181,9 @@ public class TapUISearchChatFragment extends Fragment {
 
     private void setRecentSearchItemsFromDatabase() {
         // Observe database with live data
+        if (vm.getRecentSearchList() == null) {
+            return;
+        }
         vm.getRecentSearchList().observe(getViewLifecycleOwner(), hpRecentSearchEntities -> {
             vm.clearRecentSearches();
 

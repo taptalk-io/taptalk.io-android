@@ -215,7 +215,7 @@ public class TapUI {
     }
 
     public void addRoomListListener(TapUIRoomListListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getRoomListListeners().remove(listener);
@@ -223,7 +223,7 @@ public class TapUI {
     }
 
     public void removeRoomListListener(TapUIRoomListListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getRoomListListeners().remove(listener);
@@ -234,7 +234,7 @@ public class TapUI {
     }
 
     public void addChatRoomListener(TapUIChatRoomListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getChatRoomListeners().remove(listener);
@@ -242,7 +242,7 @@ public class TapUI {
     }
 
     public void removeChatRoomListener(TapUIChatRoomListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getChatRoomListeners().remove(listener);
@@ -253,7 +253,7 @@ public class TapUI {
     }
 
     public void addChatProfileListener(TapUIChatProfileListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getChatProfileListeners().remove(listener);
@@ -261,7 +261,7 @@ public class TapUI {
     }
 
     public void removeChatProfileListener(TapUIChatProfileListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getChatProfileListeners().remove(listener);
@@ -272,7 +272,7 @@ public class TapUI {
     }
 
     public void addCustomKeyboardListener(TapUICustomKeyboardListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getCustomKeyboardListeners().remove(listener);
@@ -280,7 +280,7 @@ public class TapUI {
     }
 
     public void removeCustomKeyboardListener(TapUICustomKeyboardListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getCustomKeyboardListeners().remove(listener);
@@ -291,7 +291,7 @@ public class TapUI {
     }
 
     public void addChatRoomCustomNavigationBarListener(TapUIChatRoomCustomNavigationBarListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getChatRoomCustomNavigationBarListeners().remove(listener);
@@ -299,7 +299,7 @@ public class TapUI {
     }
 
     public void removeChatRoomCustomNavigationBarListener(TapUIChatRoomCustomNavigationBarListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getChatRoomCustomNavigationBarListeners().remove(listener);
@@ -310,7 +310,7 @@ public class TapUI {
     }
 
     public void addMyAccountListener(TapUIMyAccountListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getMyAccountListeners().remove(listener);
@@ -318,7 +318,7 @@ public class TapUI {
     }
 
     public void removeMyAccountListener(TapUIMyAccountListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getMyAccountListeners().remove(listener);
@@ -331,7 +331,7 @@ public class TapUI {
      */
 
     public TapUIMainRoomListFragment getRoomListFragment() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         return TapUIMainRoomListFragment.newInstance(instanceKey);
@@ -342,56 +342,56 @@ public class TapUI {
     }
 
     public void openRoomList(Context context, TAPRoomModel room) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapUIRoomListActivity.start(context, instanceKey, room);
     }
 
     public void openRoomList(Context context, String roomID) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapUIRoomListActivity.start(context, instanceKey, roomID, false);
     }
 
     public void openGroupChatCreator(Context context) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TAPAddGroupMemberActivity.start(context, instanceKey);
     }
 
     public void openNewChat(Context context) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TAPNewChatActivity.start(context, instanceKey);
     }
 
     public void openBarcodeScanner(Context context) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TAPBarcodeScannerActivity.start(context, instanceKey);
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapUIChatActivity.start(context, instanceKey, roomModel, null, null, TapTalk.isConnected(instanceKey));
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel, String scrollToMessageWithLocalID) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapUIChatActivity.start(context, instanceKey, roomModel, null, scrollToMessageWithLocalID, TapTalk.isConnected(instanceKey));
     }
 
     public void openChatRoom(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapUIChatActivity.start(
@@ -413,7 +413,7 @@ public class TapUI {
             @Nullable String customQuoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
             TapCommonListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
@@ -484,7 +484,7 @@ public class TapUI {
             @Nullable String customQuoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
             TapCommonListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
@@ -525,7 +525,7 @@ public class TapUI {
     }
 
     public void openChatRoomWithOtherUser(Context context, TAPUserModel otherUser) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         openChatRoom(
@@ -545,7 +545,7 @@ public class TapUI {
             @Nullable String customQuoteContent,
             @Nullable String customQuoteImageURL,
             @Nullable HashMap<String, Object> userInfo) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         if (null != customQuoteTitle) {
@@ -568,56 +568,56 @@ public class TapUI {
     }
 
     public void openStarredMessagesPage(Context context, TAPRoomModel room) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapStarredMessagesActivity.Companion.start(context, instanceKey, room);
     }
 
     public void openPinnedMessagesChatRoom(Context context, TAPRoomModel room) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapPinnedMessagesActivity.Companion.start(context, instanceKey, room);
     }
 
     public TapUIRoomListFragment getCurrentTapTalkRoomListFragment() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         return currentTapTalkRoomListFragment;
     }
 
     public void setCurrentTapTalkRoomListFragment(TapUIRoomListFragment currentTapTalkRoomListFragment) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         this.currentTapTalkRoomListFragment = currentTapTalkRoomListFragment;
     }
 
     public TapUIChatActivity getCurrentTapTalkChatActivity() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         return currentTapTalkChatActivity;
     }
 
     public void setCurrentTapTalkChatActivity(TapUIChatActivity currentTapTalkChatActivity) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         this.currentTapTalkChatActivity = currentTapTalkChatActivity;
     }
 
     public AppCompatActivity getCurrentForegroundTapTalkActivity() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         return currentForegroundTapTalkActivity;
     }
 
     public void setCurrentForegroundTapTalkActivity(AppCompatActivity currentForegroundTapTalkActivity) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         this.currentForegroundTapTalkActivity = currentForegroundTapTalkActivity;
@@ -646,112 +646,112 @@ public class TapUI {
     }
 
     public boolean isSearchChatBarVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isSearchChatBarHidden;
     }
 
     public void setSearchChatBarInRoomListVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSearchChatBarHidden = !isVisible;
     }
 
     public boolean isCloseRoomListButtonVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isCloseRoomListButtonVisible;
     }
 
     public void setCloseButtonInRoomListVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isCloseRoomListButtonVisible = isVisible;
     }
 
     public boolean isMyAccountButtonVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isMyAccountButtonHidden;
     }
 
     public void setMyAccountButtonInRoomListVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isMyAccountButtonHidden = !isVisible;
     }
 
     public boolean isNewChatButtonVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isNewChatButtonHidden;
     }
 
     public void setNewChatButtonInRoomListVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isNewChatButtonHidden = !isVisible;
     }
 
     public boolean isProfileButtonVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isProfileButtonHidden;
     }
 
     public void setProfileButtonInChatRoomVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isProfileButtonHidden = !isVisible;
     }
 
     public boolean isNewContactMenuButtonVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isNewContactMenuButtonHidden;
     }
 
     public void setNewContactMenuButtonVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isNewContactMenuButtonHidden = !isVisible;
     }
 
     public boolean isScanQRMenuButtonVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isScanQRMenuButtonHidden;
     }
 
     public void setScanQRMenuButtonVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isScanQRMenuButtonHidden = !isVisible;
     }
 
     public boolean isNewGroupMenuButtonVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isNewGroupMenuButtonHidden;
     }
 
     public void setNewGroupMenuButtonVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isNewGroupMenuButtonHidden = !isVisible;
@@ -766,602 +766,602 @@ public class TapUI {
     }
 
     public boolean isLogoutButtonVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isLogoutButtonVisible;
     }
 
     public void setLogoutButtonVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isLogoutButtonVisible = isVisible;
     }
 
     public boolean isReadStatusHidden() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isReadStatusHidden;
     }
 
     public void setReadStatusVisible(boolean isReadStatusVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         this.isReadStatusHidden = !isReadStatusVisible;
     }
 
     public boolean isConnectionStatusIndicatorVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isConnectionStatusIndicatorHidden;
     }
 
     public void setConnectionStatusIndicatorVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isConnectionStatusIndicatorHidden = !isVisible;
     }
 
     public boolean isDocumentAttachmentDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isDocumentAttachmentDisabled;
     }
 
     public void setDocumentAttachmentEnabled(boolean documentAttachmentEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isDocumentAttachmentDisabled = !documentAttachmentEnabled;
     }
 
     public boolean isCameraAttachmentDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isCameraAttachmentDisabled;
     }
 
     public void setCameraAttachmentEnabled(boolean cameraAttachmentEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isCameraAttachmentDisabled = !cameraAttachmentEnabled;
     }
 
     public boolean isGalleryAttachmentDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isGalleryAttachmentDisabled;
     }
 
     public void setGalleryAttachmentEnabled(boolean galleryAttachmentEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isGalleryAttachmentDisabled = !galleryAttachmentEnabled;
     }
 
     public boolean isLocationAttachmentDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isLocationAttachmentDisabled;
     }
 
     public void setLocationAttachmentEnabled(boolean locationAttachmentEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isLocationAttachmentDisabled = !locationAttachmentEnabled;
     }
 
     public boolean isReplyMessageMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isReplyMessageMenuDisabled;
     }
 
     public void setReplyMessageMenuEnabled(boolean replyMessageMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isReplyMessageMenuDisabled = !replyMessageMenuEnabled;
     }
 
     public boolean isForwardMessageMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isForwardMessageMenuDisabled;
     }
 
     public void setForwardMessageMenuEnabled(boolean forwardMessageMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isForwardMessageMenuDisabled = !forwardMessageMenuEnabled;
     }
 
     public boolean isStarMessageMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isStarMessageMenuDisabled;
     }
 
     public void setStarMessageMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isStarMessageMenuDisabled = !isEnabled;
     }
 
     public boolean isSharedMediaMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isSharedMediaMenuDisabled;
     }
 
     public void setSharedMediaMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSharedMediaMenuDisabled = !isEnabled;
     }
 
     public boolean isSharedMediaMediasTabVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isSharedMediaMediasTabHidden;
     }
 
     public void setSharedMediaMediasTabVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSharedMediaMediasTabHidden = !isVisible;
     }
 
     public boolean isSharedMediaLinksTabVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isSharedMediaLinksTabHidden;
     }
 
     public void setSharedMediaLinksTabVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSharedMediaLinksTabHidden = !isVisible;
     }
 
     public boolean isSharedMediaDocumentsTabVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isSharedMediaDocumentsTabHidden;
     }
 
     public void setSharedMediaDocumentsTabVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSharedMediaDocumentsTabHidden = !isVisible;
     }
 
     public boolean isCopyMessageMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isCopyMessageMenuDisabled;
     }
 
     public void setCopyMessageMenuEnabled(boolean copyMessageMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isCopyMessageMenuDisabled = !copyMessageMenuEnabled;
     }
 
     public boolean isDeleteMessageMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isDeleteMessageMenuDisabled;
     }
 
     public void setDeleteMessageMenuEnabled(boolean deleteMessageMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isDeleteMessageMenuDisabled = !deleteMessageMenuEnabled;
     }
 
     public boolean isAllowDeleteOthersMessageForAdminDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isAllowDeleteOthersMessageForAdminDisabled;
     }
 
     public void setAllowDeleteOthersMessageForAdminEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isAllowDeleteOthersMessageForAdminDisabled = !isEnabled;
     }
 
     public boolean isSaveMediaToGalleryMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isSaveMediaToGalleryMenuDisabled;
     }
 
     public void setSaveMediaToGalleryMenuEnabled(boolean saveMediaToGalleryMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSaveMediaToGalleryMenuDisabled = !saveMediaToGalleryMenuEnabled;
     }
 
     public boolean isSaveDocumentMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isSaveDocumentMenuDisabled;
     }
 
     public void setSaveDocumentMenuEnabled(boolean saveDocumentMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSaveDocumentMenuDisabled = !saveDocumentMenuEnabled;
     }
 
     public boolean isOpenLinkMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isOpenLinkMenuDisabled;
     }
 
     public void setOpenLinkMenuEnabled(boolean openLinkMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isOpenLinkMenuDisabled = !openLinkMenuEnabled;
     }
 
     public boolean isOpenLinkWithExternalBrowserEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isOpenLinkWithExternalBrowserEnabled;
     }
 
     public void setOpenLinkWithExternalBrowserEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isOpenLinkWithExternalBrowserEnabled = isEnabled;
     }
 
     public boolean isComposeEmailMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isComposeEmailMenuDisabled;
     }
 
     public void setComposeEmailMenuEnabled(boolean composeEmailMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isComposeEmailMenuDisabled = !composeEmailMenuEnabled;
     }
 
     public boolean isDialNumberMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isDialNumberMenuDisabled;
     }
 
     public void setDialNumberMenuEnabled(boolean dialNumberMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isDialNumberMenuDisabled = !dialNumberMenuEnabled;
     }
 
     public boolean isSendSMSMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isSendSMSMenuDisabled;
     }
 
     public void setSendSMSMenuEnabled(boolean sendSMSMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSendSMSMenuDisabled = !sendSMSMenuEnabled;
     }
 
     public boolean isViewProfileMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isViewProfileMenuDisabled;
     }
 
     public void setViewProfileMenuEnabled(boolean viewProfileMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isViewProfileMenuDisabled = !viewProfileMenuEnabled;
     }
 
     public boolean isSendMessageMenuDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isSendMessageMenuDisabled;
     }
 
     public void setSendMessageMenuEnabled(boolean sendMessageMenuEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSendMessageMenuDisabled = !sendMessageMenuEnabled;
     }
 
     public boolean isMentionUsernameDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isMentionUsernameDisabled;
     }
 
     public void setMentionUsernameEnabled(boolean mentionUsernameEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isMentionUsernameDisabled = !mentionUsernameEnabled;
     }
 
     public boolean isAddToContactsButtonInChatRoomVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isAddToContactsButtonInChatRoomHidden;
     }
 
     public void setAddToContactsButtonInChatRoomVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isAddToContactsButtonInChatRoomHidden = !isVisible;
     }
 
     public boolean isAddToContactsButtonInChatProfileVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isAddToContactsButtonInChatProfileHidden;
     }
 
     public void setAddToContactsButtonInChatProfileVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isAddToContactsButtonInChatProfileHidden = !isVisible;
     }
 
     public boolean isEditBioTextFieldVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isEditBioTextFieldHidden;
     }
 
     public void setEditBioTextFieldVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isEditBioTextFieldHidden = !isVisible;
     }
 
     public boolean isUsernameInChatProfileVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isUsernameInChatProfileHidden;
     }
 
     public void setUsernameInChatProfileVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isUsernameInChatProfileHidden = !isVisible;
     }
 
     public boolean isMobileNumberInChatProfileVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isMobileNumberInChatProfileHidden;
     }
 
     public void setMobileNumberInChatProfileVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isMobileNumberInChatProfileHidden = !isVisible;
     }
 
     public boolean isEmailAddressInChatProfileVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isEmailAddressInChatProfileVisible;
     }
 
     public void setEmailAddressInChatProfileVisible(boolean emailAddressInChatProfileVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isEmailAddressInChatProfileVisible = emailAddressInChatProfileVisible;
     }
 
     public boolean isAddContactDisabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isAddContactDisabled;
     }
 
     public void setAddContactEnabled(boolean addContactEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isAddContactDisabled = !addContactEnabled;
     }
 
     public boolean isReportButtonInChatProfileVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isReportButtonInChatProfileVisible;
     }
 
     public void setReportButtonInChatProfileVisible(boolean reportButtonInChatProfileVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isReportButtonInChatProfileVisible = reportButtonInChatProfileVisible;
     }
 
     public boolean isReportButtonInUserProfileVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isReportButtonInUserProfileVisible;
     }
 
     public void setReportButtonInUserProfileVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isReportButtonInUserProfileVisible = isVisible;
     }
 
     public boolean isReportButtonInGroupProfileVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isReportButtonInGroupProfileVisible;
     }
 
     public void setReportButtonInGroupProfileVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isReportButtonInGroupProfileVisible = isVisible;
     }
 
     public boolean isReportMessageMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isReportMessageMenuEnabled;
     }
 
     public void setReportMessageMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isReportMessageMenuEnabled = isEnabled;
     }
 
     public boolean isMarkAsUnreadRoomListSwipeMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isMarkAsUnreadRoomListSwipeMenuDisabled;
     }
 
     public void setMarkAsUnreadRoomListSwipeMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isMarkAsUnreadRoomListSwipeMenuDisabled = !isEnabled;
     }
 
     public boolean isMarkAsReadRoomListSwipeMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isMarkAsReadRoomListSwipeMenuDisabled;
     }
 
     public void setMarkAsReadRoomListSwipeMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isMarkAsReadRoomListSwipeMenuDisabled = !isEnabled;
     }
 
     public boolean isSendVoiceNoteMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isSendVoiceNoteMenuDisabled;
     }
 
     public void setSendVoiceNoteMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSendVoiceNoteMenuDisabled = !isEnabled;
     }
 
     public boolean isEditMessageMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isEditMessageMenuDisabled;
     }
 
     public void setEditMessageMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isEditMessageMenuDisabled = !isEnabled;
     }
 
     public boolean isSavedMessagesMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isSavedMessagesMenuDisabled;
     }
 
     public void setSavedMessagesMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isSavedMessagesMenuDisabled = !isEnabled;
@@ -1372,7 +1372,7 @@ public class TapUI {
     }
 
     public void setPinMessageMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isPinMessageMenuDisabled = !isEnabled;
@@ -1383,7 +1383,7 @@ public class TapUI {
     }
 
     public void setMuteRoomListSwipeMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isMuteRoomListSwipeMenuDisabled = !isEnabled;
@@ -1394,7 +1394,7 @@ public class TapUI {
     }
 
     public void setLinkPreviewInMessageEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isLinkPreviewInMessageDisabled = !isEnabled;
@@ -1405,7 +1405,7 @@ public class TapUI {
     }
 
     public void setPinRoomListSwipeMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isPinRoomListSwipeMenuDisabled = !isEnabled;
@@ -1416,7 +1416,7 @@ public class TapUI {
     }
 
     public void setDeleteRoomListSwipeMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isDeleteRoomListSwipeMenuDisabled = !isEnabled;
@@ -1427,7 +1427,7 @@ public class TapUI {
     }
 
     public void setScheduledMessageFeatureEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isScheduledMessageFeatureDisabled = !isEnabled;
@@ -1438,21 +1438,21 @@ public class TapUI {
     }
 
     public void setMessageInfoMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isMessageInfoMenuDisabled = !isEnabled;
     }
 
     public boolean isGroupInCommonMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return !isGroupInCommonMenuDisabled;
     }
 
     public void setGroupInCommonMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isGroupInCommonMenuDisabled = !isEnabled;
@@ -1465,7 +1465,7 @@ public class TapUI {
      */
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TAPCustomBubbleManager.getInstance(instanceKey).addCustomBubbleMap(baseCustomBubble);
@@ -1897,14 +1897,14 @@ public class TapUI {
      */
 
     public boolean isDeleteAccountButtonVisible() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isDeleteAccountButtonVisible;
     }
 
     public void setDeleteAccountButtonVisible(boolean isVisible) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isDeleteAccountButtonVisible = isVisible;
@@ -1919,14 +1919,14 @@ public class TapUI {
     }
 
     public boolean isBlockUserMenuEnabled() {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return isBlockUserMenuEnabled;
     }
 
     public void setBlockUserMenuEnabled(boolean isEnabled) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         isBlockUserMenuEnabled = isEnabled;

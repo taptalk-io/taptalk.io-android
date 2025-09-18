@@ -58,8 +58,6 @@ import com.google.android.libraries.places.api.Places;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
-import com.orhanobut.hawk.Hawk;
-import com.orhanobut.hawk.NoEncryption;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -224,17 +222,6 @@ public class TapTalk implements LifecycleObserver {
         TAPApiManager.setBaseUrlSocket(instanceKey, generateSocketBaseURL(appBaseURL));
         TAPConnectionManager.getInstance(instanceKey).setWebSocketEndpoint(generateWSSBaseURL(appBaseURL));
 
-        // Init Hawk for preference
-        if (!Hawk.isBuilt()) {
-            if (BuildConfig.BUILD_TYPE.equals("dev")) {
-                // No encryption for dev build
-                Hawk.init(appContext).setEncryption(new NoEncryption()).build();
-            } else {
-                Hawk.init(appContext).build();
-            }
-        }
-        TAPDataManager.getInstance(instanceKey).migratePreferences();
-
         this.implementationType = type;
 
         TAPCacheManager.getInstance(appContext).initAllCache();
@@ -298,7 +285,7 @@ public class TapTalk implements LifecycleObserver {
 
         if (sdkVersion.isEmpty()) {
             // Use hard-coded string
-            String version = "2.18.0";
+            String version = "2.18.1";
             sdkVersion = String.format("%s-%s", version, BuildConfig.BUILD_TYPE);
         }
     }
@@ -393,6 +380,13 @@ public class TapTalk implements LifecycleObserver {
         return true;
     }
 
+    public static boolean checkTapTalkInitialized(String instanceKey) {
+        if (getTapTalkInstance(instanceKey) == null) {
+            return false;
+        }
+        return true;
+    }
+
     public static void setLoggingEnabled(boolean enabled) {
         isLoggingEnabled = enabled;
     }
@@ -439,7 +433,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void authenticateWithAuthTicket(String instanceKey, String authTicket, boolean connectOnSuccess, TapCommonListener listener) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
@@ -504,7 +498,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void logoutAndClearAllTapTalkData(String instanceKey) {
-        if (!checkTapTalkInitialized() || !isAuthenticated(instanceKey)) {
+        if (!checkTapTalkInitialized(instanceKey) || !isAuthenticated(instanceKey)) {
             return;
         }
         TAPDataManager.getInstance(instanceKey).logout(new TAPDefaultDataView<TAPCommonResponse>() {
@@ -542,7 +536,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void clearAllTapTalkData(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TAPDataManager.getInstance(instanceKey).deleteAllPreference();
@@ -568,7 +562,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void connect(String instanceKey, TapCommonListener listener) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
@@ -584,7 +578,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void disconnect(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TAPConnectionManager.getInstance(instanceKey).close(NOT_CONNECTED);
@@ -595,7 +589,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static boolean isConnected(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         return TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == CONNECTED;
@@ -606,7 +600,7 @@ public class TapTalk implements LifecycleObserver {
 //    }
 
 //    public static void setAutoConnectEnabled(String instanceKey, boolean enabled) {
-//        if (!checkTapTalkInitialized()) {
+//        if (!checkTapTalkInitialized(instanceKey)) {
 //            return;
 //        }
 //        getTapTalkInstance(instanceKey).isAutoConnectDisabled = !enabled;
@@ -617,7 +611,7 @@ public class TapTalk implements LifecycleObserver {
 //    }
 //
 //    public static boolean isAutoConnectEnabled(String instanceKey) {
-//        if (!checkTapTalkInitialized()) {
+//        if (!checkTapTalkInitialized(instanceKey)) {
 //            return false;
 //        }
 //        return !getTapTalkInstance(instanceKey).isAutoConnectDisabled;
@@ -634,7 +628,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static int getClientAppIcon(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return -1;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -661,7 +655,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static TapTalkImplementationType getTapTalkImplementationType(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -688,7 +682,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static Map<String, String> getCoreConfigs(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -703,7 +697,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static Map<String, String> getProjectConfigs(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -718,7 +712,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static Map<String, String> getCustomConfigs(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -784,7 +778,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void setAutoContactSyncEnabled(String instanceKey, boolean enabled) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -798,7 +792,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static boolean isAutoContactSyncEnabled(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return false;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -873,7 +867,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static TAPUserModel getTapTalkActiveUser(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         return TAPChatManager.getInstance(instanceKey).getActiveUser();
@@ -884,7 +878,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void refreshActiveUser(String instanceKey, TapCommonListener listener) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
@@ -1161,7 +1155,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static List<TapListener> getTapTalkListeners(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -1180,7 +1174,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void addTapTalkListener(String instanceKey, TapListener listener) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -1194,7 +1188,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void removeTapTalkListener(String instanceKey, TapListener listener) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -1208,7 +1202,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     private static void setTapTalkScreenOrientation(String instanceKey, TapTalkScreenOrientation orientation) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -1222,7 +1216,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     private static TapTalkScreenOrientation getTapTalkScreenOrientation(String instanceKey) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return null;
         }
         TapTalk instance = getTapTalkInstance(instanceKey);
@@ -1238,7 +1232,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     private static void setInAppNotificationEnabled(String instanceKey, boolean enabled) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TAPNotificationManager.getInstance(instanceKey).setRoomListAppear(!enabled);
@@ -1249,7 +1243,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     private void createAndShowBackgroundNotification(String instanceKey, Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
-        if (!checkTapTalkInitialized()) {
+        if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }
         TAPNotificationManager.getInstance(instanceKey).createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
@@ -1260,7 +1254,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void fetchNewMessageAndUpdatedBadgeCount(String instanceKey) {
-        if (checkTapTalkInitialized() && isAuthenticated(instanceKey)) {
+        if (checkTapTalkInitialized(instanceKey) && isAuthenticated(instanceKey)) {
             TapCoreRoomListManager.getInstance(instanceKey).fetchNewMessageToDatabase(new TapCommonListener() {
                 @Override
                 public void onSuccess(String s) {

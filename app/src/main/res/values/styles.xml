@@ -6,7 +6,6 @@
         <item name="colorPrimary">@color/tapColorPrimary</item>
         <item name="colorPrimaryDark">@color/tapColorPrimaryDark</item>
         <item name="colorAccent">@color/tapColorAccent</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/tapColorPrimaryDark</item>
     </style>
 
 </resources>

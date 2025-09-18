@@ -88,7 +88,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.activity:activity:1.10.0'
@@ -141,9 +141,6 @@ dependencies {
     // Stetho
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
-
-    // Hawk
-    implementation "com.orhanobut:hawk:2.0.1"
 
     // Firebase
     implementation 'com.google.firebase:firebase-core:21.1.1'

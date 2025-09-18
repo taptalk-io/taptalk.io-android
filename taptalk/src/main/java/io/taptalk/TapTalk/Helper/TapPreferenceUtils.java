@@ -6,7 +6,6 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.orhanobut.hawk.Hawk;
 
 import java.util.HashMap;
 
@@ -128,10 +127,6 @@ public class TapPreferenceUtils {
         if (isContextOrKeyEmpty(key)) {
             return false;
         }
-        // TODO: Remove when migration is over
-        if (Hawk.contains(key)) {
-            return true;
-        }
         if (decryptedPreferences.containsKey(key)) {
             return true;
         }
@@ -171,10 +166,6 @@ public class TapPreferenceUtils {
                 return getFromSharedPreferences(key, type, defaultValue);
             }
         }
-        // TODO: Remove when migration is over
-        if (!checkPreferenceKeyAvailable(key) && Hawk.contains(key)) {
-            return Hawk.get(key, defaultValue);
-        }
         return getFromSharedPreferences(key, type, defaultValue);
     }
 
@@ -184,10 +175,6 @@ public class TapPreferenceUtils {
         }
         if (decryptedPreferences.containsKey(key) && decryptedPreferences.get(key) instanceof String) {
             return (String) decryptedPreferences.get(key);
-        }
-        // TODO: Remove when migration is over
-        if (!checkPreferenceKeyAvailable(key) && Hawk.contains(key)) {
-            return Hawk.get(key, "");
         }
         try {
             String encrypted = getSharedPreferences().getString(getEncryptedKey(key), "");
@@ -207,10 +194,6 @@ public class TapPreferenceUtils {
     public static Long getLongPreference(String key) {
         if (isContextOrKeyEmpty(key)) {
             return 0L;
-        }
-        // TODO: Remove when migration is over
-        if (!checkPreferenceKeyAvailable(key) && Hawk.contains(key)) {
-            return Hawk.get(key, 0L);
         }
         String dataString = getStringPreference(key);
         if (dataString == null || dataString.isEmpty()) {
@@ -236,10 +219,6 @@ public class TapPreferenceUtils {
         }
         if (decryptedPreferences.containsKey(key) && decryptedPreferences.get(key) instanceof Boolean) {
             return (Boolean) decryptedPreferences.get(key);
-        }
-        // TODO: Remove when migration is over
-        if (!checkPreferenceKeyAvailable(key) && Hawk.contains(key)) {
-            return Hawk.get(key, false);
         }
         try {
             Boolean decryptedData = getSharedPreferences().getBoolean(getEncryptedKey(key), false);

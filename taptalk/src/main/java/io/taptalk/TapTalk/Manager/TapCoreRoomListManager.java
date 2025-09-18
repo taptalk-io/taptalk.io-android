@@ -77,7 +77,7 @@ public class TapCoreRoomListManager {
     }
 
     public void addCoreRoomListListener(TapCoreRoomListListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         if (getCoreRoomListListeners().isEmpty()) {
@@ -131,7 +131,7 @@ public class TapCoreRoomListManager {
     }
 
     public void removeCoreRoomListListener(TapCoreRoomListListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
         getCoreRoomListListeners().remove(listener);
@@ -141,7 +141,7 @@ public class TapCoreRoomListManager {
     }
 
     public void fetchNewMessageToDatabase(TapCommonListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -232,7 +232,7 @@ public class TapCoreRoomListManager {
     }
 
     public void fetchNewMessage(TapCoreGetMessageListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -324,7 +324,7 @@ public class TapCoreRoomListManager {
     }
 
     public void getRoomListFromCache(TapCoreGetRoomListListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
@@ -364,7 +364,7 @@ public class TapCoreRoomListManager {
     }
 
     public void getUpdatedRoomList(TapCoreGetRoomListListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
+        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }

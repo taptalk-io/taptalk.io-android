@@ -654,7 +654,7 @@ public class TapUIRoomListFragment extends Fragment {
             // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
             runFullRefreshSequence();
         }
-        else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated(instanceKey)) {
+        else if (TapTalk.checkTapTalkInitialized(instanceKey) && TapTalk.isAuthenticated(instanceKey)) {
             // Clear data when refresh token is expired
             TapTalk.clearAllTapTalkData(instanceKey);
             List<TapListener> listeners = getTapTalkListeners(instanceKey);
