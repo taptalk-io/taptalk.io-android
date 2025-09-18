@@ -142,9 +142,6 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
 
-    // Hawk
-    implementation "com.orhanobut:hawk:2.0.1"
-
     // Firebase
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-messaging:23.4.0'

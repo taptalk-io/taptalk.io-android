@@ -58,8 +58,6 @@ import com.google.android.libraries.places.api.Places;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
-import com.orhanobut.hawk.Hawk;
-import com.orhanobut.hawk.NoEncryption;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -223,17 +221,6 @@ public class TapTalk implements LifecycleObserver {
         TAPApiManager.setBaseUrlApi(instanceKey, generateApiBaseURL(appBaseURL));
         TAPApiManager.setBaseUrlSocket(instanceKey, generateSocketBaseURL(appBaseURL));
         TAPConnectionManager.getInstance(instanceKey).setWebSocketEndpoint(generateWSSBaseURL(appBaseURL));
-
-        // Init Hawk for preference
-        if (!Hawk.isBuilt()) {
-            if (BuildConfig.BUILD_TYPE.equals("dev")) {
-                // No encryption for dev build
-                Hawk.init(appContext).setEncryption(new NoEncryption()).build();
-            } else {
-                Hawk.init(appContext).build();
-            }
-        }
-        TAPDataManager.getInstance(instanceKey).migratePreferences();
 
         this.implementationType = type;
 

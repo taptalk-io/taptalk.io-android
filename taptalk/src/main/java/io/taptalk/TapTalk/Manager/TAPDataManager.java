@@ -59,7 +59,6 @@ import androidx.lifecycle.LiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.orhanobut.hawk.Hawk;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -228,7 +227,6 @@ public class TAPDataManager {
 
     private void removePreference(String key) {
         TapPreferenceUtils.removePreference(key);
-        Hawk.delete(instanceKey + key);
     }
 
     /**
@@ -270,151 +268,6 @@ public class TAPDataManager {
         removePinnedMessageIds();
         removeBlockedUserIds();
 //        removeCustomizedAppearance();
-    }
-
-    public void migratePreferences() {
-        if (Hawk.count() > 0) {
-            if (Hawk.contains(instanceKey + CORE)) {
-                saveCoreConfigs(Hawk.get(instanceKey + CORE));
-                Hawk.delete(instanceKey + CORE);
-            }
-            if (Hawk.contains(instanceKey + PROJECT)) {
-                saveProjectConfigs(Hawk.get(instanceKey + PROJECT));
-                Hawk.delete(instanceKey + PROJECT);
-            }
-            if (Hawk.contains(instanceKey + CUSTOM)) {
-                saveProjectConfigs(Hawk.get(instanceKey + CUSTOM));
-                Hawk.delete(instanceKey + CUSTOM);
-            }
-            if (Hawk.contains(instanceKey + K_COUNTRY_LIST)) {
-                saveCountryList(Hawk.get(instanceKey + K_COUNTRY_LIST));
-                Hawk.delete(instanceKey + K_COUNTRY_LIST);
-            }
-            if (Hawk.contains(instanceKey + LAST_CALL_COUNTRY_TIMESTAMP)) {
-                saveLastCallCountryTimestamp(Hawk.get(instanceKey + LAST_CALL_COUNTRY_TIMESTAMP));
-                Hawk.delete(instanceKey + LAST_CALL_COUNTRY_TIMESTAMP);
-            }
-            if (Hawk.contains(instanceKey + K_USER)) {
-                saveActiveUser(Hawk.get(instanceKey + K_USER));
-                Hawk.delete(instanceKey + K_USER);
-            }
-            if (Hawk.contains(instanceKey + K_AUTH_TICKET)) {
-                saveAuthTicket(Hawk.get(instanceKey + K_AUTH_TICKET));
-                Hawk.delete(instanceKey + K_AUTH_TICKET);
-            }
-            if (Hawk.contains(instanceKey + K_ACCESS_TOKEN)) {
-                saveAccessToken(Hawk.get(instanceKey + K_ACCESS_TOKEN));
-                Hawk.delete(instanceKey + K_ACCESS_TOKEN);
-            }
-            if (Hawk.contains(instanceKey + K_ACCESS_TOKEN_EXPIRY)) {
-                saveAccessTokenExpiry(Hawk.get(instanceKey + K_ACCESS_TOKEN_EXPIRY));
-                Hawk.delete(instanceKey + K_ACCESS_TOKEN_EXPIRY);
-            }
-            if (Hawk.contains(instanceKey + K_REFRESH_TOKEN)) {
-                saveRefreshToken(Hawk.get(instanceKey + K_REFRESH_TOKEN));
-                Hawk.delete(instanceKey + K_REFRESH_TOKEN);
-            }
-            if (Hawk.contains(instanceKey + K_REFRESH_TOKEN_EXPIRY)) {
-                saveRefreshTokenExpiry(Hawk.get(instanceKey + K_REFRESH_TOKEN_EXPIRY));
-                Hawk.delete(instanceKey + K_REFRESH_TOKEN_EXPIRY);
-            }
-            if (Hawk.contains(instanceKey + K_LAST_UPDATED)) {
-                TapPreferenceUtils.savePreference(instanceKey + K_LAST_UPDATED, Hawk.get(instanceKey + K_LAST_UPDATED));
-                Hawk.delete(instanceKey + K_LAST_UPDATED);
-            }
-            if (Hawk.contains(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME)) {
-                TapPreferenceUtils.savePreference(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME, Hawk.get(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME));
-                Hawk.delete(instanceKey + K_LAST_ROOM_MESSAGE_DELETE_TIME);
-            }
-            if (Hawk.contains(instanceKey + K_GROUP_DATA_MAP)) {
-                saveRoomDataMap(Hawk.get(instanceKey + K_GROUP_DATA_MAP));
-                Hawk.delete(instanceKey + K_GROUP_DATA_MAP);
-            }
-            if (Hawk.contains(instanceKey + IS_PERMISSION_SYNC_ASKED)) {
-                saveContactSyncPermissionAsked(Hawk.get(instanceKey + IS_PERMISSION_SYNC_ASKED));
-                Hawk.delete(instanceKey + IS_PERMISSION_SYNC_ASKED);
-            }
-            if (Hawk.contains(instanceKey + IS_CONTACT_SYNC_ALLOWED_BY_USER)) {
-                saveContactSyncAllowedByUser(Hawk.get(instanceKey + IS_CONTACT_SYNC_ALLOWED_BY_USER));
-                Hawk.delete(instanceKey + IS_CONTACT_SYNC_ALLOWED_BY_USER);
-            }
-            if (Hawk.contains(instanceKey + K_CHAT_ROOM_CONTACT_ACTION)) {
-                TapPreferenceUtils.savePreference(instanceKey + K_CHAT_ROOM_CONTACT_ACTION, Hawk.get(instanceKey + K_CHAT_ROOM_CONTACT_ACTION));
-                Hawk.delete(instanceKey + K_CHAT_ROOM_CONTACT_ACTION);
-            }
-            if (Hawk.contains(instanceKey + K_BLOCKED_USER)) {
-                saveBlockedUserIds(Hawk.get(instanceKey + K_BLOCKED_USER));
-                Hawk.delete(instanceKey + K_BLOCKED_USER);
-            }
-            if (Hawk.contains(instanceKey + K_UNREAD_ROOM_LIST)) {
-                saveUnreadRoomIDs(Hawk.get(instanceKey + K_UNREAD_ROOM_LIST));
-                Hawk.delete(instanceKey + K_UNREAD_ROOM_LIST);
-            }
-            if (Hawk.contains(instanceKey + K_MUTED_ROOM_LIST)) {
-                saveMutedRoomIDs(Hawk.get(instanceKey + K_MUTED_ROOM_LIST));
-                Hawk.delete(instanceKey + K_MUTED_ROOM_LIST);
-            }
-            if (Hawk.contains(instanceKey + K_STARRED_MESSAGE)) {
-                TapPreferenceUtils.savePreference(instanceKey + K_STARRED_MESSAGE, Hawk.get(instanceKey + K_STARRED_MESSAGE));
-                Hawk.delete(instanceKey + K_STARRED_MESSAGE);
-            }
-            if (Hawk.contains(instanceKey + K_PINNED_MESSAGE_IDS)) {
-                TapPreferenceUtils.savePreference(instanceKey + K_PINNED_MESSAGE_IDS, Hawk.get(instanceKey + K_PINNED_MESSAGE_IDS));
-                Hawk.delete(instanceKey + K_PINNED_MESSAGE_IDS);
-            }
-            if (Hawk.contains(instanceKey + MY_COUNTRY_CODE)) {
-                saveMyCountryCode(Hawk.get(instanceKey + MY_COUNTRY_CODE));
-                Hawk.delete(instanceKey + MY_COUNTRY_CODE);
-            }
-            if (Hawk.contains(instanceKey + MY_COUNTRY_FLAG_URL)) {
-                saveMyCountryFlagUrl(Hawk.get(instanceKey + MY_COUNTRY_FLAG_URL));
-                Hawk.delete(instanceKey + MY_COUNTRY_FLAG_URL);
-            }
-            if (Hawk.contains(instanceKey + K_IS_ROOM_LIST_SETUP_FINISHED)) {
-                setRoomListSetupFinished();
-                Hawk.delete(instanceKey + K_IS_ROOM_LIST_SETUP_FINISHED);
-            }
-            if (Hawk.contains(instanceKey + K_FILE_PATH_MAP)) {
-                saveFileProviderPathMap(Hawk.get(instanceKey + K_FILE_PATH_MAP));
-                Hawk.delete(instanceKey + K_FILE_PATH_MAP);
-            }
-            if (Hawk.contains(instanceKey + K_FILE_URI_MAP)) {
-                saveFileMessageUriMap(Hawk.get(instanceKey + K_FILE_URI_MAP));
-                Hawk.delete(instanceKey + K_FILE_URI_MAP);
-            }
-            if (Hawk.contains(instanceKey + K_MEDIA_VOLUME)) {
-                saveMediaVolumePreference(Hawk.get(instanceKey + K_MEDIA_VOLUME));
-                Hawk.delete(instanceKey + K_MEDIA_VOLUME);
-            }
-            if (Hawk.contains(instanceKey + K_FIREBASE_TOKEN)) {
-                saveFirebaseToken(Hawk.get(instanceKey + K_FIREBASE_TOKEN));
-                Hawk.delete(instanceKey + K_FIREBASE_TOKEN);
-            }
-            if (Hawk.contains(instanceKey + K_LAST_DELETE_TIMESTAMP)) {
-                saveLastDeleteTimestamp(Hawk.get(instanceKey + K_LAST_DELETE_TIMESTAMP));
-                Hawk.delete(instanceKey + K_LAST_DELETE_TIMESTAMP);
-            }
-            if (Hawk.contains(instanceKey + K_NOTIFICATION_MESSAGE_MAP)) {
-                saveNotificationMessageMap(Hawk.get(instanceKey + K_NOTIFICATION_MESSAGE_MAP));
-                Hawk.delete(instanceKey + K_NOTIFICATION_MESSAGE_MAP);
-            }
-            if (Hawk.contains(instanceKey + APP_ID)) {
-                saveApplicationID(Hawk.get(instanceKey + APP_ID));
-                Hawk.delete(instanceKey + APP_ID);
-            }
-            if (Hawk.contains(instanceKey + APP_SECRET)) {
-                saveApplicationSecret(Hawk.get(instanceKey + APP_SECRET));
-                Hawk.delete(instanceKey + APP_SECRET);
-            }
-            if (Hawk.contains(instanceKey + USER_AGENT)) {
-                saveUserAgent(Hawk.get(instanceKey + USER_AGENT));
-                Hawk.delete(instanceKey + USER_AGENT);
-            }
-            if (Hawk.contains(AUTO_START_PERMISSION)) {
-                TapPreferenceUtils.saveBooleanPreference(AUTO_START_PERMISSION, Hawk.get(AUTO_START_PERMISSION));
-                Hawk.delete(AUTO_START_PERMISSION);
-            }
-        }
     }
 
     /**

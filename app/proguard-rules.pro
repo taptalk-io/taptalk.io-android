@@ -105,12 +105,6 @@
 #-keep class com.crashlytics. { *; }
 #-dontwarn com.crashlytics.
 #
-#-keep class com.orhanobut.hawk. { *; }
-#-keepnames class com.orhanobut.hawk. { *; }
-#
-#-keep class com.orhanobut.hawk. { *; }
-#-keepnames class com.orhanobut.hawk. { *; }
-#
 #
 ##-keep class io. { *; }
 ##-keepnames class io. { *; }
