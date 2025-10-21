@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.R;
 
@@ -35,6 +36,14 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         instanceKey = getIntent().getStringExtra(INSTANCE_KEY);
+        if (instanceKey == null) {
+            instanceKey = "";
+        }
+
+//        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
+//            finish();
+//            return;
+//        }
 
 //        switch (TapTalk.getTapTalkScreenOrientation()) {
 //            case TapTalkOrientationPortrait:

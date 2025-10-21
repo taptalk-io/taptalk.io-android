@@ -205,9 +205,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun initViewModel() {
-        vm = ViewModelProvider(this,
-                TAPRegisterViewModel.TAPRegisterViewModelFactory(application, instanceKey))
-                .get(TAPRegisterViewModel::class.java)
+        vm = ViewModelProvider(this, TAPRegisterViewModel.TAPRegisterViewModelFactory(application, instanceKey))[TAPRegisterViewModel::class.java]
+        if (vm.myUserModel == null) {
+            finish()
+            return
+        }
         vm.currentProfilePicture = vm.myUserModel.imageURL.fullsize
         vm.countryFlagUrl = TAPDataManager.getInstance(instanceKey).myCountryFlagUrl
     }

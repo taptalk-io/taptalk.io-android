@@ -5,6 +5,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
 
 import android.util.Log;
+import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 
@@ -12,6 +13,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 
 import javax.annotation.Nullable;
 
@@ -158,7 +160,14 @@ public class TAPApiManager {
     }
 
     public static String getApiBaseUrl(String instanceKey) {
-        return apiBaseUrlMap.get(instanceKey);
+        String baseUrl = apiBaseUrlMap.get(instanceKey);
+        if (baseUrl != null) {
+            Matcher urlMatcher = Patterns.WEB_URL.matcher(baseUrl);
+            if (urlMatcher.find()) {
+                return baseUrl;
+            }
+        }
+        return "https://taptalk.io";
     }
 
     public static void setBaseUrlApi(String instanceKey, @NonNull String apiBaseUrl) {
@@ -166,7 +175,14 @@ public class TAPApiManager {
     }
 
     public static String getSocketBaseUrl(String instanceKey) {
-        return socketBaseUrlMap.get(instanceKey);
+        String baseUrl = socketBaseUrlMap.get(instanceKey);
+        if (baseUrl != null) {
+            Matcher urlMatcher = Patterns.WEB_URL.matcher(baseUrl);
+            if (urlMatcher.find()) {
+                return baseUrl;
+            }
+        }
+        return "https://taptalk.io";
     }
 
     public static void setBaseUrlSocket(String instanceKey, @NonNull String socketBaseUrl) {
