@@ -78,7 +78,7 @@ public class TapCoreChatRoomManager {
         return null == coreChatRoomListeners ? coreChatRoomListeners = new ArrayList<>() : coreChatRoomListeners;
     }
 
-    public void addChatRoomListener(TapCoreChatRoomListener listener) {
+    public synchronized void addChatRoomListener(TapCoreChatRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -128,7 +128,7 @@ public class TapCoreChatRoomManager {
         getCoreChatRoomListeners().add(listener);
     }
 
-    public void removeChatRoomListener(TapCoreChatRoomListener listener) {
+    public synchronized void removeChatRoomListener(TapCoreChatRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }

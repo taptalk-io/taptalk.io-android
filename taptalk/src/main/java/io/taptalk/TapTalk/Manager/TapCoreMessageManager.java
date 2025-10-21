@@ -263,7 +263,7 @@ public class TapCoreMessageManager {
         }, messageListenerBulkCallbackDelay, messageListenerBulkCallbackDelay);
     }
 
-    public void addMessageListener(TapCoreMessageListener listener) {
+    public synchronized void addMessageListener(TapCoreMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -338,7 +338,7 @@ public class TapCoreMessageManager {
         getCoreMessageListeners().add(listener);
     }
 
-    public void removeMessageListener(TapCoreMessageListener listener) {
+    public synchronized void removeMessageListener(TapCoreMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }

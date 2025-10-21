@@ -67,7 +67,7 @@ public class TapCoreContactManager {
         return null == coreContactListeners ? coreContactListeners = new ArrayList<>() : coreContactListeners;
     }
 
-    public void addContactListener(TapCoreContactListener listener) {
+    public synchronized void addContactListener(TapCoreContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }

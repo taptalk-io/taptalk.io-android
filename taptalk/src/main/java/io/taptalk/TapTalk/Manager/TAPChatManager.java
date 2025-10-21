@@ -399,20 +399,20 @@ public class TAPChatManager {
         }
     };
 
-    public void addChatListener(TAPChatListener chatListener) {
+    public synchronized void addChatListener(TAPChatListener chatListener) {
         chatListeners.remove(chatListener);
         chatListeners.add(chatListener);
     }
 
-    public void removeChatListener(TAPChatListener chatListener) {
+    public synchronized void removeChatListener(TAPChatListener chatListener) {
         chatListeners.remove(chatListener);
     }
 
-    public void removeChatListenerAt(int index) {
+    public synchronized void removeChatListenerAt(int index) {
         chatListeners.remove(index);
     }
 
-    public void clearChatListener() {
+    public synchronized void clearChatListener() {
         chatListeners.clear();
     }
 

@@ -1173,7 +1173,7 @@ public class TapTalk implements LifecycleObserver {
         addTapTalkListener("", listener);
     }
 
-    public static void addTapTalkListener(String instanceKey, TapListener listener) {
+    public static synchronized void addTapTalkListener(String instanceKey, TapListener listener) {
         if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -1187,7 +1187,7 @@ public class TapTalk implements LifecycleObserver {
         removeTapTalkListener("", listener);
     }
 
-    public static void removeTapTalkListener(String instanceKey, TapListener listener) {
+    public static synchronized void removeTapTalkListener(String instanceKey, TapListener listener) {
         if (!checkTapTalkInitialized(instanceKey)) {
             return;
         }

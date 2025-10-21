@@ -173,20 +173,20 @@ public class TAPConnectionManager {
         TAPNetworkStateManager.getInstance(instanceKey).addNetworkListener(networkListener);
     }
 
-    public void addSocketListener(TapTalkSocketInterface listener) {
+    public synchronized void addSocketListener(TapTalkSocketInterface listener) {
         socketListeners.remove(listener);
         socketListeners.add(listener);
     }
 
-    public void removeSocketListener(TapTalkSocketInterface listener) {
+    public synchronized void removeSocketListener(TapTalkSocketInterface listener) {
         socketListeners.remove(listener);
     }
 
-    public void removeSocketListenerAt(int index) {
+    public synchronized void removeSocketListenerAt(int index) {
         socketListeners.remove(index);
     }
 
-    public void clearSocketListener() {
+    public synchronized void clearSocketListener() {
         socketListeners.clear();
     }
 
