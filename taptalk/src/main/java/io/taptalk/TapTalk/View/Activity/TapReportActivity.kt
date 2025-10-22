@@ -98,6 +98,9 @@ class TapReportActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         vb = ActivityTapReportBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
 
         if (intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) != null) {
             vm.reportType = intent.getSerializableExtra(TAPDefaultConstant.Extras.REPORT_TYPE) as ReportType

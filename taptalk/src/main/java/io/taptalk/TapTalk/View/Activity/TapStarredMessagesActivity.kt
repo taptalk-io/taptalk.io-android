@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_STARRED_MESSAGES
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener
@@ -25,8 +27,10 @@ import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener
-import io.taptalk.TapTalk.Manager.*
+import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPContactManager
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
+import io.taptalk.TapTalk.Manager.TapCoreMessageManager
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
@@ -66,6 +70,10 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         vb = TapActivityStarredMessagesBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
+
         glide = Glide.with(this)
         initRoom()
     }

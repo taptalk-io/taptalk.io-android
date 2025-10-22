@@ -140,7 +140,7 @@ public class TAPRegisterViewModel extends AndroidViewModel {
     }
 
     public TAPUserModel getMyUserModel() {
-        return null == myUserModel ? TAPChatManager.getInstance(instanceKey).getActiveUser() : myUserModel;
+        return null == myUserModel ? myUserModel = TAPChatManager.getInstance(instanceKey).getActiveUser() : myUserModel;
     }
 
     public void setMyUserModel(TAPUserModel myUserModel) {
@@ -148,7 +148,7 @@ public class TAPRegisterViewModel extends AndroidViewModel {
     }
 
     public ArrayList<TapPhotosItemModel> getProfilePictureList() {
-        return profilePictureList == null? profilePictureList = new ArrayList<>() : profilePictureList;
+        return profilePictureList == null ? profilePictureList = new ArrayList<>() : profilePictureList;
     }
 
     public void setProfilePictureList(ArrayList<TapPhotosItemModel> profilePictureList) {

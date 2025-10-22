@@ -65,9 +65,9 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     private TAPSearchChatAdapter adapter;
 
     public static void start(
-            Activity context,
-            String instanceKey,
-            ArrayList<TAPMessageModel> message
+        Activity context,
+        String instanceKey,
+        ArrayList<TAPMessageModel> message
     ) {
         Intent intent = new Intent(context, TAPForwardPickerActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
@@ -80,6 +80,9 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_forward_picker);
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
 
         initViewModel();
         initView();

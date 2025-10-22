@@ -214,7 +214,7 @@ public class TapUI {
         return null == tapUIRoomListListeners ? tapUIRoomListListeners = new ArrayList<>() : tapUIRoomListListeners;
     }
 
-    public void addRoomListListener(TapUIRoomListListener listener) {
+    public synchronized void addRoomListListener(TapUIRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -222,7 +222,7 @@ public class TapUI {
         getRoomListListeners().add(listener);
     }
 
-    public void removeRoomListListener(TapUIRoomListListener listener) {
+    public synchronized void removeRoomListListener(TapUIRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -233,7 +233,7 @@ public class TapUI {
         return null == tapUIChatRoomListeners ? tapUIChatRoomListeners = new ArrayList<>() : tapUIChatRoomListeners;
     }
 
-    public void addChatRoomListener(TapUIChatRoomListener listener) {
+    public synchronized void addChatRoomListener(TapUIChatRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -241,7 +241,7 @@ public class TapUI {
         getChatRoomListeners().add(listener);
     }
 
-    public void removeChatRoomListener(TapUIChatRoomListener listener) {
+    public synchronized void removeChatRoomListener(TapUIChatRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -252,7 +252,7 @@ public class TapUI {
         return null == tapUIChatProfileListeners ? tapUIChatProfileListeners = new ArrayList<>() : tapUIChatProfileListeners;
     }
 
-    public void addChatProfileListener(TapUIChatProfileListener listener) {
+    public synchronized void addChatProfileListener(TapUIChatProfileListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -260,7 +260,7 @@ public class TapUI {
         getChatProfileListeners().add(listener);
     }
 
-    public void removeChatProfileListener(TapUIChatProfileListener listener) {
+    public synchronized void removeChatProfileListener(TapUIChatProfileListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -271,7 +271,7 @@ public class TapUI {
         return null == tapUICustomKeyboardListeners ? tapUICustomKeyboardListeners = new ArrayList<>() : tapUICustomKeyboardListeners;
     }
 
-    public void addCustomKeyboardListener(TapUICustomKeyboardListener listener) {
+    public synchronized void addCustomKeyboardListener(TapUICustomKeyboardListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -279,7 +279,7 @@ public class TapUI {
         getCustomKeyboardListeners().add(listener);
     }
 
-    public void removeCustomKeyboardListener(TapUICustomKeyboardListener listener) {
+    public synchronized void removeCustomKeyboardListener(TapUICustomKeyboardListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -290,7 +290,7 @@ public class TapUI {
         return null == tapUIChatRoomCustomNavigationBarListeners ? tapUIChatRoomCustomNavigationBarListeners = new ArrayList<>() : tapUIChatRoomCustomNavigationBarListeners;
     }
 
-    public void addChatRoomCustomNavigationBarListener(TapUIChatRoomCustomNavigationBarListener listener) {
+    public synchronized void addChatRoomCustomNavigationBarListener(TapUIChatRoomCustomNavigationBarListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -298,7 +298,7 @@ public class TapUI {
         getChatRoomCustomNavigationBarListeners().add(listener);
     }
 
-    public void removeChatRoomCustomNavigationBarListener(TapUIChatRoomCustomNavigationBarListener listener) {
+    public synchronized void removeChatRoomCustomNavigationBarListener(TapUIChatRoomCustomNavigationBarListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -309,7 +309,7 @@ public class TapUI {
         return null == tapUIMyAccountListeners ? tapUIMyAccountListeners = new ArrayList<>() : tapUIMyAccountListeners;
     }
 
-    public void addMyAccountListener(TapUIMyAccountListener listener) {
+    public synchronized void addMyAccountListener(TapUIMyAccountListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -317,7 +317,7 @@ public class TapUI {
         getMyAccountListeners().add(listener);
     }
 
-    public void removeMyAccountListener(TapUIMyAccountListener listener) {
+    public synchronized void removeMyAccountListener(TapUIMyAccountListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }

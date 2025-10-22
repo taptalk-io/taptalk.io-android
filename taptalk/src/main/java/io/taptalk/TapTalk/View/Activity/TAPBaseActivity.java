@@ -18,7 +18,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.R;
 
@@ -35,6 +38,14 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         instanceKey = getIntent().getStringExtra(INSTANCE_KEY);
+        if (instanceKey == null) {
+            instanceKey = "";
+        }
+
+//        if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
+//            finish();
+//            return;
+//        }
 
 //        switch (TapTalk.getTapTalkScreenOrientation()) {
 //            case TapTalkOrientationPortrait:
@@ -93,6 +104,14 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
         super.onPause();
         TAPUtils.dismissKeyboard(this);
         TapUI.getInstance(instanceKey).setCurrentForegroundTapTalkActivity(null);
+    }
+
+    public boolean finishIfNotLoggedIn() {
+        if (TAPApiManager.getInstance(instanceKey).isLoggedOut()) {
+            finish();
+            return true;
+        }
+        return false;
     }
 
     /**

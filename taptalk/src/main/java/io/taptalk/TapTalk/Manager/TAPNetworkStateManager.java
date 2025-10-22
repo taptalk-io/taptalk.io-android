@@ -97,20 +97,20 @@ public class TAPNetworkStateManager {
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE) : null;
     }
 
-    public void addNetworkListener(TapTalkNetworkInterface listener) {
+    public synchronized void addNetworkListener(TapTalkNetworkInterface listener) {
         listeners.remove(listener);
         listeners.add(listener);
     }
 
-    public void removeNetworkListener(TapTalkNetworkInterface listener) {
+    public synchronized void removeNetworkListener(TapTalkNetworkInterface listener) {
         listeners.remove(listener);
     }
 
-    public void removeNetworkListenerAt(int index) {
+    public synchronized void removeNetworkListenerAt(int index) {
         listeners.remove(index);
     }
 
-    public void clearNetworkListener() {
+    public synchronized void clearNetworkListener() {
         listeners.clear();
     }
 

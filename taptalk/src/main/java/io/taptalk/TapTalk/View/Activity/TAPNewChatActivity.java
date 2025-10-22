@@ -91,6 +91,9 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_new_chat);
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
 
         initViewModel();
         initView();

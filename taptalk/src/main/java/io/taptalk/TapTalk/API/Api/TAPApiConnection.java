@@ -72,13 +72,15 @@ public class TAPApiConnection {
         OkHttpClient httpHpClientAccessToken = buildHttpTapClient(NOT_USE_REFRESH_TOKEN);
         OkHttpClient httpHpClientRefreshToken = buildHttpTapClient(USE_REFRESH_TOKEN);
 
-        Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getApiBaseUrl(instanceKey));
-        Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getSocketBaseUrl(instanceKey));
-        Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, TAPApiManager.getApiBaseUrl(instanceKey));
-
+        String apiBaseUrl = TAPApiManager.getApiBaseUrl(instanceKey);
+        Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, apiBaseUrl);
+        Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, apiBaseUrl);
         this.homingPigeon = homingPigeonAdapter.create(TAPTalkApiService.class);
-        this.hpSocket = hpSocketAdapter.create(TAPTalkSocketService.class);
         this.hpRefresh = hpRefreshAdapter.create(TAPTalkRefreshTokenService.class);
+
+        String socketBaseUrl = TAPApiManager.getSocketBaseUrl(instanceKey);
+        Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, socketBaseUrl);
+        this.hpSocket = hpSocketAdapter.create(TAPTalkSocketService.class);
     }
 
     public TAPTalkApiService getHomingPigeon() {

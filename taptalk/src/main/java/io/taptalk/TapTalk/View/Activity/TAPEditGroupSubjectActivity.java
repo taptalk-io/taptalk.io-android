@@ -96,13 +96,13 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     // Create new group
     public static void start(
-            Activity context,
-            String instanceKey,
-            ArrayList<TAPUserModel> groupMembers,
-            ArrayList<String> groupMemberIDs,
-            String groupName,
-            TAPImageURL groupImage,
-            Uri groupImageUri
+        Activity context,
+        String instanceKey,
+        ArrayList<TAPUserModel> groupMembers,
+        ArrayList<String> groupMemberIDs,
+        String groupName,
+        TAPImageURL groupImage,
+        Uri groupImageUri
     ) {
         Intent intent = new Intent(context, TAPEditGroupSubjectActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
@@ -117,9 +117,9 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     // Edit group
     public static void start(
-            Activity context,
-            String instanceKey,
-            TAPRoomModel room
+        Activity context,
+        String instanceKey,
+        TAPRoomModel room
     ) {
         Intent intent = new Intent(context, TAPEditGroupSubjectActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
@@ -133,6 +133,9 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_edit_group_subject);
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
 
         initViewModel();
         initView();

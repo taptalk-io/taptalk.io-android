@@ -20,11 +20,18 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT
-import io.taptalk.TapTalk.Helper.*
+import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener
+import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
+import io.taptalk.TapTalk.Helper.TapTalk
+import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener
-import io.taptalk.TapTalk.Manager.*
+import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPContactManager
+import io.taptalk.TapTalk.Manager.TAPGroupManager
+import io.taptalk.TapTalk.Manager.TapCoreMessageManager
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
@@ -63,6 +70,10 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         vb = TapActivityStarredMessagesBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
+
         glide = Glide.with(this)
         initRoom()
     }

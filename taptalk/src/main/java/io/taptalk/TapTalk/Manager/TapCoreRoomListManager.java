@@ -76,7 +76,7 @@ public class TapCoreRoomListManager {
         return null == coreRoomListListeners ? coreRoomListListeners = new ArrayList<>() : coreRoomListListeners;
     }
 
-    public void addCoreRoomListListener(TapCoreRoomListListener listener) {
+    public synchronized void addCoreRoomListListener(TapCoreRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
@@ -130,7 +130,7 @@ public class TapCoreRoomListManager {
         getCoreRoomListListeners().add(listener);
     }
 
-    public void removeCoreRoomListListener(TapCoreRoomListListener listener) {
+    public synchronized void removeCoreRoomListListener(TapCoreRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }

@@ -51,14 +51,20 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
     public TapContactListAdapter(String instanceKey, List<TapContactListModel> contactList) {
         setItems(contactList, false);
         this.instanceKey = instanceKey;
-        this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+        TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        if (activeUser != null) {
+            this.myID = activeUser.getUserID();
+        }
     }
 
     public TapContactListAdapter(String instanceKey, List<TapContactListModel> contactList, TapContactListListener listener) {
         setItems(contactList, false);
         this.instanceKey = instanceKey;
         this.listener = listener;
-        this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+        TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        if (activeUser != null) {
+            this.myID = activeUser.getUserID();
+        }
     }
 
     @Override
