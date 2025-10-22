@@ -28,18 +28,55 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.DATA
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressMenuID.SAVE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
-import io.taptalk.TapTalk.Helper.*
+import io.taptalk.TapTalk.Helper.TAPBroadcastManager
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter
+import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
+import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TapLongPressInterface
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
-import io.taptalk.TapTalk.Listener.*
-import io.taptalk.TapTalk.Manager.*
+import io.taptalk.TapTalk.Listener.TAPDatabaseListener
+import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Listener.TapCommonListener
+import io.taptalk.TapTalk.Listener.TapCoreContactListener
+import io.taptalk.TapTalk.Listener.TapCoreGetContactListener
+import io.taptalk.TapTalk.Manager.TAPCacheManager
+import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPContactManager
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
-import io.taptalk.TapTalk.Model.*
-import io.taptalk.TapTalk.Model.ResponseModel.*
+import io.taptalk.TapTalk.Manager.TAPOldDataManager
+import io.taptalk.TapTalk.Manager.TapCoreContactManager
+import io.taptalk.TapTalk.Manager.TapCoreRoomListManager
+import io.taptalk.TapTalk.Manager.TapUI
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel
+import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.Model.TAPImageURL
+import io.taptalk.TapTalk.Model.TAPMessageModel
+import io.taptalk.TapTalk.Model.TAPRoomModel
+import io.taptalk.TapTalk.Model.TAPUserModel
+import io.taptalk.TapTalk.Model.TapPhotosItemModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity.Companion.start
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapProfilePicturePagerAdapter
@@ -65,6 +102,10 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         vb = TapActivityChatProfileBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
+
         glide = Glide.with(this)
         initViewModel()
         profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm!!.profilePictureList, profilePictureListener)

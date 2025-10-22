@@ -80,6 +80,9 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_room_list);
         vm = new ViewModelProvider(this).get(TapMainRoomListViewModel.class);
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
         initView();
     }
 

@@ -3,11 +3,9 @@ package io.taptalk.TapTalk.View.Activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
@@ -62,6 +60,9 @@ class TapSharedMediaActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         vb = TapActivitySharedMediaBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
 
         vm.room = intent.getParcelableExtra(ROOM)
 

@@ -99,6 +99,10 @@ class TapMessageInfoActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         vb = TapActivityMessageInfoBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
+
         if (intent.getParcelableExtra<TAPMessageModel>(MESSAGE) != null) {
             vm.message = intent.getParcelableExtra(MESSAGE)
         }

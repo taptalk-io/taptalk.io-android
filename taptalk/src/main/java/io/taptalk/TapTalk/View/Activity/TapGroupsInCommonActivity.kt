@@ -50,6 +50,9 @@ class TapGroupsInCommonActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         vb = TapActivityGroupsInCommonBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
 
         val user = intent.getParcelableExtra<TAPUserModel>(Extras.USER)
         if (user != null) {

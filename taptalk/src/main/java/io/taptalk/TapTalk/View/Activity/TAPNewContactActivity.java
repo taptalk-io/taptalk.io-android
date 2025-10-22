@@ -72,10 +72,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private RequestManager glide;
 
-    public static void start(
-            Context context,
-            String instanceKey
-    ) {
+    public static void start(Context context, String instanceKey) {
         Intent intent = new Intent(context, TAPNewContactActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         context.startActivity(intent);
@@ -88,6 +85,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_new_contact);
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
 
         initViewModel();
         initView();

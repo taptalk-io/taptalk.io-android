@@ -73,6 +73,9 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         vb = TapActivityGroupMembersBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
 
         vb.tvTitle.text = resources.getString(R.string.tap_group_members)
         if (initViewModel()) initView()

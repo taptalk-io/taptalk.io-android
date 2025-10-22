@@ -515,6 +515,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         super.onCreate(savedInstanceState);
         vb = TapActivityChatBinding.inflate(getLayoutInflater());
         setContentView(vb.getRoot());
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
 
         glide = Glide.with(this);
         audioManager = TapAudioManager.Companion.getInstance(instanceKey, audioListener);

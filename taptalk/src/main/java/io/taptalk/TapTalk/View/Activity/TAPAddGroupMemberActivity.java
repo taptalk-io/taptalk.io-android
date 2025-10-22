@@ -112,6 +112,9 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_add_group_member);
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
 
         initViewModel();
         initListener();

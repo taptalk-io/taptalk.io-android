@@ -39,6 +39,9 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_barcode_scanner);
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
 
         initView();
         showScanner();

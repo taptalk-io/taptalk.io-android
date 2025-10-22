@@ -216,6 +216,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         vb = TapActivityChatBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
 
         vb.tvRoomName.text = getString(R.string.tap_scheduled_message)
         vb.clRoomStatus.isVisible = false

@@ -54,6 +54,10 @@ class TAPBlockedListActivity : TAPBaseActivity() {
         vb = TapActivityBlockedListBinding.inflate(layoutInflater)
         setContentView(vb.root)
         window.setBackgroundDrawable(null)
+        if (finishIfNotLoggedIn()) {
+            return
+        }
+
         adapter = TapBlockedListAdapter(
             vm.blockedList,
             blockedContactsListener

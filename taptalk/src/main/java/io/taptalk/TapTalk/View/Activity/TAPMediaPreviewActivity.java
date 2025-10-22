@@ -62,10 +62,10 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     private int lastIndex = 0, checkCount = 0;
 
     public static void start(
-            Activity context,
-            String instanceKey,
-            ArrayList<TAPMediaPreviewModel> mediaPreviews,
-            ArrayList<TAPUserModel> roomParticipantsByUsername
+        Activity context,
+        String instanceKey,
+        ArrayList<TAPMediaPreviewModel> mediaPreviews,
+        ArrayList<TAPUserModel> roomParticipantsByUsername
     ) {
         Intent intent = new Intent(context, TAPMediaPreviewActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
@@ -79,6 +79,9 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_media_preview);
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
         receiveIntent();
         initView();
     }

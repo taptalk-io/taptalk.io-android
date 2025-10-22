@@ -65,9 +65,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     private RequestManager glide;
 
     public static void start(
-            Context context,
-            String instanceKey,
-            TAPUserModel contact
+        Context context,
+        String instanceKey,
+        TAPUserModel contact
     ) {
         Intent intent = new Intent(context, TAPScanResultActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
@@ -79,9 +79,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     public static void start(
-            Context context,
-            String instanceKey,
-            String textValue
+        Context context,
+        String instanceKey,
+        String textValue
     ) {
         Intent intent = new Intent(context, TAPScanResultActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
@@ -96,6 +96,10 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_scan_result);
+        if (finishIfNotLoggedIn()) {
+            return;
+        }
+
         vm = new ViewModelProvider(this).get(TAPScanResultViewModel.class);
         initView();
     }
