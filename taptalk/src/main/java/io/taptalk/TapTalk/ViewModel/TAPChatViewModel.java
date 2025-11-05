@@ -326,9 +326,15 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void setQuotedMessage(TAPMessageModel quotedMessage, int quoteAction) {
+        setQuotedMessage(quotedMessage, quoteAction, true);
+    }
+
+    public void setQuotedMessage(TAPMessageModel quotedMessage, int quoteAction, boolean updateManager) {
         this.quotedMessage = quotedMessage;
         this.quoteAction = quoteAction;
-        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, quoteAction);
+        if (updateManager) { // Do not update manager data for scheduled message room
+            TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, quoteAction);
+        }
     }
 
     public TAPGetMessageListByRoomResponse getPendingAfterResponse() {

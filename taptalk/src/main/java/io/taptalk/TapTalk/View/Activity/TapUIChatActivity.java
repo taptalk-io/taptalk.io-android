@@ -1716,7 +1716,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onReplyMessage(TAPMessageModel message) {
-            if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
+            if (null == vm.getRoom() ||
+                !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID()) ||
+                isActivityPaused
+            ) {
                 return;
             }
             showQuoteLayout(message, REPLY, true);
@@ -2206,15 +2209,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         if (!hadFocus && etChat.getSelectionEnd() == 0) {
                             etChat.setSelection(etChat.getText().length());
                         }
-                    } else {
+                    }
+                    else if (!isActivityPaused) {
                         showQuoteLayout(messages.get(0), quoteAction, false);
                     }
                     break;
                 case EDIT:
-                    showQuoteLayout(message, quoteAction, true);
+                    if (!isActivityPaused) {
+                        showQuoteLayout(message, quoteAction, true);
+                    }
                     break;
                 default:
-                    showQuoteLayout(message, quoteAction, false);
+                    if (!isActivityPaused) {
+                        showQuoteLayout(message, quoteAction, false);
+                    }
                     break;
             }
         });
@@ -3426,7 +3434,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onEditMessage(TAPMessageModel message) {
             super.onEditMessage(message);
-            if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
+            if (null == vm.getRoom() ||
+                !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID()) ||
+                isActivityPaused
+            ) {
                 return;
             }
             showQuoteLayout(message, EDIT, true);

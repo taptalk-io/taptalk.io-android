@@ -462,7 +462,6 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
     }
 
-
     private fun initViewModel(): Boolean {
         vm = ViewModelProvider(this, TAPChatViewModelFactory(application, instanceKey)).get(TAPChatViewModel::class.java)
         if (null == vm.room) {
@@ -1176,7 +1175,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (null == message) {
             return
         }
-        vm.setQuotedMessage(message, QuoteAction.EDIT)
+        vm.setQuotedMessage(message, QuoteAction.EDIT, false)
         runOnUiThread {
             vb.clQuoteLayout.visibility = View.VISIBLE
             // Add other quotable message type here
@@ -1296,7 +1295,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
     private fun hideQuoteLayout() {
         vb.etChat.filters = arrayOf<InputFilter>()
         vb.etChat.setText("")
-        vm.setQuotedMessage(null, 0)
+        vm.setQuotedMessage(null, 0, false)
         vm.setForwardedMessages(null, 0)
         val hasFocus: Boolean = vb.etChat.hasFocus()
         if (vb.clQuoteLayout.visibility == View.VISIBLE) {
@@ -1814,10 +1813,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (vm.quotedMessage != null && vm.quoteAction == QuoteAction.EDIT) {
             // edit message
             val messageModel = vm.quotedMessage
-            if ((messageModel.type == MessageType.TYPE_TEXT || messageModel.type == MessageType.TYPE_LINK) && !TextUtils.isEmpty(
-                    message
-                )
-            ) {
+            if ((messageModel.type == MessageType.TYPE_TEXT || messageModel.type == MessageType.TYPE_LINK) && !TextUtils.isEmpty(message)) {
                 messageModel.body = message
                 var data = messageModel.data
                 if (data == null) {
