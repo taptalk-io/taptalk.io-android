@@ -5224,19 +5224,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_burger_menu_ripple));
                 ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_burger_white));
                 ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
+                etChat.setBackground(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_text_field_active));
                 TAPUtils.showKeyboard(TapUIChatActivity.this, etChat);
 
                 if (0 < etChat.getText().toString().length()) {
                     ivChatMenu.setVisibility(View.GONE);
                     ivButtonChatMenu.setVisibility(View.GONE);
                 }
-            } else if (hasFocus) {
+            }
+            else if (hasFocus) {
                 vm.setScrollFromKeyboard(true);
+                etChat.setBackground(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_text_field_active));
                 TAPUtils.showKeyboard(TapUIChatActivity.this, etChat);
             }
-//            else {
-//                etChat.requestFocus();
-//            }
+            else {
+                etChat.setBackground(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_text_field));
+            }
         }
     };
 

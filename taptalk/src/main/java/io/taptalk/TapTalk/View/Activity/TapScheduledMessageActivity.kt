@@ -2543,7 +2543,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         OnFocusChangeListener { v, hasFocus ->
             if (hasFocus && vm.isCustomKeyboardEnabled) {
                 vm.isScrollFromKeyboard = true
-                vb.rvCustomKeyboard.setVisibility(View.GONE)
+                vb.rvCustomKeyboard.visibility = View.GONE
                 vb.ivChatMenuArea.setImageDrawable(
                     ContextCompat.getDrawable(
                         this@TapScheduledMessageActivity,
@@ -2558,9 +2558,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 )
                 vb.ivChatMenu.setColorFilter(
                     ContextCompat.getColor(
-                        TapTalk.appContext,
+                        this@TapScheduledMessageActivity,
                         R.color.tapIconChatComposerBurgerMenu
                     )
+                )
+                vb.etChat.background = ContextCompat.getDrawable(
+                    this@TapScheduledMessageActivity,
+                    R.drawable.tap_bg_chat_composer_text_field_active
                 )
                 TAPUtils.showKeyboard(this@TapScheduledMessageActivity, vb.etChat)
                 if (vb.etChat.text.toString().isNotEmpty()) {
@@ -2570,7 +2574,17 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
             else if (hasFocus) {
                 vm.isScrollFromKeyboard = true
+                vb.etChat.background = ContextCompat.getDrawable(
+                    this@TapScheduledMessageActivity,
+                    R.drawable.tap_bg_chat_composer_text_field_active
+                )
                 TAPUtils.showKeyboard(this@TapScheduledMessageActivity, vb.etChat)
+            }
+            else {
+                vb.etChat.background = ContextCompat.getDrawable(
+                    this@TapScheduledMessageActivity,
+                    R.drawable.tap_bg_chat_composer_text_field
+                )
             }
         }
 
