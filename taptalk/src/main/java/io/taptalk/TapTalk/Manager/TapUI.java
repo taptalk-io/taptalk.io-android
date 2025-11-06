@@ -1853,7 +1853,8 @@ public class TapUI {
         return longPressMenuItems;
     }
 
-    public List<TapLongPressMenuItem> getDefaultScheduledMessageLongPressMenuItems(Context context) {
+    public List<TapLongPressMenuItem> getDefaultScheduledMessageLongPressMenuItems(Context context, TAPMessageModel messageModel) {
+        LongPressMenuType longPressMenuType = getLongPressMenuForMessageType(messageModel.getType());
         ArrayList<TapLongPressMenuItem> longPressMenuItems = new ArrayList<>();
 
         // Send Now
@@ -1868,18 +1869,42 @@ public class TapUI {
             context.getString(R.string.tap_reschedule),
             R.drawable.tap_ic_clock_grey
         ));
-        // Copy
-        longPressMenuItems.add(new TapLongPressMenuItem(
-            COPY,
-            context.getString(R.string.tap_copy),
-            R.drawable.tap_ic_copy_orange
-        ));
-        // Edit
-        longPressMenuItems.add(new TapLongPressMenuItem(
-            EDIT,
-            context.getString(R.string.tap_edit),
-            R.drawable.tap_ic_edit_orange
-        ));
+
+        HashMap<String, Object> messageData = messageModel.getData();
+        String caption = "";
+        if (messageData != null && messageData.get(CAPTION) != null) {
+            caption = (String) messageData.get(CAPTION);
+        }
+        if (!isCopyMessageMenuDisabled() &&
+            (longPressMenuType == LongPressMenuType.TYPE_TEXT_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_LOCATION_MESSAGE ||
+            ((longPressMenuType == LongPressMenuType.TYPE_IMAGE_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_FILE_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_VOICE_MESSAGE) &&
+            caption != null && !caption.isEmpty()))
+        ) {
+            // Copy
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                COPY,
+                context.getString(R.string.tap_copy),
+                R.drawable.tap_ic_copy_orange
+            ));
+        }
+
+        if (isEditMessageMenuEnabled() &&
+            (longPressMenuType == LongPressMenuType.TYPE_TEXT_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_IMAGE_MESSAGE ||
+            longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE)
+        ) {
+            // Edit
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                EDIT,
+                context.getString(R.string.tap_edit),
+                R.drawable.tap_ic_edit_orange
+            ));
+        }
+
         // Delete
         longPressMenuItems.add(new TapLongPressMenuItem(
             DELETE,
@@ -2249,7 +2274,7 @@ public class TapUI {
                 return listener.setScheduledMessageLongPressMenuItems(context, message);
             }
         }
-        return getDefaultScheduledMessageLongPressMenuItems(context);
+        return getDefaultScheduledMessageLongPressMenuItems(context, message);
     }
 
     List<TapLongPressMenuItem> getLinkLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String url) {
