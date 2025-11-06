@@ -364,10 +364,10 @@ public class TAPChatManager {
                     }
                     HashMap<String, Object> scheduledMessageMap = TAPUtils.fromJSON(new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {}, emitData).getData();
                     TAPMessageModel scheduledMessage = TAPEncryptorManager.getInstance().decryptMessage(scheduledMessageMap);
-                    if (scheduledMessage == null) {
-                        return;
+                    if (scheduledMessage != null && scheduledMessage.getUser() != null) {
+                        // FIXME: Emit data incomplete, not saved to database
+                        TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(scheduledMessage));
                     }
-                    TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(scheduledMessage));
                     break;
                 case kSocketBlockUser:
                     TAPEmitModel<TAPOnlineStatusModel> blockUserEmit = TAPUtils
@@ -618,26 +618,29 @@ public class TAPChatManager {
                 // Send truncated message
                 if (scheduledTime < System.currentTimeMillis()) {
                     triggerListenerAndSendMessage(messageModel, true);
-                } else {
+                }
+                else {
                     triggerListenerAndSendScheduledMessage(messageModel, scheduledTime, true);
                 }
             }
-        } else {
-
-                TAPMessageModel messageModel;
-                List<String> urls = TAPUtils.getUrlsFromString(textMessage);
-                if (urls.isEmpty()) {
-                    messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
-                } else {
-                    HashMap<String, Object> data = new HashMap<>();
-                    data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
-                    data.put(URLS, urls);
-                    messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), data);
-                }
+        }
+        else {
+            TAPMessageModel messageModel;
+            List<String> urls = TAPUtils.getUrlsFromString(textMessage);
+            if (urls.isEmpty()) {
+                messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
+            }
+            else {
+                HashMap<String, Object> data = new HashMap<>();
+                data.put(URL, TAPUtils.setUrlWithProtocol(urls.get(0)));
+                data.put(URLS, urls);
+                messageModel = createLinkMessage(textMessage, roomModel, getActiveUser(), data);
+            }
             // Send message
             if (scheduledTime < System.currentTimeMillis()) {
                 triggerListenerAndSendMessage(messageModel, true);
-            } else {
+            }
+            else {
                 triggerListenerAndSendScheduledMessage(messageModel, scheduledTime, true);
             }
         }
@@ -720,16 +723,19 @@ public class TAPChatManager {
                 // Send truncated message
                 if (scheduledTime < System.currentTimeMillis()) {
                     triggerListenerAndSendMessage(messageModel, true);
-                } else {
+                }
+                else {
                     triggerListenerAndSendScheduledMessage(messageModel, scheduledTime, true);
                 }
             }
-        } else {
+        }
+        else {
             TAPMessageModel messageModel;
             List<String> urls = TAPUtils.getUrlsFromString(textMessage);
             if (urls.isEmpty()) {
                 messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
-            } else {
+            }
+            else {
                 HashMap<String, Object> newData = new HashMap<>(data);
                 String url = TAPUtils.setUrlWithProtocol(urls.get(0));
                 if (!url.equalsIgnoreCase((String) data.get(URL))) {
@@ -742,7 +748,8 @@ public class TAPChatManager {
             // Send message
             if (scheduledTime < System.currentTimeMillis()) {
                 triggerListenerAndSendMessage(messageModel, true);
-            } else {
+            }
+            else {
                 triggerListenerAndSendScheduledMessage(messageModel, scheduledTime, true);
             }
         }
@@ -1007,7 +1014,7 @@ public class TAPChatManager {
             TAPDataManager.getInstance(instanceKey).createScheduledMessage(message, scheduledTime, new TAPDefaultDataView<>() {
                 @Override
                 public void onSuccess(TapCreateScheduledMessageResponse response) {
-                    super.onSuccess(response);
+                    message.setIsSending(false);
                     pendingScheduledMessages.remove(message.getLocalID());
                     checkAndSendPendingScheduledMessages();
                     for (TAPChatListener chatListener : chatListenersCopy) {
@@ -1015,17 +1022,12 @@ public class TAPChatManager {
                             chatListener.onScheduledMessageSent(new TapScheduledMessageModel(scheduledTime, message));
                         }
                     }
+//                    TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(message));
                 }
 
                 @Override
                 public void onError(TAPErrorModel error) {
-                    super.onError(error);
-                    checkAndSendPendingScheduledMessages();
-                    for (TAPChatListener chatListener : chatListenersCopy) {
-                        if (null != chatListener) {
-                            chatListener.onScheduledSendFailed(new TapScheduledMessageModel(scheduledTime, message));
-                        }
-                    }
+                    onError(error.getMessage());
                 }
 
                 @Override
@@ -1287,7 +1289,6 @@ public class TAPChatManager {
     private void addFileMessageToUploadQueue(Context context, TAPMessageModel messageModel, TAPRoomModel roomModel, TapSendMessageInterface listener) {
         addFileMessageToUploadQueue(context, messageModel, roomModel, listener, 0L);
     }
-
 
     private void addFileMessageToUploadQueue(Context context, TAPMessageModel messageModel, TAPRoomModel roomModel, TapSendMessageInterface listener, Long scheduledTime) {
         // Check if file size exceeds limit
@@ -2430,10 +2431,13 @@ public class TAPChatManager {
     public void checkAndSendPendingScheduledMessages() {
         if (!pendingScheduledMessages.isEmpty()) {
             TapScheduledMessageModel scheduledMessage = pendingScheduledMessages.entrySet().iterator().next().getValue();
-            if (scheduledMessage.getScheduledTime() > System.currentTimeMillis()) {
-                runScheduledMessageSequence(scheduledMessage.getMessage(), scheduledMessage.getScheduledTime());
-            } else {
-                runSendMessageSequence(scheduledMessage.getMessage(), kSocketNewMessage);
+            if (scheduledMessage != null && scheduledMessage.getMessage() != null && scheduledMessage.getScheduledTime() != null) {
+                if (scheduledMessage.getScheduledTime() > System.currentTimeMillis()) {
+                    runScheduledMessageSequence(scheduledMessage.getMessage(), scheduledMessage.getScheduledTime());
+                }
+                else {
+                    runSendMessageSequence(scheduledMessage.getMessage(), kSocketNewMessage);
+                }
             }
         }
     }
