@@ -676,17 +676,15 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         vb.ivSendArea.setOnClickListener {
             hideKeyboards()
             val text = vb.etChat.text.toString().trim { it <= ' ' }
-            if (text.isNotEmpty()) {
-                if (vm.quoteAction != null && vm.quotedMessage != null) {
-                    buildAndSendTextOrLinkMessage(text, vm.quotedMessage.created)
-                }
-                else {
-                    svm.pendingScheduledMessageType = TYPE_TEXT
-                    svm.pendingScheduledMessageTime = System.currentTimeMillis()
-                    svm.pendingScheduledMessageText = text
-                    val timePicker = TapTimePickerBottomSheetFragment(svm, getTextScheduledMessageListener(text))
-                    timePicker.show(supportFragmentManager, "")
-                }
+            if (vm.quoteAction != null && vm.quotedMessage != null) {
+                buildAndSendTextOrLinkMessage(text, vm.quotedMessage.created)
+            }
+            else if (text.isNotEmpty()) {
+                svm.pendingScheduledMessageType = TYPE_TEXT
+                svm.pendingScheduledMessageTime = System.currentTimeMillis()
+                svm.pendingScheduledMessageText = text
+                val timePicker = TapTimePickerBottomSheetFragment(svm, getTextScheduledMessageListener(text))
+                timePicker.show(supportFragmentManager, "")
             }
         }
         vb.ivToBottom.setOnClickListener { scrollToBottom() }
