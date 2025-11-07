@@ -953,13 +953,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             getScheduledMessages()
         }
 
-//        override fun onScheduledMessageSent(scheduledMessage: TapScheduledMessageModel?) {
-//            super.onScheduledMessageSent(scheduledMessage)
-//        }
-//
-//        override fun onScheduledSendFailed(scheduledMessage: TapScheduledMessageModel?) {
-//            super.onScheduledSendFailed(scheduledMessage)
-//        }
+        override fun onReceiveMessageInActiveRoom(message: TAPMessageModel?) {
+            if (message != null && vm.messagePointer.containsKey(message.localID)) {
+                getScheduledMessages()
+            }
+        }
 
         override fun onRetrySendMessage(message: TAPMessageModel) {
             if (null == vm.room || message.room.roomID != vm.room.roomID) {
