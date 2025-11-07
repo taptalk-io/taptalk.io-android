@@ -855,7 +855,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                             message.messageID = scheduledMessage.id.toString()
                             // update status text
                             if (scheduledMessage.scheduledTime != null) {
-                                message.messageStatusText = TAPTimeFormatter.formatClock(scheduledMessage.scheduledTime)
+//                                message.messageStatusText = TAPTimeFormatter.formatClock(scheduledMessage.scheduledTime)
                                 message.created = scheduledMessage.scheduledTime
                             }
                             // add date separator
@@ -952,6 +952,14 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             super.onGetScheduledMessageList()
             getScheduledMessages()
         }
+
+//        override fun onScheduledMessageSent(scheduledMessage: TapScheduledMessageModel?) {
+//            super.onScheduledMessageSent(scheduledMessage)
+//        }
+//
+//        override fun onScheduledSendFailed(scheduledMessage: TapScheduledMessageModel?) {
+//            super.onScheduledSendFailed(scheduledMessage)
+//        }
 
         override fun onRetrySendMessage(message: TAPMessageModel) {
             if (null == vm.room || message.room.roomID != vm.room.roomID) {

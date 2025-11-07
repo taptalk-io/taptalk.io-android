@@ -569,8 +569,11 @@ public class TAPChatManager {
         if (scheduledTime < System.currentTimeMillis()) {
             checkAndSendForwardedMessage(room);
             triggerListenerAndSendMessage(createLocationMessageModel(address, latitude, longitude, room), true);
-        } else {
-            triggerListenerAndSendScheduledMessage(createLocationMessageModel(address, latitude, longitude, room), scheduledTime, true);
+        }
+        else {
+            TAPMessageModel message = createLocationMessageModel(address, latitude, longitude, room);
+            message.setCreated(scheduledTime);
+            triggerListenerAndSendScheduledMessage(message, scheduledTime, true);
         }
     }
 
@@ -589,8 +592,7 @@ public class TAPChatManager {
     }
 
     public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, Long scheduledTime) {
-
-        Integer startIndex;
+        int startIndex;
 
         if (scheduledTime < System.currentTimeMillis()) {
             checkAndSendForwardedMessage(roomModel);
@@ -598,8 +600,8 @@ public class TAPChatManager {
 
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
-            List<TAPMessageEntity> messageEntities = new ArrayList<>();
-            Integer length = textMessage.length();
+//            List<TAPMessageEntity> messageEntities = new ArrayList<>();
+            int length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel;
@@ -612,14 +614,16 @@ public class TAPChatManager {
                     data.put(URLS, urls);
                     messageModel = createLinkMessage(substr, roomModel, getActiveUser(), data);
                 }
+
                 // Add entity to list
-                messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
+//                messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
 
                 // Send truncated message
                 if (scheduledTime < System.currentTimeMillis()) {
                     triggerListenerAndSendMessage(messageModel, true);
                 }
                 else {
+                    messageModel.setCreated(scheduledTime);
                     triggerListenerAndSendScheduledMessage(messageModel, scheduledTime, true);
                 }
             }
@@ -641,6 +645,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
             else {
+                messageModel.setCreated(scheduledTime);
                 triggerListenerAndSendScheduledMessage(messageModel, scheduledTime, true);
             }
         }
@@ -690,8 +695,7 @@ public class TAPChatManager {
     }
 
     public void sendLinkMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, HashMap<String, Object> data, Long scheduledTime) {
-
-        Integer startIndex;
+        int startIndex;
 
         if (scheduledTime < System.currentTimeMillis()) {
             checkAndSendForwardedMessage(roomModel);
@@ -699,15 +703,16 @@ public class TAPChatManager {
 
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
-            List<TAPMessageEntity> messageEntities = new ArrayList<>();
-            Integer length = textMessage.length();
+//            List<TAPMessageEntity> messageEntities = new ArrayList<>();
+            int length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel;
                 List<String> urls = TAPUtils.getUrlsFromString(substr);
                 if (urls.isEmpty()) {
                     messageModel = createTextMessage(substr, roomModel, getActiveUser());
-                } else {
+                }
+                else {
                     HashMap<String, Object> newData = new HashMap<>(data);
                     String url = TAPUtils.setUrlWithProtocol(urls.get(0));
                     if (!url.equalsIgnoreCase((String) data.get(URL))) {
@@ -718,13 +723,14 @@ public class TAPChatManager {
                     messageModel = createLinkMessage(substr, roomModel, getActiveUser(), newData);
                 }
                 // Add entity to list
-                messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
+//                messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
 
                 // Send truncated message
                 if (scheduledTime < System.currentTimeMillis()) {
                     triggerListenerAndSendMessage(messageModel, true);
                 }
                 else {
+                    messageModel.setCreated(scheduledTime);
                     triggerListenerAndSendScheduledMessage(messageModel, scheduledTime, true);
                 }
             }
@@ -750,6 +756,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
             else {
+                messageModel.setCreated(scheduledTime);
                 triggerListenerAndSendScheduledMessage(messageModel, scheduledTime, true);
             }
         }
@@ -994,8 +1001,7 @@ public class TAPChatManager {
     }
 
     private void triggerListenerAndSendScheduledMessage(TAPMessageModel message, Long scheduledTime, boolean isNotifyChatListener) {
-        // update status text
-        message.setMessageStatusText(TAPTimeFormatter.formatClock(scheduledTime));
+//        message.setMessageStatusText(TAPTimeFormatter.formatClock(scheduledTime));
         List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
         if (!chatListenersCopy.isEmpty() && isNotifyChatListener) {
             for (TAPChatListener chatListener : chatListenersCopy) {
@@ -1349,6 +1355,7 @@ public class TAPChatManager {
             return;
         }
         if (scheduledTime > System.currentTimeMillis()) {
+            messageModel.setCreated(scheduledTime);
             uploadingScheduledMessages.put(messageModel.getLocalID(), new TapScheduledMessageModel(scheduledTime, messageModel));
         }
 
@@ -1945,6 +1952,7 @@ public class TAPChatManager {
         addUploadingMessageToHashMap(messageModel);
         messageModel = fixOrientationAndShowImagePreviewBubble(messageModel, scheduledTime);
         if (scheduledTime > System.currentTimeMillis()) {
+            messageModel.setCreated(scheduledTime);
             uploadingScheduledMessages.put(messageModel.getLocalID(), new TapScheduledMessageModel(scheduledTime, messageModel));
         }
 
@@ -2122,7 +2130,9 @@ public class TAPChatManager {
         addUploadingMessageToHashMap(messageModel);
         if (scheduledTime < System.currentTimeMillis()) {
             triggerSendMessageListener(messageModel);
-        } else {
+        }
+        else {
+            messageModel.setCreated(scheduledTime);
             triggerSendMessageListener(messageModel, scheduledTime);
         }
 
@@ -2913,8 +2923,9 @@ public class TAPChatManager {
     }
 
     public void saveMessageToDatabase() {
-        if (0 == saveMessages.size()) return;
-
+        if (saveMessages.isEmpty()) {
+            return;
+        }
         TAPDataManager.getInstance(instanceKey).insertToDatabase(new ArrayList<>(saveMessages), true);
     }
 
