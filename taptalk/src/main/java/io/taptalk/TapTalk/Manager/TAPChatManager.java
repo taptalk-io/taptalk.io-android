@@ -362,12 +362,12 @@ public class TAPChatManager {
                     for (TAPChatListener chatListener : chatListenersCopy) {
                         chatListener.onGetScheduledMessageList();
                     }
-                    HashMap<String, Object> scheduledMessageMap = TAPUtils.fromJSON(new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {}, emitData).getData();
-                    TAPMessageModel scheduledMessage = TAPEncryptorManager.getInstance().decryptMessage(scheduledMessageMap);
-                    if (scheduledMessage != null && scheduledMessage.getUser() != null) {
-                        // FIXME: Emit data incomplete, not saved to database
-                        TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(scheduledMessage));
-                    }
+//                    HashMap<String, Object> scheduledMessageMap = TAPUtils.fromJSON(new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {}, emitData).getData();
+//                    TAPMessageModel scheduledMessage = TAPEncryptorManager.getInstance().decryptMessage(scheduledMessageMap);
+//                    if (scheduledMessage != null && scheduledMessage.getUser() != null) {
+//                        // FIXME: Emit data incomplete, not saved to database
+//                        TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(scheduledMessage));
+//                    }
                     break;
                 case kSocketBlockUser:
                     TAPEmitModel<TAPOnlineStatusModel> blockUserEmit = TAPUtils

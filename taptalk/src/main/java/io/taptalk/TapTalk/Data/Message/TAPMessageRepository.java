@@ -53,6 +53,10 @@ public class TAPMessageRepository {
     }
 
     public void insert(TAPMessageEntity message) {
+        if (message.getCreated() > System.currentTimeMillis()) {
+            // FIXME: PREVENT SAVING SCHEDULED MESSAGE
+            return;
+        }
         new InsertAsyncTask(messageDao).execute(message);
     }
 
@@ -73,6 +77,12 @@ public class TAPMessageRepository {
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
         new Thread(() -> {
             messageEntities.removeAll(Collections.singleton(null)); // Remove null objects from list
+            for (TAPMessageEntity entity : new ArrayList<>(messageEntities)) {
+                if (entity.getCreated() > System.currentTimeMillis()) {
+                    // FIXME: PREVENT SAVING SCHEDULED MESSAGE
+                    messageEntities.remove(entity);
+                }
+            }
             if (messageEntities.isEmpty()) {
                 return;
             }
@@ -86,9 +96,16 @@ public class TAPMessageRepository {
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
             messageEntities.removeAll(Collections.singleton(null)); // Remove null objects from list
+            for (TAPMessageEntity entity : new ArrayList<>(messageEntities)) {
+                if (entity.getCreated() > System.currentTimeMillis()) {
+                    // FIXME: PREVENT SAVING SCHEDULED MESSAGE
+                    messageEntities.remove(entity);
+                }
+            }
             if (messageEntities.isEmpty()) {
                 listener.onInsertFailed("Could not save messages, inserted list is either empty or null.");
-            } else {
+            }
+            else {
                 messageDao.insert(messageEntities);
                 if (0 < TAPChatManager.getInstance(instanceKey).getSaveMessages().size() && isClearSaveMessages) {
                     TAPChatManager.getInstance(instanceKey).clearSaveMessages();
