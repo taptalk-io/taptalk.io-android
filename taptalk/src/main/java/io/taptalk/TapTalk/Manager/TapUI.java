@@ -1895,6 +1895,7 @@ public class TapUI {
         }
 
         if (isEditMessageMenuEnabled() &&
+            (null == messageModel.getIsSending() || !messageModel.getIsSending()) &&
             (longPressMenuType == LongPressMenuType.TYPE_TEXT_MESSAGE ||
             longPressMenuType == LongPressMenuType.TYPE_IMAGE_MESSAGE ||
             longPressMenuType == LongPressMenuType.TYPE_VIDEO_MESSAGE)
@@ -1907,7 +1908,7 @@ public class TapUI {
             ));
         }
 
-        if (null == messageModel.getIsSending() || !messageModel.getIsSending()) {
+        if (!isDeleteMessageMenuDisabled && (null == messageModel.getIsSending() || !messageModel.getIsSending())) {
             // Delete
             longPressMenuItems.add(new TapLongPressMenuItem(
                 DELETE,
