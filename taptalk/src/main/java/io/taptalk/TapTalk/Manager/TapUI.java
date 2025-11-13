@@ -1857,18 +1857,20 @@ public class TapUI {
         LongPressMenuType longPressMenuType = getLongPressMenuForMessageType(messageModel.getType());
         ArrayList<TapLongPressMenuItem> longPressMenuItems = new ArrayList<>();
 
-        // Send Now
-        longPressMenuItems.add(new TapLongPressMenuItem(
-            SEND_NOW,
-            context.getString(R.string.tap_send_now),
-            R.drawable.tap_ic_circle_arrow_up_primary
-        ));
-        // Reschedule
-        longPressMenuItems.add(new TapLongPressMenuItem(
-            RESCHEDULE,
-            context.getString(R.string.tap_reschedule),
-            R.drawable.tap_ic_clock_grey
-        ));
+        if (null == messageModel.getIsSending() || !messageModel.getIsSending()) {
+            // Send Now
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                SEND_NOW,
+                context.getString(R.string.tap_send_now),
+                R.drawable.tap_ic_circle_arrow_up_primary
+            ));
+            // Reschedule
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                RESCHEDULE,
+                context.getString(R.string.tap_reschedule),
+                R.drawable.tap_ic_clock_grey
+            ));
+        }
 
         HashMap<String, Object> messageData = messageModel.getData();
         String caption = "";
@@ -1905,12 +1907,14 @@ public class TapUI {
             ));
         }
 
-        // Delete
-        longPressMenuItems.add(new TapLongPressMenuItem(
-            DELETE,
-            context.getString(R.string.tap_delete),
-            R.drawable.tap_ic_delete_red
-        ));
+        if (null == messageModel.getIsSending() || !messageModel.getIsSending()) {
+            // Delete
+            longPressMenuItems.add(new TapLongPressMenuItem(
+                DELETE,
+                context.getString(R.string.tap_delete),
+                R.drawable.tap_ic_delete_red
+            ));
+        }
 
         return longPressMenuItems;
     }
