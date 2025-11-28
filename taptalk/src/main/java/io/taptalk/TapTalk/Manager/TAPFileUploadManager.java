@@ -141,18 +141,27 @@ public class TAPFileUploadManager {
     };
 
     public Long getMaxFileUploadSize() {
-        String maxFileSize = TapTalk.getCoreConfigs(instanceKey).get(CHAT_MEDIA_MAX_FILE_SIZE);
-        return null == maxFileSize ? Long.valueOf(DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
+        Map<String, String> configs = TapTalk.getCoreConfigs(instanceKey);
+        if (null != configs && null != configs.get(CHAT_MEDIA_MAX_FILE_SIZE)) {
+            return Long.valueOf(configs.get(CHAT_MEDIA_MAX_FILE_SIZE));
+        }
+        return Long.valueOf(DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE);
     }
 
     public Long getMaxRoomPhotoUploadSize() {
-        String maxFileSize = TapTalk.getCoreConfigs(instanceKey).get(ROOM_PHOTO_MAX_FILE_SIZE);
-        return null == maxFileSize ? Long.valueOf(DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
+        Map<String, String> configs = TapTalk.getCoreConfigs(instanceKey);
+        if (null != configs && null != configs.get(ROOM_PHOTO_MAX_FILE_SIZE)) {
+            return Long.valueOf(configs.get(ROOM_PHOTO_MAX_FILE_SIZE));
+        }
+        return Long.valueOf(DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE);
     }
 
     public Long getMaxUserPhotoUploadSize() {
-        String maxFileSize = TapTalk.getCoreConfigs(instanceKey).get(USER_PHOTO_MAX_FILE_SIZE);
-        return null == maxFileSize ? Long.valueOf(DEFAULT_USER_PHOTO_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
+        Map<String, String> configs = TapTalk.getCoreConfigs(instanceKey);
+        if (null != configs && null != configs.get(USER_PHOTO_MAX_FILE_SIZE)) {
+            return Long.valueOf(configs.get(USER_PHOTO_MAX_FILE_SIZE));
+        }
+        return Long.valueOf(DEFAULT_USER_PHOTO_MAX_FILE_SIZE);
     }
 
     public HashMap<String, TapSendMessageInterface> getSendMessageListeners() {
@@ -1469,6 +1478,7 @@ public class TAPFileUploadManager {
         int position = TAPUtils.searchMessagePositionByLocalID(getUploadQueue(roomID), cancelledMessageModel.getLocalID());
         removeUploadProgressMap(cancelledMessageModel.getLocalID());
         getBitmapQueue().remove(cancelledMessageModel.getLocalID());
+        TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.remove(cancelledMessageModel.getLocalID());
         if (-1 != position && 0 == position && !isUploadQueueEmpty(roomID)) {
             TAPDataManager.getInstance(instanceKey).unSubscribeToUploadImage(roomID);
             uploadNextSequence(context, roomID);

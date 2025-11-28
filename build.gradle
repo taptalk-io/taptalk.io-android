@@ -2,8 +2,8 @@
 
 buildscript {
     ext.kotlin_version = '1.9.24'
-    ext.taptalk_version_name = '2.18.2'
-    ext.taptalk_version_code = 146
+    ext.taptalk_version_name = '2.18.3'
+    ext.taptalk_version_code = 147
 
     repositories {
         google()

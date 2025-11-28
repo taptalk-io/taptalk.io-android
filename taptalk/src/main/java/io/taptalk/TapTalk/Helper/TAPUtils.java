@@ -499,19 +499,20 @@ public class TAPUtils {
 
     public static String[] getStoragePermissions(boolean includeAudio) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (includeAudio) {
-                return new String[] {
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO,
-                    Manifest.permission.READ_MEDIA_AUDIO
-                };
-            }
-            else {
-                return new String[] {
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO
-                };
-            }
+            return new String[]{};
+//            if (includeAudio) {
+//                return new String[] {
+//                    Manifest.permission.READ_MEDIA_IMAGES,
+//                    Manifest.permission.READ_MEDIA_VIDEO,
+//                    Manifest.permission.READ_MEDIA_AUDIO
+//                };
+//            }
+//            else {
+//                return new String[] {
+//                    Manifest.permission.READ_MEDIA_IMAGES,
+//                    Manifest.permission.READ_MEDIA_VIDEO
+//                };
+//            }
         }
         else {
             return new String[] {
@@ -555,22 +556,20 @@ public class TAPUtils {
         if (!hasPermissions(activity, getStoragePermissions(false))) {
             // Check read & write storage permission
             ActivityCompat.requestPermissions(activity, getStoragePermissions(false), PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
-        } else {
+        }
+        else {
             // Permission granted
             Intent intent;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                String[] mimeTypes = {INTENT_TYPE_IMAGE, INTENT_TYPE_VIDEO};
-                intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images and videos
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
-            } else {
-                intent = new Intent(Intent.ACTION_GET_CONTENT);
-            }
+            String[] mimeTypes = {INTENT_TYPE_IMAGE, INTENT_TYPE_VIDEO};
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images and videos
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType(INTENT_TYPE_ALL);
             try {
                 activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
-            } catch (ActivityNotFoundException e) {
+            }
+            catch (ActivityNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -1202,22 +1201,20 @@ public class TAPUtils {
         if (!hasPermissions(activity, getStoragePermissions(true))) {
             // Check read storage permission
             ActivityCompat.requestPermissions(activity, getStoragePermissions(true), PERMISSION_READ_EXTERNAL_STORAGE_FILE);
-        } else {
+        }
+        else {
             // Permission granted
             Intent intent;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                String[] mimeTypes = {INTENT_TYPE_ALL};
-                intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType(INTENT_TYPE_ALL);
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            String[] mimeTypes = {INTENT_TYPE_ALL};
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType(INTENT_TYPE_ALL);
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
 //                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
-            } else {
-                intent = new Intent(Intent.ACTION_GET_CONTENT);
-            }
             intent.setType(INTENT_TYPE_ALL);
             try {
                 activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
-            } catch (ActivityNotFoundException e) {
+            }
+            catch (ActivityNotFoundException e) {
                 e.printStackTrace();
             }
         }

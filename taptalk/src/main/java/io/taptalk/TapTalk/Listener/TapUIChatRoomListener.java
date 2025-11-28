@@ -96,7 +96,7 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
 
     @Override
     public List<TapLongPressMenuItem> setScheduledMessageLongPressMenuItems(Context context, TAPMessageModel messageModel) {
-        return TapUI.getInstance(instanceKey).getDefaultScheduledMessageLongPressMenuItems(context);
+        return TapUI.getInstance(instanceKey).getDefaultScheduledMessageLongPressMenuItems(context, messageModel);
     }
 
     @Override

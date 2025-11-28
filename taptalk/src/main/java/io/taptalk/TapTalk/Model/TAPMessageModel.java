@@ -446,6 +446,7 @@ public class TAPMessageModel implements Parcelable {
 
     public void setCreated(Long created) {
         this.created = created;
+        updateMessageStatusText();
     }
 
     public TAPUserModel getUser() {

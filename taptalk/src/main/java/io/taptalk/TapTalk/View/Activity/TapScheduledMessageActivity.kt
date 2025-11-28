@@ -462,7 +462,6 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         }
     }
 
-
     private fun initViewModel(): Boolean {
         vm = ViewModelProvider(this, TAPChatViewModelFactory(application, instanceKey)).get(TAPChatViewModel::class.java)
         if (null == vm.room) {
@@ -677,17 +676,15 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         vb.ivSendArea.setOnClickListener {
             hideKeyboards()
             val text = vb.etChat.text.toString().trim { it <= ' ' }
-            if (text.isNotEmpty()) {
-                if (vm.quoteAction != null && vm.quotedMessage != null) {
-                    buildAndSendTextOrLinkMessage(text, vm.quotedMessage.created)
-                }
-                else {
-                    svm.pendingScheduledMessageType = TYPE_TEXT
-                    svm.pendingScheduledMessageTime = System.currentTimeMillis()
-                    svm.pendingScheduledMessageText = text
-                    val timePicker = TapTimePickerBottomSheetFragment(svm, getTextScheduledMessageListener(text))
-                    timePicker.show(supportFragmentManager, "")
-                }
+            if (vm.quoteAction != null && vm.quotedMessage != null) {
+                buildAndSendTextOrLinkMessage(text, vm.quotedMessage.created)
+            }
+            else if (text.isNotEmpty()) {
+                svm.pendingScheduledMessageType = TYPE_TEXT
+                svm.pendingScheduledMessageTime = System.currentTimeMillis()
+                svm.pendingScheduledMessageText = text
+                val timePicker = TapTimePickerBottomSheetFragment(svm, getTextScheduledMessageListener(text))
+                timePicker.show(supportFragmentManager, "")
             }
         }
         vb.ivToBottom.setOnClickListener { scrollToBottom() }
@@ -841,8 +838,11 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
         override fun onSuccess(response: TapGetScheduledMessageListResponse?) {
             vm.messageModels.clear()
+            vm.messagePointer.clear()
             messageAdapter.clearItems()
             vm.dateSeparators.clear()
+
+            // Add response messages
             if (response?.items?.isNotEmpty() == true) {
                 var previousModel : TapScheduledMessageModel? = null
 
@@ -855,7 +855,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                             message.messageID = scheduledMessage.id.toString()
                             // update status text
                             if (scheduledMessage.scheduledTime != null) {
-                                message.messageStatusText = TAPTimeFormatter.formatClock(scheduledMessage.scheduledTime)
+//                                message.messageStatusText = TAPTimeFormatter.formatClock(scheduledMessage.scheduledTime)
                                 message.created = scheduledMessage.scheduledTime
                             }
                             // add date separator
@@ -866,19 +866,42 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                                 messageAdapter.addMessage(dateSeparator)
                             }
                             messageAdapter.addMessage(message)
+                            vm.addMessagePointer(message)
                             previousModel = TapScheduledMessageModel(scheduledMessage)
                         }
                     }
                 }
-                if (TAPChatManager.getInstance(instanceKey).pendingScheduledMessages.isNotEmpty()) {
-                    for (message in TAPChatManager.getInstance(instanceKey).pendingScheduledMessages) {
-                        if (message.message?.room?.roomID == vm.room.roomID && message != null) {
-                            if (!messageAdapter.items.contains(message.message)) {
-                                addNewMessage(message.message!!, message.scheduledTime!!)
-                            }
+            }
+
+            // Add local messages
+            if (TAPChatManager.getInstance(instanceKey).pendingScheduledMessages.isNotEmpty()) {
+                for (scheduledMessage in TAPChatManager.getInstance(instanceKey).pendingScheduledMessages) {
+                    if (scheduledMessage.message != null && scheduledMessage.message.room?.roomID == vm.room.roomID) {
+                        if (!vm.messagePointer.containsKey(scheduledMessage.message.localID)) {
+                            addNewMessage(scheduledMessage.message, scheduledMessage.scheduledTime!!)
                         }
                     }
                 }
+            }
+            if (TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages.isNotEmpty()) {
+                for (scheduledMessage in TAPChatManager.getInstance(instanceKey).uploadingScheduledMessages) {
+                    if (scheduledMessage.value.message != null && scheduledMessage.value.message!!.room?.roomID == vm.room.roomID) {
+                        if (!vm.messagePointer.containsKey(scheduledMessage.value.message!!.localID)) {
+                            addNewMessage(scheduledMessage.value.message!!, scheduledMessage.value.scheduledTime!!)
+                        }
+                    }
+                }
+            }
+
+            if (messageAdapter.items.isEmpty()) {
+                runOnUiThread {
+                    if (vb.llEmptyScheduledMessage.visibility == View.GONE) {
+                        vb.llEmptyScheduledMessage.visibility = View.VISIBLE
+                    }
+                    hideMessageList()
+                }
+            }
+            else {
                 runOnUiThread {
                     if (vb.llEmptyScheduledMessage.visibility == View.VISIBLE) {
                         vb.llEmptyScheduledMessage.visibility = View.GONE
@@ -886,14 +909,6 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                     showMessageList()
                     updateMessageDecoration()
                     messageAdapter.notifyDataSetChanged()
-                }
-            }
-            else {
-                runOnUiThread {
-                    if (vb.llEmptyScheduledMessage.visibility == View.GONE) {
-                        vb.llEmptyScheduledMessage.visibility = View.VISIBLE
-                    }
-                    hideMessageList()
                 }
             }
 
@@ -936,6 +951,12 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         override fun onGetScheduledMessageList() {
             super.onGetScheduledMessageList()
             getScheduledMessages()
+        }
+
+        override fun onReceiveMessageInActiveRoom(message: TAPMessageModel?) {
+            if (message != null && vm.messagePointer.containsKey(message.localID)) {
+                getScheduledMessages()
+            }
         }
 
         override fun onRetrySendMessage(message: TAPMessageModel) {
@@ -1116,44 +1137,53 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (imageView.visibility == View.GONE) {
             return
         }
-        if (tvAvatarLabel === vb.tvMyAvatarLabelEmpty) {
-            ImageViewCompat.setImageTintList(
-                imageView,
-                ColorStateList.valueOf(
-                    TAPUtils.getRandomColor(
-                        this,
-                        TAPChatManager.getInstance(instanceKey).activeUser.fullname
+
+        runOnUiThread {
+            if (tvAvatarLabel === vb.tvMyAvatarLabelEmpty) {
+                ImageViewCompat.setImageTintList(
+                    imageView,
+                    ColorStateList.valueOf(
+                        TAPUtils.getRandomColor(
+                            this,
+                            TAPChatManager.getInstance(instanceKey).activeUser.fullname
+                        )
                     )
                 )
+                tvAvatarLabel.text =
+                    TAPUtils.getInitials(
+                        TAPChatManager.getInstance(instanceKey).activeUser.fullname,
+                        2
+                    )
+            } else {
+                ImageViewCompat.setImageTintList(
+                    imageView,
+                    ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.room.name))
+                )
+                tvAvatarLabel.text = TAPUtils.getInitials(
+                    vm.room.name,
+                    if (vm.room.type == RoomType.TYPE_PERSONAL) 2 else 1
+                )
+            }
+            imageView.setImageDrawable(
+                ContextCompat.getDrawable(
+                    this@TapScheduledMessageActivity,
+                    R.drawable.tap_bg_circle_9b9b9b
+                )
             )
-            tvAvatarLabel.text =
-                TAPUtils.getInitials(TAPChatManager.getInstance(instanceKey).activeUser.fullname, 2)
+            tvAvatarLabel.visibility = View.VISIBLE
         }
-        else {
-            ImageViewCompat.setImageTintList(
-                imageView,
-                ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.room.name))
-            )
-            tvAvatarLabel.text = TAPUtils.getInitials(
-                vm.room.name,
-                if (vm.room.type == RoomType.TYPE_PERSONAL) 2 else 1
-            )
-        }
-        imageView.setImageDrawable(
-            ContextCompat.getDrawable(
-                this@TapScheduledMessageActivity,
-                R.drawable.tap_bg_circle_9b9b9b
-            )
-        )
-        tvAvatarLabel.visibility = View.VISIBLE
     }
 
     private fun showMessageList() {
-        vb.flMessageList.visibility = View.VISIBLE
+        runOnUiThread {
+            vb.flMessageList.visibility = View.VISIBLE
+        }
     }
 
     private fun hideMessageList() {
-        vb.flMessageList.visibility = View.GONE
+        runOnUiThread {
+            vb.flMessageList.visibility = View.GONE
+        }
     }
 
     private fun updateMessageDecoration() {
@@ -1176,7 +1206,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (null == message) {
             return
         }
-        vm.setQuotedMessage(message, QuoteAction.EDIT)
+        vm.setQuotedMessage(message, QuoteAction.EDIT, false)
         runOnUiThread {
             vb.clQuoteLayout.visibility = View.VISIBLE
             // Add other quotable message type here
@@ -1296,7 +1326,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
     private fun hideQuoteLayout() {
         vb.etChat.filters = arrayOf<InputFilter>()
         vb.etChat.setText("")
-        vm.setQuotedMessage(null, 0)
+        vm.setQuotedMessage(null, 0, false)
         vm.setForwardedMessages(null, 0)
         val hasFocus: Boolean = vb.etChat.hasFocus()
         if (vb.clQuoteLayout.visibility == View.VISIBLE) {
@@ -1814,10 +1844,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         if (vm.quotedMessage != null && vm.quoteAction == QuoteAction.EDIT) {
             // edit message
             val messageModel = vm.quotedMessage
-            if ((messageModel.type == MessageType.TYPE_TEXT || messageModel.type == MessageType.TYPE_LINK) && !TextUtils.isEmpty(
-                    message
-                )
-            ) {
+            if ((messageModel.type == MessageType.TYPE_TEXT || messageModel.type == MessageType.TYPE_LINK) && !TextUtils.isEmpty(message)) {
                 messageModel.body = message
                 var data = messageModel.data
                 if (data == null) {
@@ -2549,7 +2576,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         OnFocusChangeListener { v, hasFocus ->
             if (hasFocus && vm.isCustomKeyboardEnabled) {
                 vm.isScrollFromKeyboard = true
-                vb.rvCustomKeyboard.setVisibility(View.GONE)
+                vb.rvCustomKeyboard.visibility = View.GONE
                 vb.ivChatMenuArea.setImageDrawable(
                     ContextCompat.getDrawable(
                         this@TapScheduledMessageActivity,
@@ -2564,9 +2591,13 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
                 )
                 vb.ivChatMenu.setColorFilter(
                     ContextCompat.getColor(
-                        TapTalk.appContext,
+                        this@TapScheduledMessageActivity,
                         R.color.tapIconChatComposerBurgerMenu
                     )
+                )
+                vb.etChat.background = ContextCompat.getDrawable(
+                    this@TapScheduledMessageActivity,
+                    R.drawable.tap_bg_chat_composer_text_field_active
                 )
                 TAPUtils.showKeyboard(this@TapScheduledMessageActivity, vb.etChat)
                 if (vb.etChat.text.toString().isNotEmpty()) {
@@ -2576,7 +2607,17 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
             }
             else if (hasFocus) {
                 vm.isScrollFromKeyboard = true
+                vb.etChat.background = ContextCompat.getDrawable(
+                    this@TapScheduledMessageActivity,
+                    R.drawable.tap_bg_chat_composer_text_field_active
+                )
                 TAPUtils.showKeyboard(this@TapScheduledMessageActivity, vb.etChat)
+            }
+            else {
+                vb.etChat.background = ContextCompat.getDrawable(
+                    this@TapScheduledMessageActivity,
+                    R.drawable.tap_bg_chat_composer_text_field
+                )
             }
         }
 

@@ -52,6 +52,10 @@ public class TAPTimeFormatter {
     }
 
     public static String durationChatString(Context context, long timestamp) {
+        if (timestamp <= 0) {
+            return "";
+        }
+
         long timeGap;
         long timeNow = Calendar.getInstance().getTimeInMillis();
         timeGap = timeNow - timestamp;
@@ -66,13 +70,26 @@ public class TAPTimeFormatter {
         midnightFromSendTime.set(Calendar.MILLISECOND, 0);
         midnightTimeGap = midnightFromSendTime.getTimeInMillis() - timestamp;
 
-        if (timestamp == 0) {
-            return "";
-        } else if (midnightTimeGap > timeGap && context != null) {
-            return String.format("%s • %s", context.getString(R.string.tap_today), formatClock(timestamp));
-        } else if ((TAPTimeFormatter.times.get(3)) + midnightTimeGap > timeGap && context != null) {
-            return String.format("%s • %s", context.getString(R.string.tap_yesterday), formatClock(timestamp));
-        } else {
+        Calendar midnightNextDay = Calendar.getInstance();
+        midnightNextDay.add(Calendar.DATE, 1);
+        midnightNextDay.set(Calendar.HOUR_OF_DAY, 0);
+        midnightNextDay.set(Calendar.MINUTE, 0);
+        midnightNextDay.set(Calendar.SECOND, 0);
+        midnightNextDay.set(Calendar.MILLISECOND, 0);
+
+        if (midnightTimeGap > timeGap && timestamp < midnightNextDay.getTimeInMillis()) {
+            if (context != null) {
+                return String.format("%s • %s", context.getString(R.string.tap_today), formatClock(timestamp));
+            }
+            return String.format("%s • %s", "Today", formatClock(timestamp));
+        }
+        else if (TAPTimeFormatter.times.get(3) + midnightTimeGap > timeGap && timestamp < midnightNextDay.getTimeInMillis() - TAPTimeFormatter.times.get(3)) {
+            if (context != null) {
+                return String.format("%s • %s", context.getString(R.string.tap_yesterday), formatClock(timestamp));
+            }
+            return String.format("%s • %s", "Yesterday", formatClock(timestamp));
+        }
+        else {
             return String.format("%s • %s", formatTime(timestamp, "dd/MM/yy"), formatClock(timestamp));
         }
     }

@@ -20,8 +20,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.R;
 
@@ -32,6 +30,7 @@ import java.util.List;
 public abstract class TAPBaseActivity extends AppCompatActivity {
 
     public String instanceKey = "";
+    public boolean isActivityPaused = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,12 +95,14 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        isActivityPaused = false;
         TapUI.getInstance(instanceKey).setCurrentForegroundTapTalkActivity(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        isActivityPaused = true;
         TAPUtils.dismissKeyboard(this);
         TapUI.getInstance(instanceKey).setCurrentForegroundTapTalkActivity(null);
     }
