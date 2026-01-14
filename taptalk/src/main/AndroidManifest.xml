@@ -90,7 +90,7 @@
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
-            android:exported="true"
+            android:exported="false"
             android:launchMode="singleTask"/>
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity"
