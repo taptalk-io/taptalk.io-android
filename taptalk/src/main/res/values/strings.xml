@@ -208,6 +208,7 @@
     <string name="tap_error_resend_media_data_not_found">Could not find the file, please try to resend it again.</string>
     <string name="tap_error_load_image_detail">Could not load image, message data is null.</string>
     <string name="tap_error_no_app_to_open_file">No suitable app to open this file.</string>
+    <string name="tap_error_no_app_to_open_url">No suitable app to open this URL.</string>
     <string name="tap_format_s_error_exceed_upload_limit">Exceeded %s upload limit</string>
     <string name="tap_error_media_will_not_be_sent">This media will not be sent</string>
     <string name="tap_error_could_not_find_file">Could not find file</string>

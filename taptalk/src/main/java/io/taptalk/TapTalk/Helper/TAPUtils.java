@@ -655,7 +655,8 @@ public class TAPUtils {
         try {
             context.startActivity(Intent.createChooser(intent, OPEN_FILE));
             return true;
-        } catch (ActivityNotFoundException e) {
+        }
+        catch (ActivityNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
             return true;
@@ -1109,7 +1110,13 @@ public class TAPUtils {
             return;
         }
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        activity.startActivity(intent);
+        try {
+            activity.startActivity(intent);
+        }
+        catch (ActivityNotFoundException e) {
+            Toast.makeText(activity, activity.getString(R.string.tap_error_no_app_to_open_url), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     public static void openUrl(String instanceKey, Activity activity, String url) {
@@ -1160,7 +1167,8 @@ public class TAPUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(context);
             return defaultSmsPackageName;
-        } else {
+        }
+        else {
             Intent intent = new Intent(Intent.ACTION_VIEW).addCategory(Intent.CATEGORY_DEFAULT).setType("vnd.android-dir/mms-sms");
             final List<ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(intent, 0);
             if (resolveInfos != null && !resolveInfos.isEmpty()) {
@@ -1173,7 +1181,13 @@ public class TAPUtils {
     public static void openMaps(Activity activity, Double latitude, Double longitude) {
         Uri googleMapUrl = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + latitude + "," + longitude + "&z=16");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, googleMapUrl);
-        activity.startActivity(mapIntent);
+        try {
+            activity.startActivity(mapIntent);
+        }
+        catch (ActivityNotFoundException e) {
+            Toast.makeText(activity, activity.getString(R.string.tap_error_no_app_to_open_url), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     /**
