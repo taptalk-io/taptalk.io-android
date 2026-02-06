@@ -1,6 +1,7 @@
 package io.moselo.SampleApps.Activity
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -1026,7 +1027,12 @@ class TAPLoginActivity : TAPBaseActivity() {
             if (waLink.isNotEmpty() && Patterns.WEB_URL.matcher(waLink).matches()) {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(waLink)
-                startActivity(intent)
+                try {
+                    startActivity(intent)
+                }
+                catch (e: ActivityNotFoundException) {
+                    e.printStackTrace()
+                }
                 vm?.isCheckWhatsAppVerificationPending = true
             }
         }

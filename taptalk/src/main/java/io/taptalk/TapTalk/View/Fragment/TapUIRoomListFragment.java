@@ -838,14 +838,18 @@ public class TapUIRoomListFragment extends Fragment {
                     else {
                         index = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().indexOf(messageRoomID);
                     }
+                    if (index > vm.getRoomList().size()) {
+                        index = vm.getRoomList().size();
+                    }
                     vm.addRoomPointer(newRoomList);
                     vm.getRoomList().add(index, newRoomList);
+                    int finalIndex = index;
                     activity.runOnUiThread(() -> {
                         llRoomEmpty.setVisibility(View.GONE);
                         if (adapter.getItems().isEmpty()) {
                             adapter.addItem(newRoomList);
                         }
-                        adapter.notifyItemInserted(index);
+                        adapter.notifyItemInserted(finalIndex);
 
                         if (llm.findFirstCompletelyVisibleItemPosition() == 0)
                             rvContactList.scrollToPosition(0);

@@ -4702,11 +4702,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 ivToBottom.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.GONE);
                 vm.clearUnreadMessages();
-            } else if (messageLayoutManager.findFirstVisibleItemPosition() > vm.getFirstVisibleItemIndex() && !vm.isScrollFromKeyboard()) {
+            }
+            else if (messageLayoutManager.findFirstVisibleItemPosition() > vm.getFirstVisibleItemIndex() && !vm.isScrollFromKeyboard()) {
                 vm.setOnBottom(false);
                 ivToBottom.setVisibility(View.VISIBLE);
                 hideUnreadButton();
-            } else if (messageLayoutManager.findFirstVisibleItemPosition() > vm.getFirstVisibleItemIndex()) {
+            }
+            else if (messageLayoutManager.findFirstVisibleItemPosition() > vm.getFirstVisibleItemIndex()) {
                 vm.setOnBottom(false);
                 ivToBottom.setVisibility(View.VISIBLE);
                 vm.setScrollFromKeyboard(false);
@@ -4715,13 +4717,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (newState == SCROLL_STATE_IDLE) {
                 // Start hide date indicator timer if state is idle
                 hideDateIndicatorTimer.start();
-            } else if (newState == SCROLL_STATE_DRAGGING) {
+            }
+            else if (newState == SCROLL_STATE_DRAGGING) {
                 // Show date indicator
                 TAPMessageModel firstVisibleMessage = messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition());
                 if (firstVisibleMessage != null) {
                     hideDateIndicatorTimer.cancel();
-                    tvDateIndicator.setText(TAPTimeFormatter.dateStampString(TapUIChatActivity.this, firstVisibleMessage.getCreated()));
-                    tvDateIndicator.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -4729,10 +4730,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            // Update date indicator text
-            if (tvDateIndicator.getVisibility() == View.VISIBLE) {
-                tvDateIndicator.setText(TAPTimeFormatter.dateStampString(TapUIChatActivity.this,
-                        messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition()).getCreated()));
+            if (messageLayoutManager.findLastVisibleItemPosition() >= messageAdapter.getItemCount() - 1) {
+                // Hide date indicator
+                tvDateIndicator.setVisibility(View.GONE);
+            }
+            else {
+                // Update date indicator text
+                tvDateIndicator.setText(TAPTimeFormatter.dateStampString(TapUIChatActivity.this, messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition()).getCreated()));
                 tvDateIndicator.setVisibility(View.VISIBLE);
             }
         }
@@ -6346,14 +6350,36 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         }
         TAPMessageModel dateSeparator = vm.generateDateSeparator(this, firstMessage);
+
+        // FIXME: Uncomment this and notifyDataSet if duplicate top date separator is showing
+        // Remove duplicate separator
+//        String lastDate = TAPTimeFormatter.formatDate(dateSeparator.getCreated());
+//        String localIDToRemove = "";
+//        for (Map.Entry<String, TAPMessageModel> entry : vm.getDateSeparators().entrySet()) {
+//            if (lastDate.equals(TAPTimeFormatter.formatDate(entry.getValue().getCreated()))) {
+//                localIDToRemove = entry.getValue().getLocalID();
+//                break;
+//            }
+//        }
+//        if (!localIDToRemove.isEmpty()) {
+//            vm.getDateSeparators().remove(localIDToRemove);
+//            vm.getDateSeparatorIndexes().remove(localIDToRemove);
+//            TAPMessageModel dateSeparatorToRemove = vm.getMessagePointer().get(localIDToRemove);
+//            if (dateSeparatorToRemove != null) {
+//                messageAdapter.removeMessage(dateSeparatorToRemove);
+//            }
+//        }
+
         vm.getDateSeparators().put(dateSeparator.getLocalID(), dateSeparator);
         vm.getDateSeparatorIndexes().put(dateSeparator.getLocalID(), messageAdapter.getItems().size());
         runOnUiThread(() -> {
             messageAdapter.addItem(messageAdapter.getItems().size(), dateSeparator);
+//            if (notifyDataSet || !localIDToRemove.isEmpty()) {
             if (notifyDataSet) {
                 // Notify all to fix message bubble duplicated when After API is called on DONE state
                 messageAdapter.notifyDataSetChanged();
-            } else {
+            }
+            else {
                 messageAdapter.notifyItemInserted(messageAdapter.getItems().indexOf(dateSeparator));
             }
         });
