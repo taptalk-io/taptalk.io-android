@@ -71,11 +71,8 @@ class TAPWebBrowserActivity : TAPBaseActivity() {
         val webSettings: WebSettings = vb.webView.settings
         webSettings.javaScriptEnabled = true
         webSettings.domStorageEnabled = true
-        webSettings.databaseEnabled = true
-        webSettings.allowFileAccess = true
-        webSettings.allowContentAccess = true
-        webSettings.allowFileAccessFromFileURLs = true
-        webSettings.allowUniversalAccessFromFileURLs = true
+        webSettings.allowFileAccess = false
+        webSettings.allowContentAccess = false
         vb.webView.loadUrl(url)
     }
 
