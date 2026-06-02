@@ -170,6 +170,10 @@ public class TapCoreMessageManager {
         return null == coreMessageListeners ? coreMessageListeners = new ArrayList<>() : coreMessageListeners;
     }
 
+    private List<TapCoreMessageListener> getCoreMessageListenersForLoop() {
+        return new ArrayList<>(getCoreMessageListeners());
+    }
+
     private List<TAPMessageModel> getPendingCallbackNewMessages() {
         return null == pendingCallbackNewMessages ? pendingCallbackNewMessages = new ArrayList<>() : pendingCallbackNewMessages;
     }
@@ -191,13 +195,13 @@ public class TapCoreMessageManager {
             @Override
             public void run() {
                 if (getPendingCallbackNewMessages().size() > 1) {
-                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                    for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
                         if (null != listener) {
                             listener.onReceiveNewMessage(getPendingCallbackNewMessages());
                         }
                     }
                 } else if (getPendingCallbackNewMessages().size() == 1) {
-                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                    for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
                         if (null != listener) {
                             listener.onReceiveNewMessage(getPendingCallbackNewMessages().get(0));
                         }
@@ -218,13 +222,13 @@ public class TapCoreMessageManager {
             @Override
             public void run() {
                 if (getPendingCallbackUpdatedMessages().size() > 1) {
-                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                    for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
                         if (null != listener) {
                             listener.onReceiveUpdatedMessage(getPendingCallbackUpdatedMessages());
                         }
                     }
                 } else if (getPendingCallbackUpdatedMessages().size() == 1) {
-                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                    for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
                         if (null != listener) {
                             listener.onReceiveUpdatedMessage(getPendingCallbackUpdatedMessages().get(0));
                         }
@@ -245,13 +249,13 @@ public class TapCoreMessageManager {
             @Override
             public void run() {
                 if (getPendingCallbackDeletedMessages().size() > 1) {
-                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                    for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
                         if (null != listener) {
                             listener.onMessageDeleted(getPendingCallbackDeletedMessages());
                         }
                     }
                 } else if (getPendingCallbackDeletedMessages().size() == 1) {
-                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                    for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
                         if (null != listener) {
                             listener.onMessageDeleted(getPendingCallbackDeletedMessages().get(0));
                         }
@@ -273,7 +277,7 @@ public class TapCoreMessageManager {
                     @Override
                     public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
                         if (messageListenerBulkCallbackDelay == 0L) {
-                            for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                            for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
                                 if (null != listener) {
                                     listener.onReceiveNewMessage(message);
                                 }
@@ -296,7 +300,7 @@ public class TapCoreMessageManager {
                             return;
                         }
                         if (messageListenerBulkCallbackDelay == 0L) {
-                            for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                            for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
                                 if (null != listener) {
                                     listener.onReceiveUpdatedMessage(message);
                                 }
@@ -315,7 +319,7 @@ public class TapCoreMessageManager {
                     @Override
                     public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
                         if (messageListenerBulkCallbackDelay == 0L) {
-                            for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                            for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
                                 if (null != listener) {
                                     listener.onMessageDeleted(message);
                                 }
@@ -1901,7 +1905,7 @@ public class TapCoreMessageManager {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
-        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+        for (TapCoreMessageListener listener : getCoreMessageListenersForLoop()) {
             if (null != listener) {
                 listener.onRequestMessageFileUpload(messageModel, fileUri);
             }

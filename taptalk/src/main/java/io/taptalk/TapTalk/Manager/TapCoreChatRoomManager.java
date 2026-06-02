@@ -78,6 +78,10 @@ public class TapCoreChatRoomManager {
         return null == coreChatRoomListeners ? coreChatRoomListeners = new ArrayList<>() : coreChatRoomListeners;
     }
 
+    private List<TapCoreChatRoomListener> getCoreChatRoomListenersForLoop() {
+        return new ArrayList<>(getCoreChatRoomListeners());
+    }
+
     public synchronized void addChatRoomListener(TapCoreChatRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
@@ -87,7 +91,7 @@ public class TapCoreChatRoomManager {
                 chatListener = new TAPChatListener() {
                     @Override
                     public void onReceiveUpdatedChatRoomData(TAPRoomModel room, @Nullable TAPUserModel recipientUser) {
-                        for (TapCoreChatRoomListener listener : getCoreChatRoomListeners()) {
+                        for (TapCoreChatRoomListener listener : getCoreChatRoomListenersForLoop()) {
                             if (null != listener) {
                                 listener.onReceiveUpdatedChatRoomData(room, recipientUser);
                             }
@@ -96,7 +100,7 @@ public class TapCoreChatRoomManager {
 
                     @Override
                     public void onReceiveStartTyping(TAPTypingModel typingModel) {
-                        for (TapCoreChatRoomListener listener : getCoreChatRoomListeners()) {
+                        for (TapCoreChatRoomListener listener : getCoreChatRoomListenersForLoop()) {
                             if (null != listener) {
                                 listener.onReceiveStartTyping(typingModel.getRoomID(), typingModel.getUser());
                             }
@@ -105,7 +109,7 @@ public class TapCoreChatRoomManager {
 
                     @Override
                     public void onReceiveStopTyping(TAPTypingModel typingModel) {
-                        for (TapCoreChatRoomListener listener : getCoreChatRoomListeners()) {
+                        for (TapCoreChatRoomListener listener : getCoreChatRoomListenersForLoop()) {
                             if (null != listener) {
                                 listener.onReceiveStopTyping(typingModel.getRoomID(), typingModel.getUser());
                             }
@@ -114,7 +118,7 @@ public class TapCoreChatRoomManager {
 
                     @Override
                     public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
-                        for (TapCoreChatRoomListener listener : getCoreChatRoomListeners()) {
+                        for (TapCoreChatRoomListener listener : getCoreChatRoomListenersForLoop()) {
                             if (null != listener) {
                                 listener.onReceiveOnlineStatus(onlineStatus.getUser(), onlineStatus.getOnline(), onlineStatus.getLastActive());
                             }

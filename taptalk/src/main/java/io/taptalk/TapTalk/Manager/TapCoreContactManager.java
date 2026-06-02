@@ -67,6 +67,10 @@ public class TapCoreContactManager {
         return null == coreContactListeners ? coreContactListeners = new ArrayList<>() : coreContactListeners;
     }
 
+    private List<TapCoreContactListener> getCoreContactListenersForLoop() {
+        return new ArrayList<>(getCoreContactListeners());
+    }
+
     public synchronized void addContactListener(TapCoreContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
@@ -489,7 +493,7 @@ public class TapCoreContactManager {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
-        for (TapCoreContactListener listener : getCoreContactListeners()) {
+        for (TapCoreContactListener listener : getCoreContactListenersForLoop()) {
             listener.onContactBlocked(userModel);
         }
     }
@@ -498,7 +502,7 @@ public class TapCoreContactManager {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
-        for (TapCoreContactListener listener : getCoreContactListeners()) {
+        for (TapCoreContactListener listener : getCoreContactListenersForLoop()) {
             listener.onContactUnblocked(userModel);
         }
     }

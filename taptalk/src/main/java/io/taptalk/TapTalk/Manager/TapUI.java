@@ -214,6 +214,10 @@ public class TapUI {
         return null == tapUIRoomListListeners ? tapUIRoomListListeners = new ArrayList<>() : tapUIRoomListListeners;
     }
 
+    private List<TapUIRoomListListener> getRoomListListenersForLoop() {
+        return new ArrayList<>(getRoomListListeners());
+    }
+
     public synchronized void addRoomListListener(TapUIRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
@@ -231,6 +235,10 @@ public class TapUI {
 
     private List<TapUIChatRoomListener> getChatRoomListeners() {
         return null == tapUIChatRoomListeners ? tapUIChatRoomListeners = new ArrayList<>() : tapUIChatRoomListeners;
+    }
+
+    private List<TapUIChatRoomListener> getChatRoomListenersForLoop() {
+        return new ArrayList<>(getChatRoomListeners());
     }
 
     public synchronized void addChatRoomListener(TapUIChatRoomListener listener) {
@@ -252,6 +260,10 @@ public class TapUI {
         return null == tapUIChatProfileListeners ? tapUIChatProfileListeners = new ArrayList<>() : tapUIChatProfileListeners;
     }
 
+    private List<TapUIChatProfileListener> getChatProfileListenersForLoop() {
+        return new ArrayList<>(getChatProfileListeners());
+    }
+
     public synchronized void addChatProfileListener(TapUIChatProfileListener listener) {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
@@ -269,6 +281,10 @@ public class TapUI {
 
     private List<TapUICustomKeyboardListener> getCustomKeyboardListeners() {
         return null == tapUICustomKeyboardListeners ? tapUICustomKeyboardListeners = new ArrayList<>() : tapUICustomKeyboardListeners;
+    }
+
+    private List<TapUICustomKeyboardListener> getCustomKeyboardListenersForLoop() {
+        return new ArrayList<>(getCustomKeyboardListeners());
     }
 
     public synchronized void addCustomKeyboardListener(TapUICustomKeyboardListener listener) {
@@ -461,7 +477,8 @@ public class TapUI {
                     }
                 }
             });
-        } else {
+        }
+        else {
             openChatRoom(
                     context,
                     roomID,
@@ -1971,8 +1988,9 @@ public class TapUI {
     void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
         if (getRoomListListeners().isEmpty() && null != mainRoomListFragment) {
             mainRoomListFragment.showSearchChat();
-        } else {
-            for (TapUIRoomListListener listener : getRoomListListeners()) {
+        }
+        else {
+            for (TapUIRoomListListener listener : getRoomListListenersForLoop()) {
                 if (null != listener) {
                     listener.onSearchChatBarTapped(activity, mainRoomListFragment);
                 }
@@ -1983,8 +2001,9 @@ public class TapUI {
     void triggerCloseRoomListTapped(Activity activity) {
         if (getRoomListListeners().isEmpty() && null != activity) {
             activity.finish();
-        } else {
-            for (TapUIRoomListListener listener : getRoomListListeners()) {
+        }
+        else {
+            for (TapUIRoomListListener listener : getRoomListListenersForLoop()) {
                 if (null != listener) {
                     listener.onCloseRoomListTapped(activity);
                 }
@@ -1995,8 +2014,9 @@ public class TapUI {
     void triggerTapTalkAccountButtonTapped(Activity activity) {
         if (getRoomListListeners().isEmpty()) {
             TAPMyAccountActivity.Companion.start(activity, instanceKey);
-        } else {
-            for (TapUIRoomListListener listener : getRoomListListeners()) {
+        }
+        else {
+            for (TapUIRoomListListener listener : getRoomListListenersForLoop()) {
                 if (null != listener) {
                     listener.onTapTalkAccountButtonTapped(activity);
                 }
@@ -2007,8 +2027,9 @@ public class TapUI {
     void triggerNewChatButtonTapped(Activity activity) {
         if (getRoomListListeners().isEmpty()) {
             TAPNewChatActivity.start(activity, instanceKey);
-        } else {
-            for (TapUIRoomListListener listener : getRoomListListeners()) {
+        }
+        else {
+            for (TapUIRoomListListener listener : getRoomListListenersForLoop()) {
                 if (null != listener) {
                     listener.onNewChatButtonTapped(activity);
                 }
@@ -2021,7 +2042,7 @@ public class TapUI {
             return;
         }
 
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             if (null != listener) {
                 listener.onTapTalkChatRoomOpened(activity, room, otherUser);
             }
@@ -2033,7 +2054,7 @@ public class TapUI {
             return;
         }
 
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             if (null != listener) {
                 listener.onTapTalkChatRoomClosed(activity, room, otherUser);
             }
@@ -2045,7 +2066,7 @@ public class TapUI {
             return;
         }
 
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             if (null != listener) {
                 listener.onTapTalkActiveUserSendMessage(activity, messageModel, room);
             }
@@ -2058,17 +2079,20 @@ public class TapUI {
         }
         if (getChatRoomListeners().isEmpty()) {
             TAPChatProfileActivity.Companion.start(activity, instanceKey, room, user);
-        } else {
-            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        }
+        else {
+            for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
                 if (room.getType() == TYPE_PERSONAL) {
                     if (null != listener) {
                         listener.onTapTalkUserProfileButtonTapped(activity, room, user);
                     }
-                } else if (room.getType() == TYPE_GROUP && null != user) {
+                }
+                else if (room.getType() == TYPE_GROUP && null != user) {
                     if (null != listener) {
                         listener.onTapTalkGroupMemberAvatarTapped(activity, room, user);
                     }
-                } else if (room.getType() == TYPE_GROUP) {
+                }
+                else if (room.getType() == TYPE_GROUP) {
                     if (null != listener) {
                         listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
                     }
@@ -2082,7 +2106,8 @@ public class TapUI {
             if (isRoomParticipant) {
                 // Open member profile
                 TAPChatProfileActivity.Companion.start(activity, instanceKey, message.getRoom(), user);
-            } else {
+            }
+            else {
                 // Open personal profile
                 TAPChatProfileActivity.Companion.start(
                         activity,
@@ -2098,15 +2123,16 @@ public class TapUI {
                         user,
                         true);
             }
-        } else {
-            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        }
+        else {
+            for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
                 listener.onTapTalkUserMentionTapped(activity, message, user, isRoomParticipant);
             }
         }
     }
 
     void triggerMessageQuoteTapped(Activity activity, TAPMessageModel messageModel) {
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             HashMap<String, Object> userInfo = null;
             if (null != messageModel.getData() && null != messageModel.getData().get(USER_INFO)) {
                 userInfo = (HashMap<String, Object>) messageModel.getData().get(USER_INFO);
@@ -2122,7 +2148,7 @@ public class TapUI {
             return;
         }
 
-        for (TapUIChatProfileListener listener : getChatProfileListeners()) {
+        for (TapUIChatProfileListener listener : getChatProfileListenersForLoop()) {
             if (null != listener) {
                 listener.onReportUserButtonTapped(activity, room, reportedUser);
             }
@@ -2134,7 +2160,7 @@ public class TapUI {
             return;
         }
 
-        for (TapUIChatProfileListener listener : getChatProfileListeners()) {
+        for (TapUIChatProfileListener listener : getChatProfileListenersForLoop()) {
             if (null != listener) {
                 listener.onReportGroupButtonTapped(activity, room);
             }
@@ -2146,7 +2172,7 @@ public class TapUI {
             return;
         }
 
-        for (TapUIChatProfileListener listener : getChatProfileListeners()) {
+        for (TapUIChatProfileListener listener : getChatProfileListenersForLoop()) {
             if (null != listener) {
                 listener.onGroupInCommonItemTapped(activity, room);
             }
@@ -2158,7 +2184,7 @@ public class TapUI {
             TapStarredMessagesActivity.Companion.start(activity, instanceKey, room);
         }
 
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             if (null != listener) {
                 listener.onTapTalkStarredMessageButtonTapped(activity, room);
             }
@@ -2166,7 +2192,7 @@ public class TapUI {
     }
 
     void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             if (null != listener) {
                 listener.onTapTalkProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
             }
@@ -2174,7 +2200,7 @@ public class TapUI {
     }
 
     void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             if (null != listener) {
                 listener.onTapTalkProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
             }
@@ -2186,7 +2212,7 @@ public class TapUI {
             return;
         }
 
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             if (null != listener) {
                 listener.onSavedMessageBubbleArrowTapped(messageModel);
             }
@@ -2198,7 +2224,7 @@ public class TapUI {
             return;
         }
 
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             if (null != listener) {
                 listener.onPinnedMessageTapped(message);
             }
@@ -2210,7 +2236,7 @@ public class TapUI {
             return;
         }
 
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             if (null != listener) {
                 listener.onReportMessageButtonTapped(activity, message);
             }
@@ -2218,7 +2244,7 @@ public class TapUI {
     }
 
     List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
-        for (TapUICustomKeyboardListener listener : getCustomKeyboardListeners()) {
+        for (TapUICustomKeyboardListener listener : getCustomKeyboardListenersForLoop()) {
             List<TAPCustomKeyboardItemModel> items = listener.setCustomKeyboardItems(room, activeUser, recipientUser);
             if (null != items && !items.isEmpty()) {
                 return items;
@@ -2228,7 +2254,7 @@ public class TapUI {
     }
 
     void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
-        for (TapUICustomKeyboardListener listener : getCustomKeyboardListeners()) {
+        for (TapUICustomKeyboardListener listener : getCustomKeyboardListenersForLoop()) {
             if (null != listener) {
                 listener.onCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, recipientUser);
             }
@@ -2248,7 +2274,7 @@ public class TapUI {
         if (getRoomListListeners().isEmpty()) {
             return TAPChatManager.getInstance(instanceKey).getDefaultRoomListTitleText(roomList, position, context);
         }
-        for (TapUIRoomListListener listener : getRoomListListeners()) {
+        for (TapUIRoomListListener listener : getRoomListListenersForLoop()) {
             return listener.setRoomListTitleText(roomList, position, context);
         }
         return "";
@@ -2258,7 +2284,7 @@ public class TapUI {
         if (getRoomListListeners().isEmpty()) {
             return TAPChatManager.getInstance(instanceKey).getDefaultRoomListContentText(roomList, position, context);
         }
-        for (TapUIRoomListListener listener : getRoomListListeners()) {
+        for (TapUIRoomListListener listener : getRoomListListenersForLoop()) {
             return listener.setRoomListContentText(roomList, position, context);
         }
         return "";
@@ -2266,7 +2292,7 @@ public class TapUI {
 
     List<TapLongPressMenuItem> getMessageLongPressMenuItems(Context context, TAPMessageModel message) {
         if (!getChatRoomListeners().isEmpty()) {
-            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
                 return listener.setMessageLongPressMenuItems(context, message);
             }
         }
@@ -2275,7 +2301,7 @@ public class TapUI {
 
     List<TapLongPressMenuItem> getScheduledMessageLongPressMenuItems(Context context, TAPMessageModel message) {
         if (!getChatRoomListeners().isEmpty()) {
-            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
                 return listener.setScheduledMessageLongPressMenuItems(context, message);
             }
         }
@@ -2284,7 +2310,7 @@ public class TapUI {
 
     List<TapLongPressMenuItem> getLinkLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String url) {
         if (!getChatRoomListeners().isEmpty()) {
-            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
                 return listener.setLinkLongPressMenuItems(context, message, url);
             }
         }
@@ -2293,7 +2319,7 @@ public class TapUI {
 
     List<TapLongPressMenuItem> getEmailLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String emailAddress) {
         if (!getChatRoomListeners().isEmpty()) {
-            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
                 return listener.setEmailLongPressMenuItems(context, message, emailAddress);
             }
         }
@@ -2302,7 +2328,7 @@ public class TapUI {
 
     List<TapLongPressMenuItem> getPhoneLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String phoneNumber) {
         if (!getChatRoomListeners().isEmpty()) {
-            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
                 return listener.setPhoneLongPressMenuItems(context, message, phoneNumber);
             }
         }
@@ -2311,7 +2337,7 @@ public class TapUI {
 
     List<TapLongPressMenuItem> getMentionLongPressMenuItems(Context context, @Nullable TAPMessageModel message, String username) {
         if (!getChatRoomListeners().isEmpty()) {
-        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
             return listener.setMentionLongPressMenuItems(context, message, username);
         }
         }
@@ -2320,7 +2346,7 @@ public class TapUI {
 
     void triggerLongPressMenuItemSelected(Activity activity, TapLongPressMenuItem longPressMenuItem, @Nullable TAPMessageModel message) {
         if (!getChatRoomListeners().isEmpty()) {
-            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {
                 listener.onLongPressMenuItemSelected(activity, longPressMenuItem, message);
             }
         }
