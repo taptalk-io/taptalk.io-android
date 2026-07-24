@@ -141,18 +141,18 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
             vb.etCaption.filters += InputFilter.LengthFilter(100)
         }
 
-        vb.ivCloseBtn.setOnClickListener { onBackPressed() }
+        vb.ivCloseBtn.setOnClickListener { onBack() }
         vb.ivSearchIcon.setOnClickListener { showSearchBar() }
         vb.ivButtonClearText.setOnClickListener { vb.etSearch.setText("") }
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (vm.isSelecting) {
             showToolbar()
         }
         else {
             try {
-                super.onBackPressed()
+                super.onBack()
                 overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_right)
             }
             catch (e: Exception) {

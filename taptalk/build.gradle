@@ -8,11 +8,11 @@ plugins {
 
 android {
     namespace = "io.taptalk.TapTalk"
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         minSdk 21
-        targetSdk 35
+        targetSdk 36
         versionCode taptalk_version_code
         versionName taptalk_version_name
 

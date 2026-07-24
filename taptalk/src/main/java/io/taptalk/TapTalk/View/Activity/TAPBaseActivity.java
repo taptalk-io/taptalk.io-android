@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,6 +55,14 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
 //                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //                break;
 //        }
+
+        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                onBack();
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
 
         // Show/hide action bar
         ActionBar actionBar = getSupportActionBar();
@@ -113,6 +122,12 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    public void onBack() {
+        if (!isFinishing()) {
+            finish();
+        }
     }
 
     /**

@@ -75,7 +75,7 @@ class TapGroupsInCommonActivity : TAPBaseActivity() {
         )
 
         vb.ivButtonBack.setOnClickListener {
-            onBackPressed()
+            onBack()
         }
     }
 

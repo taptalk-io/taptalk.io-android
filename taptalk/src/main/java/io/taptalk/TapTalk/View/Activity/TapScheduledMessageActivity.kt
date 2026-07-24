@@ -246,9 +246,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         TAPBroadcastManager.unregister(this, foregroundBroadcastReceiver)
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         try {
-            super.onBackPressed()
+            super.onBack()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
         }
         catch (e: Exception) {
@@ -1083,7 +1083,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
     private fun closeActivity() {
         vb.rvCustomKeyboard.visibility = View.GONE
-        onBackPressed()
+        onBack()
     }
 
 

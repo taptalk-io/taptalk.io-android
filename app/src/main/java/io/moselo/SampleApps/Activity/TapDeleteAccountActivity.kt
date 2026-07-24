@@ -98,14 +98,14 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
         }
 
         vb.ivButtonBack.setOnClickListener {
-            onBackPressed()
+            onBack()
         }
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (supportFragmentManager.fragments.isEmpty()) {
             try {
-                super.onBackPressed()
+                super.onBack()
                 overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_right)
             }
             catch (e: Exception) {

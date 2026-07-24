@@ -189,12 +189,12 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         if (vm.isApiCallOnProgress()) {
             return;
         }
         try {
-            super.onBackPressed();
+            super.onBack();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
         catch (Exception e) {
@@ -234,7 +234,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                         Intent intent = new Intent();
                         intent.putExtra(CLOSE_ACTIVITY, true);
                         setResult(RESULT_OK);
-                        onBackPressed();
+                        onBack();
                     }
                     break;
             }
@@ -327,7 +327,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
-        ivButtonBack.setOnClickListener(v -> onBackPressed());
+        ivButtonBack.setOnClickListener(v -> onBack());
         ivButtonEdit.setOnClickListener(v -> openEditGroup());
         flLoading.setOnClickListener(v -> {
         });
@@ -715,7 +715,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
         Intent intent = new Intent();
         intent.putExtra(CLOSE_ACTIVITY, true);
         setResult(RESULT_OK, intent);
-        onBackPressed();
+        onBack();
     }
 
     private void promoteAdmin() {

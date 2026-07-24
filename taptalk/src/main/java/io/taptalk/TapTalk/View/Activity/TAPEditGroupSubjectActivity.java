@@ -188,13 +188,13 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         if (vm.isLoading()) {
             return;
         }
         try {
             if (vm.getGroupAction() == EDIT_GROUP) {
-                super.onBackPressed();
+                super.onBack();
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
             }
             else {
@@ -281,7 +281,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             clSelectedMembers.setVisibility(View.GONE);
             etGroupName.addTextChangedListener(editGroupNameWatcher);
 
-            ivButtonClose.setOnClickListener(v -> onBackPressed());
+            ivButtonClose.setOnClickListener(v -> onBack());
             flButtonUpdateGroup.setOnClickListener(v -> validateAndEditGroupDetails());
             loadGroupImage(null == vm.getGroupData().getImageURL() ? "" : vm.getGroupData().getImageURL().getThumbnail());
         } else {
@@ -300,7 +300,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
                     0, 0));
             OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
-            ivButtonBack.setOnClickListener(v -> onBackPressed());
+            ivButtonBack.setOnClickListener(v -> onBack());
             flButtonCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
             //loadGroupImage();
             loadGroupImage(null == vm.getGroupData().getImageURL() ? "" : vm.getGroupData().getImageURL().getThumbnail());

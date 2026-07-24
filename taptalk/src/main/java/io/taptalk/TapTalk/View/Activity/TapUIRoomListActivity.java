@@ -156,7 +156,7 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        fRoomList.onBackPressed();
+    public void onBack() {
+        fRoomList.onBack();
     }
 }

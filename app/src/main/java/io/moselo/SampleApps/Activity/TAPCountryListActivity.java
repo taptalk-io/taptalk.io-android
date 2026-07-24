@@ -22,6 +22,7 @@ import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecycle
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
 import io.moselo.SampleApps.Adapter.TAPCountryListAdapter;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalkSample.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID;
@@ -32,7 +33,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PI
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM;
 
-public class TAPCountryListActivity extends AppCompatActivity {
+public class TAPCountryListActivity extends TAPBaseActivity {
     private ImageView ivCloseBtn, ivSearchIcon, ivSearchClose;
     private TextView tvToolbarTitle;
     private EditText etSearch;
@@ -76,14 +77,14 @@ public class TAPCountryListActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         if (etSearch.getVisibility() == View.VISIBLE) {
             hideSearchBar();
         }
         else {
             TAPUtils.dismissKeyboard(this);
             try {
-                super.onBackPressed();
+                super.onBack();
                 overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_down);
             }
             catch (Exception e) {
@@ -111,7 +112,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
         clEmptyState = findViewById(R.id.cl_empty_state);
 
 
-        ivCloseBtn.setOnClickListener(v -> onBackPressed());
+        ivCloseBtn.setOnClickListener(v -> onBack());
         etSearch.addTextChangedListener(searchTextWatcher);
 
         ivSearchIcon.setOnClickListener(view -> {

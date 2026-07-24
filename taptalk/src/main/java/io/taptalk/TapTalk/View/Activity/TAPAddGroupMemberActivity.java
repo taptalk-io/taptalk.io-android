@@ -157,13 +157,13 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         if (vm.isSelecting()) {
             showToolbar();
         }
         else {
             try {
-                super.onBackPressed();
+                super.onBack();
                 if (vm.getGroupAction() == CREATE_GROUP) {
                     overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
                 }
@@ -360,7 +360,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         etSearch.addTextChangedListener(searchTextWatcher);
         etSearch.setOnEditorActionListener(searchEditorListener);
 
-        ivButtonBack.setOnClickListener(v -> onBackPressed());
+        ivButtonBack.setOnClickListener(v -> onBack());
         ivButtonSearch.setOnClickListener(v -> showSearchBar(true));
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 

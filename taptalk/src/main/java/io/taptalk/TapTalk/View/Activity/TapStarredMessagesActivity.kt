@@ -161,7 +161,7 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
                 loadMessagesFromApi()
             }
         }
-        vb.ivButtonBack.setOnClickListener { onBackPressed() }
+        vb.ivButtonBack.setOnClickListener { onBack() }
 
         updateMessageDecoration()
     }

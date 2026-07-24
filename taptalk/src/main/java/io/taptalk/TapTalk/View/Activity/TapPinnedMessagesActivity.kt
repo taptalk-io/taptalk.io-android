@@ -177,7 +177,7 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
                 loadMessagesFromApi()
             }
         }
-        vb.ivButtonBack.setOnClickListener { onBackPressed() }
+        vb.ivButtonBack.setOnClickListener { onBack() }
         vb.clUnpinAll.setOnClickListener{
             showLoading()
             TapCoreMessageManager.getInstance(instanceKey).getPinnedMessageIDs(vm.room.roomID, object : TapCoreGetStringArrayListener() {

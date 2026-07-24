@@ -79,20 +79,20 @@ class TAPWebBrowserActivity : TAPBaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                onBack()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (vb.webView.canGoBack()) {
             vb.webView.goBack()
         }
         else {
             try {
-                super.onBackPressed()
+                super.onBack()
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
             }
             catch (e: Exception) {

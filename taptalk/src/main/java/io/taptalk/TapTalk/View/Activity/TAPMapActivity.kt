@@ -305,7 +305,7 @@ class TAPMapActivity : TAPBaseActivity(),
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.iv_button_back -> {
-                onBackPressed()
+                onBack()
             }
             R.id.iv_current_location -> {
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -487,14 +487,14 @@ class TAPMapActivity : TAPBaseActivity(),
         }
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (vb.etKeyword.isFocused) {
             TAPUtils.dismissKeyboard(this)
             vb.etKeyword.clearFocus()
         }
         else {
             try {
-                super.onBackPressed()
+                super.onBack()
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
             }
             catch (e: Exception) {

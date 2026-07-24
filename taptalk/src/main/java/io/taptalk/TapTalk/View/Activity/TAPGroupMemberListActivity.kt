@@ -82,7 +82,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         else stateLoadingMember()
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         try {
             when {
                 vm.isSearchActive -> {
@@ -100,7 +100,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
                 }
                 else -> {
-                    super.onBackPressed()
+                    super.onBack()
                     overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
                 }
             }
@@ -121,7 +121,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             R.id.iv_button_back -> {
-                onBackPressed()
+                onBack()
             }
 
             R.id.ll_add_button -> {

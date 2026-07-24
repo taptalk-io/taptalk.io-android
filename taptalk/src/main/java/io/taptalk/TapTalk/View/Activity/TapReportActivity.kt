@@ -218,11 +218,11 @@ class TapReportActivity : TAPBaseActivity() {
             }
         }
         vb.ivButtonBack.setOnClickListener {
-            onBackPressed()
+            onBack()
         }
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         val title: String
         val message: String
         if (isLoading) {
@@ -253,7 +253,7 @@ class TapReportActivity : TAPBaseActivity() {
         }
         else {
             try {
-                super.onBackPressed()
+                super.onBack()
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
             }
             catch (e: Exception) {

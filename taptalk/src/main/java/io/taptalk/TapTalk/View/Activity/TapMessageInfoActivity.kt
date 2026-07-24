@@ -107,7 +107,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             vm.message = intent.getParcelableExtra(MESSAGE)
         }
         if (vm.message == null) {
-            onBackPressed()
+            onBack()
         }
         if (intent.getParcelableExtra<TAPRoomModel>(ROOM) != null) {
             vm.room = intent.getParcelableExtra(ROOM)
@@ -128,7 +128,7 @@ class TapMessageInfoActivity : TAPBaseActivity() {
             )
         )
 
-        vb.ivButtonBack.setOnClickListener { onBackPressed() }
+        vb.ivButtonBack.setOnClickListener { onBack() }
 
         supportPostponeEnterTransition()
 
@@ -149,9 +149,9 @@ class TapMessageInfoActivity : TAPBaseActivity() {
         )
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         try {
-            super.onBackPressed()
+            super.onBack()
             supportFinishAfterTransition()
         }
         catch (e: Exception) {

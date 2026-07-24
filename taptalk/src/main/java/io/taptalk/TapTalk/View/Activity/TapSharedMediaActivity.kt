@@ -88,7 +88,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
         else {
             vb.tabLayout.visibility = View.GONE
         }
-        vb.ivButtonBack.setOnClickListener { onBackPressed() }
+        vb.ivButtonBack.setOnClickListener { onBack() }
         TAPDataManager.getInstance(instanceKey).getOldestCreatedTimeFromRoom(vm.room?.roomID, object : TAPDatabaseListener<Long>() {
             override fun onSelectFinished(entity: Long?) {
                 super.onSelectFinished(entity)
@@ -106,9 +106,9 @@ class TapSharedMediaActivity : TAPBaseActivity() {
         finish()
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         try {
-            super.onBackPressed()
+            super.onBack()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
         }
         catch (e: Exception) {

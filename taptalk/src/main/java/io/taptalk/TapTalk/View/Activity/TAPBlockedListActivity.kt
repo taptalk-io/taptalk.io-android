@@ -82,7 +82,7 @@ class TAPBlockedListActivity : TAPBaseActivity() {
                 vb.tvEditSaveBtn.text = getString(R.string.tap_done)
             }
         }
-        vb.ivButtonBack.setOnClickListener { onBackPressed() }
+        vb.ivButtonBack.setOnClickListener { onBack() }
     }
 
     override fun onResume() {
@@ -90,14 +90,14 @@ class TAPBlockedListActivity : TAPBaseActivity() {
         getBlockedUsers()
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (adapter?.isEditState() == true) {
             adapter?.setViewState()
             vb.tvEditSaveBtn.text = getString(R.string.tap_edit)
         }
         else {
             try {
-                super.onBackPressed()
+                super.onBack()
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
             }
             catch (e: Exception) {

@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
@@ -25,11 +24,12 @@ import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.HiddenFilter;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.PatternFilter;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.utils.FileUtils;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 
 /**
  * Created by Dimorinny on 24.10.15.
  */
-public class FilePickerActivity extends AppCompatActivity implements DirectoryFragment.FileClickListener {
+public class FilePickerActivity extends TAPBaseActivity implements DirectoryFragment.FileClickListener {
     public static final String ARG_START_PATH = "tap_arg_start_path";
     public static final String ARG_CURRENT_PATH = "tap_arg_current_path";
 
@@ -127,7 +127,7 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
 
         updateTitle();
 
-        ivButtonClose.setOnClickListener(v -> onBackPressed());
+        ivButtonClose.setOnClickListener(v -> onBack());
     }
 
     private void initFragment() {
@@ -173,7 +173,7 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         FragmentManager fm = getFragmentManager();
 
         if (!mCurrentPath.equals(mStartPath)) {

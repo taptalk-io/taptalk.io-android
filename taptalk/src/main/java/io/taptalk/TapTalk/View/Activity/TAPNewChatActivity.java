@@ -108,13 +108,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         if (etSearch.getVisibility() == View.VISIBLE) {
             showToolbar();
         }
         else {
             try {
-                super.onBackPressed();
+                super.onBack();
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
             }
             catch (Exception e) {
@@ -202,7 +202,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
-        ivButtonClose.setOnClickListener(v -> onBackPressed());
+        ivButtonClose.setOnClickListener(v -> onBack());
         ivButtonSearch.setOnClickListener(v -> showSearchBar(true));
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
         llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactListWhenSyncButtonClicked());
