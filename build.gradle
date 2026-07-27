@@ -14,23 +14,13 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:9.0.1'
-        classpath 'com.google.gms:google-services:4.4.2'
+        classpath 'com.google.gms:google-services:4.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.2'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.7'
     }
 }
 
 allprojects {
-//    repositories {
-//        google()
-//        jcenter()
-//        maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
-//        maven {
-//            url "https://jitpack.io"
-//            credentials { username authToken }
-//            credentials { username authTokenKevin }
-//        }
-//    }
 
     ext {
         signingProps = 'signing.properties'
