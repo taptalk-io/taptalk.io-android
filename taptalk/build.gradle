@@ -1,8 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id 'com.android.library'
-    id 'kotlin-android'
     id 'kotlin-parcelize'
-//    id 'kotlin-android-extensions'
     id 'maven-publish'
 }
 
@@ -17,7 +17,8 @@ android {
         versionName taptalk_version_name
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
+//        consumerProguardFiles "consumer-rules.pro"
+        consumerProguardFiles "proguard-rules.pro"
         multiDexEnabled true
     }
 
@@ -69,15 +70,17 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
     publishing {
         singleVariant("release") {
             withJavadocJar()
             withSourcesJar()
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
     }
 }
 

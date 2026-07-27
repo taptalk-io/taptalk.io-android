@@ -402,7 +402,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun startSearch(keyword: String?) {
         vm.clearSearchResults()
-        vm.searchKeyword = keyword?.toLowerCase(Locale.getDefault())?.trim { it <= ' ' }
+        vm.searchKeyword = keyword?.lowercase()?.trim { it <= ' ' }
         searchAdapter?.searchKeyword = vm.searchKeyword!!
         if (vm.searchState == vm.STATE_IDLE) {
             // Search with keyword

@@ -3,7 +3,7 @@ package io.taptalk.TapTalk.Model.ResponseModel
 import android.os.Parcelable
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.taptalk.TapTalk.Model.TAPMessageModel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TapSharedMediaItemModel(

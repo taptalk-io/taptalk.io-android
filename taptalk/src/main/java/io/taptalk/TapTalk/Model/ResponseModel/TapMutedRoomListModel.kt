@@ -3,7 +3,7 @@ package io.taptalk.TapTalk.Model.ResponseModel
 import com.fasterxml.jackson.annotation.JsonProperty
 import android.os.Parcelable
 import com.fasterxml.jackson.annotation.JsonAlias
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TapMutedRoomListModel(

@@ -1,8 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
     id 'kotlin-parcelize'
-//    id 'kotlin-android-extensions'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
 }
@@ -25,7 +25,6 @@ android {
         versionName taptalk_version_name
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", applicationId + "-" + versionName)
     }
 
     signingConfigs {
@@ -70,7 +69,7 @@ android {
         release {
             signingConfig signingConfigs.release
             debuggable false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             minifyEnabled true
             zipAlignEnabled true
             if (project.hasProperty('RELEASE_GOOGLE_MAPS_API_KEY')) {
@@ -239,13 +238,19 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
     lintOptions {
         disable "Instantiatable"
     }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
+}
+
+base {
+    archivesName = android.defaultConfig.applicationId + "-" + android.defaultConfig.versionName
 }
 
 dependencies {
