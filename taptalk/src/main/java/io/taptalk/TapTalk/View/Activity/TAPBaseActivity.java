@@ -47,15 +47,6 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
 //            return;
 //        }
 
-//        switch (TapTalk.getTapTalkScreenOrientation()) {
-//            case TapTalkOrientationPortrait:
-//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//                break;
-//            case TapTalkOrientationLandscape:
-//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//                break;
-//        }
-
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
