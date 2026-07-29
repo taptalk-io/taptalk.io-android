@@ -347,7 +347,6 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         contactListAdapter = new TapContactListAdapter(instanceKey, vm.getAdapterItems(), listener);
         rvContactList.setAdapter(contactListAdapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-//        rvContactList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // Selected members adapter

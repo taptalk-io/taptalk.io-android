@@ -130,7 +130,6 @@ public class TAPCountryListActivity extends TAPBaseActivity {
         try {
             adapter = new TAPCountryListAdapter(setupDataForRecycler(""), countryPickInterface);
             rvCountryList.setAdapter(adapter);
-            rvCountryList.setHasFixedSize(true);
             rvCountryList.setLayoutManager(new LinearLayoutManager(TAPCountryListActivity.this, LinearLayoutManager.VERTICAL, false));
         } catch (Exception e) {
             e.printStackTrace();

@@ -161,7 +161,6 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
         vb.rvStarredMessages.instanceKey = instanceKey
         vb.rvStarredMessages.adapter = messageAdapter
         vb.rvStarredMessages.layoutManager = messageLayoutManager
-        vb.rvStarredMessages.setHasFixedSize(false)
         vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(TYPE_BUBBLE_IMAGE_LEFT, 0)
         vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(TYPE_BUBBLE_IMAGE_RIGHT, 0)
         vb.rvStarredMessages.recycledViewPool.setMaxRecycledViews(TYPE_BUBBLE_VIDEO_LEFT, 0)

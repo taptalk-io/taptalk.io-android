@@ -128,7 +128,6 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
         adapter = new TAPSearchChatAdapter(instanceKey, vm.getSearchResults(), Glide.with(this), roomListInterface);
         rvForwardList.setAdapter(adapter);
-        rvForwardList.setHasFixedSize(false);
         rvForwardList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvForwardList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 

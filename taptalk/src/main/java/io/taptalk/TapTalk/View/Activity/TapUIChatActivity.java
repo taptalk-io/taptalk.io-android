@@ -1115,7 +1115,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         rvMessageList.instanceKey = instanceKey;
         rvMessageList.setAdapter(messageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
-        rvMessageList.setHasFixedSize(false);
         rvMessageList.setupSwipeHelper(this, position -> {
             showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
         });

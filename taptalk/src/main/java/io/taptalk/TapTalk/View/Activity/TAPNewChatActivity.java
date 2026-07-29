@@ -198,7 +198,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         adapter = new TapContactListAdapter(instanceKey, vm.getSeparatedContactList(), contactListListener);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        rvContactList.setHasFixedSize(false);
 
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 

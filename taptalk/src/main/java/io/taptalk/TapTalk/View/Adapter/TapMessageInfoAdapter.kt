@@ -92,7 +92,6 @@ class TapMessageInfoAdapter (
             }
             messageBubbleRecyclerView?.adapter = messageAdapter
             messageBubbleRecyclerView?.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.VERTICAL, false)
-//            messageBubbleRecyclerView?.setHasFixedSize(true)
 
             if (!transitionStarted && activity is FragmentActivity) {
                 messageBubbleRecyclerView?.post {

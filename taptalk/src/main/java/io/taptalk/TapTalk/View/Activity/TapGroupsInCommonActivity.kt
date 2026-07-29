@@ -67,7 +67,6 @@ class TapGroupsInCommonActivity : TAPBaseActivity() {
             roomListInterface
         )
         vb.rvGroups.adapter = adapter
-        vb.rvGroups.setHasFixedSize(false)
         vb.rvGroups.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.VERTICAL,

@@ -195,7 +195,6 @@ class TAPLoginActivity : TAPBaseActivity() {
         try {
             countryListAdapter = TAPCountryListAdapter(setupDataForRecycler(vb.layoutLoginCountryList.etSearchCountryList.text.toString()), countryPickInterface)
             vb.layoutLoginCountryList.rvCountryList.adapter = countryListAdapter
-            vb.layoutLoginCountryList.rvCountryList.setHasFixedSize(true)
             vb.layoutLoginCountryList.rvCountryList.layoutManager = LinearLayoutManager(
                 this,
                 LinearLayoutManager.VERTICAL,

@@ -257,7 +257,6 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         val rvLongPress = layout.findViewById<RecyclerView>(R.id.rv_long_press)
         rvLongPress?.adapter = longPressAdapter
         rvLongPress?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-//        rvLongPress?.setHasFixedSize(true)
     }
 
     override fun onDestroyView() {

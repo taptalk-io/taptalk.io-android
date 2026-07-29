@@ -146,7 +146,6 @@ public class TapUISearchChatFragment extends Fragment {
 
         adapter = new TAPSearchChatAdapter(instanceKey, vm.getSearchResults(), Glide.with(this));
         recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 

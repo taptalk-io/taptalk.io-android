@@ -121,7 +121,6 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             rvImageThumbnail.setVisibility(View.VISIBLE);
             rvImageThumbnail.setAdapter(thumbnailAdapter);
             rvImageThumbnail.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-//            rvImageThumbnail.setHasFixedSize(false);
             rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.dpToPx(1), 0, TAPUtils.dpToPx(16), 0, medias.size(), 0, 0));
         }
         SimpleItemAnimator thumbnailItemAnimator = (SimpleItemAnimator) rvImageThumbnail.getItemAnimator();
@@ -245,7 +244,6 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
             rvImageThumbnail.setVisibility(View.VISIBLE);
             rvImageThumbnail.setAdapter(thumbnailAdapter);
-//            rvImageThumbnail.setHasFixedSize(false);
             rvImageThumbnail.setLayoutManager(new LinearLayoutManager(TAPMediaPreviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
         } else {
             thumbnailAdapter.notifyDataSetChanged();

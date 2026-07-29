@@ -119,7 +119,6 @@ class TapMessageInfoActivity : TAPBaseActivity() {
         adapter = TapMessageInfoAdapter(instanceKey, vm.message!!, resultList)
         vb.rvMessageInfo.adapter = adapter
         vb.rvMessageInfo.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        vb.rvMessageInfo.setHasFixedSize(true)
         vb.rvMessageInfo.addItemDecoration(
             TAPVerticalDecoration(
                 TAPUtils.dpToPx(12),
