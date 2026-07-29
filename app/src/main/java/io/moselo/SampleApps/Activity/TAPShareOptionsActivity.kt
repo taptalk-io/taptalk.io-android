@@ -77,7 +77,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         val llm = LinearLayoutManager(this, VERTICAL, false)
         vb.rvRoomList.adapter = adapter
         vb.rvRoomList.layoutManager = llm
-        vb.rvRoomList.setHasFixedSize(true)
+//        vb.rvRoomList.setHasFixedSize(true)
         OverScrollDecoratorHelper.setUpOverScroll(vb.rvRoomList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
         val messageAnimator = vb.rvRoomList.itemAnimator as SimpleItemAnimator
         messageAnimator.supportsChangeAnimations = false
@@ -85,7 +85,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         val searchLlm = LinearLayoutManager(this, VERTICAL, false)
         vb.rvSearchList.adapter = searchAdapter
         vb.rvSearchList.layoutManager = searchLlm
-        vb.rvSearchList.setHasFixedSize(true)
+//        vb.rvSearchList.setHasFixedSize(true)
         OverScrollDecoratorHelper.setUpOverScroll(vb.rvSearchList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
         val searchAnimator = vb.rvSearchList.itemAnimator as SimpleItemAnimator
         searchAnimator.supportsChangeAnimations = false
@@ -421,7 +421,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         val selectedLlm = LinearLayoutManager(this, HORIZONTAL, false)
         vb.rvSelected.adapter = selectedAdapter
         vb.rvSelected.layoutManager = selectedLlm
-        vb.rvSelected.setHasFixedSize(true)
+//        vb.rvSelected.setHasFixedSize(true)
         OverScrollDecoratorHelper.setUpOverScroll(vb.rvSelected, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL)
         val animator = vb.rvSelected.itemAnimator as SimpleItemAnimator
         animator.supportsChangeAnimations = false

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fl_image_preview"
     android:layout_width="56dp"
@@ -28,7 +29,7 @@
             android:background="@drawable/tap_bg_remove_media_thumbnail_button_default"
             android:padding="7dp"
             android:src="@drawable/tap_ic_remove_white"
-            android:tint="@color/tapIconRemoveItem" />
+            app:tint="@color/tapIconRemoveItem" />
 
         <ImageView
             android:id="@+id/iv_warning"
@@ -36,8 +37,8 @@
             android:layout_height="26dp"
             android:layout_gravity="center"
             android:background="@drawable/tap_bg_remove_media_thumbnail_button_warning"
-            android:tint="@color/tapIconRemoveItemBackground"
             android:visibility="gone"
+            app:tint="@color/tapIconRemoveItemBackground"
             tools:src="@drawable/tap_ic_warning_red_circle_background" />
 
         <ImageView
@@ -47,7 +48,7 @@
             android:layout_gravity="center"
             android:padding="2dp"
             android:src="@drawable/tap_ic_loading_progress_circle_white"
-            android:tint="@color/tapIconRemoveItem" />
+            app:tint="@color/tapIconRemoveItem" />
 
     </FrameLayout>
 

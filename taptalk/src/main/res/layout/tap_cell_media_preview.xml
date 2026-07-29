@@ -30,12 +30,12 @@
         android:background="@drawable/tap_bg_circle_6604040f"
         android:padding="8dp"
         android:src="@drawable/tap_ic_loading_progress_circle_white"
-        android:tint="@color/tapIconLoadingProgressWhite"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/tapIconLoadingProgressWhite" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_caption"
@@ -111,20 +111,18 @@
                 android:layout_height="24dp"
                 android:layout_margin="10dp"
                 android:src="@drawable/tap_ic_warning_red_circle_background"
-                android:tint="@color/tapIconMediaPreviewWarning"
                 app:layout_constraintEnd_toStartOf="@id/tv_error_title"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/tapIconMediaPreviewWarning" />
 
             <TextView
                 android:id="@+id/tv_error_title"
                 style="@style/tapMediaPreviewWarningTitleStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
                 android:text="@string/tap_format_s_error_exceed_upload_limit"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="@id/iv_warning_icon"

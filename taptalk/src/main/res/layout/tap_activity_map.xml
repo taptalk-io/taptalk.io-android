@@ -24,10 +24,10 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"
-            android:tint="@color/tapIconNavBarCloseButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavBarCloseButton" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -35,7 +35,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="56dp"
-            android:layout_marginRight="56dp"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
@@ -74,11 +73,11 @@
             android:layout_height="40dp"
             android:layout_marginBottom="40dp"
             android:src="@drawable/tap_ic_location_pin_orange"
-            android:tint="@color/tapIconLocationPickerMarker"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconLocationPickerMarker" />
 
         <ImageView
             android:id="@+id/iv_current_location"
@@ -88,9 +87,9 @@
             android:background="@drawable/tap_bg_recenter_location_button"
             android:padding="16dp"
             android:src="@drawable/tap_ic_recenter_location"
-            android:tint="@color/tapIconLocationPickerRecenter"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/tapIconLocationPickerRecenter" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/rl_search"
@@ -106,13 +105,12 @@
                 android:layout_height="14dp"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:src="@drawable/tap_ic_search_orange"
-                android:tint="@color/tapIconSearchBarMagnifier"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/et_keyword"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/tapIconSearchBarMagnifier" />
 
             <EditText
                 android:id="@+id/et_keyword"
@@ -121,9 +119,7 @@
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="18dp"
-                android:layout_marginLeft="18dp"
                 android:layout_marginEnd="4dp"
-                android:layout_marginRight="4dp"
                 android:background="@color/tapTransparentWhite"
                 android:hint="@string/tap_search_address"
                 android:imeOptions="actionSearch"
@@ -142,7 +138,6 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
                 android:padding="8dp"
                 android:text="@string/tap_clear"
                 android:textAllCaps="true"
@@ -211,7 +206,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginLeft="4dp"
                 android:hint="@string/tap_searching_for_address" />
 
         </LinearLayout>
@@ -232,7 +226,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/tap_ic_send_white_small"
-                android:tint="@color/tapButtonIconColor" />
+                app:tint="@color/tapButtonIconColor" />
 
             <TextView
                 style="@style/tapButtonLabelStyle"
@@ -240,7 +234,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="4dp"
-                android:layout_marginLeft="4dp"
                 android:gravity="center"
                 android:text="@string/tap_send_location" />
 

@@ -381,7 +381,6 @@
             android:layout_height="16dp"
             android:layout_gravity="end"
             android:layout_marginEnd="4dp"
-            android:layout_marginRight="4dp"
             android:background="@drawable/tap_bg_room_list_unread_badge"
             android:padding="3dp"
             android:src="@drawable/tap_ic_mention_orange"
@@ -397,7 +396,6 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
             android:background="@color/tapGreyDc"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/civ_avatar" />

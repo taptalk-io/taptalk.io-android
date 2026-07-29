@@ -14,11 +14,11 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:src="@drawable/tap_ic_loading_progress_circle_white"
-        android:tint="@color/tapIconLoadingProgressWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/tapIconLoadingProgressWhite" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_result"
@@ -57,7 +57,7 @@
                     android:background="@drawable/tap_bg_circle_close_scan_result"
                     android:padding="5dp"
                     android:src="@drawable/tap_ic_close_grey"
-                    android:tint="@color/tapIconCloseScanResult" />
+                    app:tint="@color/tapIconCloseScanResult" />
 
             </FrameLayout>
 
@@ -182,7 +182,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="40dp"
                         android:src="@drawable/tap_ic_add_contact"
-                        android:tint="@color/tapIconMenuNewContact" />
+                        app:tint="@color/tapIconMenuNewContact" />
 
                     <TextView
                         android:id="@+id/tv_add_success"
@@ -229,22 +229,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/tap_ic_loading_progress_circle_white"
-                    android:tint="@color/tapIconLoadingProgressWhite"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    app:tint="@color/tapIconLoadingProgressWhite" />
 
                 <ImageView
                     android:id="@+id/iv_button_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/tap_ic_add_white"
-                    android:tint="@color/tapButtonIconColor" />
+                    app:tint="@color/tapButtonIconColor" />
 
                 <TextView
                     android:id="@+id/tv_button_title"
                     style="@style/tapButtonLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
                     android:layout_marginStart="4dp"
                     android:gravity="center"
                     android:text="@string/tap_add_to_contacts" />

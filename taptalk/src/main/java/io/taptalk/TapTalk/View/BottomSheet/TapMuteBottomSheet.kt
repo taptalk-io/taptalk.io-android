@@ -51,7 +51,7 @@ class TapMuteBottomSheet(
         val rvLongPress = layout.findViewById<RecyclerView>(R.id.rv_long_press)
         rvLongPress?.adapter = adapter
         rvLongPress?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        rvLongPress?.setHasFixedSize(true)
+//        rvLongPress?.setHasFixedSize(true)
     }
 
     override fun show(manager: FragmentManager, tag: String?) {

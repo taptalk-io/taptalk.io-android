@@ -75,10 +75,10 @@
             android:paddingEnd="16dp"
             android:paddingBottom="12dp"
             android:src="@drawable/tap_ic_add_image"
-            android:tint="@color/tapIconMediaPreviewAdd"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconMediaPreviewAdd" />
 
         <TextView
             android:id="@+id/tv_send_btn"
@@ -98,6 +98,5 @@
             app:layout_constraintVertical_bias="0.666" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

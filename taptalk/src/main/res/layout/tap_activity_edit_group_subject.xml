@@ -22,11 +22,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            android:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavigationBarBackButton" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -49,11 +49,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"
-            android:tint="@color/tapIconNavBarCloseButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_title"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavBarCloseButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -110,11 +110,11 @@
                 android:layout_height="wrap_content"
                 android:elevation="2dp"
                 android:src="@drawable/tap_ic_camera_orange"
-                android:tint="@color/tapColorPrimaryIcon"
                 app:layout_constraintBottom_toBottomOf="@id/civ_group_image"
                 app:layout_constraintEnd_toEndOf="@id/civ_group_image"
                 app:layout_constraintStart_toStartOf="@id/civ_group_image"
-                app:layout_constraintTop_toTopOf="@id/civ_group_image" />
+                app:layout_constraintTop_toTopOf="@id/civ_group_image"
+                app:tint="@color/tapColorPrimaryIcon" />
 
             <io.taptalk.TapTalk.Helper.CircleImageView
                 android:id="@+id/civ_group_image_overlay"
@@ -162,7 +162,7 @@
                     android:layout_margin="5dp"
                     android:background="@drawable/tap_bg_circle_remove_item"
                     android:src="@drawable/tap_ic_remove_red_circle_background"
-                    android:tint="@color/tapIconRemoveItemBackground" />
+                    app:tint="@color/tapIconRemoveItemBackground" />
 
             </FrameLayout>
 
@@ -292,8 +292,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:src="@drawable/tap_ic_loading_progress_circle_white"
-                        android:tint="@color/tapIconLoadingProgressWhite"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        app:tint="@color/tapIconLoadingProgressWhite" />
 
                 </FrameLayout>
 
@@ -328,8 +328,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/tap_ic_loading_progress_circle_white"
-                    android:tint="@color/tapIconLoadingProgressWhite"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    app:tint="@color/tapIconLoadingProgressWhite" />
 
             </FrameLayout>
 
