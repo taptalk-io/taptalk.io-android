@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
@@ -977,7 +978,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vb.layoutPopupLoadingScreen.tvLoadingText.text = message
             vb.layoutPopupLoadingScreen.flLoading.setOnClickListener { hideLoading() }
 
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 this.hideLoading()
             }, 1000L)
         }

@@ -446,23 +446,23 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                     null, null, null, ContactsContract.Contacts.DISPLAY_NAME + " COLLATE NOCASE ASC");
             if ((null != cur ? cur.getCount() : 0) > 0) {
                 while (cur.moveToNext()) {
-                    String id = cur.getString(
-                            cur.getColumnIndex(ContactsContract.Contacts._ID));
-                    if (cur.getInt(cur.getColumnIndex(
-                            ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                    String id = cur.getString(Math.max(0, cur.getColumnIndex(ContactsContract.Contacts._ID)));
+                    if (cur.getInt(Math.max(0, cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
                         Cursor pCur = cr.query(
-                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                                null,
-                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                                new String[]{id}, null);
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{id}, null
+                        );
 
                         if (null != pCur) {
                             while (pCur.moveToNext()) {
-                                String phoneNo = pCur.getString(pCur.getColumnIndex(
-                                        ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                String phoneNo = pCur.getString(Math.max(0, pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
                                 String phoneNumb = TAPContactManager.getInstance(instanceKey).convertPhoneNumber(phoneNo);
-                                if (!"".equals(phoneNumb) && !TAPContactManager.getInstance(instanceKey)
-                                        .isUserPhoneNumberAlreadyExist(phoneNumb) && !newContactsPhoneNumbers.contains(phoneNumb)) {
+                                if (!"".equals(phoneNumb) &&
+                                    !TAPContactManager.getInstance(instanceKey).isUserPhoneNumberAlreadyExist(phoneNumb) &&
+                                    !newContactsPhoneNumbers.contains(phoneNumb)
+                                ) {
                                     newContactsPhoneNumbers.add(phoneNumb);
                                 }
                             }

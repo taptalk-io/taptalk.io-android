@@ -1381,7 +1381,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         runOnUiThread {
             TAPUtils.dismissKeyboard(this)
             vb.etChat.clearFocus()
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 vb.rvCustomKeyboard.visibility = View.VISIBLE
                 vb.ivChatMenuArea.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_show_keyboard_ripple))
                 vb.ivChatMenu.setImageDrawable(

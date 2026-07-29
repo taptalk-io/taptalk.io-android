@@ -458,7 +458,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             vb.layoutPopupLoadingScreen.ivLoadingImage.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_checklist_pumpkin))
             vb.layoutPopupLoadingScreen.ivLoadingImage.clearAnimation()
             vb.layoutPopupLoadingScreen.tvLoadingText.text = message
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 hideLoading()
                 vb.ivButtonSearch.setOnClickListener(this)
                 vb.ivButtonClearText.setOnClickListener(this)

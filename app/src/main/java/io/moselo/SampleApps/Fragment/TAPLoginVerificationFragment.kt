@@ -281,7 +281,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 setAndStartTimer(waitTime)
                 vb.etOtpCode.requestFocus()
                 TAPUtils.showKeyboard(activity, vb.etOtpCode)
-                Handler().postDelayed({ showTimer() }, 2000)
+                Handler(Looper.getMainLooper()).postDelayed({ showTimer() }, 2000)
             }
             else {
                 showRequestAgain()
