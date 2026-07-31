@@ -35,31 +35,35 @@ android {
                 if (propFile.canRead()) {
                     props.load(new FileInputStream(propFile))
 
-                    if (props != null
-                            && props.containsKey(globalConfig.keystoreFileName)
-                            && props.containsKey(globalConfig.keystorePasswordName)
-                            && props.containsKey(globalConfig.keyAliasName)
-                            && props.containsKey(globalConfig.keyPasswordName)) {
-
+                    if (props != null &&
+                        props.containsKey(globalConfig.keystoreFileName) &&
+                        props.containsKey(globalConfig.keystorePasswordName) &&
+                        props.containsKey(globalConfig.keyAliasName) &&
+                        props.containsKey(globalConfig.keyPasswordName)
+                    ) {
                         def keystoreFile = file(props[globalConfig.keystoreFileName])
                         if (keystoreFile.canRead()) {
                             storeFile keystoreFile
                             storePassword props[globalConfig.keystorePasswordName]
                             keyAlias props[globalConfig.keyAliasName]
                             keyPassword props[globalConfig.keyPasswordName]
-                        } else {
+                        }
+                        else {
                             println("[GRADLE BUILD ERR]: Keystore file not found: " + props[globalConfig.keystoreFileName])
                             android.buildTypes.release.signingConfig = null
                         }
-                    } else {
+                    }
+                    else {
                         println("[GRADLE BUILD ERR]: File signing.properties found but some entries missing")
                         android.buildTypes.release.signingConfig = null
                     }
-                } else {
+                }
+                else {
                     println("[GRADLE BUILD ERR]: File signing.properties not found")
                     android.buildTypes.release.signingConfig = null
                 }
-            } catch (ex) {
+            }
+            catch (ex) {
                 throw new InvalidUserDataException("[GRADLE BUILD ERR]: Signing FAILED. Check signing config." + ex.message)
             }
         }
@@ -74,22 +78,26 @@ android {
             zipAlignEnabled true
             if (project.hasProperty('RELEASE_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${RELEASE_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('RELEASE_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${RELEASE_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('RELEASE_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${RELEASE_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('RELEASE_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${RELEASE_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
         }
@@ -101,22 +109,26 @@ android {
             versionNameSuffix '-STAGING'
             if (project.hasProperty('STAGING_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${STAGING_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${STAGING_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${STAGING_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
         }
@@ -128,22 +140,26 @@ android {
             versionNameSuffix '-STAGING'
             if (project.hasProperty('STAGING_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${STAGING_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${STAGING_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${STAGING_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
         }
@@ -155,22 +171,26 @@ android {
             versionNameSuffix '-DEV'
             if (project.hasProperty('DEV_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${DEV_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${DEV_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${DEV_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
         }
@@ -182,22 +202,26 @@ android {
             versionNameSuffix '-DEV'
             if (project.hasProperty('DEV_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${DEV_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${DEV_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${DEV_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
         }
@@ -253,5 +277,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
 
+    // Multidex
     implementation 'androidx.multidex:multidex:2.0.1'
 }

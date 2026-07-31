@@ -11,6 +11,7 @@ dependencyResolutionManagement {
         }
     }
 }
+
 rootProject.name = "TapTalk Android"
 
 if (!System.env.JITPACK) {

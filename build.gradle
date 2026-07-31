@@ -12,6 +12,7 @@ buildscript {
             url 'https://maven.fabric.io/public'
         }
     }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:9.0.1'
         classpath 'com.google.gms:google-services:4.5.0'
@@ -21,7 +22,6 @@ buildscript {
 }
 
 allprojects {
-
     ext {
         signingProps = 'signing.properties'
         keystoreFileName = 'KEYSTORE_FILE'
