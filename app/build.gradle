@@ -23,7 +23,6 @@ android {
         targetSdk 36
         versionCode taptalk_version_code
         versionName taptalk_version_name
-        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -276,7 +275,4 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.8.0')
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
-
-    // Multidex
-    implementation 'androidx.multidex:multidex:2.0.1'
 }
