@@ -40,7 +40,13 @@ import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPBaseAdapter
 import io.taptalk.TapTalk.ViewModel.TAPShareOptionsViewModel
 
-class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListModel>, private val vm: TAPShareOptionsViewModel, val glide: RequestManager, private val listener: TAPShareOptionsInterface): TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>>() {
+class TAPShareOptionsAdapter(
+    val instanceKey: String,
+    list: List<TAPRoomListModel>,
+    private val vm: TAPShareOptionsViewModel,
+    val glide: RequestManager,
+    private val listener: TAPShareOptionsInterface
+): TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>>() {
 
     var searchKeyword: String = ""
     init {
@@ -63,19 +69,19 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
 
         private val clContainer = itemView.findViewById<ConstraintLayout>(R.id.cl_container)
         private val civAvatar = itemView.findViewById<ImageView>(R.id.civ_avatar)
-        private val ivAvatarIcon = itemView.findViewById<ImageView?>(R.id.iv_avatar_icon)
-        private val ivMute = itemView.findViewById<ImageView?>(R.id.iv_mute)
-        private val ivMessageStatus = itemView.findViewById<ImageView?>(R.id.iv_message_status)
-        private val ivPersonalRoomTypingIndicator = itemView.findViewById<ImageView?>(R.id.iv_personal_room_typing_indicator)
-        private val tvAvatarLabel = itemView.findViewById<TextView?>(R.id.tv_avatar_label)
-        private val tvFullName = itemView.findViewById<TextView?>(R.id.tv_full_name)
-        private val tvLastMessage = itemView.findViewById<TextView?>(R.id.tv_last_message)
-        private val tvLastMessageTime = itemView.findViewById<TextView?>(R.id.tv_last_message_time)
-        private val tvBadgeUnread = itemView.findViewById<TextView?>(R.id.tv_badge_unread)
-        private val ivBadgeMention = itemView.findViewById<ImageView?>(R.id.iv_badge_mention)
-        private val vSeparator = itemView.findViewById<View?>(R.id.v_separator)
-        private val vSeparatorFull = itemView.findViewById<View?>(R.id.v_separator_full)
-        private val gSelected = itemView.findViewById<Group?>(R.id.g_selected)
+        private val ivAvatarIcon = itemView.findViewById<ImageView>(R.id.iv_avatar_icon)
+        private val ivMute = itemView.findViewById<ImageView>(R.id.iv_mute)
+        private val ivMessageStatus = itemView.findViewById<ImageView>(R.id.iv_message_status)
+        private val ivPersonalRoomTypingIndicator = itemView.findViewById<ImageView>(R.id.iv_personal_room_typing_indicator)
+        private val tvAvatarLabel = itemView.findViewById<TextView>(R.id.tv_avatar_label)
+        private val tvFullName = itemView.findViewById<TextView>(R.id.tv_full_name)
+        private val tvLastMessage = itemView.findViewById<TextView>(R.id.tv_last_message)
+        private val tvLastMessageTime = itemView.findViewById<TextView>(R.id.tv_last_message_time)
+        private val tvBadgeUnread = itemView.findViewById<TextView>(R.id.tv_badge_unread)
+        private val ivBadgeMention = itemView.findViewById<ImageView>(R.id.iv_badge_mention)
+        private val vSeparator = itemView.findViewById<View>(R.id.v_separator)
+        private val vSeparatorFull = itemView.findViewById<View>(R.id.v_separator_full)
+        private val gSelected = itemView.findViewById<Group>(R.id.g_selected)
 
         override fun onBind(item: TAPRoomListModel?, position: Int) {
             val activeUser = TAPChatManager.getInstance(instanceKey).activeUser ?: return
@@ -289,13 +295,13 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
                 gSelected.visibility = View.VISIBLE
                 itemView.setOnClickListener {
                     listener.onRoomDeselected(item, position)
-                    notifyItemChanged(adapterPosition)
+                    notifyItemChanged(bindingAdapterPosition)
                 }
             } else {
                 gSelected.visibility = View.GONE
                 itemView.setOnClickListener {
                     listener.onRoomSelected(item)
-                    notifyItemChanged(adapterPosition)
+                    notifyItemChanged(bindingAdapterPosition)
                 }
             }
         }
@@ -308,7 +314,8 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
         private val tvFullName: TextView = itemView.findViewById(R.id.tv_full_name)
         private val tvUsername: TextView = itemView.findViewById(R.id.tv_username)
         private val vSeparator: View = itemView.findViewById(R.id.v_separator)
-        private val vSeparatorFull = itemView.findViewById<View?>(R.id.v_separator_full)
+        private val vSeparatorFull = itemView.findViewById<View>(R.id.v_separator_full)
+
         override fun onBind(item: TAPRoomListModel, position: Int) {
             val room = item.lastMessage.room ?: return
             if (room.deleted > 0L) {
@@ -388,14 +395,14 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
                 ImageViewCompat.setImageTintList(ivSelection, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive)))
                 itemView.setOnClickListener {
                     listener.onRoomDeselected(item, position)
-                    notifyItemChanged(adapterPosition)
+                    notifyItemChanged(bindingAdapterPosition)
                 }
             } else {
                 ivSelection.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_circle_inactive))
                 ImageViewCompat.setImageTintList(ivSelection, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive)))
                 itemView.setOnClickListener {
                     listener.onRoomSelected(item)
-                    notifyItemChanged(adapterPosition)
+                    notifyItemChanged(bindingAdapterPosition)
                 }
             }
         }

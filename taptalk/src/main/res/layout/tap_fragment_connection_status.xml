@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_connection_status"
     android:layout_width="match_parent"
@@ -20,9 +21,8 @@
         android:id="@+id/iv_connection_status"
         android:layout_width="13dp"
         android:layout_height="13dp"
-        android:layout_marginLeft="2dp"
         android:layout_marginStart="2dp"
-        android:tint="@color/tapWhite"
+        app:tint="@color/tapWhite"
         tools:src="@drawable/tap_ic_checklist_pumpkin" />
 
 </LinearLayout>

@@ -31,10 +31,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import io.moselo.SampleApps.Adapter.TAPCountryListAdapter
 import io.moselo.SampleApps.SampleApplication
-import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
@@ -128,7 +126,7 @@ class TAPLoginActivity : TAPBaseActivity() {
         }
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (vb.layoutLoginCountryList.clCountryListContainer.visibility == View.VISIBLE ||
             vb.layoutLoginWhatsappVerification.svWhatsappVerification.visibility == View.VISIBLE ||
             vb.layoutLoginOtp.svOtpVerification.visibility == View.VISIBLE
@@ -148,7 +146,7 @@ class TAPLoginActivity : TAPBaseActivity() {
             return
         }
         try {
-            super.onBackPressed()
+            super.onBack()
         }
         catch (e: Exception) {
             e.printStackTrace()
@@ -197,7 +195,6 @@ class TAPLoginActivity : TAPBaseActivity() {
         try {
             countryListAdapter = TAPCountryListAdapter(setupDataForRecycler(vb.layoutLoginCountryList.etSearchCountryList.text.toString()), countryPickInterface)
             vb.layoutLoginCountryList.rvCountryList.adapter = countryListAdapter
-            vb.layoutLoginCountryList.rvCountryList.setHasFixedSize(true)
             vb.layoutLoginCountryList.rvCountryList.layoutManager = LinearLayoutManager(
                 this,
                 LinearLayoutManager.VERTICAL,
@@ -280,7 +277,7 @@ class TAPLoginActivity : TAPBaseActivity() {
     }
 
     private val backButtonClickListener = OnClickListener {
-        onBackPressed()
+        onBack()
     }
 
     /**=============================================================================================

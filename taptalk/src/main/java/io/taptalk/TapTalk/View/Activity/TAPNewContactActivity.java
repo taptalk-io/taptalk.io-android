@@ -102,9 +102,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         try {
-            super.onBackPressed();
+            super.onBack();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
         catch (Exception e) {
@@ -144,7 +144,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         etSearch.addTextChangedListener(contactSearchWatcher);
         etSearch.setOnEditorActionListener((textView, i, keyEvent) -> onSearchEditorClicked());
 
-        ivButtonBack.setOnClickListener(v -> onBackPressed());
+        ivButtonBack.setOnClickListener(v -> onBack());
         ivButtonClearText.setOnClickListener(v -> clearSearch());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

@@ -139,7 +139,14 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         setTextandImageBasedOnOTPMethod(channel)
 
         TAPUtils.animateClickButton(vb.ivBackButton, 0.95f)
-        vb.ivBackButton.setOnClickListener { activity?.onBackPressed() }
+        vb.ivBackButton.setOnClickListener {
+            if (activity is TAPBaseActivity) {
+                (activity as TAPBaseActivity).onBack()
+            }
+            else {
+                activity?.onBackPressed()
+            }
+        }
         vb.etOtpCode.addTextChangedListener(otpTextWatcher)
         vb.etOtpCode.requestFocus()
         TAPUtils.showKeyboard(activity, vb.etOtpCode)
@@ -274,7 +281,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 setAndStartTimer(waitTime)
                 vb.etOtpCode.requestFocus()
                 TAPUtils.showKeyboard(activity, vb.etOtpCode)
-                Handler().postDelayed({ showTimer() }, 2000)
+                Handler(Looper.getMainLooper()).postDelayed({ showTimer() }, 2000)
             }
             else {
                 showRequestAgain()
@@ -547,9 +554,10 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                         countryFlagUrl,
                         phoneNumber)
                 //set phonenumber and countryID in viewmodel to default state
-                (activity as TAPLoginActivityOld).vm.phoneNumber = "0"
-                (activity as TAPLoginActivityOld).vm.countryID = 0
-                activity?.onBackPressed()
+                val loginActivity = activity as TAPLoginActivityOld
+                loginActivity.vm.phoneNumber = "0"
+                loginActivity.vm.countryID = 0
+                loginActivity.onBack()
             }
         }
 

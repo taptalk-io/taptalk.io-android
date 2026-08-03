@@ -111,7 +111,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         TAPBroadcastManager.unregister(this@TAPRegisterActivity, uploadBroadcastReceiver)
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
         }
@@ -124,7 +124,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             return
         }
         try {
-            super.onBackPressed()
+            super.onBack()
             overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_down)
         }
         catch (e: Exception) {

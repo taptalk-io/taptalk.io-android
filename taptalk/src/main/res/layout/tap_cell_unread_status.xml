@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:src="@drawable/tap_ic_chevron_down_orange"
-            android:tint="@color/tapIconChatRoomUnreadIdentifier" />
+            app:tint="@color/tapIconChatRoomUnreadIdentifier" />
 
     </LinearLayout>
 

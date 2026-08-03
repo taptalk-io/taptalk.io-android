@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
@@ -12,6 +13,6 @@
         android:layout_height="20dp"
         android:layout_gravity="center"
         android:src="@drawable/tap_ic_loading_progress_circle_white"
-        android:tint="@color/tapIconLoadingProgressPrimary" />
+        app:tint="@color/tapIconLoadingProgressPrimary" />
 
 </FrameLayout>

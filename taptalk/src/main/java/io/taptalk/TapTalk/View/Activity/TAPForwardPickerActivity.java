@@ -90,13 +90,13 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         if (etSearch.getVisibility() == View.VISIBLE) {
             showToolbar();
         }
         else {
             try {
-                super.onBackPressed();
+                super.onBack();
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
             }
             catch (Exception e) {
@@ -122,13 +122,12 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         etSearch.removeTextChangedListener(searchTextWatcher);
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        ivButtonClose.setOnClickListener(v -> onBackPressed());
+        ivButtonClose.setOnClickListener(v -> onBack());
         ivButtonSearch.setOnClickListener(v -> showSearchBar());
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
         adapter = new TAPSearchChatAdapter(instanceKey, vm.getSearchResults(), Glide.with(this), roomListInterface);
         rvForwardList.setAdapter(adapter);
-        rvForwardList.setHasFixedSize(false);
         rvForwardList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvForwardList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 

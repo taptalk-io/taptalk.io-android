@@ -48,13 +48,13 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         if (ScanState.SHOW == state) {
             showScanner();
         }
         else {
             try {
-                super.onBackPressed();
+                super.onBack();
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }
             catch (Exception e) {
@@ -70,7 +70,7 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
         ivBack = findViewById(R.id.iv_back);
         flToolbar = findViewById(R.id.fl_toolbar);
 
-        ivBack.setOnClickListener(v -> onBackPressed());
+        ivBack.setOnClickListener(v -> onBack());
     }
 
     public void showScanner() {

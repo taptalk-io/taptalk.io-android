@@ -246,9 +246,9 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         TAPBroadcastManager.unregister(this, foregroundBroadcastReceiver)
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         try {
-            super.onBackPressed()
+            super.onBack()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
         }
         catch (e: Exception) {
@@ -613,7 +613,6 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         vb.rvMessageList.instanceKey = instanceKey
         vb.rvMessageList.adapter = messageAdapter
         vb.rvMessageList.layoutManager = messageLayoutManager
-        vb.rvMessageList.setHasFixedSize(false)
         // FIXME: 9 November 2018 IMAGES/VIDEOS CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
         vb.rvMessageList.recycledViewPool.setMaxRecycledViews(BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0)
         vb.rvMessageList.recycledViewPool.setMaxRecycledViews(BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0)
@@ -1083,7 +1082,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
 
     private fun closeActivity() {
         vb.rvCustomKeyboard.visibility = View.GONE
-        onBackPressed()
+        onBack()
     }
 
 
@@ -1381,7 +1380,7 @@ class TapScheduledMessageActivity: TAPBaseActivity() {
         runOnUiThread {
             TAPUtils.dismissKeyboard(this)
             vb.etChat.clearFocus()
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 vb.rvCustomKeyboard.visibility = View.VISIBLE
                 vb.ivChatMenuArea.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_show_keyboard_ripple))
                 vb.ivChatMenu.setImageDrawable(

@@ -1,8 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
     id 'kotlin-parcelize'
-//    id 'kotlin-android-extensions'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
 }
@@ -12,20 +12,17 @@ if (file("${rootProject.rootDir}/environment.properties").exists()) {
 }
 
 android {
-    namespace = "io.taptalk.TapTalkSample"
     def globalConfig = rootProject.extensions.getByName("ext")
-
-    compileSdk 35
+    namespace = "io.taptalk.TapTalkSample"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId "io.taptalk.TapTalkSample"
-        minSdk 21
-        targetSdk 35
-        versionCode taptalk_version_code
-        versionName taptalk_version_name
-        multiDexEnabled true
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", applicationId + "-" + versionName)
+        applicationId = "io.taptalk.TapTalkSample"
+        minSdk = 21
+        targetSdk = 36
+        versionCode = taptalk_version_code
+        versionName = taptalk_version_name
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -35,32 +32,35 @@ android {
                 def propFile = file(globalConfig.signingProps)
                 if (propFile.canRead()) {
                     props.load(new FileInputStream(propFile))
-
-                    if (props != null
-                            && props.containsKey(globalConfig.keystoreFileName)
-                            && props.containsKey(globalConfig.keystorePasswordName)
-                            && props.containsKey(globalConfig.keyAliasName)
-                            && props.containsKey(globalConfig.keyPasswordName)) {
-
+                    if (props != null &&
+                        props.containsKey(globalConfig.keystoreFileName) &&
+                        props.containsKey(globalConfig.keystorePasswordName) &&
+                        props.containsKey(globalConfig.keyAliasName) &&
+                        props.containsKey(globalConfig.keyPasswordName)
+                    ) {
                         def keystoreFile = file(props[globalConfig.keystoreFileName])
                         if (keystoreFile.canRead()) {
                             storeFile keystoreFile
                             storePassword props[globalConfig.keystorePasswordName]
                             keyAlias props[globalConfig.keyAliasName]
                             keyPassword props[globalConfig.keyPasswordName]
-                        } else {
+                        }
+                        else {
                             println("[GRADLE BUILD ERR]: Keystore file not found: " + props[globalConfig.keystoreFileName])
                             android.buildTypes.release.signingConfig = null
                         }
-                    } else {
+                    }
+                    else {
                         println("[GRADLE BUILD ERR]: File signing.properties found but some entries missing")
                         android.buildTypes.release.signingConfig = null
                     }
-                } else {
+                }
+                else {
                     println("[GRADLE BUILD ERR]: File signing.properties not found")
                     android.buildTypes.release.signingConfig = null
                 }
-            } catch (ex) {
+            }
+            catch (ex) {
                 throw new InvalidUserDataException("[GRADLE BUILD ERR]: Signing FAILED. Check signing config." + ex.message)
             }
         }
@@ -68,179 +68,170 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
-            debuggable false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            minifyEnabled true
-            zipAlignEnabled true
+            signingConfig = signingConfigs.release
+            debuggable = false
+            minifyEnabled = true
+            zipAlignEnabled = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (project.hasProperty('RELEASE_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${RELEASE_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('RELEASE_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${RELEASE_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('RELEASE_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${RELEASE_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('RELEASE_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${RELEASE_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-//            if (project.hasProperty('RELEASE_GCP_ANALYTICS_KEY')) {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${RELEASE_GCP_ANALYTICS_KEY}\"")
-//            } else {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-//            }
         }
         staging {
-            signingConfig signingConfigs.debug
-            debuggable true
-            minifyEnabled false
-            applicationIdSuffix '.staging'
-            versionNameSuffix '-STAGING'
+            signingConfig = signingConfigs.debug
+            debuggable = true
+            minifyEnabled = false
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-STAGING"
             if (project.hasProperty('STAGING_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${STAGING_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${STAGING_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${STAGING_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-//            if (project.hasProperty('STAGING_GCP_ANALYTICS_KEY')) {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${STAGING_GCP_ANALYTICS_KEY}\"")
-//            } else {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-//            }
         }
         stagingUpload {
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled false
-            applicationIdSuffix '.staging'
-            versionNameSuffix '-STAGING'
+            signingConfig = signingConfigs.release
+            debuggable = false
+            minifyEnabled = false
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-STAGING"
             if (project.hasProperty('STAGING_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${STAGING_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${STAGING_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('STAGING_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${STAGING_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-//            if (project.hasProperty('STAGING_GCP_ANALYTICS_KEY')) {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${STAGING_GCP_ANALYTICS_KEY}\"")
-//            } else {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-//            }
         }
         dev {
-            signingConfig signingConfigs.debug
-            debuggable true
-            minifyEnabled false
-            applicationIdSuffix '.dev'
-            versionNameSuffix '-DEV'
+            signingConfig = signingConfigs.debug
+            debuggable = true
+            minifyEnabled = false
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-DEV"
             if (project.hasProperty('DEV_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${DEV_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${DEV_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${DEV_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-//            if (project.hasProperty('DEV_GCP_ANALYTICS_KEY')) {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${DEV_GCP_ANALYTICS_KEY}\"")
-//            } else {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-//            }
         }
         devUpload {
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled false
-            applicationIdSuffix '.dev'
-            versionNameSuffix '-DEV'
+            signingConfig = signingConfigs.release
+            debuggable = false
+            minifyEnabled = false
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-DEV"
             if (project.hasProperty('DEV_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_ID')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${DEV_TAPTALK_SDK_APP_KEY_ID}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_SECRET')) {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${DEV_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
             }
             if (project.hasProperty('DEV_TAPTALK_SDK_BASE_URL')) {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${DEV_TAPTALK_SDK_BASE_URL}\"")
-            } else {
+            }
+            else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-//            if (project.hasProperty('DEV_GCP_ANALYTICS_KEY')) {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${DEV_GCP_ANALYTICS_KEY}\"")
-//            } else {
-//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-//            }
         }
     }
 
     buildFeatures {
-        viewBinding true
+        viewBinding = true
         buildConfig = true
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = '17'
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     lintOptions {
@@ -248,47 +239,38 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
+}
+
+base {
+    archivesName = android.defaultConfig.applicationId + "-" + android.defaultConfig.versionName
+}
+
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.13.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'com.facebook.stetho:stetho:1.5.1'
-    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation(fileTree(dir: 'libs', include: ['*.jar']))
+    //noinspection GradleDependency - Latest available version for minSdk 21
+    implementation("com.google.android.material:material:1.13.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version")
 
     // TapTalk
-    implementation project(':taptalk')
-
-    // OKHTTP
-    implementation 'com.squareup.okhttp3:okhttp:4.5.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.5.0'
-
-    // Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-jackson:2.8.1'
-    implementation 'com.squareup.retrofit2:adapter-rxjava:2.8.1'
-
-    // RxAndroid
-    implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'io.reactivex:rxjava:1.3.8'
-
-    // Firebase
-    implementation 'com.google.firebase:firebase-core:21.1.1'
-    implementation 'com.google.firebase:firebase-messaging:23.4.0'
-    implementation platform('com.google.firebase:firebase-bom:25.12.0')
-    implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-analytics'
+    implementation(project(':taptalk'))
 
     // Glide
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    //noinspection NewerVersionAvailable
+    implementation("com.github.bumptech.glide:glide:4.11.0")
+    //noinspection NewerVersionAvailable
+    annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    // Stetho
+    implementation("com.facebook.stetho:stetho:1.6.0")
+    implementation("com.facebook.stetho:stetho-okhttp3:1.6.0")
 
-    implementation 'androidx.multidex:multidex:2.0.1'
+    // Firebase
+    //noinspection GradleDependency
+    implementation(platform('com.google.firebase:firebase-bom:32.8.0'))
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
 }

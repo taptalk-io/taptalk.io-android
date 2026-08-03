@@ -168,7 +168,6 @@ class TapReportActivity : TAPBaseActivity() {
         optionsAdapter = TapSelectableStringListAdapter(vm.reportOptions, onClickListener, vm.selectedReportOption)
         vb.rvOptions.adapter = optionsAdapter
         vb.rvOptions.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        vb.rvOptions.setHasFixedSize(true)
 
         if (vm.selectedReportOption == vm.reportOptions[vm.reportOptions.size - 1]) {
             vb.etOther.visibility = View.VISIBLE
@@ -218,11 +217,11 @@ class TapReportActivity : TAPBaseActivity() {
             }
         }
         vb.ivButtonBack.setOnClickListener {
-            onBackPressed()
+            onBack()
         }
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         val title: String
         val message: String
         if (isLoading) {
@@ -253,7 +252,7 @@ class TapReportActivity : TAPBaseActivity() {
         }
         else {
             try {
-                super.onBackPressed()
+                super.onBack()
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
             }
             catch (e: Exception) {

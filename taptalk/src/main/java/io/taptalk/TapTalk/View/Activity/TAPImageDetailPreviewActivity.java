@@ -172,9 +172,9 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         try {
-            super.onBackPressed();
+            super.onBack();
             tivImageDetail.setZoom(1f);
             supportFinishAfterTransition();
         }
@@ -235,7 +235,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
         gestureDetector = new GestureDetector(this, new TapGestureListener());
         tivImageDetail.setOnTouchListener(touchListener);
 
-        ivButtonBack.setOnClickListener(v -> onBackPressed());
+        ivButtonBack.setOnClickListener(v -> onBack());
         ivButtonSave.setOnClickListener(saveButtonListener);
         clActionBar.setOnClickListener(emptyListener);
         llCaption.setOnClickListener(emptyListener);

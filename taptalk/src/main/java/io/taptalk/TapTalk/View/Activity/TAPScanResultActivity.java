@@ -105,9 +105,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         try {
-            super.onBackPressed();
+            super.onBack();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
         }
         catch (Exception e) {
@@ -145,7 +145,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         TAPUtils.rotateAnimateInfinitely(this, ivLoading);
 
-        flButtonClose.setOnClickListener(v -> onBackPressed());
+        flButtonClose.setOnClickListener(v -> onBack());
 
         vm.setAddedContactUserModel(getIntent().getParcelableExtra(ADDED_CONTACT));
         vm.setScanResult(getIntent().getStringExtra(SCAN_RESULT));
@@ -289,7 +289,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                    .setPrimaryButtonListener(v -> onBackPressed()).show();
+                    .setPrimaryButtonListener(v -> onBack()).show();
         }
 
         @Override
@@ -299,7 +299,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_api_call_return_error))
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                    .setPrimaryButtonListener(v -> onBackPressed()).show();
+                    .setPrimaryButtonListener(v -> onBack()).show();
         }
     };
 

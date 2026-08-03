@@ -24,11 +24,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            android:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_search"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavigationBarBackButton" />
 
         <EditText
             android:id="@+id/et_search"
@@ -55,11 +55,11 @@
             android:layout_height="56dp"
             android:padding="18dp"
             android:src="@drawable/tap_ic_loading_progress_circle_white"
-            android:tint="@color/tapIconLoadingProgressPrimary"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconLoadingProgressPrimary" />
 
         <ImageView
             android:id="@+id/iv_button_clear_text"
@@ -68,12 +68,12 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"
-            android:tint="@color/tapIconClearTextButton"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/et_search"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconClearTextButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -213,14 +213,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/tap_ic_send_message_orange"
-                    android:tint="@color/tapButtonIconColor"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/tv_button_text"
                     app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_goneMarginStart="0dp" />
+                    app:layout_goneMarginStart="0dp"
+                    app:tint="@color/tapButtonIconColor" />
 
                 <TextView
                     android:id="@+id/tv_button_text"
@@ -242,12 +242,12 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/tap_ic_loading_progress_circle_white"
-                    android:tint="@color/tapIconLoadingProgressWhite"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/tapIconLoadingProgressWhite" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -299,27 +299,24 @@
             android:id="@+id/iv_connection_lost"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:padding="4dp"
             android:src="@drawable/tap_ic_connection_lost"
-            android:tint="@color/tapIconSearchConnectionLost"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconSearchConnectionLost" />
 
         <TextView
             android:id="@+id/tv_connection_lost"
             style="@style/tapSearchConnectionLostTitleStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"

@@ -44,12 +44,15 @@ public class TapBaseChatRoomCustomNavigationBarFragment extends Fragment {
         return null;
     }
 
-    public void onBackPressed() {
+    public void onBack() {
         if (getActivity() == null) {
             return;
         }
         if (getActivity() instanceof TapUIChatActivity) {
             ((TapUIChatActivity) getActivity()).closeActivity();
+        }
+        else if (getActivity() instanceof TAPBaseActivity) {
+            ((TAPBaseActivity) getActivity()).onBack();
         }
         else {
             getActivity().onBackPressed();

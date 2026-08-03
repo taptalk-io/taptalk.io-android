@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
@@ -135,7 +136,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPBroadcastManager.unregister(this@TAPMyAccountActivity, uploadBroadcastReceiver)
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
         }
@@ -158,7 +159,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
         else {
             try {
-                super.onBackPressed()
+                super.onBack()
                 overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
             }
             catch (e: Exception) {
@@ -287,7 +288,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         setProfileInformation(vb.clBasicInfo.tvEmailView, vb.clBasicInfo.gEmail, vm.myUserModel.email)
         setTextVersionApp()
 
-        vb.ivButtonClose.setOnClickListener { onBackPressed() }
+        vb.ivButtonClose.setOnClickListener { onBack() }
         vb.flContainer.setOnClickListener { clearAllFocus() }
         vb.clFormContainer.setOnClickListener { clearAllFocus() }
         vb.clPassword.setOnClickListener { openChangePasswordPage() }
@@ -658,7 +659,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
         }
-        vb.ivButtonClose.setOnClickListener { onBackPressed() }
+        vb.ivButtonClose.setOnClickListener { onBack() }
         vb.tvEditProfilePicture.isEnabled = true
 
         vb.ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white))
@@ -977,7 +978,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vb.layoutPopupLoadingScreen.tvLoadingText.text = message
             vb.layoutPopupLoadingScreen.flLoading.setOnClickListener { hideLoading() }
 
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 this.hideLoading()
             }, 1000L)
         }

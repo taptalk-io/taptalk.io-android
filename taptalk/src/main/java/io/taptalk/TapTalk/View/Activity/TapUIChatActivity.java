@@ -609,7 +609,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         if (vm.isDeleteGroup() && !TAPGroupManager.Companion.getInstance(instanceKey).getRefreshRoomList()) {
             TAPGroupManager.Companion.getInstance(instanceKey).setRefreshRoomList(true);
         }
@@ -632,7 +632,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
                 setResult(RESULT_OK);
                 try {
-                    super.onBackPressed();
+                    super.onBack();
                     overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
                 }
                 catch (Exception e) {
@@ -1115,7 +1115,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         rvMessageList.instanceKey = instanceKey;
         rvMessageList.setAdapter(messageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
-        rvMessageList.setHasFixedSize(false);
         rvMessageList.setupSwipeHelper(this, position -> {
             showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
         });
@@ -2051,7 +2050,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     public void closeActivity() {
         rvCustomKeyboard.setVisibility(View.GONE);
-        onBackPressed();
+        onBack();
     }
 
     private void blockContact() {

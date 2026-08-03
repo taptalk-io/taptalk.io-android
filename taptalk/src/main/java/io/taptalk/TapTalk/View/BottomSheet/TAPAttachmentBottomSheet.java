@@ -121,7 +121,6 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
             recyclerView.setAdapter(new TAPAttachmentAdapter(instanceKey, attachmentList, attachmentListener, onClickListener));
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setHasFixedSize(true);
     }
 
     @Override

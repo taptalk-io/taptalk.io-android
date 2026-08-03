@@ -25,10 +25,10 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            android:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavigationBarBackButton" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -70,10 +70,10 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_search_orange"
-            android:tint="@color/tapIconNavBarMagnifier"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavBarMagnifier" />
 
         <ImageView
             android:id="@+id/iv_button_clear_text"
@@ -82,11 +82,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"
-            android:tint="@color/tapIconClearTextButton"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconClearTextButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -142,11 +142,11 @@
         android:layout_marginBottom="15dp"
         android:layout_marginTop="15dp"
         android:src="@drawable/tap_ic_loading_progress_circle_white"
-        android:tint="@color/tapIconLoadingProgressPrimary"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rv_contact_list" />
+        app:layout_constraintTop_toBottomOf="@+id/rv_contact_list"
+        app:tint="@color/tapIconLoadingProgressPrimary" />
 
     <LinearLayout
         android:id="@+id/ll_group_members"
@@ -205,8 +205,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:src="@drawable/tap_ic_loading_progress_circle_white"
-                android:tint="@color/tapIconLoadingProgressWhite"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:tint="@color/tapIconLoadingProgressWhite" />
 
         </FrameLayout>
 

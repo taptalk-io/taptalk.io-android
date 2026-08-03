@@ -124,12 +124,12 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         TAPBroadcastManager.unregister(this, downloadProgressReceiver)
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (vm!!.isApiCallOnProgress) {
             return
         }
         try {
-            super.onBackPressed()
+            super.onBack()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
         }
         catch (e: Exception) {
@@ -178,7 +178,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         val intent = Intent()
                         intent.putExtra(Extras.CLOSE_ACTIVITY, true)
                         setResult(RESULT_OK)
-                        onBackPressed()
+                        onBack()
                     }
                 }
                 RequestCode.OPEN_STARRED_MESSAGES, RequestCode.OPEN_SHARED_MEDIA -> {
@@ -274,7 +274,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
 
-        vb.ivButtonBack.setOnClickListener { onBackPressed() }
+        vb.ivButtonBack.setOnClickListener { onBack() }
         vb.layoutPopupLoadingScreen.flLoading.setOnClickListener { }
 
         // Update room data
@@ -1138,7 +1138,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         val intent = Intent()
         intent.putExtra(Extras.CLOSE_ACTIVITY, true)
         setResult(RESULT_OK, intent)
-        onBackPressed()
+        onBack()
     }
 
     private fun promoteAdmin() {

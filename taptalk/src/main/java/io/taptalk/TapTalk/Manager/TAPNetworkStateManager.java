@@ -1,14 +1,13 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.NetworkRequest;
-import android.os.Build;
+
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,10 +22,10 @@ public class TAPNetworkStateManager {
     private static HashMap<String, TAPNetworkStateManager> instances;
 
     private String instanceKey = "";
-    private List<TapTalkNetworkInterface> listeners;
+    private final List<TapTalkNetworkInterface> listeners;
 
-    private TapNetworkCallback networkCallback;
-    private NetworkRequest networkRequest;
+    private final TapNetworkCallback networkCallback;
+    private final NetworkRequest networkRequest;
 
     public static TAPNetworkStateManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
@@ -44,34 +43,34 @@ public class TAPNetworkStateManager {
         this.instanceKey = instanceKey;
         listeners = new ArrayList<>();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Use ConnectivityManager.NetworkCallback for API 21 and above
-            networkCallback = new TapNetworkCallback();
-            networkRequest = new NetworkRequest.Builder()
-                    .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                    .build();
-        }
+        networkCallback = new TapNetworkCallback();
+        networkRequest = new NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .build();
     }
 
     public void registerCallback(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != networkCallback) {
+        if (null != networkCallback) {
             try {
                 getConnectivityManager(context).registerNetworkCallback(networkRequest, networkCallback);
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 // FIXME: 31 Mar 2020
             }
-        } else {
+        }
+        else {
             // Broadcast receiver will not receive callback right away, trigger connectivity change manually to update connection status
             triggerConnectivityChange();
         }
     }
 
     public void unregisterCallback(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != networkCallback) {
+        if (null != networkCallback) {
             try {
                 getConnectivityManager(context).unregisterNetworkCallback(networkCallback);
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 // FIXME: 31 Mar 2020 java.lang.IllegalArgumentException:
                 //  NetworkCallback was already unregistered when called more than once
             }
@@ -79,15 +78,16 @@ public class TAPNetworkStateManager {
     }
 
     public boolean hasNetworkConnection(Context context) {
-        // FIXME: USE THREAD
         ConnectivityManager connectivityManager = getConnectivityManager(context);
         if (null != connectivityManager &&
-                null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) &&
-                null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI) &&
-                (NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() ||
-                        NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState())) {
+            null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) &&
+            null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI) &&
+            (NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() ||
+            NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState())
+        ) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -117,7 +117,8 @@ public class TAPNetworkStateManager {
     private void triggerConnectivityChange() {
         if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
             TAPNetworkStateManager.getInstance(instanceKey).onNetworkAvailable();
-        } else {
+        }
+        else {
             TAPNetworkStateManager.getInstance(instanceKey).onNetworkLost();
         }
     }
@@ -139,33 +140,15 @@ public class TAPNetworkStateManager {
 
     public class TapNetworkCallback extends ConnectivityManager.NetworkCallback {
         @Override
-        public void onAvailable(Network network) {
+        public void onAvailable(@NonNull Network network) {
             super.onAvailable(network);
             onNetworkAvailable();
         }
 
         @Override
-        public void onLost(Network network) {
+        public void onLost(@NonNull Network network) {
             super.onLost(network);
             onNetworkLost();
-        }
-    }
-
-    public static class TapNetworkBroadcastReceiver extends BroadcastReceiver {
-
-        public TapNetworkBroadcastReceiver() {
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ||
-                    null == intent.getAction() ||
-                    !intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")) {
-                return;
-            }
-            for (String instanceKey : TapTalk.getInstanceKeys()) {
-                TAPNetworkStateManager.getInstance(instanceKey).triggerConnectivityChange();
-            }
         }
     }
 }

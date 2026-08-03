@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -7,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -14,6 +16,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.RemoteInput;
+import androidx.core.content.ContextCompat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -93,14 +96,17 @@ public class TAPNotificationManager {
         if (checkMapContainsRoomID(messageRoomID) && TYPE_SYSTEM_MESSAGE == notificationMessage.getType()) {
             notificationMessage.setBody(TAPChatManager.getInstance(instanceKey).formattingSystemMessage(notificationMessage));
             getNotificationMessagesMap().get(messageRoomID).add(notificationMessage);
-        } else if (checkMapContainsRoomID(messageRoomID)) {
+        }
+        else if (checkMapContainsRoomID(messageRoomID)) {
             getNotificationMessagesMap().get(messageRoomID).add(notificationMessage);
-        } else if (TYPE_SYSTEM_MESSAGE == notificationMessage.getType()) {
+        }
+        else if (TYPE_SYSTEM_MESSAGE == notificationMessage.getType()) {
             notificationMessage.setBody(TAPChatManager.getInstance(instanceKey).formattingSystemMessage(notificationMessage));
             List<TAPMessageModel> listNotificationMessagePerRoomID = new ArrayList<>();
             listNotificationMessagePerRoomID.add(notificationMessage);
             getNotificationMessagesMap().put(messageRoomID, listNotificationMessagePerRoomID);
-        } else {
+        }
+        else {
             List<TAPMessageModel> listNotificationMessagePerRoomID = new ArrayList<>();
             listNotificationMessagePerRoomID.add(notificationMessage);
             getNotificationMessagesMap().put(messageRoomID, listNotificationMessagePerRoomID);
@@ -130,7 +136,8 @@ public class TAPNotificationManager {
     public List<TAPMessageModel> getListOfMessageFromMap(String roomID) {
         if (checkMapContainsRoomID(roomID)) {
             return getNotificationMessagesMap().get(roomID);
-        } else {
+        }
+        else {
             return new ArrayList<>();
         }
     }
@@ -163,12 +170,13 @@ public class TAPNotificationManager {
         intent.putExtra(INSTANCE_KEY, instanceKey);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT);
-        } else {
+        }
+        else {
             return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
         }
     }
 
-    //buat create notification when the apps is in background
+    // Create notification when app is in background
     public NotificationCompat.Builder createNotificationBubble(NotificationBuilder builder) {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.MessagingStyle messageStyle = new NotificationCompat.MessagingStyle(builder.chatSender);
@@ -405,7 +413,8 @@ public class TAPNotificationManager {
                     TYPE_GROUP == notificationMessage.getRoom().getType()) {
                 setChatMessage(notificationMessage.getUser().getFullname() + ": " + notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getName());
-            } else if (null != notificationMessage) {
+            }
+            else if (null != notificationMessage) {
                 setChatMessage(notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getName());
             }
@@ -502,7 +511,7 @@ public class TAPNotificationManager {
                 (notificationMessage.getIsDeleted() != null && notificationMessage.getIsDeleted()) ||
                 (notificationMessage.getIsHidden() != null && notificationMessage.getIsHidden())
             ) {
-                if (currentRoomNotificationList != null && currentRoomNotificationList.size() > 0) {
+                if (currentRoomNotificationList != null && !currentRoomNotificationList.isEmpty()) {
                     for (TAPMessageModel message : new ArrayList<>(currentRoomNotificationList)) {
                         if (notificationMessage.getMessageID() != null &&
                                 notificationMessage.getMessageID().equals(message.getMessageID())
@@ -523,15 +532,19 @@ public class TAPNotificationManager {
             if (currentRoomNotificationList != null && !currentRoomNotificationList.isEmpty()) {
                 // Show notification
                 notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
-            } else {
+            }
+            else {
                 // Remove notification
                 notificationManager.cancel(notificationMessage.getRoom().getRoomID(), 0);
             }
 
             if (notificationMap.size() > 1) {
                 // Show grouped notification
-                notificationManager.notify(0, TAPNotificationManager.getInstance(instanceKey).createSummaryNotificationBubble(context, TapUIRoomListActivity.class).build());
-            } else if (notificationMap.isEmpty()) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                    notificationManager.notify(0, TAPNotificationManager.getInstance(instanceKey).createSummaryNotificationBubble(context, TapUIRoomListActivity.class).build());
+                }
+            }
+            else if (notificationMap.isEmpty()) {
                 // Remove grouped notification
                 notificationManager.cancel(0);
             }

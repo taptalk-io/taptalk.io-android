@@ -1,4 +1,4 @@
 jdk:
-  - openjdk11
- install:
-  - ./gradlew build :lib:publishToMavenLocal
+  - openjdk21
+install:
+  - ./gradlew build :taptalk:publishToMavenLocal

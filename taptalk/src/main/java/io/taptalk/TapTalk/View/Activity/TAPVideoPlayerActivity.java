@@ -135,9 +135,9 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBack() {
         try {
-            super.onBackPressed();
+            super.onBack();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
         }
         catch (Exception e) {
@@ -200,7 +200,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             }
         }
         else {
-            onBackPressed();
+            onBack();
         }
     }
 
@@ -222,7 +222,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         pbVideoLoading = findViewById(R.id.pb_video_loading);
         seekBar = findViewById(R.id.seek_bar);
 
-        ivButtonClose.setOnClickListener(v -> onBackPressed());
+        ivButtonClose.setOnClickListener(v -> onBack());
         ivButtonMute.setOnClickListener(v -> onMuteButtonTapped());
         ivButtonPlayPause.setOnClickListener(v -> onPlayOrPauseButtonTapped());
         clContainer.setOnClickListener(v -> onVideoTapped());

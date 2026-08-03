@@ -118,7 +118,7 @@ public class TapUIMainRoomListFragment extends Fragment {
                 .commit();
     }
 
-    public void onBackPressed() {
+    public void onBack() {
         switch (state) {
             case STATE_ROOM_LIST:
                 if (null != fRoomList && fRoomList.isSelecting()) {

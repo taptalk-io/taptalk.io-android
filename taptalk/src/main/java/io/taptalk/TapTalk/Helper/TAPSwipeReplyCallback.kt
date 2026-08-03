@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.os.Handler
+import android.os.Looper
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
@@ -140,8 +141,8 @@ class TAPSwipeReplyCallback(
             swipeBack = event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP
             if (swipeBack) {
                 if (abs(itemView.translationX) >= TAPUtils.dpToPx(48)) {
-                    Handler().postDelayed({
-                        swipeReplyInterface.onItemSwiped(viewHolder.adapterPosition)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        swipeReplyInterface.onItemSwiped(viewHolder.bindingAdapterPosition)
                     }, 100L)
                     recyclerView.setOnTouchListener(null)
                 }

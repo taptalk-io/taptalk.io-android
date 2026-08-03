@@ -77,7 +77,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         val llm = LinearLayoutManager(this, VERTICAL, false)
         vb.rvRoomList.adapter = adapter
         vb.rvRoomList.layoutManager = llm
-        vb.rvRoomList.setHasFixedSize(true)
         OverScrollDecoratorHelper.setUpOverScroll(vb.rvRoomList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
         val messageAnimator = vb.rvRoomList.itemAnimator as SimpleItemAnimator
         messageAnimator.supportsChangeAnimations = false
@@ -85,7 +84,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         val searchLlm = LinearLayoutManager(this, VERTICAL, false)
         vb.rvSearchList.adapter = searchAdapter
         vb.rvSearchList.layoutManager = searchLlm
-        vb.rvSearchList.setHasFixedSize(true)
         OverScrollDecoratorHelper.setUpOverScroll(vb.rvSearchList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
         val searchAnimator = vb.rvSearchList.itemAnimator as SimpleItemAnimator
         searchAnimator.supportsChangeAnimations = false
@@ -141,18 +139,18 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
             vb.etCaption.filters += InputFilter.LengthFilter(100)
         }
 
-        vb.ivCloseBtn.setOnClickListener { onBackPressed() }
+        vb.ivCloseBtn.setOnClickListener { onBack() }
         vb.ivSearchIcon.setOnClickListener { showSearchBar() }
         vb.ivButtonClearText.setOnClickListener { vb.etSearch.setText("") }
     }
 
-    override fun onBackPressed() {
+    override fun onBack() {
         if (vm.isSelecting) {
             showToolbar()
         }
         else {
             try {
-                super.onBackPressed()
+                super.onBack()
                 overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_right)
             }
             catch (e: Exception) {
@@ -402,7 +400,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun startSearch(keyword: String?) {
         vm.clearSearchResults()
-        vm.searchKeyword = keyword?.toLowerCase(Locale.getDefault())?.trim { it <= ' ' }
+        vm.searchKeyword = keyword?.lowercase()?.trim { it <= ' ' }
         searchAdapter?.searchKeyword = vm.searchKeyword!!
         if (vm.searchState == vm.STATE_IDLE) {
             // Search with keyword
@@ -421,7 +419,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         val selectedLlm = LinearLayoutManager(this, HORIZONTAL, false)
         vb.rvSelected.adapter = selectedAdapter
         vb.rvSelected.layoutManager = selectedLlm
-        vb.rvSelected.setHasFixedSize(true)
         OverScrollDecoratorHelper.setUpOverScroll(vb.rvSelected, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL)
         val animator = vb.rvSelected.itemAnimator as SimpleItemAnimator
         animator.supportsChangeAnimations = false

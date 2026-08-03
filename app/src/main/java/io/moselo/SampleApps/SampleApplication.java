@@ -6,11 +6,11 @@ import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_SECRET;
 import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
 
 import android.app.Activity;
+import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
 
@@ -20,7 +20,6 @@ import java.util.List;
 import io.moselo.SampleApps.Activity.TAPLoginActivity;
 import io.moselo.SampleApps.Activity.TapDeleteAccountActivity;
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
 import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
@@ -34,7 +33,7 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalkSample.BuildConfig;
 import io.taptalk.TapTalkSample.R;
 
-public class SampleApplication extends MultiDexApplication {
+public class SampleApplication extends Application {
 
     private static final String TAG = "SampleApplication";
     public static final String INSTANCE_KEY = "";

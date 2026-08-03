@@ -22,21 +22,19 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"
-            android:tint="@color/tapIconNavBarCloseButton"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavBarCloseButton" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_button_search"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
             android:layout_marginBottom="8dp"
             android:clipToPadding="true"
             android:elevation="2dp"
@@ -59,12 +57,11 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_marginStart="18dp"
-                    android:layout_marginLeft="18dp"
                     android:src="@drawable/tap_ic_search_orange"
-                    android:tint="@color/tapIconSearchBarMagnifier"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/tapIconSearchBarMagnifier" />
 
                 <TextView
                     android:id="@+id/tv_search_text"
@@ -72,9 +69,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginEnd="18dp"
-                    android:layout_marginRight="18dp"
                     android:maxLines="1"
                     android:text="@string/tap_search"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -271,16 +266,15 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/tap_bg_start_new_chat_button_ripple"
         android:elevation="8dp"
         android:padding="16dp"
         android:src="@drawable/tap_ic_pencil_chat"
-        android:tint="@color/tapIconStartNewChatButton"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/tapIconStartNewChatButton" />
 
     <include
         layout="@layout/tap_layout_setup_chat"
