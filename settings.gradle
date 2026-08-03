@@ -3,11 +3,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
         maven {
-            url "https://jitpack.io"
-            credentials { username authToken }
-            credentials { username authTokenKevin }
+            url = "https://s3.amazonaws.com/repo.commonsware.com"
+        }
+        maven {
+            url = "https://jitpack.io"
+            credentials { username = authToken }
+            credentials { username = authTokenKevin }
         }
     }
 }

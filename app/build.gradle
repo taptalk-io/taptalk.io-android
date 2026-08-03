@@ -12,19 +12,17 @@ if (file("${rootProject.rootDir}/environment.properties").exists()) {
 }
 
 android {
-    namespace = "io.taptalk.TapTalkSample"
     def globalConfig = rootProject.extensions.getByName("ext")
-
-    compileSdk 36
+    namespace = "io.taptalk.TapTalkSample"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId "io.taptalk.TapTalkSample"
-        minSdk 21
-        targetSdk 36
-        versionCode taptalk_version_code
-        versionName taptalk_version_name
-        multiDexEnabled true
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        applicationId = "io.taptalk.TapTalkSample"
+        minSdk = 21
+        targetSdk = 36
+        versionCode = taptalk_version_code
+        versionName = taptalk_version_name
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -34,7 +32,6 @@ android {
                 def propFile = file(globalConfig.signingProps)
                 if (propFile.canRead()) {
                     props.load(new FileInputStream(propFile))
-
                     if (props != null &&
                         props.containsKey(globalConfig.keystoreFileName) &&
                         props.containsKey(globalConfig.keystorePasswordName) &&
@@ -71,11 +68,11 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
-            debuggable false
+            signingConfig = signingConfigs.release
+            debuggable = false
+            minifyEnabled = true
+            zipAlignEnabled = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            minifyEnabled true
-            zipAlignEnabled true
             if (project.hasProperty('RELEASE_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${RELEASE_GOOGLE_MAPS_API_KEY}\"")
             }
@@ -102,11 +99,11 @@ android {
             }
         }
         staging {
-            signingConfig signingConfigs.debug
-            debuggable true
-            minifyEnabled false
-            applicationIdSuffix '.staging'
-            versionNameSuffix '-STAGING'
+            signingConfig = signingConfigs.debug
+            debuggable = true
+            minifyEnabled = false
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-STAGING"
             if (project.hasProperty('STAGING_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
             }
@@ -133,11 +130,11 @@ android {
             }
         }
         stagingUpload {
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled false
-            applicationIdSuffix '.staging'
-            versionNameSuffix '-STAGING'
+            signingConfig = signingConfigs.release
+            debuggable = false
+            minifyEnabled = false
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-STAGING"
             if (project.hasProperty('STAGING_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
             }
@@ -164,11 +161,11 @@ android {
             }
         }
         dev {
-            signingConfig signingConfigs.debug
-            debuggable true
-            minifyEnabled false
-            applicationIdSuffix '.dev'
-            versionNameSuffix '-DEV'
+            signingConfig = signingConfigs.debug
+            debuggable = true
+            minifyEnabled = false
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-DEV"
             if (project.hasProperty('DEV_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
             }
@@ -195,11 +192,11 @@ android {
             }
         }
         devUpload {
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled false
-            applicationIdSuffix '.dev'
-            versionNameSuffix '-DEV'
+            signingConfig = signingConfigs.release
+            debuggable = false
+            minifyEnabled = false
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-DEV"
             if (project.hasProperty('DEV_GOOGLE_MAPS_API_KEY')) {
                 buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
             }
@@ -228,13 +225,13 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
+        viewBinding = true
         buildConfig = true
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     lintOptions {
@@ -253,30 +250,27 @@ base {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation(fileTree(dir: 'libs', include: ['*.jar']))
     //noinspection GradleDependency - Latest available version for minSdk 21
-    implementation 'com.google.android.material:material:1.13.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation("com.google.android.material:material:1.13.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version")
 
     // TapTalk
-    implementation project(':taptalk')
+    implementation(project(':taptalk'))
 
     // Glide
     //noinspection NewerVersionAvailable
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation("com.github.bumptech.glide:glide:4.11.0")
     //noinspection NewerVersionAvailable
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
 
     // Stetho
-    implementation 'com.facebook.stetho:stetho:1.6.0'
-    implementation 'com.facebook.stetho:stetho-okhttp3:1.6.0'
+    implementation("com.facebook.stetho:stetho:1.6.0")
+    implementation("com.facebook.stetho:stetho-okhttp3:1.6.0")
 
     // Firebase
     //noinspection GradleDependency
-    implementation platform('com.google.firebase:firebase-bom:32.8.0')
-    implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-analytics'
-
-    // Multidex
-    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation(platform('com.google.firebase:firebase-bom:32.8.0'))
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
 }
