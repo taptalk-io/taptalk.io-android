@@ -728,14 +728,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         menuItems.add(menuGroupInCommon)
                     }
                     // Add to contacts
-                    if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
-                            instanceKey
-                        ).isAddToContactsButtonInChatProfileVisible
-                    ) {
-                        val contact = TAPContactManager.getInstance(instanceKey).getUserData(
-                            TAPChatManager.getInstance(instanceKey)
-                                .getOtherUserIdFromRoom(vm!!.room.roomID)
-                        )
+                    if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(instanceKey).isAddToContactsButtonInChatProfileVisible) {
+                        val contact = TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm!!.room.roomID))
                         if ((null == contact || null == contact.isContact || contact.isContact == 0) && !isUserBlocked()) {
                             val menuAddToContact = TapChatProfileItemModel(
                                 ChatProfileMenuType.MENU_ADD_TO_CONTACTS,
@@ -979,13 +973,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     menuItems.add(menuGroupInCommon)
                 }
                 // Add to contacts
-                if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
-                        instanceKey
-                    ).isAddToContactsButtonInChatProfileVisible
-                ) {
-                    val contact = TAPContactManager.getInstance(instanceKey).getUserData(
-                        vm!!.groupMemberUser.userID
-                    )
+                if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(instanceKey).isAddToContactsButtonInChatProfileVisible) {
+                    val contact = TAPContactManager.getInstance(instanceKey).getUserData(vm!!.groupMemberUser.userID)
                     if ((null == contact || null == contact.isContact || contact.isContact == 0) && !isUserBlocked()) {
                         val menuAddToContact = TapChatProfileItemModel(
                             ChatProfileMenuType.MENU_ADD_TO_CONTACTS,
@@ -1110,7 +1099,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     .setPrimaryButtonTitle(getString(R.string.tap_yes))
                     .setPrimaryButtonListener {
                         showLoadingPopup(getString(R.string.tap_loading))
-                        TapCoreContactManager.getInstance(instanceKey).unblockUser(user.userID, blockUnblockUserView)
+                        TapCoreContactManager.getInstance(instanceKey).unblockUser(user.userID, unblockUserView)
                     }
                     .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                     .setSecondaryButtonListener { }
@@ -1124,7 +1113,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     .setPrimaryButtonTitle(getString(R.string.tap_block))
                     .setPrimaryButtonListener {
                         showLoadingPopup(getString(R.string.tap_loading))
-                        TapCoreContactManager.getInstance(instanceKey).blockUser(user.userID, blockUnblockUserView)
+                        TapCoreContactManager.getInstance(instanceKey).blockUser(user.userID, blockUserView)
                     }
                     .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                     .setSecondaryButtonListener { }
@@ -1884,15 +1873,39 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
 
-    private val blockUnblockUserView = object : TapCoreGetContactListener() {
+    private val blockUserView = object : TapCoreGetContactListener() {
         override fun onSuccess(user: TAPUserModel?) {
-            super.onSuccess(user)
+            if (user != null) {
+                TAPContactManager.getInstance(instanceKey).updateUserData(user)
+                val blockedUserList = TAPDataManager.getInstance(instanceKey).blockedUserIds
+                if (!blockedUserList.contains(user.userID)) {
+                    blockedUserList.add(user.userID)
+                    TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserList)
+                }
+            }
             hideLoadingPopup()
             updateView()
         }
 
         override fun onError(errorCode: String?, errorMessage: String?) {
-            super.onError(errorCode, errorMessage)
+            hideLoadingPopup()
+            showErrorDialog(getString(R.string.tap_error), errorMessage)
+        }
+    }
+
+    private val unblockUserView = object : TapCoreGetContactListener() {
+        override fun onSuccess(user: TAPUserModel?) {
+            if (user != null) {
+                TAPContactManager.getInstance(instanceKey).updateUserData(user)
+                val blockedUserList = TAPDataManager.getInstance(instanceKey).blockedUserIds
+                blockedUserList.remove(user.userID)
+                TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserList)
+            }
+            hideLoadingPopup()
+            updateView()
+        }
+
+        override fun onError(errorCode: String?, errorMessage: String?) {
             hideLoadingPopup()
             showErrorDialog(getString(R.string.tap_error), errorMessage)
         }
