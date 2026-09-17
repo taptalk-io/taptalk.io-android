@@ -3104,8 +3104,8 @@ public class TAPChatManager {
         TapUI.getInstance(instanceKey).triggerChatProfileGroupsInCommonButtonTapped(activity, room);
     }
 
-    public void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
-        TapUI.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(activity, room);
+    public void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room, String sourceChatRoomID) {
+        TapUI.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(activity, room, sourceChatRoomID);
     }
 
     public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {

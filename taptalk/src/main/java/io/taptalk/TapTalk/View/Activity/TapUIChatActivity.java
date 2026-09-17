@@ -4508,15 +4508,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 // Scroll to message
                 runOnUiThread(() -> {
-                    messageLayoutManager.scrollToPositionWithOffset(messageAdapter.getItems().indexOf(message), TAPUtils.dpToPx(128));
                     rvMessageList.post(() -> {
-                        if (messageLayoutManager.findFirstVisibleItemPosition() > 0) {
-                            vm.setOnBottom(false);
-                            ivToBottom.setVisibility(View.VISIBLE);
-                        }
-                        hideUnreadButton();
-                        hideUnreadButtonLoading();
-                        messageAdapter.highlightMessage(message);
+                        messageLayoutManager.scrollToPositionWithOffset(messageAdapter.getItems().indexOf(message), TAPUtils.dpToPx(128));
+                        rvMessageList.post(() -> {
+                            if (messageLayoutManager.findFirstVisibleItemPosition() > 0) {
+                                vm.setOnBottom(false);
+                                ivToBottom.setVisibility(View.VISIBLE);
+                            }
+                            hideUnreadButton();
+                            hideUnreadButtonLoading();
+                            messageAdapter.highlightMessage(message);
+                        });
                     });
                 });
             }
