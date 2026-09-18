@@ -252,7 +252,12 @@ public class TapTalk implements LifecycleObserver {
 //            AnalyticsManager.getInstance(instanceKey).identifyUser();
         }
 
-        TAPDataManager.getInstance(instanceKey).updateSendingMessageToFailed();
+        try {
+            TAPDataManager.getInstance(instanceKey).updateSendingMessageToFailed();
+        }
+        catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
         TAPContactManager.getInstance(instanceKey).setContactSyncPermissionAsked(TAPDataManager.getInstance(instanceKey).isContactSyncPermissionAsked());
         TAPContactManager.getInstance(instanceKey).setContactSyncAllowedByUser(TAPDataManager.getInstance(instanceKey).isContactSyncAllowedByUser());
 

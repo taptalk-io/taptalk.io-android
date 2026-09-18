@@ -1062,14 +1062,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
         else {
             // Setup default navigation bar
             // Set room name
-            if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
-                tvRoomName.setText(R.string.tap_saved_messages);
-            } else if (vm.getRoom().getType() == TYPE_PERSONAL && null != vm.getOtherUserModel() &&
+            if (null != vm.getRoom()) {
+                if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                    tvRoomName.setText(R.string.tap_saved_messages);
+                }
+                else if (
+                    vm.getRoom().getType() == TYPE_PERSONAL &&
+                    null != vm.getOtherUserModel() &&
                     (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L) &&
-                    !vm.getOtherUserModel().getFullname().isEmpty()) {
-                tvRoomName.setText(vm.getOtherUserModel().getFullname());
-            } else {
-                tvRoomName.setText(vm.getRoom().getName());
+                    !vm.getOtherUserModel().getFullname().isEmpty()
+                ) {
+                    tvRoomName.setText(vm.getOtherUserModel().getFullname());
+                }
+                else {
+                    tvRoomName.setText(vm.getRoom().getName());
+                }
             }
 
             setNavigationBarProfilePicture();
@@ -1217,7 +1224,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Load items from database for the first time
-        if (vm.getRoom().isDeleted()) {
+        if (null != vm.getRoom() && vm.getRoom().isDeleted()) {
             //showRoomIsUnavailableState();
             if (vm.getRoom().getType() == TYPE_PERSONAL) {
                 showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
@@ -1236,7 +1243,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //            getAllUnreadMessage();
 //        }
 
-        if (vm.getRoom().isLocked()) {
+        if (null != vm.getRoom() && vm.getRoom().isLocked()) {
             // Hide chat composer if room is locked
             lockChatRoom();
         }
@@ -1345,12 +1352,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //        }
 
         if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled()) {
-            TAPMessageModel newestMessage = TAPDataManager.getInstance(instanceKey).getNewestPinnedMessage(vm.getRoom().getRoomID());
-            if (newestMessage != null) {
-                vm.addPinnedMessage(newestMessage);
-                vm.addPinnedMessageId(newestMessage.getMessageID());
-                setPinnedMessage(TAPDataManager.getInstance(instanceKey).getNewestPinnedMessage(vm.getRoom().getRoomID()));
-            } else {
+            if (null != vm.getRoom()) {
+                TAPMessageModel newestMessage = TAPDataManager.getInstance(instanceKey).getNewestPinnedMessage(vm.getRoom().getRoomID());
+                if (newestMessage != null) {
+                    vm.addPinnedMessage(newestMessage);
+                    vm.addPinnedMessageId(newestMessage.getMessageID());
+                    setPinnedMessage(TAPDataManager.getInstance(instanceKey).getNewestPinnedMessage(vm.getRoom().getRoomID()));
+                }
+                else {
+                    vm.setLoadPinnedMessages(false);
+                }
+            }
+            else {
                 vm.setLoadPinnedMessages(false);
             }
         }

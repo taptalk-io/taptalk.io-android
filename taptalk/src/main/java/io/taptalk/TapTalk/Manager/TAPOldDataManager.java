@@ -44,13 +44,19 @@ public class TAPOldDataManager {
             }
 
             if (TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists() && isOverOneWeek) {
-                TAPDataManager.getInstance(instanceKey).getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
-                    @Override
-                    public void onSelectFinished(List<TAPMessageEntity> entities) {
-                        autoCleanProcessFromRoomQueryResult(entities, currentTimestamp);
-                    }
-                });
-            } else if (!TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists()) {
+                try {
+                    TAPDataManager.getInstance(instanceKey).getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
+                        @Override
+                        public void onSelectFinished(List<TAPMessageEntity> entities) {
+                            autoCleanProcessFromRoomQueryResult(entities, currentTimestamp);
+                        }
+                    });
+                }
+                catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (!TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists()) {
                 TAPDataManager.getInstance(instanceKey).saveLastDeleteTimestamp(currentTimestamp);
             }
         }).start();
