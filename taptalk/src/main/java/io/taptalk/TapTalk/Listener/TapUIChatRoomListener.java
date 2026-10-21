@@ -149,7 +149,7 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
         if (null == activity) {
             return;
         }
-        TapStarredMessagesActivity.Companion.start(activity, instanceKey, room);
+        TapStarredMessagesActivity.Companion.start(activity, instanceKey, room, "");
     }
 
     @Override

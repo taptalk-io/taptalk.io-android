@@ -8,17 +8,13 @@ import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.text.TextPaint
-import android.text.style.ClickableSpan
 import android.text.util.Linkify
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -26,7 +22,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.text.toSpannable
 import androidx.core.widget.ImageViewCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.RequestManager
@@ -473,12 +468,8 @@ class TapSharedMediaAdapter(
         }
 
         private fun openFile(item: TAPMessageModel) {
-            val intent = Intent(DownloadBroadcastEvent.OpenFile)
-            intent.putExtra(Extras.MESSAGE, item)
-            intent.putExtra(MessageData.FILE_URI, fileUri)
-            LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent)
+            TAPUtils.openFile(instanceKey, itemView.context, fileUri, TAPFileUtils.getMimeTypeFromUri(itemView.context, fileUri))
         }
-
     }
 
     inner class DateSeparatorViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {

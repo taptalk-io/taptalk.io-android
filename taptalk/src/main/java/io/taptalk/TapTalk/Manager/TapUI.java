@@ -588,7 +588,7 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized(instanceKey)) {
             return;
         }
-        TapStarredMessagesActivity.Companion.start(context, instanceKey, room);
+        TapStarredMessagesActivity.Companion.start(context, instanceKey, room, "");
     }
 
     public void openPinnedMessagesChatRoom(Context context, TAPRoomModel room) {
@@ -2179,9 +2179,9 @@ public class TapUI {
         }
     }
 
-    void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room) {
+    void triggerChatProfileStarredMessageButtonTapped(Activity activity, TAPRoomModel room, String sourceChatRoomID) {
         if (getChatRoomListeners().isEmpty()) {
-            TapStarredMessagesActivity.Companion.start(activity, instanceKey, room);
+            TapStarredMessagesActivity.Companion.start(activity, instanceKey, room, sourceChatRoomID);
         }
 
         for (TapUIChatRoomListener listener : getChatRoomListenersForLoop()) {

@@ -98,6 +98,56 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     private var vm: TAPProfileViewModel? = null
     private var glide: RequestManager? = null
 
+    companion object {
+        private val TAG = TAPChatProfileActivity::class.java.simpleName
+        private const val NEXT_VALUE = 1
+        fun start(
+            context: Activity,
+            instanceKey: String?,
+            room: TAPRoomModel,
+            user: TAPUserModel?,
+            isNonParticipantUserProfile: Boolean
+        ) {
+            start(context, instanceKey, room, user, null, isNonParticipantUserProfile)
+        }
+
+        @JvmOverloads
+        fun start(
+            context: Activity,
+            instanceKey: String?,
+            room: TAPRoomModel?,
+            user: TAPUserModel?,
+            isAdmin: Boolean? = null,
+            isNonParticipantUserProfile: Boolean = false
+        ) {
+            val intent = Intent(context, TAPChatProfileActivity::class.java)
+            intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
+            intent.putExtra(Extras.ROOM, room)
+            if (null != isAdmin) {
+                intent.putExtra(K_USER, user)
+                intent.putExtra(Extras.IS_ADMIN, isAdmin)
+                context.startActivityForResult(intent, RequestCode.GROUP_OPEN_MEMBER_PROFILE)
+            }
+            else if (room?.type == RoomType.TYPE_PERSONAL) {
+                if (isNonParticipantUserProfile) {
+                    intent.putExtra(Extras.IS_NON_PARTICIPANT_USER_PROFILE, true)
+                }
+                if (context is TapUIChatActivity) {
+                    intent.putExtra(Extras.ROOM_ID, room.roomID)
+                }
+                context.startActivityForResult(intent, RequestCode.OPEN_PERSONAL_PROFILE)
+            }
+            else if (room?.type == RoomType.TYPE_GROUP && null != user) {
+                intent.putExtra(K_USER, user)
+                context.startActivityForResult(intent, RequestCode.OPEN_MEMBER_PROFILE)
+            }
+            else if (room?.type == RoomType.TYPE_GROUP) {
+                context.startActivityForResult(intent, RequestCode.OPEN_GROUP_PROFILE)
+            }
+            context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vb = TapActivityChatProfileBinding.inflate(layoutInflater)
@@ -678,14 +728,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         menuItems.add(menuGroupInCommon)
                     }
                     // Add to contacts
-                    if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
-                            instanceKey
-                        ).isAddToContactsButtonInChatProfileVisible
-                    ) {
-                        val contact = TAPContactManager.getInstance(instanceKey).getUserData(
-                            TAPChatManager.getInstance(instanceKey)
-                                .getOtherUserIdFromRoom(vm!!.room.roomID)
-                        )
+                    if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(instanceKey).isAddToContactsButtonInChatProfileVisible) {
+                        val contact = TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm!!.room.roomID))
                         if ((null == contact || null == contact.isContact || contact.isContact == 0) && !isUserBlocked()) {
                             val menuAddToContact = TapChatProfileItemModel(
                                 ChatProfileMenuType.MENU_ADD_TO_CONTACTS,
@@ -929,13 +973,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     menuItems.add(menuGroupInCommon)
                 }
                 // Add to contacts
-                if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
-                        instanceKey
-                    ).isAddToContactsButtonInChatProfileVisible
-                ) {
-                    val contact = TAPContactManager.getInstance(instanceKey).getUserData(
-                        vm!!.groupMemberUser.userID
-                    )
+                if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(instanceKey).isAddToContactsButtonInChatProfileVisible) {
+                    val contact = TAPContactManager.getInstance(instanceKey).getUserData(vm!!.groupMemberUser.userID)
                     if ((null == contact || null == contact.isContact || contact.isContact == 0) && !isUserBlocked()) {
                         val menuAddToContact = TapChatProfileItemModel(
                             ChatProfileMenuType.MENU_ADD_TO_CONTACTS,
@@ -1060,7 +1099,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     .setPrimaryButtonTitle(getString(R.string.tap_yes))
                     .setPrimaryButtonListener {
                         showLoadingPopup(getString(R.string.tap_loading))
-                        TapCoreContactManager.getInstance(instanceKey).unblockUser(user.userID, blockUnblockUserView)
+                        TapCoreContactManager.getInstance(instanceKey).unblockUser(user.userID, unblockUserView)
                     }
                     .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                     .setSecondaryButtonListener { }
@@ -1074,7 +1113,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     .setPrimaryButtonTitle(getString(R.string.tap_block))
                     .setPrimaryButtonListener {
                         showLoadingPopup(getString(R.string.tap_loading))
-                        TapCoreContactManager.getInstance(instanceKey).blockUser(user.userID, blockUnblockUserView)
+                        TapCoreContactManager.getInstance(instanceKey).blockUser(user.userID, blockUserView)
                     }
                     .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                     .setSecondaryButtonListener { }
@@ -1369,11 +1408,11 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ""
             )
 //            TapStarredMessagesActivity.start(this@TAPChatProfileActivity, instanceKey, room)
-            TAPChatManager.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(this, room)
+            TAPChatManager.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(this, room, "")
         }
         else {
 //            TapStarredMessagesActivity.start(this@TAPChatProfileActivity, instanceKey, vm!!.room)
-            TAPChatManager.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(this, vm!!.room)
+            TAPChatManager.getInstance(instanceKey).triggerChatProfileStarredMessageButtonTapped(this, vm!!.room, intent.getStringExtra(Extras.ROOM_ID))
         }
     }
 
@@ -1834,15 +1873,39 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
 
-    private val blockUnblockUserView = object : TapCoreGetContactListener() {
+    private val blockUserView = object : TapCoreGetContactListener() {
         override fun onSuccess(user: TAPUserModel?) {
-            super.onSuccess(user)
+            if (user != null) {
+                TAPContactManager.getInstance(instanceKey).updateUserData(user)
+                val blockedUserList = TAPDataManager.getInstance(instanceKey).blockedUserIds
+                if (!blockedUserList.contains(user.userID)) {
+                    blockedUserList.add(user.userID)
+                    TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserList)
+                }
+            }
             hideLoadingPopup()
             updateView()
         }
 
         override fun onError(errorCode: String?, errorMessage: String?) {
-            super.onError(errorCode, errorMessage)
+            hideLoadingPopup()
+            showErrorDialog(getString(R.string.tap_error), errorMessage)
+        }
+    }
+
+    private val unblockUserView = object : TapCoreGetContactListener() {
+        override fun onSuccess(user: TAPUserModel?) {
+            if (user != null) {
+                TAPContactManager.getInstance(instanceKey).updateUserData(user)
+                val blockedUserList = TAPDataManager.getInstance(instanceKey).blockedUserIds
+                blockedUserList.remove(user.userID)
+                TAPDataManager.getInstance(instanceKey).saveBlockedUserIds(blockedUserList)
+            }
+            hideLoadingPopup()
+            updateView()
+        }
+
+        override fun onError(errorCode: String?, errorMessage: String?) {
             hideLoadingPopup()
             showErrorDialog(getString(R.string.tap_error), errorMessage)
         }
@@ -1866,50 +1929,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     }
                 }
             }
-        }
-    }
-
-    companion object {
-        private val TAG = TAPChatProfileActivity::class.java.simpleName
-        private const val NEXT_VALUE = 1
-        fun start(
-            context: Activity,
-            instanceKey: String?,
-            room: TAPRoomModel,
-            user: TAPUserModel?,
-            isNonParticipantUserProfile: Boolean
-        ) {
-            start(context, instanceKey, room, user, null, isNonParticipantUserProfile)
-        }
-
-        @JvmOverloads
-        fun start(
-            context: Activity,
-            instanceKey: String?,
-            room: TAPRoomModel?,
-            user: TAPUserModel?,
-            isAdmin: Boolean? = null,
-            isNonParticipantUserProfile: Boolean = false
-        ) {
-            val intent = Intent(context, TAPChatProfileActivity::class.java)
-            intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
-            intent.putExtra(Extras.ROOM, room)
-            if (null != isAdmin) {
-                intent.putExtra(K_USER, user)
-                intent.putExtra(Extras.IS_ADMIN, isAdmin)
-                context.startActivityForResult(intent, RequestCode.GROUP_OPEN_MEMBER_PROFILE)
-            } else if (room?.type == RoomType.TYPE_PERSONAL) {
-                if (isNonParticipantUserProfile) {
-                    intent.putExtra(Extras.IS_NON_PARTICIPANT_USER_PROFILE, true)
-                }
-                context.startActivityForResult(intent, RequestCode.OPEN_PERSONAL_PROFILE)
-            } else if (room?.type == RoomType.TYPE_GROUP && null != user) {
-                intent.putExtra(K_USER, user)
-                context.startActivityForResult(intent, RequestCode.OPEN_MEMBER_PROFILE)
-            } else if (room?.type == RoomType.TYPE_GROUP) {
-                context.startActivityForResult(intent, RequestCode.OPEN_GROUP_PROFILE)
-            }
-            context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
         }
     }
 }

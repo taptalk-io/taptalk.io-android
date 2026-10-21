@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_STARRED_MESSAGES
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
@@ -55,12 +56,14 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
         fun start(
             context: Context,
             instanceKey: String?,
-            room: TAPRoomModel
+            room: TAPRoomModel,
+            sourceChatRoomID: String?
         ) {
             if (context is Activity) {
                 val intent = Intent(context, TapStarredMessagesActivity::class.java)
                 intent.putExtra(INSTANCE_KEY, instanceKey)
                 intent.putExtra(ROOM, room)
+                intent.putExtra(ROOM_ID, sourceChatRoomID)
                 context.startActivityForResult(intent, OPEN_STARRED_MESSAGES)
             }
         }
@@ -266,10 +269,25 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
     private val chatListener = object : TAPChatListener() {
         override fun onOutsideClicked(message: TAPMessageModel?) {
             super.onOutsideClicked(message)
-            val intent = Intent()
-            intent.putExtra(Extras.MESSAGE, message)
-            setResult(RESULT_OK, intent)
-            finish()
+            if (!message?.room?.roomID.isNullOrEmpty()) {
+                val sourceChatRoomID = intent.getStringExtra(ROOM_ID)
+                if (!sourceChatRoomID.isNullOrEmpty() && sourceChatRoomID == message.room?.roomID) {
+                    val intent = Intent()
+                    intent.putExtra(Extras.MESSAGE, message)
+                    setResult(RESULT_OK, intent)
+                    finish()
+                }
+                else {
+                    TapUIChatActivity.start(
+                        this@TapStarredMessagesActivity,
+                        instanceKey,
+                        message.room!!,
+                        LinkedHashMap(),
+                        message.localID,
+                        TapTalk.isConnected(instanceKey)
+                    )
+                }
+            }
         }
     }
 }

@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.view.View;
@@ -15,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import com.bumptech.glide.RequestManager;
@@ -118,7 +116,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             tvRecentTitle.setText(item.getSectionTitle());
             if (TAPSearchChatModel.Type.SECTION_TITLE == item.getType()) {
                 tvClearHistory.setVisibility(View.GONE);
-            } else {
+            }
+            else {
                 tvClearHistory.setVisibility(View.VISIBLE);
                 tvClearHistory.setOnClickListener(v -> TAPDataManager.getInstance(instanceKey).deleteAllRecentSearch());
             }
@@ -149,7 +148,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
         protected void onBind(TAPSearchChatModel item, int position) {
             if (item.isLastInSection()) {
                 vSeparator.setVisibility(View.GONE);
-            } else {
+            }
+            else {
                 vSeparator.setVisibility(View.VISIBLE);
             }
 
@@ -184,7 +184,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             if (null != item.getMessage() && null != item.getMessage().getRoomType() && item.getMessage().getRoomType() == TAPDefaultConstant.RoomType.TYPE_GROUP) {
                 tvLastMessage.setText(Html.fromHtml(String.format("<font color='#%s'>%s: </font> %s", colorSender.length() > 6 ? colorSender.substring(colorSender.length() - 6) : colorSender, TAPUtils.getFirstWordOfString(item.getMessage().getUserFullName()), highlightedText)));
-            } else {
+            }
+            else {
                 tvLastMessage.setText(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUserID()) ?
                         Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
             }
@@ -218,6 +219,10 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             else if (null != message.getSending() && message.getSending()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sending_grey));
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageSending)));
+            }
+            else {
+                ivMessageStatus.setImageDrawable(null);
+                ImageViewCompat.setImageTintList(ivMessageStatus, null);
             }
 
             clContainer.setOnClickListener(v -> TapUIChatActivity.start(
@@ -261,7 +266,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
         protected void onBind(TAPSearchChatModel item, int position) {
             if (item.isLastInSection()) {
                 vSeparator.setVisibility(View.GONE);
-            } else {
+            }
+            else {
                 vSeparator.setVisibility(View.VISIBLE);
             }
 
@@ -274,57 +280,60 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             TAPRoomModel group = null;
             if (room.getType() == TYPE_PERSONAL) {
                 user = TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()));
-            } else if (room.getType() == TYPE_GROUP || room.getType() == TYPE_TRANSACTION) {
+            }
+            else if (room.getType() == TYPE_GROUP || room.getType() == TYPE_TRANSACTION) {
                 group = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(room.getRoomID());
             }
 
             // Load avatar
+            RequestListener<Drawable> requestListener = new RequestListener<>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    // Show initial
+                    if (itemView.getContext() instanceof Activity) {
+                        ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getName())));
+                            civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
+                            tvAvatarLabel.setText(TAPUtils.getInitials(room.getName(), room.getType() == TYPE_PERSONAL ? 2 : 1));
+                            tvAvatarLabel.setVisibility(View.VISIBLE);
+                        });
+                    }
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    if (itemView.getContext() instanceof Activity) {
+                        ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            ImageViewCompat.setImageTintList(civAvatar, null);
+                            tvAvatarLabel.setVisibility(View.GONE);
+                        });
+                    }
+                    return false;
+                }
+            };
             glide.clear(civAvatar);
             if (null != user && (null != user.getDeleted() && user.getDeleted() > 0L)) {
                 // Deleted user
-                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, null);
-                tvAvatarLabel.setVisibility(View.GONE);
-            } else if (TAPUtils.isSavedMessagesRoom(room.getRoomID(), instanceKey)) {
+                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().listener(requestListener).into(civAvatar);
+            }
+            else if (TAPUtils.isSavedMessagesRoom(room.getRoomID(), instanceKey)) {
                 // Saved messages
-                glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, null);
-                tvAvatarLabel.setVisibility(View.GONE);
-            } else if (null != user  && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+                glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().listener(requestListener).into(civAvatar);
+            }
+            else if (null != user  && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 // Load user avatar
-                glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        // Show initial
-                        if (itemView.getContext() instanceof Activity) {
-                            ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getName())));
-                                civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                                tvAvatarLabel.setText(TAPUtils.getInitials(room.getName(), room.getType() == TYPE_PERSONAL ? 2 : 1));
-                                tvAvatarLabel.setVisibility(View.VISIBLE);
-                            });
-                        }
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        return false;
-                    }
-                }).into(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, null);
-                tvAvatarLabel.setVisibility(View.GONE);
-            } else if (null != group && !group.isDeleted() && null != group.getImageURL() &&
-                    !group.getImageURL().getThumbnail().isEmpty()) {
+                glide.load(user.getImageURL().getThumbnail()).listener(requestListener).into(civAvatar);
+            }
+            else if (null != group && !group.isDeleted() && null != group.getImageURL() && !group.getImageURL().getThumbnail().isEmpty()) {
                 // Load group image
-                glide.load(group.getImageURL().getThumbnail()).into(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, null);
-                tvAvatarLabel.setVisibility(View.GONE);
-            } else if (null != room.getImageURL() && !room.getImageURL().getThumbnail().isEmpty()) {
-                glide.load(room.getImageURL().getThumbnail()).into(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, null);
-                tvAvatarLabel.setVisibility(View.GONE);
-            } else {
+                glide.load(group.getImageURL().getThumbnail()).listener(requestListener).into(civAvatar);
+            }
+            else if (null != room.getImageURL() && !room.getImageURL().getThumbnail().isEmpty()) {
+                // Load room image url
+                glide.load(room.getImageURL().getThumbnail()).listener(requestListener).into(civAvatar);
+            }
+            else {
                 // Show initial
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getName())));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
@@ -337,12 +346,26 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             // Set room name with highlighted text
             String roomName;
-            if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
-                    null != user.getFullname() && !user.getFullname().isEmpty()) {
+            if (TAPUtils.isSavedMessagesRoom(room.getRoomID(), instanceKey)) {
+                roomName = itemView.getContext().getString(R.string.tap_saved_messages);
+            }
+            else if (
+                null != user &&
+                (null == user.getDeleted() || user.getDeleted() <= 0L) &&
+                null != user.getFullname() &&
+                !user.getFullname().isEmpty()
+            ) {
                 roomName = user.getFullname();
-            } else if (null != group && !group.isDeleted() && null != group.getName() && !group.getName().isEmpty()) {
+            }
+            else if (
+                null != group &&
+                !group.isDeleted() &&
+                null != group.getName() &&
+                !group.getName().isEmpty()
+            ) {
                 roomName = group.getName();
-            } else {
+            }
+            else {
                 roomName = room.getName();
             }
             String highlightedText = roomName.replaceAll(
@@ -354,7 +377,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             if (room.getType() == TYPE_GROUP) {
                 ivAvatarIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_group_icon));
                 ivAvatarIcon.setVisibility(View.VISIBLE);
-            } else {
+            }
+            else {
                 ivAvatarIcon.setVisibility(View.GONE);
             }
 
@@ -365,24 +389,28 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             if (0 < unreadCount && unreadCount < 100) {
                 tvBadgeUnread.setText(room.getUnreadCount() + "");
                 tvBadgeUnread.setVisibility(View.VISIBLE);
-            } else if (unreadCount >= 100) {
+            }
+            else if (unreadCount >= 100) {
                 tvBadgeUnread.setText(R.string.tap_over_99);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
-            } else {
+            }
+            else {
                 tvBadgeUnread.setVisibility(View.GONE);
             }
 
             // Show mention badge
             if (!TapUI.getInstance(instanceKey).isMentionUsernameDisabled() && item.getRoomMentionCount() > 0) {
                 ivBadgeMention.setVisibility(View.VISIBLE);
-            } else {
+            }
+            else {
                 ivBadgeMention.setVisibility(View.GONE);
             }
 
             // Check if room is muted
             if (room.getIsMuted()) {
                 tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge_inactive));
-            } else {
+            }
+            else {
                 tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge));
             }
 
@@ -392,7 +420,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                     TapUIChatActivity.start(itemView.getContext(), instanceKey, room);
                     TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
                     TAPDataManager.getInstance(instanceKey).insertToDatabase(recentItem);
-                } else {
+                }
+                else {
                     // Trigger listener
                     roomListInterface.onRoomSelected(item.getRoom());
                 }
