@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPSetUploadSessionDoneRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
@@ -55,6 +56,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPSetUploadSessionDoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
@@ -321,4 +323,7 @@ public interface TAPTalkApiService {
 
     @POST("client/upload_session/create")
     Observable<TAPBaseResponse<TAPCreateUploadSessionResponse>> createUploadSession(@Body TAPCreateUploadSessionRequest request);
+
+    @POST("client/upload_session/done")
+    Observable<TAPBaseResponse<TAPSetUploadSessionDoneResponse>> setUploadSessionDone(@Body TAPSetUploadSessionDoneRequest request);
 }

@@ -52,6 +52,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPSetUploadSessionDoneRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
@@ -88,6 +89,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPSetUploadSessionDoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -896,5 +898,10 @@ public class TAPApiManager {
     public void createUploadSession(String fileName, String mediaType, long fileSize, int chunkCount, Subscriber<TAPBaseResponse<TAPCreateUploadSessionResponse>> subscriber) {
         TAPCreateUploadSessionRequest request = new TAPCreateUploadSessionRequest(fileName, mediaType, fileSize, chunkCount);
         execute(homingPigeon.createUploadSession(request), subscriber);
+    }
+
+    public void setUploadSessionDone(String uploadSessionID, Subscriber<TAPBaseResponse<TAPSetUploadSessionDoneResponse>> subscriber) {
+        TAPSetUploadSessionDoneRequest request = new TAPSetUploadSessionDoneRequest(uploadSessionID);
+        execute(homingPigeon.setUploadSessionDone(request), subscriber);
     }
 }

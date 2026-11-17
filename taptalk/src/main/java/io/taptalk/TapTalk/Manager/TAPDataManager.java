@@ -102,6 +102,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPSetUploadSessionDoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -1861,5 +1862,9 @@ public class TAPDataManager {
 
     public void createUploadSession(String fileName, String mediaType, long fileSize, int chunkCount, TAPDefaultDataView<TAPCreateUploadSessionResponse> view) {
         TAPApiManager.getInstance(instanceKey).createUploadSession(fileName, mediaType, fileSize, chunkCount, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void setUploadSessionDone(String uploadSessionID, TAPDefaultDataView<TAPSetUploadSessionDoneResponse> view) {
+        TAPApiManager.getInstance(instanceKey).setUploadSessionDone(uploadSessionID, new TAPDefaultSubscriber<>(view));
     }
 }

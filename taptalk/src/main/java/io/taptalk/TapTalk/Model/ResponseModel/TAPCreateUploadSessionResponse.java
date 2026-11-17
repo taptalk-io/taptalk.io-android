@@ -1,13 +1,10 @@
 package io.taptalk.TapTalk.Model.ResponseModel;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TAPCreateUploadSessionResponse implements Parcelable {
+public class TAPCreateUploadSessionResponse {
     @Nullable @JsonProperty("uploadSessionID") private String uploadSessionID;
     @Nullable @JsonProperty("expiryTime") private Long expiryTime;
 
@@ -36,34 +33,4 @@ public class TAPCreateUploadSessionResponse implements Parcelable {
     public void setExpiryTime(@Nullable Long expiryTime) {
         this.expiryTime = expiryTime;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.uploadSessionID);
-        if (this.expiryTime != null) {
-            dest.writeLong(this.expiryTime);
-        }
-    }
-
-    protected TAPCreateUploadSessionResponse(Parcel in) {
-        this.uploadSessionID = in.readString();
-        this.expiryTime = in.readLong();
-    }
-
-    public static final Creator<TAPCreateUploadSessionResponse> CREATOR = new Creator<>() {
-        @Override
-        public TAPCreateUploadSessionResponse createFromParcel(Parcel source) {
-            return new TAPCreateUploadSessionResponse(source);
-        }
-
-        @Override
-        public TAPCreateUploadSessionResponse[] newArray(int size) {
-            return new TAPCreateUploadSessionResponse[size];
-        }
-    };
 }

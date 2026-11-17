@@ -1,11 +1,8 @@
 package io.taptalk.TapTalk.Model.RequestModel;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TAPCreateUploadSessionRequest implements Parcelable {
+public class TAPCreateUploadSessionRequest {
     @JsonProperty("fileName") private String fileName;
     @JsonProperty("mediaType") private String mediaType;
     @JsonProperty("fileSize") private long fileSize;
@@ -52,36 +49,4 @@ public class TAPCreateUploadSessionRequest implements Parcelable {
     public void setChunkCount(int chunkCount) {
         this.chunkCount = chunkCount;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.fileName);
-        dest.writeString(this.mediaType);
-        dest.writeLong(this.fileSize);
-        dest.writeInt(this.chunkCount);
-    }
-
-    protected TAPCreateUploadSessionRequest(Parcel in) {
-        this.fileName = in.readString();
-        this.mediaType = in.readString();
-        this.fileSize = in.readLong();
-        this.chunkCount = in.readInt();
-    }
-
-    public static final Creator<TAPCreateUploadSessionRequest> CREATOR = new Creator<>() {
-        @Override
-        public TAPCreateUploadSessionRequest createFromParcel(Parcel source) {
-            return new TAPCreateUploadSessionRequest(source);
-        }
-
-        @Override
-        public TAPCreateUploadSessionRequest[] newArray(int size) {
-            return new TAPCreateUploadSessionRequest[size];
-        }
-    };
 }
