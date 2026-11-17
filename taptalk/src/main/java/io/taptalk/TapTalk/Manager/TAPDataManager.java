@@ -92,6 +92,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateUploadSessionResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
@@ -1856,5 +1857,9 @@ public class TAPDataManager {
 
     public void getGroupsInCommon(String userId, TAPDefaultDataView<TapRoomModelsResponse> view) {
         TAPApiManager.getInstance(instanceKey).getGroupsInCommon(userId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void createUploadSession(String fileName, String mediaType, long fileSize, int chunkCount, TAPDefaultDataView<TAPCreateUploadSessionResponse> view) {
+        TAPApiManager.getInstance(instanceKey).createUploadSession(fileName, mediaType, fileSize, chunkCount, new TAPDefaultSubscriber<>(view));
     }
 }

@@ -37,6 +37,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPAddRoomParticipantRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPCreateUploadSessionRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
@@ -77,6 +78,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateUploadSessionResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
@@ -889,5 +891,10 @@ public class TAPApiManager {
     public void getGroupsInCommon(String userId, Subscriber<TAPBaseResponse<TapRoomModelsResponse>> subscriber) {
         TAPUserIdRequest request = new TAPUserIdRequest(userId);
         execute(homingPigeon.getGroupsInCommon(request), subscriber);
+    }
+
+    public void createUploadSession(String fileName, String mediaType, long fileSize, int chunkCount, Subscriber<TAPBaseResponse<TAPCreateUploadSessionResponse>> subscriber) {
+        TAPCreateUploadSessionRequest request = new TAPCreateUploadSessionRequest(fileName, mediaType, fileSize, chunkCount);
+        execute(homingPigeon.createUploadSession(request), subscriber);
     }
 }

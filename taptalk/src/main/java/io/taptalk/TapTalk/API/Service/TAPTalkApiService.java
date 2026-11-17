@@ -5,6 +5,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPAddRoomParticipantRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPCreateUploadSessionRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest;
@@ -44,6 +45,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateUploadSessionResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
@@ -316,4 +318,7 @@ public interface TAPTalkApiService {
 
     @POST("client/room/groups_in_common")
     Observable<TAPBaseResponse<TapRoomModelsResponse>> getGroupsInCommon(@Body TAPUserIdRequest request);
+
+    @POST("client/upload_session/create")
+    Observable<TAPBaseResponse<TAPCreateUploadSessionResponse>> createUploadSession(@Body TAPCreateUploadSessionRequest request);
 }
