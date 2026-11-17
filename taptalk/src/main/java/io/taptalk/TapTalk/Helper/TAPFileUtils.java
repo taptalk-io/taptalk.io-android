@@ -33,6 +33,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.R;
@@ -706,5 +708,34 @@ public class TAPFileUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static List<File> splitFileBySize(File sourceFile, int chunkSizeBytes, File outputDir) {
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+
+        ArrayList<File> partFiles = new ArrayList<>();
+        byte[] buffer = new byte[chunkSizeBytes];
+        int partNumber = 1;
+
+        try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(sourceFile))) {
+            while (true) {
+                int bytesRead = input.read(buffer);
+                if (bytesRead <= 0) {
+                    break;
+                }
+                File partFile = new File(outputDir, sourceFile.getName() + ".part" + partNumber);
+                BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(partFile));
+                output.write(buffer, 0, bytesRead);
+                partFiles.add(partFile);
+                partNumber++;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return partFiles;
     }
 }
