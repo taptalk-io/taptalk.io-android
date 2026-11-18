@@ -1864,6 +1864,10 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).createUploadSession(fileName, mediaType, fileSize, chunkCount, new TAPDefaultSubscriber<>(view));
     }
 
+    public void uploadFileChunk(File fileChunk, String mimeType, String uploadSessionID, int chunkIndex, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).uploadFileChunk(fileChunk, mimeType, uploadSessionID, chunkIndex, new TAPDefaultSubscriber<>(view));
+    }
+
     public void setUploadSessionDone(String uploadSessionID, TAPDefaultDataView<TAPSetUploadSessionDoneResponse> view) {
         TAPApiManager.getInstance(instanceKey).setUploadSessionDone(uploadSessionID, new TAPDefaultSubscriber<>(view));
     }

@@ -900,6 +900,28 @@ public class TAPApiManager {
         execute(homingPigeon.createUploadSession(request), subscriber);
     }
 
+    public void uploadFileChunk(
+        File file,
+        String mimeType,
+        String uploadSessionID,
+        int chunkIndex,
+        Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber
+    ) {
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
+        ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType);
+        String fileName = file.getName();
+        if (fileName == null || fileName.isEmpty()) {
+            fileName = uploadSessionID + ".part" + chunkIndex;
+        }
+        RequestBody requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("uploadSessionID", uploadSessionID)
+            .addFormDataPart("chunkIndex", String.valueOf(chunkIndex))
+            .addFormDataPart("file", fileName, reqFile)
+            .build();
+        execute(tapMultipart.uploadFileChunk(requestBody), subscriber);
+    }
+
     public void setUploadSessionDone(String uploadSessionID, Subscriber<TAPBaseResponse<TAPSetUploadSessionDoneResponse>> subscriber) {
         TAPSetUploadSessionDoneRequest request = new TAPSetUploadSessionDoneRequest(uploadSessionID);
         execute(homingPigeon.setUploadSessionDone(request), subscriber);

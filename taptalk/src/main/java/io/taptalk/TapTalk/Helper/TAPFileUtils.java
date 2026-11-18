@@ -711,31 +711,30 @@ public class TAPFileUtils {
     }
 
     public static List<File> splitFileBySize(File sourceFile, int chunkSizeBytes, File outputDir) {
-        if (!outputDir.exists()) {
-            outputDir.mkdirs();
-        }
-
         ArrayList<File> partFiles = new ArrayList<>();
-        byte[] buffer = new byte[chunkSizeBytes];
-        int partNumber = 1;
-
-        try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(sourceFile))) {
-            while (true) {
-                int bytesRead = input.read(buffer);
-                if (bytesRead <= 0) {
-                    break;
+        if (chunkSizeBytes > 0) {
+            if (!outputDir.exists()) {
+                outputDir.mkdirs();
+            }
+            byte[] buffer = new byte[chunkSizeBytes];
+            int partNumber = 1;
+            try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(sourceFile))) {
+                while (true) {
+                    int bytesRead = input.read(buffer);
+                    if (bytesRead <= 0) {
+                        break;
+                    }
+                    File partFile = new File(outputDir, sourceFile.getName() + ".part" + partNumber);
+                    BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(partFile));
+                    output.write(buffer, 0, bytesRead);
+                    partFiles.add(partFile);
+                    partNumber++;
                 }
-                File partFile = new File(outputDir, sourceFile.getName() + ".part" + partNumber);
-                BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(partFile));
-                output.write(buffer, 0, bytesRead);
-                partFiles.add(partFile);
-                partNumber++;
+            }
+            catch (Exception e) {
+                e.printStackTrace();
             }
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
         return partFiles;
     }
 }
