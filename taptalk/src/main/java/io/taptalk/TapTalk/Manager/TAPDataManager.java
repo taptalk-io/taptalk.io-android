@@ -92,6 +92,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateUploadSessionResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
@@ -101,6 +102,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPSetUploadSessionDoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -1856,5 +1858,17 @@ public class TAPDataManager {
 
     public void getGroupsInCommon(String userId, TAPDefaultDataView<TapRoomModelsResponse> view) {
         TAPApiManager.getInstance(instanceKey).getGroupsInCommon(userId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void createUploadSession(String fileName, String mediaType, long fileSize, int chunkCount, TAPDefaultDataView<TAPCreateUploadSessionResponse> view) {
+        TAPApiManager.getInstance(instanceKey).createUploadSession(fileName, mediaType, fileSize, chunkCount, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void uploadFileChunk(File fileChunk, String mimeType, String uploadSessionID, int chunkIndex, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).uploadFileChunk(fileChunk, mimeType, uploadSessionID, chunkIndex, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void setUploadSessionDone(String uploadSessionID, TAPDefaultDataView<TAPSetUploadSessionDoneResponse> view) {
+        TAPApiManager.getInstance(instanceKey).setUploadSessionDone(uploadSessionID, new TAPDefaultSubscriber<>(view));
     }
 }

@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.API.Service;
 
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -19,4 +20,7 @@ public interface TAPTalkMultipartApiService {
 
     @POST("client/room/photo/upload")
     Observable<TAPBaseResponse<TAPUpdateRoomResponse>> uploadRoomPicture(@Body RequestBody uploadGroupPicture);
+
+    @POST("client/upload_session/upload_chunk")
+    Observable<TAPBaseResponse<TAPCommonResponse>> uploadFileChunk(@Body RequestBody uploadFileChunkRequest);
 }

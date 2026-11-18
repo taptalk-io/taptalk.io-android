@@ -37,6 +37,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPAddRoomParticipantRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPCreateUploadSessionRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
@@ -51,6 +52,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPSetUploadSessionDoneRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
@@ -77,6 +79,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateUploadSessionResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
@@ -86,6 +89,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPSetUploadSessionDoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -889,5 +893,37 @@ public class TAPApiManager {
     public void getGroupsInCommon(String userId, Subscriber<TAPBaseResponse<TapRoomModelsResponse>> subscriber) {
         TAPUserIdRequest request = new TAPUserIdRequest(userId);
         execute(homingPigeon.getGroupsInCommon(request), subscriber);
+    }
+
+    public void createUploadSession(String fileName, String mediaType, long fileSize, int chunkCount, Subscriber<TAPBaseResponse<TAPCreateUploadSessionResponse>> subscriber) {
+        TAPCreateUploadSessionRequest request = new TAPCreateUploadSessionRequest(fileName, mediaType, fileSize, chunkCount);
+        execute(homingPigeon.createUploadSession(request), subscriber);
+    }
+
+    public void uploadFileChunk(
+        File file,
+        String mimeType,
+        String uploadSessionID,
+        int chunkIndex,
+        Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber
+    ) {
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
+        ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType);
+        String fileName = file.getName();
+        if (fileName == null || fileName.isEmpty()) {
+            fileName = uploadSessionID + ".part" + chunkIndex;
+        }
+        RequestBody requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("uploadSessionID", uploadSessionID)
+            .addFormDataPart("chunkIndex", String.valueOf(chunkIndex))
+            .addFormDataPart("file", fileName, reqFile)
+            .build();
+        execute(tapMultipart.uploadFileChunk(requestBody), subscriber);
+    }
+
+    public void setUploadSessionDone(String uploadSessionID, Subscriber<TAPBaseResponse<TAPSetUploadSessionDoneResponse>> subscriber) {
+        TAPSetUploadSessionDoneRequest request = new TAPSetUploadSessionDoneRequest(uploadSessionID);
+        execute(homingPigeon.setUploadSessionDone(request), subscriber);
     }
 }

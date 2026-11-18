@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,7 +9,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -36,7 +36,11 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TapCoreFileUploadListener;
+import io.taptalk.TapTalk.Listener.TapFileChunkUploadListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateUploadSessionResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPSetUploadSessionDoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapScheduledMessageModel;
@@ -1623,6 +1627,145 @@ public class TAPFileUploadManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void uploadFileInChunks(Activity activity, File file, int maxChunkSize, TapFileChunkUploadListener listener) {
+        if (activity == null || listener == null) {
+            return;
+        }
+        if (file == null) {
+            listener.onError(ERROR_CODE_OTHERS, "File not found.");
+            return;
+        }
+        new Thread(() -> {
+            File outputDir = file.getParentFile();
+            if (outputDir == null) {
+                outputDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name));
+            }
+            List<File> fileChunks = TAPFileUtils.splitFileBySize(file, maxChunkSize, outputDir);
+            if (fileChunks.isEmpty()) {
+                activity.runOnUiThread(() -> listener.onError(ERROR_CODE_OTHERS, "Failed to split file into chunks."));
+                return;
+            }
+            activity.runOnUiThread(() -> listener.onFileSplit(fileChunks));
+            String mimeType = TAPUtils.getFileMimeType(file);
+            TAPDataManager.getInstance(instanceKey).createUploadSession(
+                file.getName(),
+                mimeType,
+                file.length(),
+                fileChunks.size(),
+                new TAPDefaultDataView<>() {
+                    @Override
+                    public void onSuccess(TAPCreateUploadSessionResponse response) {
+                        String uploadSessionID = response.getUploadSessionID();
+                        if (uploadSessionID != null && !uploadSessionID.isEmpty()) {
+                            activity.runOnUiThread(() -> listener.onSessionCreated(response));
+                            uploadNextFileChunk(activity, fileChunks, uploadSessionID, mimeType, 0, listener);
+                        }
+                        else {
+                            onError("Failed to create upload session.");
+                        }
+                    }
+
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        activity.runOnUiThread(() -> listener.onError(error.getCode(), error.getMessage()));
+                        deleteUploadedFileChunks(fileChunks);
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        activity.runOnUiThread(() -> listener.onError(ERROR_CODE_OTHERS, errorMessage));
+                        deleteUploadedFileChunks(fileChunks);
+                    }
+                }
+            );
+        }).start();
+    }
+
+    private void uploadNextFileChunk(
+        Activity activity,
+        List<File> fileChunks,
+        String uploadSessionID,
+        String mimeType,
+        int chunkIndex,
+        TapFileChunkUploadListener listener
+    ) {
+        if (chunkIndex < fileChunks.size()) {
+            // Upload next chunk
+            TAPDataManager.getInstance(instanceKey).uploadFileChunk(
+                fileChunks.get(chunkIndex),
+                mimeType,
+                uploadSessionID,
+                chunkIndex,
+                new TAPDefaultDataView<>() {
+                    @Override
+                    public void onSuccess(TAPCommonResponse response) {
+                        if (response.getSuccess()) {
+                            activity.runOnUiThread(() -> listener.onChunkUploaded(chunkIndex, uploadSessionID));
+                            uploadNextFileChunk(activity, fileChunks, uploadSessionID, mimeType, (chunkIndex + 1), listener);
+                        }
+                        else {
+                            onError(response.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        activity.runOnUiThread(() -> listener.onError(error.getCode(), error.getMessage()));
+                        deleteUploadedFileChunks(fileChunks);
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        activity.runOnUiThread(() -> listener.onError(ERROR_CODE_OTHERS, errorMessage));
+                        deleteUploadedFileChunks(fileChunks);
+                    }
+                }
+            );
+        }
+        else {
+            // Upload finished
+            TAPDataManager.getInstance(instanceKey).setUploadSessionDone(
+                uploadSessionID,
+                new TAPDefaultDataView<>() {
+                    @Override
+                    public void onSuccess(TAPSetUploadSessionDoneResponse response) {
+                        if (response.getSuccess()) {
+                            activity.runOnUiThread(() -> listener.onSuccess(uploadSessionID));
+                        }
+                        else {
+                            onError(response.getMessage());
+                        }
+                        deleteUploadedFileChunks(fileChunks);
+                    }
+
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        activity.runOnUiThread(() -> listener.onError(error.getCode(), error.getMessage()));
+                        deleteUploadedFileChunks(fileChunks);
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        activity.runOnUiThread(() -> listener.onError(ERROR_CODE_OTHERS, errorMessage));
+                        deleteUploadedFileChunks(fileChunks);
+                    }
+                }
+            );
+        }
+    }
+
+    private void deleteUploadedFileChunks(List<File> fileChunks) {
+        new Thread(() -> {
+            if (fileChunks != null && !fileChunks.isEmpty()) {
+                for (File chunk : fileChunks) {
+                    if (chunk.exists()) {
+                        chunk.delete();
+                    }
+                }
+            }
+        }).start();
     }
 
     public void onFileUploadFromExternalServerFinished(TAPMessageModel messageModel, String fileUrl) {
